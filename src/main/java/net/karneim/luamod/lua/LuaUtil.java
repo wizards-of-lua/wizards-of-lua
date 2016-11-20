@@ -157,7 +157,7 @@ public class LuaUtil implements SleepActivator {
         // Make sure that lua modules are loaded from this mod's config dir only
         // TODO ensure that the "package.path" variable can not be changed by users during runtime
         if ("LUA_PATH".equals(name)) {
-          return LuaMod.instance.getLuaDir().getAbsolutePath() + "/?.lua";
+          return "";// LuaMod.instance.getLuaDir().getAbsolutePath() + "/?.lua";
         }
         return delegate.getEnv(name);
       }
