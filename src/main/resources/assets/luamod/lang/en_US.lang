@@ -1,0 +1,23 @@
+commands.ycopy.usage=/ycopy <x1> <y1> <z1> <x2> <y2> <z2>
+commands.ycopy.outOfWorld=Cannot access blocks outside of the world
+commands.ycopy.success=%d blocks copied
+commands.ycopy.failed=No blocks copied
+commands.ycopy.tooManyBlocks=Too many blocks in the specified area (%d > %d)
+
+commands.ycopyup.usage=/ycopyup <x1> <y1> <z1> [radius_xz]
+commands.ycopyup.outOfWorld=Cannot access blocks outside of the world
+commands.ycopyup.success=%d blocks copied
+commands.ycopyup.failed=No blocks copied
+commands.ycopyup.tooManyBlocks=Too many blocks in the specified area (%d > %d)
+
+commands.ycut.usage=/ycut <x1> <y1> <z1> <x2> <y2> <z2>
+commands.ycut.outOfWorld=Cannot access blocks outside of the world
+commands.ycut.success=%d blocks cut
+commands.ycut.failed=No blocks cut
+commands.ycut.tooManyBlocks=Too many blocks in the specified area (%d > %d)
+
+commands.ypaste.usage=/ypaste <x> <y> <z> [angle]
+commands.ypaste.outOfWorld=Cannot access blocks outside of the world
+commands.ypaste.success=%d blocks pasted
+commands.ypaste.failed=No blocks pasted
+
