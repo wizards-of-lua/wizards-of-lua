@@ -5,9 +5,9 @@ import net.karneim.luamod.lua.event.EventListener;
 public interface SleepActivator {
   void startSleep(long ticks);
 
-  void addEventListener(EventListener listener);
+  boolean addEventListener(EventListener listener);
 
-  void removeEventListener(EventListener listener);
+  boolean removeEventListener(EventListener listener);
 
   void waitForEvent(EventListener listener, int ticks);
 

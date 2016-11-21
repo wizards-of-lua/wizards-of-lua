@@ -1,9 +1,6 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.event;
 
-import javax.annotation.Nullable;
-
-import net.karneim.luamod.lua.event.Event;
-import net.karneim.luamod.lua.event.EventListener;
+import net.karneim.luamod.lua.SleepActivator;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -13,18 +10,17 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
-public class EventWrapper {
+public class EventListenerWrapper {
 
   private final EventListener listener;
   private final SleepActivator sleepActivator;
   private final Table luaTable = new DefaultTable();
 
-  public EventWrapper(EventListener listener, SleepActivator sleepActivator) {
+  public EventListenerWrapper(EventListener listener, SleepActivator sleepActivator) {
     this.listener = listener;
     this.sleepActivator = sleepActivator;
     luaTable.rawset("deregister", new DeregisterFunction());
     luaTable.rawset("next", new NextFunction());
-    sleepActivator.addEventListener(listener);
   }
 
   public Table getLuaTable() {
@@ -68,7 +64,7 @@ public class EventWrapper {
       if (listener.hasNext()) {
         sleepActivator.stopWaitingForEvent();
       }
-      context.getReturnBuffer().setTo(unwrapPayload(listener.next()));
+      context.getReturnBuffer().setTo(listener.next().getLuaObject());
     }
 
     @Override
@@ -82,14 +78,7 @@ public class EventWrapper {
       if (listener.hasNext()) {
         sleepActivator.stopWaitingForEvent();
       }
-      context.getReturnBuffer().setTo(unwrapPayload(listener.next()));
-    }
-
-    private @Nullable Object unwrapPayload(@Nullable Event event) {
-      if (event != null) {
-        return event.getPayload();
-      }
-      return null;
+      context.getReturnBuffer().setTo(listener.next().getLuaObject());
     }
   }
 

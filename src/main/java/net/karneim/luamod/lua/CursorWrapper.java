@@ -1,14 +1,12 @@
 package net.karneim.luamod.lua;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.lua.event.EventListener;
+import net.karneim.luamod.lua.event.EventListenerWrapper;
 import net.karneim.luamod.lua.event.EventType;
 import net.minecraft.block.Block;
 import net.minecraft.command.NumberInvalidException;
@@ -38,9 +36,6 @@ public class CursorWrapper {
   private final Cursor cursor;
   private final SleepActivator sleepActivator;
   private final Snapshots snapshots;
-
-  private final Map<EventListener, EventWrapper> eventWrappers =
-      new HashMap<EventListener, EventWrapper>();
 
   private final Table luaTable = new DefaultTable();
 
@@ -82,15 +77,6 @@ public class CursorWrapper {
 
   public Table getLuaTable() {
     return luaTable;
-  }
-
-  private EventWrapper getWrapper(EventListener listener) {
-    EventWrapper result = eventWrappers.get(listener);
-    if (result == null) {
-      result = new EventWrapper(listener, sleepActivator);
-      eventWrappers.put(listener, result);
-    }
-    return result;
   }
 
   private class MoveFunction extends AbstractFunction2 {
@@ -800,7 +786,9 @@ public class CursorWrapper {
         throw new IllegalArgumentException(String.format("Event name expected but got %s!", arg1));
       }
       EventType type = getEventType(arg1);
-      EventWrapper wrapper = getWrapper(new EventListener(type));
+      EventListener listener = new EventListener(type);
+      sleepActivator.addEventListener(listener);
+      EventListenerWrapper wrapper = new EventListenerWrapper(listener, sleepActivator);
       context.getReturnBuffer().setTo(wrapper.getLuaTable());
     }
 

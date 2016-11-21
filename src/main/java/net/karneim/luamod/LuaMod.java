@@ -16,6 +16,8 @@ import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
 import net.karneim.luamod.lua.LuaProcessEntity;
 import net.karneim.luamod.lua.LuaProcessRegistry;
+import net.karneim.luamod.lua.event.EventWrapper;
+import net.karneim.luamod.lua.event.ModEventHandler;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
@@ -145,6 +147,12 @@ public class LuaMod {
 
   public ClipboardRegistry getClipboards() {
     return clipboards;
+  }
+
+  public void notifyEventListeners(EventWrapper<?> wrapper) {
+    for (LuaProcessEntity entity : processRegistry.getAll()) {
+      entity.notifyEventListeners(wrapper);
+    }
   }
 
 }

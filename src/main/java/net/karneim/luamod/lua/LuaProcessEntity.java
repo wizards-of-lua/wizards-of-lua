@@ -4,8 +4,7 @@ import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
-import net.karneim.luamod.lua.event.Event;
-import net.karneim.luamod.lua.event.EventType;
+import net.karneim.luamod.lua.event.EventWrapper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -69,7 +68,7 @@ public class LuaProcessEntity extends Entity {
 
     setCustomNameTag("Lua-" + LuaMod.instance.getNewProcessId());
     LuaMod.instance.getProcessRegistry().register(this);
-    
+
     // if (surface != null) {
     // cursor.move(surface);
     // }
@@ -126,26 +125,6 @@ public class LuaProcessEntity extends Entity {
   // luaUtil.handleEvent(new Event(EventType.MESSAGE_EVENT, unformattedText));
   // }
 
-  /**
-   * Called when a public chat message is sent to this entity.
-   * 
-   * @param sender
-   * @param message
-   */
-  public void onChatMessage(ICommandSender sender, String message) {
-    luaUtil.handleEvent(new Event(EventType.CHAT_EVENT, message));
-  }
-
-  /**
-   * Called when a "whisper" message is sent to this entity.
-   * 
-   * @param sender
-   * @param message
-   */
-  public void onWhisperMessage(ICommandSender sender, String message) {
-    luaUtil.handleEvent(new Event(EventType.WHISPER_EVENT, message));
-  }
-
   private void requestChunkLoaderTicket() {
     chunkLoaderTicket = ForgeChunkManager.requestTicket(LuaMod.instance, getEntityWorld(),
         ForgeChunkManager.Type.ENTITY);
@@ -188,7 +167,7 @@ public class LuaProcessEntity extends Entity {
       luaUtil.setWorldTime(ticksExisted);
       switch (state) {
         case START:
-          
+
           try {
             luaUtil.run();
             state = State.STOP;
@@ -292,6 +271,8 @@ public class LuaProcessEntity extends Entity {
     }
   }
 
-
+  public void notifyEventListeners(EventWrapper<?> wrapper) {
+    luaUtil.notifyEventListeners(wrapper);
+  }
 
 }
