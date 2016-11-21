@@ -3,6 +3,8 @@ package net.karneim.luamod.lua;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,7 +56,7 @@ public class LuaUtil implements SleepActivator {
   private long worldTime;
   private long wakeUpTime;
 
-  private EventListener currentListener = null;
+  private Set<EventListener> currentListeners = new HashSet<EventListener>();
   private long waitForEventUntil;
 
   public LuaUtil(ICommandSender owner, Cursor cursor, Clipboard clipboard,
@@ -188,19 +190,32 @@ public class LuaUtil implements SleepActivator {
   }
 
   @Override
-  public void waitForEvent(EventListener listener, int maxTicks) {
-    currentListener = listener;
-    waitForEventUntil = worldTime + maxTicks;
+  public void waitForEvent(EventListener listener, int ticks) {
+    waitForEvents(Arrays.asList(listener), ticks);
+  }
+
+  @Override
+  public void waitForEvents(Collection<? extends EventListener> listeners, int ticks) {
+    currentListeners.clear();
+    currentListeners.addAll(listeners);
+    waitForEventUntil = worldTime + ticks;
   }
 
   public boolean isWaitingForEvent() {
-    return waitForEventUntil > worldTime && currentListener != null && !currentListener.hasNext();
+    if (waitForEventUntil <= worldTime || currentListeners.isEmpty())
+      return false;
+    for (EventListener listener : currentListeners) {
+      if (listener.hasNext()) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
   public void stopWaitingForEvent() {
     waitForEventUntil = worldTime;
-    currentListener = null;
+    currentListeners.clear();
   }
 
   public void compile(String program) throws LoaderException {

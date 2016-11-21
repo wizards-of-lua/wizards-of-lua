@@ -177,6 +177,7 @@ public class LuaProcessEntity extends Entity {
               state = State.RESUME;
             }
           } catch (Exception e) {
+            e.printStackTrace();
             String message = String.format("Error during command execution: %s!", e.getMessage());
             TextComponentString txt = new TextComponentString(message);
             txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
@@ -196,6 +197,7 @@ public class LuaProcessEntity extends Entity {
               state = State.RESUME;
             }
           } catch (Exception e) {
+            e.printStackTrace();
             String message = String.format("Error during command execution: %s!", e.getMessage());
             TextComponentString txt = new TextComponentString(message);
             txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
