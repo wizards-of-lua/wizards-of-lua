@@ -6,7 +6,7 @@ import net.sandius.rembulan.Table;
 
 public class WhisperEventWrapper extends EventWrapper<String> {
   public WhisperEventWrapper(@Nullable String message) {
-    super(message, EventType.WHISPER_EVENT);
+    super(message, EventType.WHISPER);
   }
 
   @Override

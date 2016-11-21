@@ -8,7 +8,7 @@ import net.sandius.rembulan.impl.DefaultTable;
 
 public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
   public ServerChatEventWrapper(@Nullable ServerChatEvent delegate) {
-    super(delegate, EventType.CHAT_EVENT);
+    super(delegate, EventType.CHAT);
   }
 
   @Override

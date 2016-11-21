@@ -1,8 +1,9 @@
 package net.karneim.luamod.lua.event;
 
 public enum EventType {
-  CHAT_EVENT, //
-  WHISPER_EVENT, //
+  CHAT, //
+  WHISPER, //
   LEFT_CLICK,//
+  RIGHT_CLICK,//
   ;
 }

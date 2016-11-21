@@ -5,6 +5,9 @@ import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickEmpty;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ModEventHandler {
@@ -27,12 +30,32 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onLeftClickBlock(LeftClickBlock evt) {
-    mod.notifyEventListeners(new PlayerInteractEventWrapper(evt, EventType.LEFT_CLICK));
+    mod.notifyEventListeners(
+        new PlayerInteractEventWrapper<LeftClickBlock>(evt, EventType.LEFT_CLICK));
   }
 
   @SubscribeEvent
   public void onLeftClickEmpty(LeftClickEmpty evt) {
-    mod.notifyEventListeners(new PlayerInteractEventWrapper(evt, EventType.LEFT_CLICK));
+    mod.notifyEventListeners(
+        new PlayerInteractEventWrapper<LeftClickEmpty>(evt, EventType.LEFT_CLICK));
+  }
+
+  @SubscribeEvent
+  public void onRightClickBlock(RightClickBlock evt) {
+    mod.notifyEventListeners(
+        new PlayerInteractEventWrapper<RightClickBlock>(evt, EventType.RIGHT_CLICK));
+  }
+
+  @SubscribeEvent
+  public void onRightClickEmpty(RightClickEmpty evt) {
+    mod.notifyEventListeners(
+        new PlayerInteractEventWrapper<RightClickEmpty>(evt, EventType.RIGHT_CLICK));
+  }
+
+  @SubscribeEvent
+  public void onRightClickItem(RightClickItem evt) {
+    mod.notifyEventListeners(
+        new PlayerInteractEventWrapper<RightClickItem>(evt, EventType.RIGHT_CLICK));
   }
 
 }
