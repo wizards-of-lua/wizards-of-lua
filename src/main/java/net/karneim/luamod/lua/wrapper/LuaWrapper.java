@@ -1,8 +1,6 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
-
-import net.sandius.rembulan.LuaObject;
 
 public abstract class LuaWrapper<JavaObject> {
   protected final @Nullable JavaObject delegate;
@@ -15,12 +13,12 @@ public abstract class LuaWrapper<JavaObject> {
     return delegate;
   }
 
-  public @Nullable LuaObject getLuaObject() {
+  public @Nullable Object getLuaObject() {
     if (delegate == null) {
       return null;
     }
     return toLuaObject();
   }
 
-  protected abstract LuaObject toLuaObject();
+  protected abstract Object toLuaObject();
 }

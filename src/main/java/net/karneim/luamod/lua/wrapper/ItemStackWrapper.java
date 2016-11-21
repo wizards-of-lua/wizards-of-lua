@@ -1,13 +1,15 @@
-package net.karneim.luamod.lua.mcwrapper;
+package net.karneim.luamod.lua.wrapper;
 
-import net.karneim.luamod.lua.LuaWrapper;
+import javax.annotation.Nullable;
+
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
 public class ItemStackWrapper extends LuaWrapper<ItemStack> {
-  public ItemStackWrapper(ItemStack delegate) {
+  public ItemStackWrapper(@Nullable ItemStack delegate) {
     super(delegate);
   }
 
@@ -21,7 +23,10 @@ public class ItemStackWrapper extends LuaWrapper<ItemStack> {
   }
 
   private String getName() {
-    ResourceLocation registryName = delegate.getItem().getRegistryName();
+    Item item = delegate.getItem();
+    if (item == null)
+      return null;
+    ResourceLocation registryName = item.getRegistryName();
     return registryName.getResourceDomain() + ":" + registryName.getResourcePath();
   }
 }
