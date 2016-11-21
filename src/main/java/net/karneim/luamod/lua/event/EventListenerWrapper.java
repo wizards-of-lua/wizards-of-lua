@@ -82,6 +82,7 @@ public class EventListenerWrapper {
           return;
         }
       }
+      context.getReturnBuffer().setTo(null);
     }
 
   }

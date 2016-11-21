@@ -14,6 +14,7 @@ public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
   @Override
   protected Table toLuaObject() {
     Table result = super.toLuaObject();
+    result.rawset("sender", delegate.getUsername());
     result.rawset("message", delegate.getMessage());
     return result;
   }

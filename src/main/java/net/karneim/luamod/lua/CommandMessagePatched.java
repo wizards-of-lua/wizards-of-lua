@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua;
 
 import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.lua.event.WhisperEvent;
 import net.karneim.luamod.lua.event.WhisperEventWrapper;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -26,7 +27,8 @@ public class CommandMessagePatched extends CommandMessage {
     } else {
       LuaProcessEntity processEntity = mod.getProcessRegistry().get(args[0]);
       if (processEntity != null) {
-        processEntity.notifyEventListeners(new WhisperEventWrapper(concat(args, 1, args.length)));
+        processEntity.notifyEventListeners(new WhisperEventWrapper(
+            new WhisperEvent(sender.getName(), concat(args, 1, args.length))));
       } else {
         // do default handling
         super.execute(server, sender, args);
