@@ -1,9 +1,8 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.event;
 
-import javax.annotation.Nullable;
+import java.util.Collection;
 
-import net.karneim.luamod.lua.event.Event;
-import net.karneim.luamod.lua.event.EventListener;
+import net.karneim.luamod.lua.SleepActivator;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -13,18 +12,18 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
-public class EventWrapper {
+public class EventListenerWrapper {
 
-  private final EventListener listener;
+  private final Collection<? extends EventListener> listeners;
   private final SleepActivator sleepActivator;
   private final Table luaTable = new DefaultTable();
 
-  public EventWrapper(EventListener listener, SleepActivator sleepActivator) {
-    this.listener = listener;
+  public EventListenerWrapper(Collection<? extends EventListener> listeners,
+      SleepActivator sleepActivator) {
+    this.listeners = listeners;
     this.sleepActivator = sleepActivator;
     luaTable.rawset("deregister", new DeregisterFunction());
     luaTable.rawset("next", new NextFunction());
-    sleepActivator.addEventListener(listener);
   }
 
   public Table getLuaTable() {
@@ -35,9 +34,10 @@ public class EventWrapper {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      // System.out.println("unregister");
-      sleepActivator.removeEventListener(listener);
-      listener.clear();
+      for (EventListener listener : listeners) {
+        listener.clear();
+        sleepActivator.removeEventListener(listener);
+      }
       context.getReturnBuffer().setTo();
     }
 
@@ -59,38 +59,31 @@ public class EventWrapper {
       }
       int ticks = arg1 == null ? Integer.MAX_VALUE : ((Number) arg1).intValue();
 
-      sleepActivator.waitForEvent(listener, ticks);
-      try {
-        context.pauseIfRequested();
-      } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(NextFunction.this, "Waiting for event");
-      }
-      if (listener.hasNext()) {
-        sleepActivator.stopWaitingForEvent();
-      }
-      context.getReturnBuffer().setTo(unwrapPayload(listener.next()));
+      sleepActivator.waitForEvents(listeners, ticks);
+      execute(context);
     }
 
     @Override
     public void resume(ExecutionContext context, Object suspendedState)
         throws ResolvedControlThrowable {
+      execute(context);
+    }
+
+    private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
         context.pauseIfRequested();
       } catch (UnresolvedControlThrowable e) {
-        e.resolve(NextFunction.this, "Waiting for event");
+        throw e.resolve(NextFunction.this, "Waiting for event");
       }
-      if (listener.hasNext()) {
-        sleepActivator.stopWaitingForEvent();
+      for (EventListener listener : listeners) {
+        if (listener.hasNext()) {
+          sleepActivator.stopWaitingForEvent();
+          context.getReturnBuffer().setTo(listener.next().getLuaObject());
+          return;
+        }
       }
-      context.getReturnBuffer().setTo(unwrapPayload(listener.next()));
     }
 
-    private @Nullable Object unwrapPayload(@Nullable Event event) {
-      if (event != null) {
-        return event.getPayload();
-      }
-      return null;
-    }
   }
 
 }

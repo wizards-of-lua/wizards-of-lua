@@ -1,15 +1,19 @@
 package net.karneim.luamod.lua;
 
+import java.util.Collection;
+
 import net.karneim.luamod.lua.event.EventListener;
 
 public interface SleepActivator {
   void startSleep(long ticks);
 
-  void addEventListener(EventListener listener);
+  boolean addEventListener(EventListener listener);
 
-  void removeEventListener(EventListener listener);
+  boolean removeEventListener(EventListener listener);
 
   void waitForEvent(EventListener listener, int ticks);
+
+  void waitForEvents(Collection<? extends EventListener> listener, int ticks);
 
   void stopWaitingForEvent();
 }

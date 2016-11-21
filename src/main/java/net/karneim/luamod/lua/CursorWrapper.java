@@ -1,7 +1,8 @@
 package net.karneim.luamod.lua;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.EnumDirection;
@@ -9,6 +10,7 @@ import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.lua.event.EventListener;
+import net.karneim.luamod.lua.event.EventListenerWrapper;
 import net.karneim.luamod.lua.event.EventType;
 import net.minecraft.block.Block;
 import net.minecraft.command.NumberInvalidException;
@@ -23,6 +25,7 @@ import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
+import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
@@ -38,9 +41,6 @@ public class CursorWrapper {
   private final Cursor cursor;
   private final SleepActivator sleepActivator;
   private final Snapshots snapshots;
-
-  private final Map<EventListener, EventWrapper> eventWrappers =
-      new HashMap<EventListener, EventWrapper>();
 
   private final Table luaTable = new DefaultTable();
 
@@ -78,19 +78,11 @@ public class CursorWrapper {
     luaTable.rawset("inAir", new InAirFunction());
     luaTable.rawset("sleep", new SleepFunction());
     luaTable.rawset("registerForEvent", new RegisterForEventFunction());
+    luaTable.rawset("registerForEvents", new RegisterForEventsFunction());
   }
 
   public Table getLuaTable() {
     return luaTable;
-  }
-
-  private EventWrapper getWrapper(EventListener listener) {
-    EventWrapper result = eventWrappers.get(listener);
-    if (result == null) {
-      result = new EventWrapper(listener, sleepActivator);
-      eventWrappers.put(listener, result);
-    }
-    return result;
   }
 
   private class MoveFunction extends AbstractFunction2 {
@@ -800,7 +792,37 @@ public class CursorWrapper {
         throw new IllegalArgumentException(String.format("Event name expected but got %s!", arg1));
       }
       EventType type = getEventType(arg1);
-      EventWrapper wrapper = getWrapper(new EventListener(type));
+      EventListener listener = new EventListener(type);
+      sleepActivator.addEventListener(listener);
+      EventListenerWrapper wrapper =
+          new EventListenerWrapper(Arrays.asList(listener), sleepActivator);
+      context.getReturnBuffer().setTo(wrapper.getLuaTable());
+    }
+
+    private EventType getEventType(Object arg) {
+      String name = String.valueOf(arg);
+      return EventType.valueOf(name);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class RegisterForEventsFunction extends AbstractFunctionAnyArg {
+
+    @Override
+    public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
+      List<EventListener> listeners = new ArrayList<EventListener>();
+      for (Object arg : args) {
+        EventType type = getEventType(arg);
+        EventListener listener = new EventListener(type);
+        sleepActivator.addEventListener(listener);
+        listeners.add(listener);
+      }
+      EventListenerWrapper wrapper = new EventListenerWrapper(listeners, sleepActivator);
       context.getReturnBuffer().setTo(wrapper.getLuaTable());
     }
 

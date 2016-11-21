@@ -2,13 +2,12 @@ package net.karneim.luamod.lua.event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.LinkedList;
-
-import javax.annotation.Nullable;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public final class EventListener {
   private final EventType type;
-  private final LinkedList<Event> events = new LinkedList<Event>();
+  private final Deque<EventWrapper<?>> events = new ArrayDeque<EventWrapper<?>>();
 
   public EventListener(EventType type) {
     this.type = checkNotNull(type, "type==null!");
@@ -18,21 +17,21 @@ public final class EventListener {
     return type;
   }
 
-  public void receive(Event event) {
-    events.add(checkNotNull(event, "event==null!"));
+  public void receive(EventWrapper<?> event) {
+    checkNotNull(event, "event==null!");
+    if (type == event.getEventType()) {
+      events.add(event);
+    }
   }
 
-  public @Nullable Event next() {
-    if (hasNext()) {
-      return events.removeFirst();
-    }
-    return null;
+  public EventWrapper<?> next() {
+    return events.pop();
   }
 
   public boolean hasNext() {
     return !events.isEmpty();
   }
-  
+
   public void clear() {
     events.clear();
   }
