@@ -15,7 +15,7 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.event.EventListener;
+import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.event.EventWrapper;
 import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
@@ -56,7 +56,7 @@ public class LuaUtil implements SleepActivator {
   private long worldTime;
   private long wakeUpTime;
 
-  private Set<EventListener> currentListeners = new HashSet<EventListener>();
+  private Set<EventQueue> currentListeners = new HashSet<EventQueue>();
   private long waitForEventUntil;
 
   public LuaUtil(ICommandSender owner, Cursor cursor, Clipboard clipboard,
@@ -87,9 +87,11 @@ public class LuaUtil implements SleepActivator {
 
     LuaModLib.installInto(env, owner);
     Snapshots snapshots = new Snapshots();
+    
     CursorWrapper.installInto(env, cursor, this, snapshots);
     ClipboardWrapper.installInto(env, clipboard, snapshots);
-
+    EventsWrapper.installInto(env, this);
+    
     class SleepableCountDownSchedulingContext implements SchedulingContext {
 
       private long allowance;
@@ -190,12 +192,12 @@ public class LuaUtil implements SleepActivator {
   }
 
   @Override
-  public void waitForEvent(EventListener listener, int ticks) {
+  public void waitForEvent(EventQueue listener, int ticks) {
     waitForEvents(Arrays.asList(listener), ticks);
   }
 
   @Override
-  public void waitForEvents(Collection<? extends EventListener> listeners, int ticks) {
+  public void waitForEvents(Collection<? extends EventQueue> listeners, int ticks) {
     currentListeners.clear();
     currentListeners.addAll(listeners);
     waitForEventUntil = worldTime + ticks;
@@ -204,7 +206,7 @@ public class LuaUtil implements SleepActivator {
   public boolean isWaitingForEvent() {
     if (waitForEventUntil <= worldTime || currentListeners.isEmpty())
       return false;
-    for (EventListener listener : currentListeners) {
+    for (EventQueue listener : currentListeners) {
       if (listener.hasNext()) {
         return false;
       }
@@ -231,24 +233,24 @@ public class LuaUtil implements SleepActivator {
     executor.resume(continuation);
   }
 
-  private final Set<EventListener> eventListeners = new HashSet<EventListener>();
+  private final Set<EventQueue> eventListeners = new HashSet<EventQueue>();
 
-  public Set<EventListener> getEventListeners() {
+  public Set<EventQueue> getEventListeners() {
     return Collections.unmodifiableSet(eventListeners);
   }
 
   @Override
-  public boolean addEventListener(EventListener listener) {
+  public boolean addEventQueue(EventQueue listener) {
     return eventListeners.add(listener);
   }
 
   @Override
-  public boolean removeEventListener(EventListener listener) {
+  public boolean removeEventQueue(EventQueue listener) {
     return eventListeners.remove(listener);
   }
 
   public void notifyEventListeners(EventWrapper<?> wrapper) {
-    for (EventListener listener : eventListeners) {
+    for (EventQueue listener : eventListeners) {
       listener.receive(wrapper);
     }
   }

@@ -1,17 +1,10 @@
 package net.karneim.luamod.lua;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
-import net.karneim.luamod.lua.event.EventListener;
-import net.karneim.luamod.lua.event.EventListenerWrapper;
-import net.karneim.luamod.lua.event.EventType;
 import net.minecraft.block.Block;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.util.EnumFacing;
@@ -25,7 +18,6 @@ import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
-import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
@@ -77,8 +69,6 @@ public class CursorWrapper {
     luaTable.rawset("paste", new PasteFunction());
     luaTable.rawset("inAir", new InAirFunction());
     luaTable.rawset("sleep", new SleepFunction());
-    luaTable.rawset("registerForEvent", new RegisterForEventFunction());
-    luaTable.rawset("registerForEvents", new RegisterForEventsFunction());
   }
 
   public Table getLuaTable() {
@@ -780,61 +770,6 @@ public class CursorWrapper {
       }
       System.out.println("Resume " + String.valueOf(suspendedState));
       context.getReturnBuffer().setTo();
-    }
-  }
-
-  private class RegisterForEventFunction extends AbstractFunction1 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      // System.out.println("event: " + arg1);
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Event name expected but got %s!", arg1));
-      }
-      EventType type = getEventType(arg1);
-      EventListener listener = new EventListener(type);
-      sleepActivator.addEventListener(listener);
-      EventListenerWrapper wrapper =
-          new EventListenerWrapper(Arrays.asList(listener), sleepActivator);
-      context.getReturnBuffer().setTo(wrapper.getLuaTable());
-    }
-
-    private EventType getEventType(Object arg) {
-      String name = String.valueOf(arg);
-      return EventType.valueOf(name);
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class RegisterForEventsFunction extends AbstractFunctionAnyArg {
-
-    @Override
-    public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      List<EventListener> listeners = new ArrayList<EventListener>();
-      for (Object arg : args) {
-        EventType type = getEventType(arg);
-        EventListener listener = new EventListener(type);
-        sleepActivator.addEventListener(listener);
-        listeners.add(listener);
-      }
-      EventListenerWrapper wrapper = new EventListenerWrapper(listeners, sleepActivator);
-      context.getReturnBuffer().setTo(wrapper.getLuaTable());
-    }
-
-    private EventType getEventType(Object arg) {
-      String name = String.valueOf(arg);
-      return EventType.valueOf(name);
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
     }
   }
 

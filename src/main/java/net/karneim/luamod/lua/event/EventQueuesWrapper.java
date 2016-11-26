@@ -12,15 +12,15 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
-public class EventListenerWrapper {
+public class EventQueuesWrapper {
 
-  private final Collection<? extends EventListener> listeners;
+  private final Collection<? extends EventQueue> queues;
   private final SleepActivator sleepActivator;
   private final Table luaTable = new DefaultTable();
 
-  public EventListenerWrapper(Collection<? extends EventListener> listeners,
+  public EventQueuesWrapper(Collection<? extends EventQueue> queues,
       SleepActivator sleepActivator) {
-    this.listeners = listeners;
+    this.queues = queues;
     this.sleepActivator = sleepActivator;
     luaTable.rawset("deregister", new DeregisterFunction());
     luaTable.rawset("next", new NextFunction());
@@ -34,9 +34,9 @@ public class EventListenerWrapper {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      for (EventListener listener : listeners) {
+      for (EventQueue listener : queues) {
         listener.clear();
-        sleepActivator.removeEventListener(listener);
+        sleepActivator.removeEventQueue(listener);
       }
       context.getReturnBuffer().setTo();
     }
@@ -59,7 +59,7 @@ public class EventListenerWrapper {
       }
       int ticks = arg1 == null ? Integer.MAX_VALUE : ((Number) arg1).intValue();
 
-      sleepActivator.waitForEvents(listeners, ticks);
+      sleepActivator.waitForEvents(queues, ticks);
       execute(context);
     }
 
@@ -75,7 +75,7 @@ public class EventListenerWrapper {
       } catch (UnresolvedControlThrowable e) {
         throw e.resolve(NextFunction.this, "Waiting for event");
       }
-      for (EventListener listener : listeners) {
+      for (EventQueue listener : queues) {
         if (listener.hasNext()) {
           sleepActivator.stopWaitingForEvent();
           context.getReturnBuffer().setTo(listener.next().getLuaObject());

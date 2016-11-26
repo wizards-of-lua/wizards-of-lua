@@ -5,11 +5,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public final class EventListener {
+public final class EventQueue {
   private final EventType type;
   private final Deque<EventWrapper<?>> events = new ArrayDeque<EventWrapper<?>>();
 
-  public EventListener(EventType type) {
+  public EventQueue(EventType type) {
     this.type = checkNotNull(type, "type==null!");
   }
 
