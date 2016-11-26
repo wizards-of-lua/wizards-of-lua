@@ -30,32 +30,45 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onLeftClickBlock(LeftClickBlock evt) {
+    if (evt.getWorld().isRemote) {
+      return;
+    }
     mod.notifyEventListeners(
         new PlayerInteractEventWrapper<LeftClickBlock>(evt, EventType.LEFT_CLICK));
   }
 
   @SubscribeEvent
   public void onLeftClickEmpty(LeftClickEmpty evt) {
+    if (evt.getWorld().isRemote) {
+      return;
+    }
     mod.notifyEventListeners(
         new PlayerInteractEventWrapper<LeftClickEmpty>(evt, EventType.LEFT_CLICK));
   }
 
   @SubscribeEvent
   public void onRightClickBlock(RightClickBlock evt) {
+    if (evt.getWorld().isRemote) {
+      return;
+    }
     mod.notifyEventListeners(
         new PlayerInteractEventWrapper<RightClickBlock>(evt, EventType.RIGHT_CLICK));
   }
 
   @SubscribeEvent
   public void onRightClickEmpty(RightClickEmpty evt) {
+    if (evt.getWorld().isRemote) {
+      return;
+    }
     mod.notifyEventListeners(
         new PlayerInteractEventWrapper<RightClickEmpty>(evt, EventType.RIGHT_CLICK));
   }
 
-  @SubscribeEvent
-  public void onRightClickItem(RightClickItem evt) {
-    mod.notifyEventListeners(
-        new PlayerInteractEventWrapper<RightClickItem>(evt, EventType.RIGHT_CLICK));
-  }
+//  @SubscribeEvent
+//  public void onRightClickItem(RightClickItem evt) {
+//    System.out.println("RightClickItem");
+//    mod.notifyEventListeners(
+//        new PlayerInteractEventWrapper<RightClickItem>(evt, EventType.RIGHT_CLICK));
+//  }
 
 }
