@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.lua.wrapper.BlockPosWrapper;
 import net.karneim.luamod.lua.wrapper.EnumWrapper;
 import net.karneim.luamod.lua.wrapper.ItemStackWrapper;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
 
@@ -23,4 +24,6 @@ public class PlayerInteractEventWrapper<E extends PlayerInteractEvent>
     result.rawset("face", new EnumWrapper(delegate.getFace()).getLuaObject());
     return result;
   }
+
+
 }
