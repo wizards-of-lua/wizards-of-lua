@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.EnumFacing;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
@@ -30,6 +31,8 @@ public class EntityPlayerWrapper extends LuaWrapper<EntityPlayer> {
     result.rawset("name", delegate.getName());
     Team team = delegate.getTeam();
     result.rawset("team", team != null ? team.getRegisteredName() : null);
+    result.rawset("orientation", delegate.getHorizontalFacing().name());
+    
     return result;
   }
 
