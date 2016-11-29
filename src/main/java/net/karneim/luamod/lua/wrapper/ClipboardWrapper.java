@@ -1,4 +1,4 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshot;

@@ -11,11 +11,11 @@ import net.karneim.luamod.config.ModConfiguration;
 import net.karneim.luamod.credentials.CredentialsStore;
 import net.karneim.luamod.cursor.ClipboardRegistry;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.CommandLuAdmin;
-import net.karneim.luamod.lua.CommandLua;
+import net.karneim.luamod.lua.CommandAdmin;
+import net.karneim.luamod.lua.CommandSpell;
 import net.karneim.luamod.lua.CommandMessagePatched;
-import net.karneim.luamod.lua.LuaProcessEntity;
-import net.karneim.luamod.lua.LuaProcessRegistry;
+import net.karneim.luamod.lua.SpellEntity;
+import net.karneim.luamod.lua.SpellRegistry;
 import net.karneim.luamod.lua.event.EventWrapper;
 import net.karneim.luamod.lua.event.ModEventHandler;
 import net.minecraft.world.World;
@@ -41,7 +41,7 @@ public class LuaMod {
 
   public final Logger logger = LogManager.getLogger(LuaMod.class.getName());
 
-  private final LuaProcessRegistry processRegistry = new LuaProcessRegistry();
+  private final SpellRegistry processRegistry = new SpellRegistry();
   private final ClipboardRegistry clipboards = new ClipboardRegistry();
 
   private ModConfiguration configuration;
@@ -50,7 +50,7 @@ public class LuaMod {
   private FileCache fileCache;
   private GistRepo gistRepo;
   private CredentialsStore credentialsStore;
-  private int luaProcessCounter = 0;
+
   private long defaultTicksLimit = 10000;
 
   @EventHandler
@@ -67,15 +67,15 @@ public class LuaMod {
 
   @EventHandler
   public void init(FMLInitializationEvent event) {
-    EntityRegistry.registerModEntity(LuaProcessEntity.class, "Cursor", 1, this, 0, 1, false);
+    EntityRegistry.registerModEntity(SpellEntity.class, "Spell", 1, this, 0, 1, false);
     MinecraftForge.EVENT_BUS.register(new ModEventHandler(this));
   }
 
   @EventHandler
   public void serverLoad(FMLServerStartingEvent event) {
     logger.info("Registering LuaMod Commands");
-    event.registerServerCommand(new CommandLua());
-    event.registerServerCommand(new CommandLuAdmin());
+    event.registerServerCommand(new CommandSpell());
+    event.registerServerCommand(new CommandAdmin());
     event.registerServerCommand(new CommandMessagePatched(this));
 
     ForgeChunkManager.setForcedChunkLoadingCallback(instance,
@@ -110,12 +110,7 @@ public class LuaMod {
     return profileUrls;
   }
 
-  public int getNewProcessId() {
-    luaProcessCounter++;
-    return luaProcessCounter;
-  }
-
-  public LuaProcessRegistry getProcessRegistry() {
+  public SpellRegistry getProcessRegistry() {
     return processRegistry;
   }
 
@@ -150,7 +145,7 @@ public class LuaMod {
   }
 
   public void notifyEventListeners(EventWrapper<?> wrapper) {
-    for (LuaProcessEntity entity : processRegistry.getAll()) {
+    for (SpellEntity entity : processRegistry.getAll()) {
       entity.notifyEventListeners(wrapper);
     }
   }

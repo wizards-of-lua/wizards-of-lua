@@ -25,7 +25,7 @@ public class CommandMessagePatched extends CommandMessage {
       // this will throw an exception
       super.execute(server, sender, args);
     } else {
-      LuaProcessEntity processEntity = mod.getProcessRegistry().get(args[0]);
+      SpellEntity processEntity = mod.getProcessRegistry().get(args[0]);
       if (processEntity != null) {
         processEntity.notifyEventListeners(new WhisperEventWrapper(
             new WhisperEvent(sender.getName(), concat(args, 1, args.length))));

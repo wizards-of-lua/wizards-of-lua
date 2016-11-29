@@ -1,8 +1,9 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.wrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.karneim.luamod.lua.SleepActivator;
 import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.event.EventQueuesWrapper;
 import net.karneim.luamod.lua.event.EventType;

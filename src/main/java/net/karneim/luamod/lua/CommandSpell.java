@@ -22,16 +22,16 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.sandius.rembulan.load.LoaderException;
 
-public class CommandLua extends CommandBase {
+public class CommandSpell extends CommandBase {
 
   private static final String GIT_HUB = "GitHub";
-  private static final String CMD_NAME = "lua";
-  private static final String MSG_USAGE = "commands.lua.usage";
+  private static final String CMD_NAME = "spell";
+  private static final String MSG_USAGE = "commands.spell.usage";
 
   private final LuaMod mod;
   private final List<String> aliases = new ArrayList<String>();
 
-  public CommandLua() {
+  public CommandSpell() {
     aliases.add(CMD_NAME);
     mod = LuaMod.instance;
   }
@@ -60,7 +60,7 @@ public class CommandLua extends CommandBase {
   @Override
   public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos pos) {
-    // TODO
+    // TODO ?
     return Collections.<String>emptyList();
   }
 
@@ -75,16 +75,16 @@ public class CommandLua extends CommandBase {
       EnumFacing surface = getSurface(sender);
       @Nullable
       String prog = getProgram(owner, args);
-      
-      LuaProcessEntity modEntity =
-          new LuaProcessEntity(sender.getEntityWorld(), owner, clipboard, pos, rot, surface);
-      modEntity.setProgram(prog);
-      sender.getEntityWorld().spawnEntityInWorld(modEntity);
+
+      SpellEntity spell = new SpellEntity(sender.getEntityWorld(), LuaMod.instance, owner,
+          clipboard, pos, rot, surface);
+      spell.setProgram(prog);
+      sender.getEntityWorld().spawnEntityInWorld(spell);
       if (sender.sendCommandFeedback()) {
-        // this us true if "gamerule commandBlockOutput" is true
-        notifyCommandListener(sender, this, "%s created", modEntity.getName());
+        // this is true if "gamerule commandBlockOutput" is true
+        notifyCommandListener(sender, this, "%s created", spell.getName());
       }
-      modEntity.onUpdate();
+      spell.onUpdate();
       // sender.setCommandStat(CommandResultStats.Type.SUCCESS_COUNT, 1);
     } catch (IOException e) {
       throw new CommandException("Can't execute %s. Caught %s", getCommandName(), e.getMessage());
@@ -94,11 +94,11 @@ public class CommandLua extends CommandBase {
   }
 
   private Clipboard getClipboard(ICommandSender owner) {
-    if ( owner.getCommandSenderEntity() instanceof LuaProcessEntity) {
-      LuaProcessEntity lpe = (LuaProcessEntity)owner;
+    if (owner.getCommandSenderEntity() instanceof SpellEntity) {
+      SpellEntity lpe = (SpellEntity) owner;
       return lpe.getClipboard();
-    } else if ( owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      return mod.getClipboards().get((EntityPlayer)owner.getCommandSenderEntity());
+    } else if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
+      return mod.getClipboards().get((EntityPlayer) owner.getCommandSenderEntity());
     }
     return new Clipboard();
   }
@@ -126,7 +126,7 @@ public class CommandLua extends CommandBase {
     Entity entity = sender.getCommandSenderEntity();
     if (entity == null) {
       return null;
-    } else if (entity instanceof LuaProcessEntity) {
+    } else if (entity instanceof SpellEntity) {
       return null;
     } else {
       EnumFacing side = CursorUtil.getSideLookingAt(entity);
@@ -138,8 +138,8 @@ public class CommandLua extends CommandBase {
     Entity entity = sender.getCommandSenderEntity();
     if (entity == null) {
       return Rotation.NONE;
-    } else if (entity instanceof LuaProcessEntity) {
-      LuaProcessEntity luaProcessEntity = (LuaProcessEntity) entity;
+    } else if (entity instanceof SpellEntity) {
+      SpellEntity luaProcessEntity = (SpellEntity) entity;
       return luaProcessEntity.getCursor().getRotation();
     } else {
       return CursorUtil.getRotation(entity.getHorizontalFacing());
@@ -150,8 +150,8 @@ public class CommandLua extends CommandBase {
     Entity entity = sender.getCommandSenderEntity();
     if (entity == null) {
       return sender.getPosition();
-    } else if (entity instanceof LuaProcessEntity) {
-      LuaProcessEntity luaProcessEntity = (LuaProcessEntity) entity;
+    } else if (entity instanceof SpellEntity) {
+      SpellEntity luaProcessEntity = (SpellEntity) entity;
       return luaProcessEntity.getCursor().getWorldPosition();
     } else {
       return CursorUtil.getPositionLookingAt(entity);
@@ -160,8 +160,8 @@ public class CommandLua extends CommandBase {
 
   private ICommandSender getOwner(ICommandSender sender) {
     Entity entity = sender.getCommandSenderEntity();
-    if (entity instanceof LuaProcessEntity) {
-      LuaProcessEntity luaProcessEntity = (LuaProcessEntity) entity;
+    if (entity instanceof SpellEntity) {
+      SpellEntity luaProcessEntity = (SpellEntity) entity;
       return luaProcessEntity.getOwner();
     } else {
       return sender;

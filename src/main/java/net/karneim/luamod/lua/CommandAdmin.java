@@ -26,15 +26,15 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.ForgeHooks;
 
-public class CommandLuAdmin extends CommandBase {
+public class CommandAdmin extends CommandBase {
 
-  private static final String CMD_NAME = "luadmin";
-  private static final String MSG_USAGE = "commands.luadm.usage";
+  private static final String CMD_NAME = "admin";
+  private static final String MSG_USAGE = "commands.admin.usage";
 
   private static final String UNPAUSE = "unpause";
   private static final String PAUSE = "pause";
   private static final String ALL = "all";
-  private static final String KILL = "kill";
+  private static final String BREAK = "break";
   private static final String LIST = "list";
   private static final String CLEAR = "clear";
   private static final String LOGIN = "login";
@@ -44,18 +44,16 @@ public class CommandLuAdmin extends CommandBase {
   private static final String DEFAULT = "default";
   private static final String USER = "user";
   private static final String TICKSLIMIT = "tickslimit";
-  private static final String PROCESS = "process";
+  private static final String SPELL = "spell";
   private static final String CACHE = "cache";
   private static final String GITHUB = "github";
   private static final String PROFILE = "profile";
 
-
   private final LuaMod mod;
   private final List<String> aliases = new ArrayList<String>();
 
-  public CommandLuAdmin() {
+  public CommandAdmin() {
     aliases.add(CMD_NAME);
-    aliases.add("luadm");
     mod = LuaMod.instance;
   }
 
@@ -89,7 +87,7 @@ public class CommandLuAdmin extends CommandBase {
       }
       if (args.length <= 1) {
         return getListOfStringsMatchingLastWord(args,
-            asList(PROFILE, GITHUB, CACHE, PROCESS, TICKSLIMIT));
+            asList(PROFILE, GITHUB, CACHE, SPELL, TICKSLIMIT));
       }
       if (PROFILE.equals(args[0])) {
         if (args.length <= 2) {
@@ -115,12 +113,12 @@ public class CommandLuAdmin extends CommandBase {
           return getListOfStringsMatchingLastWord(args, asList(CLEAR));
         }
       }
-      if (PROCESS.equals(args[0])) {
+      if (SPELL.equals(args[0])) {
         if (args.length <= 2) {
-          return getListOfStringsMatchingLastWord(args, asList(KILL, LIST, PAUSE, UNPAUSE));
+          return getListOfStringsMatchingLastWord(args, asList(BREAK, LIST, PAUSE, UNPAUSE));
         }
-        if (args.length <= 3) {
-          return getListOfStringsMatchingLastWord(args, asList(getProcessNames(), ALL));
+        if (args.length <= 3 && !LIST.equals(args[1])) {
+          return getListOfStringsMatchingLastWord(args, asList(getSpellIds(), ALL));
         }
       }
       if (TICKSLIMIT.equals(args[0])) {
@@ -226,39 +224,39 @@ public class CommandLuAdmin extends CommandBase {
             return;
           }
         }
-        if (PROCESS.equals(section)) {
+        if (SPELL.equals(section)) {
           String action = getArg(args, 1, "action");
-          if (KILL.equals(action)) {
-            String pid = getArg(args, 2, "pid");
-            if (ALL.equals(pid)) {
-              killAll(sender);
+          if (BREAK.equals(action)) {
+            String spell = getArg(args, 2, "spell-id");
+            if (ALL.equals(spell)) {
+              breakAll(sender);
               return;
             } else {
-              kill(sender, pid);
+              breakSpell(sender, spell);
               return;
             }
           }
           if (LIST.equals(action)) {
-            listProcesses(sender);
+            listActiveSpells(sender);
             return;
           }
           if (PAUSE.equals(action)) {
-            String pid = getArg(args, 2, "pid");
-            if (ALL.equals(pid)) {
+            String spell = getArg(args, 2, "spell-id");
+            if (ALL.equals(spell)) {
               pauseAll(sender);
               return;
             } else {
-              pause(sender, pid);
+              pause(sender, spell);
               return;
             }
           }
           if (UNPAUSE.equals(action)) {
-            String pid = getArg(args, 2, "pid");
-            if (ALL.equals(pid)) {
+            String spell = getArg(args, 2, "spell-id");
+            if (ALL.equals(spell)) {
               unpauseAll(sender);
               return;
             } else {
-              unpause(sender, pid);
+              unpause(sender, spell);
               return;
             }
           }
@@ -351,7 +349,8 @@ public class CommandLuAdmin extends CommandBase {
 
   private String getUserProfileUrl(ICommandSender sender) {
     Entity owner = sender.getCommandSenderEntity();
-    return mod.getProfileUrls().getProfileUrl(owner);
+    String result = mod.getProfileUrls().getProfileUrl(owner);
+    return result == null ? "none" : result;
   }
 
   private void setUserProfileUrl(ICommandSender sender, @Nullable String profileUrl)
@@ -372,7 +371,8 @@ public class CommandLuAdmin extends CommandBase {
   }
 
   private String getDefaultProfileUrl() {
-    return mod.getProfileUrls().getDefaultProfileUrl();
+    String result = mod.getProfileUrls().getDefaultProfileUrl();
+    return result == null ? "none" : result;
   }
 
   private void setDefaultProfileUrl(ICommandSender sender, @Nullable String profileUrl)
@@ -407,54 +407,54 @@ public class CommandLuAdmin extends CommandBase {
     return mod.getCredentialsStore().retrieveCredentials("GitHub", id.toString());
   }
 
-  private List<String> getProcessNames() {
-    return mod.getProcessRegistry().getNames();
+  private List<String> getSpellIds() {
+    return mod.getProcessRegistry().getSpellIds();
   }
 
-  private void killAll(ICommandSender sender) {
-    mod.getProcessRegistry().killAll();
-    sender.addChatMessage(new TextComponentString("Killed all lua processes."));
+  private void breakAll(ICommandSender sender) {
+    mod.getProcessRegistry().breakAll();
+    sender.addChatMessage(new TextComponentString("Broke all spells."));
   }
 
-  private void kill(ICommandSender sender, String pid) {
-    boolean success = mod.getProcessRegistry().kill(pid);
+  private void breakSpell(ICommandSender sender, String spellId) {
+    boolean success = mod.getProcessRegistry().breakSpell(spellId);
     if (success) {
-      sender.addChatMessage(new TextComponentString("Killed lua process."));
+      sender.addChatMessage(new TextComponentString("Broke spell."));
     } else {
-      sender.addChatMessage(new TextComponentString("Lua process not found."));
+      sender.addChatMessage(new TextComponentString("Spell not found."));
     }
   }
 
-  private void listProcesses(ICommandSender sender) {
+  private void listActiveSpells(ICommandSender sender) {
     String lines = mod.getProcessRegistry().list();
-    sender.addChatMessage(new TextComponentString(String.format("Lua process list:\n%s", lines)));
+    sender.addChatMessage(new TextComponentString(String.format("Active spells:\n%s", lines)));
   }
 
   private void unpauseAll(ICommandSender sender) {
     mod.getProcessRegistry().unpauseAll();
-    sender.addChatMessage(new TextComponentString("Unpaused all lua processes."));
+    sender.addChatMessage(new TextComponentString("Unpaused all spells."));
   }
 
-  private void unpause(ICommandSender sender, String pid) {
-    boolean success = mod.getProcessRegistry().unpause(pid);
+  private void unpause(ICommandSender sender, String spellId) {
+    boolean success = mod.getProcessRegistry().unpauseSpell(spellId);
     if (success) {
-      sender.addChatMessage(new TextComponentString("Unpaused lua process."));
+      sender.addChatMessage(new TextComponentString("Unpaused spell."));
     } else {
-      sender.addChatMessage(new TextComponentString("Lua process not found."));
+      sender.addChatMessage(new TextComponentString("Spell not found."));
     }
   }
 
   private void pauseAll(ICommandSender sender) {
     mod.getProcessRegistry().pauseAll();
-    sender.addChatMessage(new TextComponentString("Paused all lua processes."));
+    sender.addChatMessage(new TextComponentString("Paused all spells."));
   }
 
-  private void pause(ICommandSender sender, String pid) {
-    boolean success = mod.getProcessRegistry().pause(pid);
+  private void pause(ICommandSender sender, String spellId) {
+    boolean success = mod.getProcessRegistry().pauseSpell(spellId);
     if (success) {
-      sender.addChatMessage(new TextComponentString("Paused lua process."));
+      sender.addChatMessage(new TextComponentString("Paused spell."));
     } else {
-      sender.addChatMessage(new TextComponentString("Lua process not found."));
+      sender.addChatMessage(new TextComponentString("Spell not found."));
     }
   }
 

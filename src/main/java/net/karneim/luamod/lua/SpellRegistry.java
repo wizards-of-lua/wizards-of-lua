@@ -8,27 +8,30 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class LuaProcessRegistry {
+public class SpellRegistry {
 
-  private final List<LuaProcessEntity> entities = new ArrayList<LuaProcessEntity>();
+  private final List<SpellEntity> entities = new ArrayList<SpellEntity>();
 
-  public void register(LuaProcessEntity entity) {
+  private int spellCounter = 0;
+
+  public void register(SpellEntity entity) {
+    entity.setCustomNameTag("Spell-" + spellCounter++);
     entities.add(entity);
   }
 
-  public void unregister(LuaProcessEntity entity) {
+  public void unregister(SpellEntity entity) {
     entities.remove(entity);
   }
 
-  public Iterable<LuaProcessEntity> getAll() {
+  public Iterable<SpellEntity> getAll() {
     return Iterables.unmodifiableIterable(entities);
   }
 
-  public @Nullable LuaProcessEntity get(String name) {
+  public @Nullable SpellEntity get(String name) {
     if (name == null) {
       return null;
     }
-    for (LuaProcessEntity e : entities) {
+    for (SpellEntity e : entities) {
       if (e.getName().equals(name)) {
         return e;
       }
@@ -36,9 +39,9 @@ public class LuaProcessRegistry {
     return null;
   }
 
-  public List<String> getNames() {
+  public List<String> getSpellIds() {
     List<String> result = new ArrayList<String>();
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
       result.add(e.getName());
     }
     return result;
@@ -46,7 +49,7 @@ public class LuaProcessRegistry {
 
   public String list() {
     StringBuilder buf = new StringBuilder();
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
       if (buf.length() > 0) {
         buf.append("\n");
       }
@@ -55,28 +58,28 @@ public class LuaProcessRegistry {
     return buf.toString();
   }
 
-  public void killAll() {
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
+  public void breakAll() {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
       e.setDead();
     }
   }
 
   public void unpauseAll() {
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
       e.unpause();
     }
   }
 
   public void pauseAll() {
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
       e.pause();
     }
   }
 
-  public boolean kill(String pid) {
+  public boolean breakSpell(String spellId) {
     boolean result = false;
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
-      if (pid.equals(e.getName())) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
+      if (spellId.equals(e.getName())) {
         e.setDead();
         result = true;
       }
@@ -84,10 +87,10 @@ public class LuaProcessRegistry {
     return result;
   }
 
-  public boolean pause(String pid) {
+  public boolean pauseSpell(String spellId) {
     boolean result = false;
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
-      if (pid.equals(e.getName())) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
+      if (spellId.equals(e.getName())) {
         e.pause();
         result = true;
       }
@@ -95,17 +98,15 @@ public class LuaProcessRegistry {
     return result;
   }
 
-  public boolean unpause(String pid) {
+  public boolean unpauseSpell(String spellId) {
     boolean result = false;
-    for (LuaProcessEntity e : Lists.newArrayList(entities)) {
-      if (pid.equals(e.getName())) {
+    for (SpellEntity e : Lists.newArrayList(entities)) {
+      if (spellId.equals(e.getName())) {
         e.unpause();
         result = true;
       }
     }
     return result;
   }
-
-
 
 }

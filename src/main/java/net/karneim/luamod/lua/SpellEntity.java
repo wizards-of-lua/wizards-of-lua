@@ -22,8 +22,9 @@ import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.load.LoaderException;
 
-public class LuaProcessEntity extends Entity {
+public class SpellEntity extends Entity {
 
+  private LuaMod mod;
   private ICommandSender owner;
   private Clipboard clipboard;
   private Cursor cursor;
@@ -39,13 +40,14 @@ public class LuaProcessEntity extends Entity {
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
 
-  public LuaProcessEntity(World worldIn) {
+  public SpellEntity(World worldIn) {
     super(worldIn);
   }
 
-  public LuaProcessEntity(World worldIn, ICommandSender aOwner, Clipboard clipboard, BlockPos pos,
-      Rotation rotation, EnumFacing surface) {
+  public SpellEntity(World worldIn, LuaMod mod, ICommandSender aOwner, Clipboard clipboard,
+      BlockPos pos, Rotation rotation, EnumFacing surface) {
     this(worldIn);
+    this.mod = mod;
     this.owner = aOwner;
     this.clipboard = clipboard;
     Entity entity = owner.getCommandSenderEntity();
@@ -55,24 +57,14 @@ public class LuaProcessEntity extends Entity {
     } else {
       userId = owner.getCommandSenderEntity().getUniqueID().toString();
     }
-
-    Credentials credentials =
-        LuaMod.instance.getCredentialsStore().retrieveCredentials("GitHub", userId);
-
-    cursor = new Cursor(owner, this, this.getEntityWorld(), pos, rotation, surface);
-
+    this.cursor = new Cursor(owner, this, this.getEntityWorld(), pos, rotation, surface);
+    Credentials credentials = mod.getCredentialsStore().retrieveCredentials("GitHub", userId);
     luaUtil = new LuaUtil(owner, cursor, clipboard, credentials);
     if (surface != null) {
       pos = pos.offset(surface, 1);
     }
-
-    setCustomNameTag("Lua-" + LuaMod.instance.getNewProcessId());
-    LuaMod.instance.getProcessRegistry().register(this);
-
-    // if (surface != null) {
-    // cursor.move(surface);
-    // }
     updatePosition();
+    mod.getProcessRegistry().register(this);
   }
 
   public ICommandSender getOwner() {

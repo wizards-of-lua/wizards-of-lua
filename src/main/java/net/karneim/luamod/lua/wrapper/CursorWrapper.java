@@ -1,10 +1,11 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
+import net.karneim.luamod.lua.SleepActivator;
 import net.minecraft.block.Block;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.util.EnumFacing;
