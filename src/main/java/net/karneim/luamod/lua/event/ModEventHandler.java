@@ -4,11 +4,11 @@ import net.karneim.luamod.LuaMod;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickEmpty;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickEmpty;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
 public class ModEventHandler {
   private LuaMod mod;
@@ -38,15 +38,6 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
-  public void onLeftClickEmpty(LeftClickEmpty evt) {
-    if (evt.getWorld().isRemote) {
-      return;
-    }
-    mod.notifyEventListeners(
-        new PlayerInteractEventWrapper<LeftClickEmpty>(evt, EventType.LEFT_CLICK));
-  }
-
-  @SubscribeEvent
   public void onRightClickBlock(RightClickBlock evt) {
     if (evt.getWorld().isRemote) {
       return;
@@ -55,20 +46,29 @@ public class ModEventHandler {
         new PlayerInteractEventWrapper<RightClickBlock>(evt, EventType.RIGHT_CLICK));
   }
 
+  // @SubscribeEvent
+  // public void onRightClickItem(RightClickItem evt) {
+  // System.out.println("RightClickItem");
+  // mod.notifyEventListeners(
+  // new PlayerInteractEventWrapper<RightClickItem>(evt, EventType.RIGHT_CLICK));
+  // }
+
   @SubscribeEvent
-  public void onRightClickEmpty(RightClickEmpty evt) {
-    if (evt.getWorld().isRemote) {
-      return;
-    }
+  public void onPlayerLoggedIn(PlayerLoggedInEvent evt) {
     mod.notifyEventListeners(
-        new PlayerInteractEventWrapper<RightClickEmpty>(evt, EventType.RIGHT_CLICK));
+        new Player2EventWrapper<PlayerLoggedInEvent>(evt, EventType.PLAYER_JOINED));
   }
 
-//  @SubscribeEvent
-//  public void onRightClickItem(RightClickItem evt) {
-//    System.out.println("RightClickItem");
-//    mod.notifyEventListeners(
-//        new PlayerInteractEventWrapper<RightClickItem>(evt, EventType.RIGHT_CLICK));
-//  }
+  @SubscribeEvent
+  public void onPlayerLoggedOut(PlayerLoggedOutEvent evt) {
+    mod.notifyEventListeners(
+        new Player2EventWrapper<PlayerLoggedOutEvent>(evt, EventType.PLAYER_LEFT));
+  }
+
+  @SubscribeEvent
+  public void onPlayerRespawn(PlayerRespawnEvent evt) {
+    mod.notifyEventListeners(
+        new Player2EventWrapper<PlayerRespawnEvent>(evt, EventType.PLAYER_SPAWNED));
+  }
 
 }
