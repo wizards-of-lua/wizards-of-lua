@@ -5,8 +5,10 @@ import java.util.Iterator;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.world.GameType;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
@@ -33,6 +35,12 @@ public class EntityPlayerWrapper extends LuaWrapper<EntityPlayer> {
     result.rawset("orientation", delegate.getHorizontalFacing().name());
     result.rawset("pos", new Vec3dWrapper(delegate.getPositionVector()));
     result.rawset("dimension", delegate.dimension);
+    if ( delegate instanceof EntityPlayerMP) {
+      EntityPlayerMP mp = (EntityPlayerMP)delegate;
+      GameType e = mp.interactionManager.getGameType();
+      result.rawset("gamemode", new EnumWrapper(e).getLuaObject());
+    }
+    
     return result;
   }
 
