@@ -32,8 +32,8 @@ public class EntityPlayerWrapper extends LuaWrapper<EntityPlayer> {
     result.rawset("name", delegate.getName());
     Team team = delegate.getTeam();
     result.rawset("team", team != null ? team.getRegisteredName() : null);
-    result.rawset("orientation", delegate.getHorizontalFacing().name());
-    result.rawset("pos", new Vec3dWrapper(delegate.getPositionVector()));
+    result.rawset("orientation", new EnumWrapper(delegate.getHorizontalFacing()).getLuaObject());
+    result.rawset("pos", new Vec3dWrapper(delegate.getPositionVector()).getLuaObject());
     result.rawset("dimension", delegate.dimension);
     if ( delegate instanceof EntityPlayerMP) {
       EntityPlayerMP mp = (EntityPlayerMP)delegate;

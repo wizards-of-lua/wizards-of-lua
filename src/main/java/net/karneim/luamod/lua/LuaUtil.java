@@ -20,6 +20,7 @@ import net.karneim.luamod.lua.event.EventWrapper;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.CursorWrapper;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
+import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -94,6 +95,7 @@ public class LuaUtil implements SleepActivator {
     CursorWrapper.installInto(env, cursor, this, snapshots);
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, this);
+    PlayersWrapper.installInto(env, LuaMod.instance.getPlayers());
     
     class SleepableCountDownSchedulingContext implements SchedulingContext {
 

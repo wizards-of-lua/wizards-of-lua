@@ -50,6 +50,7 @@ public class LuaMod {
   private FileCache fileCache;
   private GistRepo gistRepo;
   private CredentialsStore credentialsStore;
+  private Players players;
 
   private long defaultTicksLimit = 10000;
 
@@ -77,6 +78,8 @@ public class LuaMod {
     event.registerServerCommand(new CommandLua());
     event.registerServerCommand(new CommandAdmin());
     event.registerServerCommand(new CommandMessagePatched(this));
+
+    players = new Players(event.getServer());
 
     ForgeChunkManager.setForcedChunkLoadingCallback(instance,
         new net.minecraftforge.common.ForgeChunkManager.LoadingCallback() {
@@ -148,6 +151,10 @@ public class LuaMod {
     for (SpellEntity entity : processRegistry.getAll()) {
       entity.notifyEventListeners(wrapper);
     }
+  }
+
+  public Players getPlayers() {
+    return players;
   }
 
 }
