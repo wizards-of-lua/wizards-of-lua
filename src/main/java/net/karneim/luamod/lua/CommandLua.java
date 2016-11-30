@@ -22,16 +22,16 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.sandius.rembulan.load.LoaderException;
 
-public class CommandSpell extends CommandBase {
+public class CommandLua extends CommandBase {
 
   private static final String GIT_HUB = "GitHub";
-  private static final String CMD_NAME = "spell";
-  private static final String MSG_USAGE = "commands.spell.usage";
+  private static final String CMD_NAME = "lua";
+  private static final String MSG_USAGE = "commands.lua.usage";
 
   private final LuaMod mod;
   private final List<String> aliases = new ArrayList<String>();
 
-  public CommandSpell() {
+  public CommandLua() {
     aliases.add(CMD_NAME);
     mod = LuaMod.instance;
   }

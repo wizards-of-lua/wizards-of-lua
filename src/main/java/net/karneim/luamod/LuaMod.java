@@ -12,7 +12,7 @@ import net.karneim.luamod.credentials.CredentialsStore;
 import net.karneim.luamod.cursor.ClipboardRegistry;
 import net.karneim.luamod.gist.GistRepo;
 import net.karneim.luamod.lua.CommandAdmin;
-import net.karneim.luamod.lua.CommandSpell;
+import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
@@ -74,7 +74,7 @@ public class LuaMod {
   @EventHandler
   public void serverLoad(FMLServerStartingEvent event) {
     logger.info("Registering LuaMod Commands");
-    event.registerServerCommand(new CommandSpell());
+    event.registerServerCommand(new CommandLua());
     event.registerServerCommand(new CommandAdmin());
     event.registerServerCommand(new CommandMessagePatched(this));
 
