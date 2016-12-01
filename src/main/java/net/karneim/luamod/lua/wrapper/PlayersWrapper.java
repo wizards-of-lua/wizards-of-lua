@@ -25,6 +25,7 @@ public class PlayersWrapper {
     this.players = players;
     luaTable.rawset("list", new ListFunction());
     luaTable.rawset("get", new GetFunction());
+    luaTable.rawset("find", new FindFunction());
   }
 
   public Table getLuaTable() {
@@ -55,7 +56,28 @@ public class PlayersWrapper {
         throw new IllegalArgumentException(String.format("Player name expected but got nil!"));
       }
       String name = String.valueOf(arg1);
-      EntityPlayerMP player = players.getPlayer(name);
+      EntityPlayerMP player = players.get(name);
+      EntityPlayerWrapper wrapper = new EntityPlayerWrapper(player);
+      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class FindFunction extends AbstractFunction1 {
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      if (arg1 == null) {
+        throw new IllegalArgumentException(
+            String.format("@ expression expected but got nil!"));
+      }
+      String target = String.valueOf(arg1);
+      EntityPlayerMP player = players.find(target);
       EntityPlayerWrapper wrapper = new EntityPlayerWrapper(player);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.Players;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
@@ -91,12 +92,12 @@ public class LuaUtil implements SleepActivator {
 
     LuaModLib.installInto(env, owner);
     Snapshots snapshots = new Snapshots();
-    
+
     CursorWrapper.installInto(env, cursor, this, snapshots);
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, this);
-    PlayersWrapper.installInto(env, LuaMod.instance.getPlayers());
-    
+    PlayersWrapper.installInto(env, new Players(LuaMod.instance.getServer(), owner));
+
     class SleepableCountDownSchedulingContext implements SchedulingContext {
 
       private long allowance;
