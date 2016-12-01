@@ -769,7 +769,6 @@ public class CursorWrapper {
       } catch (UnresolvedControlThrowable e) {
         throw e.resolve(SleepFunction.this, "Sleeping");
       }
-      System.out.println("Resume " + String.valueOf(suspendedState));
       context.getReturnBuffer().setTo();
     }
   }
