@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
 
 import javax.annotation.Nullable;
 
@@ -55,8 +56,7 @@ public class GistSearcher {
             String.format("Expected Gist url, but got: %s", gistUrl));
       }
       try {
-        String content = gistRepo.load(credentials, gistUrl);
-
+        String content = gistRepo.load(credentials, new URL(gistUrl));
         LuaFunction fn = loader.loadTextChunk(new Variable(env), id, content);
         context.getReturnBuffer().setTo(fn, id);
       } catch (Exception e) {

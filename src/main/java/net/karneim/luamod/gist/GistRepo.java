@@ -3,6 +3,7 @@ package net.karneim.luamod.gist;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.net.URL;
 
 import net.karneim.luamod.cache.FileCache;
 import net.karneim.luamod.credentials.AccessTokenCredentials;
@@ -17,8 +18,8 @@ public class GistRepo {
     this.fileCache = checkNotNull(fileCache);
   }
 
-  public String load(Credentials credentials, String gistUrl) throws IOException {
-    String id = parseId(gistUrl);
+  public String load(Credentials credentials, URL gistUrl) throws IOException {
+    String id = parseId(gistUrl.toString());
     if (id == null) {
       throw new IllegalArgumentException(String.format("Can't parse Gist ID in %s", gistUrl));
     }
@@ -42,8 +43,8 @@ public class GistRepo {
     return content;
   }
 
-  public String parseId(String gistUrl) {
-    return GitHubTool.parseId(gistUrl);
+  public String parseId(String gistUrlStr) {
+    return GitHubTool.parseId(gistUrlStr);
   }
 
 }

@@ -49,7 +49,7 @@ public class LuaMod {
 
   private ModConfiguration configuration;
   private File luaDir;
-  private ProfileUrls profileUrls;
+  private Profiles profiles;
   private FileCache fileCache;
   private GistRepo gistRepo;
   private CredentialsStore credentialsStore;
@@ -63,7 +63,7 @@ public class LuaMod {
     luaDir = createLuaDirectory(configDir);
     fileCache = new FileCache(luaDir);
     configuration = new ModConfiguration(configFile);
-    profileUrls = new ProfileUrls(configuration);
+    profiles = new Profiles(configuration);
     credentialsStore = new CredentialsStore(configuration);
     gistRepo = new GistRepo(fileCache);
   }
@@ -114,8 +114,8 @@ public class LuaMod {
     this.defaultTicksLimit = defaultTicksLimit;
   }
 
-  public ProfileUrls getProfileUrls() {
-    return profileUrls;
+  public Profiles getProfiles() {
+    return profiles;
   }
 
   public SpellRegistry getSpellRegistry() {

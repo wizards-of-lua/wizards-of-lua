@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -170,14 +171,14 @@ public class CommandLua extends CommandBase {
 
   private String loadProfile(Entity player) throws IOException {
     @Nullable
-    String url = mod.getProfileUrls().getProfileUrl(player);
+    URL url = mod.getProfiles().getUserProfile(player);
     if (url == null) {
-      url = mod.getProfileUrls().getDefaultProfileUrl();
+      url = mod.getProfiles().getDefaultProfile();
     }
     return loadGist(player, url);
   }
 
-  private String loadGist(Entity player, String gistUrl) throws IOException {
+  private String loadGist(Entity player, URL gistUrl) throws IOException {
     @Nullable
     String prog = null;
     if (gistUrl != null) {

@@ -3,6 +3,8 @@ package net.karneim.luamod.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -349,46 +351,48 @@ public class CommandAdmin extends CommandBase {
 
   private String getUserProfileUrl(ICommandSender sender) {
     Entity owner = sender.getCommandSenderEntity();
-    String result = mod.getProfileUrls().getProfileUrl(owner);
-    return result == null ? "none" : result;
+    URL result = mod.getProfiles().getUserProfile(owner);
+    return result == null ? "none" : result.toExternalForm();
   }
 
-  private void setUserProfileUrl(ICommandSender sender, @Nullable String profileUrl)
+  private void setUserProfileUrl(ICommandSender sender, @Nullable String urlStr)
       throws CommandException {
     try {
       Entity owner = sender.getCommandSenderEntity();
-      if (profileUrl != null) {
+      URL url = toUrl(urlStr);
+      if (url != null) {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
-        mod.getGistRepo().load(credentials, profileUrl);
+        mod.getGistRepo().load(credentials, url);
       }
-      mod.getProfileUrls().setProfileUrl(owner, profileUrl);
+      mod.getProfiles().setUserProfile(owner, url);
       sender.addChatMessage(new TextComponentString("Gist successfully loaded."));
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
-          profileUrl, e.getMessage());
+          urlStr, e.getMessage());
     }
   }
 
   private String getDefaultProfileUrl() {
-    String result = mod.getProfileUrls().getDefaultProfileUrl();
-    return result == null ? "none" : result;
+    URL result = mod.getProfiles().getDefaultProfile();
+    return result == null ? "none" : result.toExternalForm();
   }
 
-  private void setDefaultProfileUrl(ICommandSender sender, @Nullable String profileUrl)
+  private void setDefaultProfileUrl(ICommandSender sender, @Nullable String urlStr)
       throws CommandException {
     try {
       Entity owner = sender.getCommandSenderEntity();
-      if (profileUrl != null) {
+      URL url = toUrl(urlStr);
+      if (url != null) {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
-        mod.getGistRepo().load(credentials, profileUrl);
+        mod.getGistRepo().load(credentials, url);
       }
-      mod.getProfileUrls().setDefaultProfileUrl(profileUrl);
+      mod.getProfiles().setDefaultProfile(url);
       sender.addChatMessage(new TextComponentString("Gist successfully loaded."));
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
-          profileUrl, e.getMessage());
+          urlStr, e.getMessage());
     }
   }
 
@@ -507,4 +511,7 @@ public class CommandAdmin extends CommandBase {
     return result;
   }
 
+  private @Nullable URL toUrl(@Nullable String urlStr) throws MalformedURLException {
+    return urlStr == null ? null : new URL(urlStr);
+  }
 }
