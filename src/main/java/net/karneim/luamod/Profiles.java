@@ -2,6 +2,7 @@ package net.karneim.luamod;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -9,14 +10,13 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.mockito.cglib.proxy.UndeclaredThrowableException;
-
 import net.karneim.luamod.config.ModConfiguration;
 import net.minecraft.entity.Entity;
 
 public class Profiles {
   private static final String PROFILE = "profile";
   private static final String DEFAULT = "default";
+  private static final String STARTUP = "startup";
 
   private final ModConfiguration config;
   private final Map<String, String> profileMap = new HashMap<String, String>();
@@ -25,48 +25,50 @@ public class Profiles {
     this.config = checkNotNull(config);
   }
 
+  public @Nullable URL getStartupProfile() {
+    return getProfile(STARTUP);
+  }
+
+  public void setStartupProfile(@Nullable URL url) {
+    setProfile(STARTUP, url);
+  }
+
+  public @Nullable URL getDefaultProfile() {
+    return getProfile(DEFAULT);
+  }
+
+  public void setDefaultProfile(@Nullable URL url) {
+    setProfile(DEFAULT, url);
+  }
+
   public @Nullable URL getUserProfile(@Nullable Entity owner) {
     if (owner == null) {
       return null;
     }
-    String userId = owner.getUniqueID().toString();
-    String urlStr = profileMap.get(userId);
-    if (urlStr == null) {
-      urlStr = config.getStringOrNull(PROFILE, userId);
-      profileMap.put(userId, urlStr);
-    }
-    return toUrl(urlStr);
+    return getProfile(owner.getUniqueID().toString());
   }
 
   public void setUserProfile(Entity owner, @Nullable URL url) {
-    String userId = owner.getUniqueID().toString();
-    String urlStr = toString(url);
-    if (urlStr == null) {
-      profileMap.remove(userId);
-    } else {
-      profileMap.put(userId, urlStr);
-    }
-    config.setString(PROFILE, userId, urlStr);
-    config.save();
+    setProfile(owner.getUniqueID().toString(), url);
   }
 
-  public @Nullable URL getDefaultProfile() {
-    String urlStr = profileMap.get(DEFAULT);
+  private @Nullable URL getProfile(String key) {
+    String urlStr = profileMap.get(key);
     if (urlStr == null) {
-      urlStr = config.getStringOrNull(PROFILE, DEFAULT);
-      profileMap.put(DEFAULT, urlStr);
+      urlStr = config.getStringOrNull(PROFILE, key);
+      profileMap.put(key, urlStr);
     }
     return toUrl(urlStr);
   }
 
-  public void setDefaultProfile(@Nullable URL url) {
+  private void setProfile(String key, @Nullable URL url) {
     String urlStr = toString(url);
     if (urlStr == null) {
-      profileMap.remove(DEFAULT);
+      profileMap.remove(key);
     } else {
-      profileMap.put(DEFAULT, urlStr);
+      profileMap.put(key, urlStr);
     }
-    config.setString(PROFILE, DEFAULT, urlStr);
+    config.setString(PROFILE, key, urlStr);
     config.save();
   }
 

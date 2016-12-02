@@ -1,9 +1,14 @@
 package net.karneim.luamod.credentials;
 
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.config.ModConfiguration;
 
@@ -15,7 +20,16 @@ public class CredentialsStore {
     this.configuration = configuration;
   }
 
-  public void storeCredentials( String realm, String userId, Credentials credentials) {
+  public void storeCredentials(Realm realm, Credentials credentials) {
+    storeCredentials(realm, null, credentials);
+  }
+
+  public void storeCredentials(Realm realm, @Nullable String userId, Credentials credentials) {
+    checkNotNull(realm, "realm==null!");
+    checkNotNull(credentials, "credentials==null!");
+    if (userId == null) {
+      userId = "default";
+    }
     map.put(new Key(realm, userId), credentials);
     // TODO store encrypted pw only!
     if (credentials instanceof UsernamePasswordCredentials) {
@@ -33,7 +47,15 @@ public class CredentialsStore {
     configuration.save();
   }
 
-  public @Nullable Credentials retrieveCredentials(String realm, String userId) {
+  public @Nullable Credentials retrieveCredentials(Realm realm) {
+    return retrieveCredentials(realm, null);
+  }
+
+  public @Nullable Credentials retrieveCredentials(Realm realm, @Nullable String userId) {
+    checkNotNull(realm, "realm==null!");
+    if (userId == null) {
+      userId = "default";
+    }
     Credentials result = map.get(new Key(realm, userId));
     if (result == null) {
       String token = configuration.getStringOrNull("credentials", realm + ".token." + userId);
@@ -57,10 +79,10 @@ public class CredentialsStore {
   }
 
   private static class Key {
-    String realm;
+    Realm realm;
     String username;
 
-    public Key(String realm, String username) {
+    public Key(Realm realm, String username) {
       this.realm = realm;
       this.username = username;
     }
@@ -83,10 +105,7 @@ public class CredentialsStore {
       if (getClass() != obj.getClass())
         return false;
       Key other = (Key) obj;
-      if (realm == null) {
-        if (other.realm != null)
-          return false;
-      } else if (!realm.equals(other.realm))
+      if (realm != other.realm)
         return false;
       if (username == null) {
         if (other.username != null)

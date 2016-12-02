@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -25,8 +26,11 @@ public class ModConfiguration {
   }
 
   public void setString(String category, String key, String value) {
-    Property p = config.get(category, key, value);
-    if ( p != null) {
+    if ( value == null) {
+      ConfigCategory cat = config.getCategory(category);
+      cat.remove(key);
+    } else {
+      Property p = config.get(category, key, "");
       p.set(value);
     }
   }
@@ -34,6 +38,5 @@ public class ModConfiguration {
   public void save() {
     config.save();
   }
-
 
 }

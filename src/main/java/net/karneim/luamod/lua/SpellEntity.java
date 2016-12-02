@@ -1,13 +1,10 @@
 package net.karneim.luamod.lua;
 
-import java.util.Collection;
-
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.Credentials;
+import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
-import net.karneim.luamod.lua.event.EventQueue;
-import net.karneim.luamod.lua.event.EventWrapper;
 import net.karneim.luamod.lua.event.Events;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -62,7 +59,7 @@ public class SpellEntity extends Entity {
       userId = owner.getCommandSenderEntity().getUniqueID().toString();
     }
     this.cursor = new Cursor(owner, this, this.getEntityWorld(), pos, rotation, surface);
-    Credentials credentials = mod.getCredentialsStore().retrieveCredentials("GitHub", userId);
+    Credentials credentials = mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
     luaUtil = new LuaUtil(owner, cursor, clipboard, credentials);
     if (surface != null) {
       pos = pos.offset(surface, 1);
@@ -82,6 +79,7 @@ public class SpellEntity extends Entity {
   public void setProgram(String program) throws LoaderException {
     this.program = program;
     luaUtil.compile(program);
+    onUpdate();
   }
 
   @Override
@@ -268,7 +266,7 @@ public class SpellEntity extends Entity {
         return false;
     }
   }
-  
+
   public Events getEvents() {
     return luaUtil.getEvents();
   }

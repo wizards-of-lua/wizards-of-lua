@@ -1,6 +1,9 @@
 package net.karneim.luamod;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +18,9 @@ import net.karneim.luamod.lua.CommandAdmin;
 import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
 import net.karneim.luamod.lua.SpellEntity;
+import net.karneim.luamod.lua.SpellEntityFactory;
 import net.karneim.luamod.lua.SpellRegistry;
+import net.karneim.luamod.lua.Startup;
 import net.karneim.luamod.lua.event.ModEventHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -28,7 +33,9 @@ import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.sandius.rembulan.load.LoaderException;
 
 @Mod(modid = LuaMod.MODID, version = LuaMod.VERSION, acceptableRemoteVersions = "*")
 public class LuaMod {
@@ -46,6 +53,8 @@ public class LuaMod {
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final ClipboardRegistry clipboards = new ClipboardRegistry();
   private final ModEventHandler modEventHandler = new ModEventHandler(this);
+  private final SpellEntityFactory spellEntityFactory = new SpellEntityFactory(this);
+  private final Startup startup = new Startup(this);
 
   private ModConfiguration configuration;
   private File luaDir;
@@ -80,7 +89,7 @@ public class LuaMod {
     event.registerServerCommand(new CommandLua());
     event.registerServerCommand(new CommandAdmin());
     event.registerServerCommand(new CommandMessagePatched(modEventHandler));
-    server = event.getServer();
+    server = checkNotNull(event.getServer());
 
     ForgeChunkManager.setForcedChunkLoadingCallback(instance,
         new net.minecraftforge.common.ForgeChunkManager.LoadingCallback() {
@@ -92,10 +101,29 @@ public class LuaMod {
             // to do here anything.
           }
         });
+
+    try {
+      startup.runStartupProfile();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (LoaderException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  @EventHandler
+  public void serverStopping(FMLServerStoppingEvent event) {
+    getSpellRegistry().breakAll();
   }
 
   public MinecraftServer getServer() {
     return server;
+  }
+
+  public SpellEntityFactory getSpellEntityFactory() {
+    return spellEntityFactory;
   }
 
   public ModConfiguration getConfiguration() {

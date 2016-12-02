@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.AccessTokenCredentials;
 import net.karneim.luamod.credentials.Credentials;
+import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.credentials.UsernamePasswordCredentials;
 import net.karneim.luamod.gist.GitHubTool;
 import net.minecraft.command.CommandBase;
@@ -45,6 +46,7 @@ public class CommandAdmin extends CommandBase {
   private static final String UNSET = "unset";
   private static final String DEFAULT = "default";
   private static final String USER = "user";
+  private static final String STARTUP = "startup";
   private static final String TICKSLIMIT = "tickslimit";
   private static final String SPELL = "spell";
   private static final String CACHE = "cache";
@@ -93,7 +95,7 @@ public class CommandAdmin extends CommandBase {
       }
       if (PROFILE.equals(args[0])) {
         if (args.length <= 2) {
-          return getListOfStringsMatchingLastWord(args, asList(USER, DEFAULT));
+          return getListOfStringsMatchingLastWord(args, asList(USER, DEFAULT, STARTUP));
         }
         if (args.length <= 3) {
           return getListOfStringsMatchingLastWord(args, asList(SET, UNSET));
@@ -172,6 +174,21 @@ public class CommandAdmin extends CommandBase {
               return;
             } else if (UNSET.equals(action)) {
               setDefaultProfileUrl(sender, null);
+              return;
+            }
+          }
+          if (STARTUP.equals(scope)) {
+            String action = getArg(args, 2, "action", false);
+            if (action == null) {
+              ITextComponent message = ForgeHooks.newChatWithLinks(getStartupProfileUrl());
+              sender.addChatMessage(message);
+              return;
+            } else if (SET.equals(action)) {
+              String url = getArg(args, 3, "url");
+              setStartupProfileUrl(sender, url);
+              return;
+            } else if (UNSET.equals(action)) {
+              setStartupProfileUrl(sender, null);
               return;
             }
           }
@@ -288,7 +305,7 @@ public class CommandAdmin extends CommandBase {
       }
       UUID uuid = sender.getCommandSenderEntity().getUniqueID();
       GitHubTool.checkToken(token);
-      mod.getCredentialsStore().storeCredentials("GitHub", uuid.toString(),
+      mod.getCredentialsStore().storeCredentials(Realm.GitHub, uuid.toString(),
           new AccessTokenCredentials(token));
       sender.addChatMessage(new TextComponentString("Successfully authenticated with GitHub."));
     } catch (IOException e) {
@@ -300,8 +317,7 @@ public class CommandAdmin extends CommandBase {
   private void setDefaultGithubToken(ICommandSender sender, String token) throws CommandException {
     try {
       GitHubTool.checkToken(token);
-      mod.getCredentialsStore().storeCredentials("GitHub", "default",
-          new AccessTokenCredentials(token));
+      mod.getCredentialsStore().storeCredentials(Realm.GitHub, new AccessTokenCredentials(token));
       sender.addChatMessage(new TextComponentString("Successfully authenticated with GitHub."));
     } catch (IOException e) {
       throw new CommandException(
@@ -317,7 +333,7 @@ public class CommandAdmin extends CommandBase {
       }
       UUID uuid = sender.getCommandSenderEntity().getUniqueID();
       GitHubTool.checklogin(username, password);
-      mod.getCredentialsStore().storeCredentials("GitHub", uuid.toString(),
+      mod.getCredentialsStore().storeCredentials(Realm.GitHub, uuid.toString(),
           new UsernamePasswordCredentials(username, password));
       sender.addChatMessage(new TextComponentString("Successfully authenticated with GitHub."));
     } catch (IOException e) {
@@ -330,7 +346,7 @@ public class CommandAdmin extends CommandBase {
       throws CommandException {
     try {
       GitHubTool.checklogin(username, password);
-      mod.getCredentialsStore().storeCredentials("GitHub", "default",
+      mod.getCredentialsStore().storeCredentials(Realm.GitHub,
           new UsernamePasswordCredentials(username, password));
       sender.addChatMessage(new TextComponentString("Successfully authenticated with GitHub."));
     } catch (IOException e) {
@@ -351,8 +367,7 @@ public class CommandAdmin extends CommandBase {
 
   private String getUserProfileUrl(ICommandSender sender) {
     Entity owner = sender.getCommandSenderEntity();
-    URL result = mod.getProfiles().getUserProfile(owner);
-    return result == null ? "none" : result.toExternalForm();
+    return toString(mod.getProfiles().getUserProfile(owner));
   }
 
   private void setUserProfileUrl(ICommandSender sender, @Nullable String urlStr)
@@ -364,9 +379,12 @@ public class CommandAdmin extends CommandBase {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
         mod.getGistRepo().load(credentials, url);
+        mod.getProfiles().setUserProfile(owner, url);
+        sender.addChatMessage(new TextComponentString("Profile successfully loaded."));
+      } else {
+        mod.getProfiles().setUserProfile(owner, null);
+        sender.addChatMessage(new TextComponentString("Profile removed."));
       }
-      mod.getProfiles().setUserProfile(owner, url);
-      sender.addChatMessage(new TextComponentString("Gist successfully loaded."));
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
           urlStr, e.getMessage());
@@ -374,8 +392,7 @@ public class CommandAdmin extends CommandBase {
   }
 
   private String getDefaultProfileUrl() {
-    URL result = mod.getProfiles().getDefaultProfile();
-    return result == null ? "none" : result.toExternalForm();
+    return toString(mod.getProfiles().getDefaultProfile());
   }
 
   private void setDefaultProfileUrl(ICommandSender sender, @Nullable String urlStr)
@@ -387,9 +404,37 @@ public class CommandAdmin extends CommandBase {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
         mod.getGistRepo().load(credentials, url);
+        mod.getProfiles().setDefaultProfile(url);
+        sender.addChatMessage(new TextComponentString("Profile successfully loaded."));
+      } else {
+        mod.getProfiles().setDefaultProfile(null);
+        sender.addChatMessage(new TextComponentString("Profile removed."));
       }
-      mod.getProfiles().setDefaultProfile(url);
-      sender.addChatMessage(new TextComponentString("Gist successfully loaded."));
+    } catch (IOException e) {
+      throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
+          urlStr, e.getMessage());
+    }
+  }
+
+  private String getStartupProfileUrl() {
+    return toString(mod.getProfiles().getStartupProfile());
+  }
+
+  private void setStartupProfileUrl(ICommandSender sender, @Nullable String urlStr)
+      throws CommandException {
+    try {
+      Entity owner = sender.getCommandSenderEntity();
+      URL url = toUrl(urlStr);
+      if (url != null) {
+        // Check if profile url is accessible and can be loaded
+        Credentials credentials = getCredentials(sender);
+        mod.getGistRepo().load(credentials, url);
+        mod.getProfiles().setStartupProfile(url);
+        sender.addChatMessage(new TextComponentString("Profile successfully loaded."));
+      } else {
+        mod.getProfiles().setStartupProfile(null);
+        sender.addChatMessage(new TextComponentString("Profile removed."));
+      }
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
           urlStr, e.getMessage());
@@ -408,7 +453,7 @@ public class CommandAdmin extends CommandBase {
     if (id == null) {
       return null;
     }
-    return mod.getCredentialsStore().retrieveCredentials("GitHub", id.toString());
+    return mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, id.toString());
   }
 
   private List<String> getSpellIds() {
@@ -513,5 +558,13 @@ public class CommandAdmin extends CommandBase {
 
   private @Nullable URL toUrl(@Nullable String urlStr) throws MalformedURLException {
     return urlStr == null ? null : new URL(urlStr);
+  }
+
+  private @Nullable String toString(@Nullable URL result) {
+    return result == null ? "none" : result.toExternalForm();
+  }
+
+  private String getProfileKey(Entity entity) {
+    return entity.getUniqueID().toString();
   }
 }
