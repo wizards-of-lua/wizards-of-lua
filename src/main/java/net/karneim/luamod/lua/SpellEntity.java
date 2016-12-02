@@ -1,10 +1,14 @@
 package net.karneim.luamod.lua;
 
+import java.util.Collection;
+
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
+import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.event.EventWrapper;
+import net.karneim.luamod.lua.event.Events;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -64,7 +68,7 @@ public class SpellEntity extends Entity {
       pos = pos.offset(surface, 1);
     }
     updatePosition();
-    mod.getProcessRegistry().register(this);
+    mod.getSpellRegistry().register(this);
   }
 
   public ICommandSender getOwner() {
@@ -156,7 +160,7 @@ public class SpellEntity extends Entity {
       return;
     }
     if (!getEntityWorld().isRemote) {
-      luaUtil.setWorldTime(ticksExisted);
+      luaUtil.getEvents().setCurrentTime(ticksExisted);
       switch (state) {
         case START:
 
@@ -179,7 +183,7 @@ public class SpellEntity extends Entity {
           break;
         case RESUME:
           try {
-            if (!luaUtil.isWaiting()) {
+            if (!luaUtil.getEvents().isWaiting()) {
               luaUtil.resume(continuation);
               state = State.STOP;
             }
@@ -221,7 +225,7 @@ public class SpellEntity extends Entity {
     System.out.println("Terminating " + getName() + "!");
     super.setDead();
     releaseChunkLoaderTicket();
-    LuaMod.instance.getProcessRegistry().unregister(this);
+    LuaMod.instance.getSpellRegistry().unregister(this);
   }
 
   public void pause() {
@@ -264,9 +268,9 @@ public class SpellEntity extends Entity {
         return false;
     }
   }
-
-  public void notifyEventListeners(EventWrapper<?> wrapper) {
-    luaUtil.notifyEventListeners(wrapper);
+  
+  public Events getEvents() {
+    return luaUtil.getEvents();
   }
 
 }

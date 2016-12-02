@@ -3,7 +3,7 @@ package net.karneim.luamod.lua.wrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.karneim.luamod.lua.SleepActivator;
+import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.event.EventQueuesWrapper;
 import net.karneim.luamod.lua.event.EventType;
@@ -16,17 +16,17 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EventsWrapper {
 
-  public static EventsWrapper installInto(Table env, SleepActivator sleepActivator) {
-    EventsWrapper result = new EventsWrapper(sleepActivator);
+  public static EventsWrapper installInto(Table env, Events events) {
+    EventsWrapper result = new EventsWrapper(events);
     env.rawset("events", result.getLuaTable());
     return result;
   }
 
-  private final SleepActivator sleepActivator;
+  private final Events events;
   private final Table luaTable = new DefaultTable();
 
-  public EventsWrapper(SleepActivator sleepActivator) {
-    this.sleepActivator = sleepActivator;
+  public EventsWrapper(Events events) {
+    this.events = events;
     luaTable.rawset("register", new RegisterForEventsFunction());
   }
 
@@ -41,11 +41,10 @@ public class EventsWrapper {
       List<EventQueue> queues = new ArrayList<EventQueue>();
       for (Object arg : args) {
         EventType type = getEventType(arg);
-        EventQueue queue = new EventQueue(type);
-        sleepActivator.addEventQueue(queue);
+        EventQueue queue = events.register(type);
         queues.add(queue);
       }
-      EventQueuesWrapper wrapper = new EventQueuesWrapper(queues, sleepActivator);
+      EventQueuesWrapper wrapper = new EventQueuesWrapper(queues, events);
       context.getReturnBuffer().setTo(wrapper.getLuaTable());
     }
 

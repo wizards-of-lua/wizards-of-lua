@@ -1,18 +1,17 @@
 package net.karneim.luamod.lua;
 
-import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.lua.event.ModEventHandler;
 import net.karneim.luamod.lua.event.WhisperEvent;
-import net.karneim.luamod.lua.event.WhisperEventWrapper;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.server.CommandMessage;
 import net.minecraft.server.MinecraftServer;
 
 public class CommandMessagePatched extends CommandMessage {
-  private final LuaMod mod;
+  private final ModEventHandler modEventHandler;
 
-  public CommandMessagePatched(LuaMod mod) {
-    this.mod = mod;
+  public CommandMessagePatched(ModEventHandler modEventHandler) {
+    this.modEventHandler = modEventHandler;
   }
 
   /**
@@ -25,14 +24,8 @@ public class CommandMessagePatched extends CommandMessage {
       // this will throw an exception
       super.execute(server, sender, args);
     } else {
-      SpellEntity processEntity = mod.getProcessRegistry().get(args[0]);
-      if (processEntity != null) {
-        processEntity.notifyEventListeners(new WhisperEventWrapper(
-            new WhisperEvent(sender.getName(), concat(args, 1, args.length))));
-      } else {
-        // do default handling
-        super.execute(server, sender, args);
-      }
+      modEventHandler.onWhisper(new WhisperEvent(sender.getName(), concat(args, 1, args.length)));
+      super.execute(server, sender, args);
     }
   }
 

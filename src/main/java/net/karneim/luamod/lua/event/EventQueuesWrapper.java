@@ -2,7 +2,6 @@ package net.karneim.luamod.lua.event;
 
 import java.util.Collection;
 
-import net.karneim.luamod.lua.SleepActivator;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -15,13 +14,13 @@ import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 public class EventQueuesWrapper {
 
   private final Collection<? extends EventQueue> queues;
-  private final SleepActivator sleepActivator;
+  private final Events eventManager;
   private final Table luaTable = new DefaultTable();
 
   public EventQueuesWrapper(Collection<? extends EventQueue> queues,
-      SleepActivator sleepActivator) {
+      Events eventManager) {
     this.queues = queues;
-    this.sleepActivator = sleepActivator;
+    this.eventManager = eventManager;
     luaTable.rawset("deregister", new DeregisterFunction());
     luaTable.rawset("next", new NextFunction());
   }
@@ -34,9 +33,9 @@ public class EventQueuesWrapper {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      for (EventQueue listener : queues) {
-        listener.clear();
-        sleepActivator.removeEventQueue(listener);
+      for (EventQueue queue : queues) {
+        queue.clear();
+        eventManager.deregister(queue);
       }
       context.getReturnBuffer().setTo();
     }
@@ -59,7 +58,7 @@ public class EventQueuesWrapper {
       }
       int ticks = arg1 == null ? Integer.MAX_VALUE : ((Number) arg1).intValue();
 
-      sleepActivator.waitForEvents(queues, ticks);
+      eventManager.waitForEvents(queues, ticks);
       execute(context);
     }
 
@@ -75,10 +74,10 @@ public class EventQueuesWrapper {
       } catch (UnresolvedControlThrowable e) {
         throw e.resolve(NextFunction.this, "Waiting for event");
       }
-      for (EventQueue listener : queues) {
-        if (listener.hasNext()) {
-          sleepActivator.stopWaitingForEvent();
-          context.getReturnBuffer().setTo(listener.next().getLuaObject());
+      for (EventQueue queue : queues) {
+        if (queue.hasNext()) {
+          eventManager.stopWaitingForEvent();
+          context.getReturnBuffer().setTo(queue.pop().getLuaObject());
           return;
         }
       }

@@ -16,7 +16,6 @@ import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
-import net.karneim.luamod.lua.event.EventWrapper;
 import net.karneim.luamod.lua.event.ModEventHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -43,9 +42,10 @@ public class LuaMod {
   public final Logger logger = LogManager.getLogger(LuaMod.class.getName());
 
   private MinecraftServer server;
-  
-  private final SpellRegistry processRegistry = new SpellRegistry();
+
+  private final SpellRegistry spellRegistry = new SpellRegistry();
   private final ClipboardRegistry clipboards = new ClipboardRegistry();
+  private final ModEventHandler modEventHandler = new ModEventHandler(this);
 
   private ModConfiguration configuration;
   private File luaDir;
@@ -71,7 +71,7 @@ public class LuaMod {
   @EventHandler
   public void init(FMLInitializationEvent event) {
     EntityRegistry.registerModEntity(SpellEntity.class, "Spell", 1, this, 0, 1, false);
-    MinecraftForge.EVENT_BUS.register(new ModEventHandler(this));
+    MinecraftForge.EVENT_BUS.register(modEventHandler);
   }
 
   @EventHandler
@@ -79,9 +79,9 @@ public class LuaMod {
     logger.info("Registering LuaMod Commands");
     event.registerServerCommand(new CommandLua());
     event.registerServerCommand(new CommandAdmin());
-    event.registerServerCommand(new CommandMessagePatched(this));
+    event.registerServerCommand(new CommandMessagePatched(modEventHandler));
     server = event.getServer();
-        
+
     ForgeChunkManager.setForcedChunkLoadingCallback(instance,
         new net.minecraftforge.common.ForgeChunkManager.LoadingCallback() {
           @Override
@@ -118,8 +118,8 @@ public class LuaMod {
     return profileUrls;
   }
 
-  public SpellRegistry getProcessRegistry() {
-    return processRegistry;
+  public SpellRegistry getSpellRegistry() {
+    return spellRegistry;
   }
 
   private File createLuaDirectory(File configDir) {
@@ -150,12 +150,6 @@ public class LuaMod {
 
   public ClipboardRegistry getClipboards() {
     return clipboards;
-  }
-
-  public void notifyEventListeners(EventWrapper<?> wrapper) {
-    for (SpellEntity entity : processRegistry.getAll()) {
-      entity.notifyEventListeners(wrapper);
-    }
   }
 
 }

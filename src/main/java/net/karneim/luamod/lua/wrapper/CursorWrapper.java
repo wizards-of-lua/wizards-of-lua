@@ -5,7 +5,7 @@ import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
-import net.karneim.luamod.lua.SleepActivator;
+import net.karneim.luamod.lua.event.Events;
 import net.minecraft.block.Block;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.util.EnumFacing;
@@ -25,21 +25,21 @@ import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 public class CursorWrapper {
 
-  public static void installInto(Table env, Cursor cursor, SleepActivator sleepActivator,
+  public static void installInto(Table env, Cursor cursor, Events eventManager,
       Snapshots snapshots) {
-    CursorWrapper wrapper = new CursorWrapper(cursor, sleepActivator, snapshots);
+    CursorWrapper wrapper = new CursorWrapper(cursor, eventManager, snapshots);
     env.rawset("cursor", wrapper.getLuaTable());
   }
 
   private final Cursor cursor;
-  private final SleepActivator sleepActivator;
+  private final Events eventManager;
   private final Snapshots snapshots;
 
   private final Table luaTable = new DefaultTable();
 
-  public CursorWrapper(Cursor cursor, SleepActivator sleepActivator, Snapshots snapshots) {
+  public CursorWrapper(Cursor cursor, Events eventManager, Snapshots snapshots) {
     this.cursor = cursor;
-    this.sleepActivator = sleepActivator;
+    this.eventManager = eventManager;
     this.snapshots = snapshots;
     luaTable.rawset("move", new MoveFunction());
     luaTable.rawset("moveBy", new MoveByFunction());
@@ -751,7 +751,7 @@ public class CursorWrapper {
       }
       int ticks = ((Number) arg1).intValue();
 
-      sleepActivator.startSleep(ticks);
+      eventManager.startSleep(ticks);
       try {
         context.pauseIfRequested();
       } catch (UnresolvedControlThrowable e) {

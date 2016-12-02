@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua.event;
 
 import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.lua.SpellEntity;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -25,7 +26,7 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onChat(ServerChatEvent evt) {
-    mod.notifyEventListeners(new ServerChatEventWrapper(evt));
+    onEvent(EventType.CHAT, evt);
   }
 
   @SubscribeEvent
@@ -33,8 +34,7 @@ public class ModEventHandler {
     if (evt.getWorld().isRemote) {
       return;
     }
-    mod.notifyEventListeners(
-        new PlayerInteractEventWrapper<LeftClickBlock>(evt, EventType.LEFT_CLICK));
+    onEvent(EventType.LEFT_CLICK, evt);
   }
 
   @SubscribeEvent
@@ -42,33 +42,36 @@ public class ModEventHandler {
     if (evt.getWorld().isRemote) {
       return;
     }
-    mod.notifyEventListeners(
-        new PlayerInteractEventWrapper<RightClickBlock>(evt, EventType.RIGHT_CLICK));
+    onEvent(EventType.RIGHT_CLICK, evt);
   }
-
-  // @SubscribeEvent
-  // public void onRightClickItem(RightClickItem evt) {
-  // System.out.println("RightClickItem");
-  // mod.notifyEventListeners(
-  // new PlayerInteractEventWrapper<RightClickItem>(evt, EventType.RIGHT_CLICK));
-  // }
 
   @SubscribeEvent
   public void onPlayerLoggedIn(PlayerLoggedInEvent evt) {
-    mod.notifyEventListeners(
-        new Player2EventWrapper<PlayerLoggedInEvent>(evt, EventType.PLAYER_JOINED));
+    onEvent(EventType.PLAYER_JOINED, evt);
   }
 
   @SubscribeEvent
   public void onPlayerLoggedOut(PlayerLoggedOutEvent evt) {
-    mod.notifyEventListeners(
-        new Player2EventWrapper<PlayerLoggedOutEvent>(evt, EventType.PLAYER_LEFT));
+    onEvent(EventType.PLAYER_LEFT, evt);
   }
 
   @SubscribeEvent
   public void onPlayerRespawn(PlayerRespawnEvent evt) {
-    mod.notifyEventListeners(
-        new Player2EventWrapper<PlayerRespawnEvent>(evt, EventType.PLAYER_SPAWNED));
+    onEvent(EventType.PLAYER_SPAWNED, evt);
+  }
+
+  /////
+
+  public void onWhisper(WhisperEvent evt) {
+    onEvent(EventType.WHISPER, evt);
+  }
+
+  ////
+
+  private void onEvent(EventType type, Object evt) {
+    for (SpellEntity e : mod.getSpellRegistry().getAll()) {
+      e.getEvents().handle(type, evt);
+    }
   }
 
 }

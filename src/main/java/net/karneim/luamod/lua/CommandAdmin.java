@@ -408,16 +408,16 @@ public class CommandAdmin extends CommandBase {
   }
 
   private List<String> getSpellIds() {
-    return mod.getProcessRegistry().getSpellIds();
+    return mod.getSpellRegistry().getSpellIds();
   }
 
   private void breakAll(ICommandSender sender) {
-    mod.getProcessRegistry().breakAll();
+    mod.getSpellRegistry().breakAll();
     sender.addChatMessage(new TextComponentString("Broke all spells."));
   }
 
   private void breakSpell(ICommandSender sender, String spellId) {
-    boolean success = mod.getProcessRegistry().breakSpell(spellId);
+    boolean success = mod.getSpellRegistry().breakSpell(spellId);
     if (success) {
       sender.addChatMessage(new TextComponentString("Broke spell."));
     } else {
@@ -426,17 +426,17 @@ public class CommandAdmin extends CommandBase {
   }
 
   private void listActiveSpells(ICommandSender sender) {
-    String lines = mod.getProcessRegistry().list();
+    String lines = mod.getSpellRegistry().list();
     sender.addChatMessage(new TextComponentString(String.format("Active spells:\n%s", lines)));
   }
 
   private void unpauseAll(ICommandSender sender) {
-    mod.getProcessRegistry().unpauseAll();
+    mod.getSpellRegistry().unpauseAll();
     sender.addChatMessage(new TextComponentString("Unpaused all spells."));
   }
 
   private void unpause(ICommandSender sender, String spellId) {
-    boolean success = mod.getProcessRegistry().unpauseSpell(spellId);
+    boolean success = mod.getSpellRegistry().unpauseSpell(spellId);
     if (success) {
       sender.addChatMessage(new TextComponentString("Unpaused spell."));
     } else {
@@ -445,12 +445,12 @@ public class CommandAdmin extends CommandBase {
   }
 
   private void pauseAll(ICommandSender sender) {
-    mod.getProcessRegistry().pauseAll();
+    mod.getSpellRegistry().pauseAll();
     sender.addChatMessage(new TextComponentString("Paused all spells."));
   }
 
   private void pause(ICommandSender sender, String spellId) {
-    boolean success = mod.getProcessRegistry().pauseSpell(spellId);
+    boolean success = mod.getSpellRegistry().pauseSpell(spellId);
     if (success) {
       sender.addChatMessage(new TextComponentString("Paused spell."));
     } else {
