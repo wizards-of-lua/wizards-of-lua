@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import net.karneim.luamod.LuaMod;
-import net.karneim.luamod.credentials.Credentials;
-import net.karneim.luamod.credentials.Realm;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -28,8 +26,8 @@ public class Startup {
   }
 
   public void runStartupProfile() throws IOException, LoaderException {
-    String program = getProgram();
-    if (program != null) {
+    String requirements = getRequirements();
+    if (requirements != null) {
       luaMod.logger.info("Running startup profile.");
       MinecraftServer server = checkNotNull(luaMod.getServer());
       ICommandSender sender = sender();
@@ -38,19 +36,18 @@ public class Startup {
       World entityWorld = checkNotNull(server.getEntityWorld());
       SpellEntity spell = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
 
-      spell.setProgram(program);
+      spell.setRequirements(requirements);
+      spell.setCommand("-- startup");
       server.getEntityWorld().spawnEntityInWorld(spell);
     }
   }
 
-  private String getProgram() throws IOException {
+  private String getRequirements() throws IOException {
     URL url = luaMod.getProfiles().getStartupProfile();
     if (url == null) {
-      return null;
+      return "";
     }
-    Credentials credentials = luaMod.getCredentialsStore().retrieveCredentials(Realm.GitHub);
-    String program = luaMod.getGistRepo().load(credentials, url);
-    return program;
+    return "require \"" + url.toExternalForm() + "\"";
   }
 
   private ICommandSender sender() {

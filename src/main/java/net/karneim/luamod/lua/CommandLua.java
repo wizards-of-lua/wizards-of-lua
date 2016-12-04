@@ -9,8 +9,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.LuaMod;
-import net.karneim.luamod.credentials.Credentials;
-import net.karneim.luamod.credentials.Realm;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -72,8 +70,9 @@ public class CommandLua extends CommandBase {
           mod.getSpellEntityFactory().create(sender.getEntityWorld(), sender, owner);
 
       server.getEntityWorld().spawnEntityInWorld(spell);
-      String prog = getProgram(owner, getArgString(args));
-      spell.setProgram(prog);
+      String requirements = getRequirements(owner);
+      spell.setRequirements(requirements);
+      spell.setCommand(getArgString(args));
 
       if (sender.sendCommandFeedback()) {
         // this is true if "gamerule commandBlockOutput" is true
@@ -107,37 +106,21 @@ public class CommandLua extends CommandBase {
     return "";
   }
 
-  private String getProgram(ICommandSender owner, String argString) throws IOException {
-    Entity entity = owner.getCommandSenderEntity();
-    @Nullable
-    String prog = loadProfile(entity);
-    if (argString != null) {
-      prog = prog + "\n" + argString;
-    }
-    return prog;
+  private String getRequirements(ICommandSender owner) throws IOException {
+    return getRequirements(owner.getCommandSenderEntity());
   }
 
-  private String loadProfile(Entity player) throws IOException {
+  private String getRequirements(Entity player) throws IOException {
     @Nullable
     URL url = mod.getProfiles().getUserProfile(player);
     if (url == null) {
       url = mod.getProfiles().getDefaultProfile();
     }
-    return loadGist(player, url);
-  }
-
-  private String loadGist(Entity player, URL gistUrl) throws IOException {
-    @Nullable
-    String prog = null;
-    if (gistUrl != null) {
-      @Nullable
-      Credentials credentials =
-          (player == null) ? mod.getCredentialsStore().retrieveCredentials(Realm.GitHub)
-              : mod.getCredentialsStore().retrieveCredentials(Realm.GitHub,
-                  player.getUniqueID().toString());
-      prog = mod.getGistRepo().load(credentials, gistUrl);
+    if (url != null) {
+      return "require \"" + url.toExternalForm() + "\"";
+    } else {
+      return "";
     }
-    return prog;
   }
 
 }

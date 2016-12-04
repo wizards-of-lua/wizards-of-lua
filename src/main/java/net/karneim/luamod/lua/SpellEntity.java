@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua;
 
+import javax.annotation.Nullable;
+
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.credentials.Realm;
@@ -35,11 +37,12 @@ public class SpellEntity extends Entity {
   }
 
   private State state = State.START;
-  private String program;
+  private String command;
   private Continuation continuation;
   private LuaUtil luaUtil;
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
+  private String requirements;
 
   public SpellEntity(World worldIn) {
     super(worldIn);
@@ -76,9 +79,20 @@ public class SpellEntity extends Entity {
     return clipboard;
   }
 
-  public void setProgram(String program) throws LoaderException {
-    this.program = program;
-    luaUtil.compile(program);
+  public void setRequirements(String requirements) {
+    this.requirements = requirements;
+  }
+
+  public @Nullable String getCommand() {
+    return command;
+  }
+
+  public void setCommand(String command) throws LoaderException {
+    this.command = command;
+    if (requirements != null) {
+      command = requirements + "\n" + command;
+    }
+    luaUtil.compile(command);
     onUpdate();
   }
 
@@ -270,5 +284,7 @@ public class SpellEntity extends Entity {
   public Events getEvents() {
     return luaUtil.getEvents();
   }
+
+
 
 }

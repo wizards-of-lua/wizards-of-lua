@@ -54,6 +54,10 @@ public class SpellRegistry {
         buf.append("\n");
       }
       buf.append(e.getName());
+      if (e.getCommand() != null) {
+        buf.append(": ");
+        buf.append(e.getCommand());
+      }
     }
     return buf.toString();
   }
