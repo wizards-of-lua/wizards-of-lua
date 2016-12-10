@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.config.ModConfiguration;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -19,31 +20,54 @@ import net.sandius.rembulan.load.LoaderException;
 
 public class Startup {
 
-  private final LuaMod luaMod;
+  private static final String STARTUP_CAT = "startup";
+  private static final String SPELLS_KEY = "spells";
 
-  public Startup(LuaMod luaMod) {
+  private final LuaMod luaMod;
+  private final ModConfiguration configuration;
+  private String spell;
+
+  public Startup(LuaMod luaMod, ModConfiguration configuration) {
     this.luaMod = checkNotNull(luaMod);
+    this.configuration = checkNotNull(configuration);
+  }
+
+  public String getSpell() {
+    if (spell == null) {
+      spell = configuration.getStringOrNull(SPELLS_KEY, STARTUP_CAT);
+    }
+    return spell;
+  }
+
+  public void setSpell(String spell) {
+    this.spell = spell;
+    configuration.setString(SPELLS_KEY, STARTUP_CAT, spell);
+    configuration.save();
   }
 
   public void runStartupProfile() throws IOException, LoaderException {
     String requirements = getRequirements();
-    if (requirements != null) {
+    String theSpell = getSpell();
+    if (requirements != null && theSpell != null) {
       luaMod.logger.info("Running startup profile.");
       MinecraftServer server = checkNotNull(luaMod.getServer());
       ICommandSender sender = sender();
       ICommandSender owner = sender;
 
       World entityWorld = checkNotNull(server.getEntityWorld());
-      SpellEntity spell = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
+      SpellEntity spellEntity = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
 
-      spell.setRequirements(requirements);
-      spell.setCommand("-- startup");
-      server.getEntityWorld().spawnEntityInWorld(spell);
+      spellEntity.setRequirements(requirements);
+      spellEntity.setCommand(theSpell);
+      server.getEntityWorld().spawnEntityInWorld(spellEntity);
     }
   }
 
   private String getRequirements() throws IOException {
     URL url = luaMod.getProfiles().getStartupProfile();
+    if (url == null) {
+      url = luaMod.getProfiles().getDefaultProfile();
+    }
     if (url == null) {
       return "";
     }

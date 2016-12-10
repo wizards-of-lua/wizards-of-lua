@@ -91,7 +91,7 @@ public class CommandAdmin extends CommandBase {
       }
       if (args.length <= 1) {
         return getListOfStringsMatchingLastWord(args,
-            asList(PROFILE, GITHUB, CACHE, SPELL, TICKSLIMIT));
+            asList(PROFILE, GITHUB, CACHE, SPELL, STARTUP, TICKSLIMIT));
       }
       if (PROFILE.equals(args[0])) {
         if (args.length <= 2) {
@@ -123,6 +123,11 @@ public class CommandAdmin extends CommandBase {
         }
         if (args.length <= 3 && !LIST.equals(args[1])) {
           return getListOfStringsMatchingLastWord(args, asList(getSpellIds(), ALL));
+        }
+      }
+      if (STARTUP.equals(args[0])) {
+        if (args.length <= 2) {
+          return getListOfStringsMatchingLastWord(args, asList(SET, UNSET));
         }
       }
       if (TICKSLIMIT.equals(args[0])) {
@@ -278,6 +283,25 @@ public class CommandAdmin extends CommandBase {
               unpause(sender, spell);
               return;
             }
+          }
+        }
+        if (STARTUP.equals(section)) {
+          @Nullable
+          String action = getArg(args, 1, "action", false);
+          if (action == null) {
+            String spell = LuaMod.instance.getStartup().getSpell();
+            if (spell == null) {
+              spell = "<none>";
+            }
+            sender.addChatMessage(new TextComponentString("Startup spell: " + spell));
+            return;
+          } else if (SET.equals(action)) {
+            String spell = getArg(args, 2, "spell");
+            LuaMod.instance.getStartup().setSpell(spell);
+            return;
+          } else if (UNSET.equals(action)) {
+            LuaMod.instance.getStartup().setSpell(null);
+            return;
           }
         }
         if (TICKSLIMIT.equals(section)) {
@@ -561,7 +585,7 @@ public class CommandAdmin extends CommandBase {
   }
 
   private @Nullable String toString(@Nullable URL result) {
-    return result == null ? "none" : result.toExternalForm();
+    return result == null ? "<none>" : result.toExternalForm();
   }
 
   private String getProfileKey(Entity entity) {

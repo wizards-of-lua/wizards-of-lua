@@ -54,7 +54,6 @@ public class LuaMod {
   private final ClipboardRegistry clipboards = new ClipboardRegistry();
   private final ModEventHandler modEventHandler = new ModEventHandler(this);
   private final SpellEntityFactory spellEntityFactory = new SpellEntityFactory(this);
-  private final Startup startup = new Startup(this);
 
   private ModConfiguration configuration;
   private File luaDir;
@@ -62,6 +61,7 @@ public class LuaMod {
   private FileCache fileCache;
   private GistRepo gistRepo;
   private CredentialsStore credentialsStore;
+  private Startup startup;
 
   private long defaultTicksLimit = 10000;
 
@@ -75,6 +75,7 @@ public class LuaMod {
     profiles = new Profiles(configuration);
     credentialsStore = new CredentialsStore(configuration);
     gistRepo = new GistRepo(fileCache);
+    startup = new Startup(this, configuration);
   }
 
   @EventHandler
@@ -178,6 +179,10 @@ public class LuaMod {
 
   public ClipboardRegistry getClipboards() {
     return clipboards;
+  }
+
+  public Startup getStartup() {
+    return startup;
   }
 
 }
