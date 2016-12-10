@@ -9,23 +9,24 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
 public abstract class EventWrapper<JavaObject> extends LuaWrapper<JavaObject> {
-  private final EventType eventType;
+  private final String type;
   private final long id;
   private static long idCount = 0;
-  public EventWrapper(@Nullable JavaObject javaObject, EventType eventType) {
+
+  public EventWrapper(@Nullable JavaObject javaObject, String type) {
     super(javaObject);
     id = ++idCount;
-    this.eventType = checkNotNull(eventType, "eventType == null!");
+    this.type = checkNotNull(type, "type == null!");
   }
 
-  public EventType getEventType() {
-    return eventType;
+  public String getType() {
+    return type;
   }
- 
+
   @Override
   protected Table toLuaObject() {
     Table result = new DefaultTable();
-    result.rawset("type", eventType.toString());
+    result.rawset("type", type);
     result.rawset("id", id);
     return result;
   }

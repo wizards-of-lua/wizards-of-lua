@@ -55,7 +55,7 @@ public class LuaUtil {
   private final Clipboard clipboard;
   private LuaFunction main;
 
-  private Events events = new Events();
+  private Events events;
 
   public LuaUtil(ICommandSender owner, Cursor cursor, Clipboard clipboard,
       Credentials credentials) {
@@ -64,7 +64,9 @@ public class LuaUtil {
     state = StateContexts.newDefaultInstance();
     env = state.newTable();
     loader = CompilerChunkLoader.of("LuaProgramAsJavaByteCode");
-
+    
+    events = new Events(LuaMod.instance);
+    
     ChunkLoader modulesLoader = CompilerChunkLoader.of("RequiredModulesAsByteCode");
     RuntimeEnvironment environment = getModRuntimeEnvironment();
 

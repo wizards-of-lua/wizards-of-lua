@@ -56,7 +56,6 @@ public class Startup {
 
       World entityWorld = checkNotNull(server.getEntityWorld());
       SpellEntity spellEntity = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
-
       spellEntity.setRequirements(requirements);
       spellEntity.setCommand(theSpell);
       server.getEntityWorld().spawnEntityInWorld(spellEntity);

@@ -8,7 +8,7 @@ import net.sandius.rembulan.Table;
 
 public class PlayerEventWrapper<E extends PlayerEvent> extends EventWrapper<E> {
   public PlayerEventWrapper(@Nullable E event, EventType eventType) {
-    super(event, eventType);
+    super(event, eventType.name());
   }
 
   @Override

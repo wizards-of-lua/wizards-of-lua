@@ -7,16 +7,21 @@ import java.util.Set;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-public class Events {
+import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.lua.SpellEntity;
 
-  private final Multimap<EventType, EventQueue> eventQueues = HashMultimap.create();
+public class Events {
+  private final LuaMod mod;
+  private final Multimap<String, EventQueue> eventQueues = HashMultimap.create();
   private final Set<EventQueue> activeQueues = new HashSet<EventQueue>();
 
   private long currentTime;
   private long wakeUpTime;
   private long waitForEventUntil;
 
-  public Events() {}
+  public Events(LuaMod mod) {
+    this.mod = mod;
+  }
 
   public boolean isWaiting() {
     return isSleeping() || isWaitingForEvent();
@@ -41,7 +46,7 @@ public class Events {
     return true;
   }
 
-  public EventQueue register(EventType type) {
+  public EventQueue register(String type) {
     EventQueue result = new EventQueue(type);
     eventQueues.put(type, result);
     return result;
@@ -65,12 +70,28 @@ public class Events {
   public void setCurrentTime(long currentTime) {
     this.currentTime = currentTime;
   }
-  
+
   public void handle(EventType type, Object evt) {
-    Collection<EventQueue> queues = eventQueues.get(type);
+    Collection<EventQueue> queues = eventQueues.get(type.name());
     for (EventQueue queue : queues) {
       queue.add(type.wrap(evt));
     }
   }
+
+  private void handle(String eventType, Object content) {
+    Collection<EventQueue> queues = eventQueues.get(eventType);
+    for (EventQueue queue : queues) {
+      queue.add(new GenericLuaEventWrapper(content, eventType));
+    }
+  }
+
+  public void fire(String eventType, Object evt) {
+    Iterable<SpellEntity> spells = mod.getSpellRegistry().getAll();
+    for (SpellEntity spell : spells) {
+      spell.getEvents().handle(eventType, evt);
+    }
+  }
+
+
 
 }
