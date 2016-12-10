@@ -296,7 +296,7 @@ public class CommandAdmin extends CommandBase {
             sender.addChatMessage(new TextComponentString("Startup spell: " + spell));
             return;
           } else if (SET.equals(action)) {
-            String spell = getArg(args, 2, "spell");
+            String spell = getRemainingArgs(args, 2, "spell");
             LuaMod.instance.getStartup().setSpell(spell);
             return;
           } else if (UNSET.equals(action)) {
@@ -547,6 +547,28 @@ public class CommandAdmin extends CommandBase {
       }
     }
     return args[idx];
+  }
+  
+  private String getRemainingArgs(String[] args, int idx, String name) throws CommandException {
+    return getRemainingArgs(args, idx, name, true);
+  }
+  
+  private String getRemainingArgs(String[] args, int idx, String name, boolean mandatory) throws CommandException {
+    if (idx >= args.length) {
+      if (mandatory) {
+        throw new CommandException("Missing %s. argument containing the %s!", idx, name);
+      } else {
+        return null;
+      }
+    }
+    StringBuilder result = new StringBuilder();
+    for( int i=idx; i<args.length; ++i) {
+      if ( result.length()>0) {
+        result.append(" ");
+      }
+      result.append(args[i]);
+    }
+    return result.toString();
   }
 
   private Long getArgAsLong(String[] args, int idx, String name) throws CommandException {
