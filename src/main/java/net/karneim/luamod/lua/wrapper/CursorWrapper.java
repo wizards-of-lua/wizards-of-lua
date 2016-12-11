@@ -66,6 +66,7 @@ public class CursorWrapper {
     luaTable.rawset("resetPosition", new ResetPositionFunction());
     luaTable.rawset("pushLocation", new PushLocationFunction());
     luaTable.rawset("popLocation", new PopLocationFunction());
+    luaTable.rawset("cut", new CutFunction());
     luaTable.rawset("copy", new CopyFunction());
     luaTable.rawset("paste", new PasteFunction());
     luaTable.rawset("inAir", new InAirFunction());
@@ -633,6 +634,41 @@ public class CursorWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
+  
+  private class CutFunction extends AbstractFunction1 {
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      // System.out.println("cut: " + arg1);
+      if (arg1 == null) {
+        throw new IllegalArgumentException(String.format("Array of vectors expected but got nil!"));
+      }
+      if (!(arg1 instanceof Table)) {
+        throw new IllegalArgumentException(
+            String.format("Array of vectors expected but got %s!", arg1));
+      }
+      Table table = (Table) arg1;
+
+      Selection selection = new Selection();
+      Object k = table.initialKey();
+      while (k != null) {
+        // process the key k
+        Object v = table.rawget(k);
+        BlockPos pos = toBlockPos(v);
+        selection.add(pos);
+        k = table.successorKeyOf(k);
+      }
+      Snapshot snapshot = cursor.cut(selection);
+      String result = snapshots.registerSnapshot(snapshot);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
 
   private class CopyFunction extends AbstractFunction1 {
 
@@ -660,22 +696,6 @@ public class CursorWrapper {
       Snapshot snapshot = cursor.copy(selection);
       String result = snapshots.registerSnapshot(snapshot);
       context.getReturnBuffer().setTo(result);
-    }
-
-    private BlockPos toBlockPos(Object v) {
-      if (!(v instanceof Table)) {
-        throw new IllegalArgumentException(
-            String.format("Table being a 3D vector (x,y,z) expected, but got %s!", v));
-      }
-      Table table = (Table) v;
-      Object ox = table.rawget("x");
-      Object oy = table.rawget("y");
-      Object oz = table.rawget("z");
-      int x = ((Number) ox).intValue();
-      int y = ((Number) oy).intValue();
-      int z = ((Number) oz).intValue();
-
-      return new BlockPos(x, y, z);
     }
 
     @Override
@@ -777,6 +797,20 @@ public class CursorWrapper {
     return text.replaceAll("\t", "    ");
   }
 
+  private BlockPos toBlockPos(Object v) {
+    if (!(v instanceof Table)) {
+      throw new IllegalArgumentException(
+          String.format("Table being a 3D vector (x,y,z) expected, but got %s!", v));
+    }
+    Table table = (Table) v;
+    Object ox = table.rawget("x");
+    Object oy = table.rawget("y");
+    Object oz = table.rawget("z");
+    int x = ((Number) ox).intValue();
+    int y = ((Number) oy).intValue();
+    int z = ((Number) oz).intValue();
 
+    return new BlockPos(x, y, z);
+  }
 
 }
