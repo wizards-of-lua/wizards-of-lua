@@ -73,25 +73,32 @@ public class Events {
 
   public void handle(EventType type, Object evt) {
     Collection<EventQueue> queues = eventQueues.get(type.name());
-    for (EventQueue queue : queues) {
-      queue.add(type.wrap(evt));
+    if (!queues.isEmpty()) {
+      // TODO move up in call stack: since the wrapper produces an immutable table, it could be
+      // created earlier
+      EventWrapper<?> wrapper = type.wrap(evt);
+      for (EventQueue queue : queues) {
+        queue.add(wrapper);
+      }
     }
   }
 
-  private void handle(String eventType, Object content) {
+  private void handle(EventWrapper event) {
+    String eventType = event.getType();
     Collection<EventQueue> queues = eventQueues.get(eventType);
-    for (EventQueue queue : queues) {
-      queue.add(new GenericLuaEventWrapper(content, eventType));
+    if (!queues.isEmpty()) {
+      for (EventQueue queue : queues) {
+        queue.add(event);
+      }
     }
   }
 
-  public void fire(String eventType, Object evt) {
+  public void fire(String eventType, Object content) {
+    GenericLuaEventWrapper wrapper = new GenericLuaEventWrapper(content, eventType);
     Iterable<SpellEntity> spells = mod.getSpellRegistry().getAll();
     for (SpellEntity spell : spells) {
-      spell.getEvents().handle(eventType, evt);
+      spell.getEvents().handle(wrapper);
     }
   }
-
-
 
 }

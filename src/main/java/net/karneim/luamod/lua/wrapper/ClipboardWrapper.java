@@ -21,7 +21,7 @@ public class ClipboardWrapper {
 
   private final Clipboard clipboard;
   private final Snapshots snapshots;
-  private final Table luaTable = new DefaultTable();
+  private final Table luaTable = DefaultTable.factory().newTable();
 
   public ClipboardWrapper(Clipboard clipboard, Snapshots snapshots) {
     this.clipboard = clipboard;

@@ -19,7 +19,7 @@ public class PlayersWrapper {
   }
 
   private final Players players;
-  private final Table luaTable = new DefaultTable();
+  private final Table luaTable = DefaultTable.factory().newTable();
 
   public PlayersWrapper(Players players) {
     this.players = players;

@@ -35,7 +35,7 @@ public class CursorWrapper {
   private final Events eventManager;
   private final Snapshots snapshots;
 
-  private final Table luaTable = new DefaultTable();
+  private final Table luaTable = DefaultTable.factory().newTable();
 
   public CursorWrapper(Cursor cursor, Events eventManager, Snapshots snapshots) {
     this.cursor = cursor;
@@ -634,7 +634,7 @@ public class CursorWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class CutFunction extends AbstractFunction1 {
 
     @Override
@@ -719,7 +719,7 @@ public class CursorWrapper {
       Snapshot snapshot = snapshots.getSnapshot(id);
       Selection resultSelection = cursor.paste(snapshot);
 
-      Table result = new DefaultTable();
+      Table result = DefaultTable.factory().newTable();
       long idx = 0;
       for (BlockPos pos : resultSelection.getPositions()) {
         idx++;
@@ -730,7 +730,7 @@ public class CursorWrapper {
     }
 
     private Table toVec3dTable(BlockPos pos) {
-      Table result = new DefaultTable();
+      Table result = DefaultTable.factory().newTable();
       result.rawset("x", pos.getX());
       result.rawset("y", pos.getY());
       result.rawset("z", pos.getZ());

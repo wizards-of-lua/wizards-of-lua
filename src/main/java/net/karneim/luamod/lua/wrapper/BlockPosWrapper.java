@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.util.math.BlockPos;
 import net.sandius.rembulan.LuaObject;
+import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
 public class BlockPosWrapper extends LuaWrapper<BlockPos> {
@@ -13,7 +14,7 @@ public class BlockPosWrapper extends LuaWrapper<BlockPos> {
 
   @Override
   protected LuaObject toLuaObject() {
-    DefaultTable result = new DefaultTable();
+    Table result = DefaultTable.factory().newTable();
     result.rawset("x", delegate.getX());
     result.rawset("y", delegate.getY());
     result.rawset("z", delegate.getZ());

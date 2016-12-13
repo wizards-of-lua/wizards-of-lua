@@ -15,7 +15,7 @@ public class ItemStackWrapper extends LuaWrapper<ItemStack> {
 
   @Override
   protected Table toLuaObject() {
-    DefaultTable result = new DefaultTable();
+    Table result = DefaultTable.factory().newTable();
     result.rawset("displayName", delegate.getDisplayName());
     result.rawset("damage", delegate.getItemDamage());
     result.rawset("name", getName());

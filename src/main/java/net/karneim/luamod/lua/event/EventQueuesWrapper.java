@@ -15,7 +15,7 @@ public class EventQueuesWrapper {
 
   private final Collection<? extends EventQueue> queues;
   private final Events eventManager;
-  private final Table luaTable = new DefaultTable();
+  private final Table luaTable = DefaultTable.factory().newTable();
 
   public EventQueuesWrapper(Collection<? extends EventQueue> queues,
       Events eventManager) {

@@ -24,7 +24,7 @@ public class EventsWrapper {
   }
 
   private final Events events;
-  private final Table luaTable = new DefaultTable();
+  private final Table luaTable = DefaultTable.factory().newTable();
 
   public EventsWrapper(Events events) {
     this.events = events;

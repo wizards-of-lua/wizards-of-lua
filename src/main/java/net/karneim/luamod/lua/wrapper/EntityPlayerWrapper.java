@@ -19,7 +19,7 @@ public class EntityPlayerWrapper extends LuaWrapper<EntityPlayer> {
 
   @Override
   protected Table toLuaObject() {
-    DefaultTable result = new DefaultTable();
+    Table result = DefaultTable.factory().newTable();
     // delegate.getAbsorptionAmount();
     result.rawset("armor", new ArmorWrapper(delegate.getArmorInventoryList()).getLuaObject());
     // delegate.getBedLocation()
@@ -52,7 +52,7 @@ public class EntityPlayerWrapper extends LuaWrapper<EntityPlayer> {
 
     @Override
     protected Table toLuaObject() {
-      Table result = new DefaultTable();
+      Table result = DefaultTable.factory().newTable();
       Iterator<ItemStack> it = delegate.iterator();
       result.rawset("feet", new ItemStackWrapper(it.next()).getLuaObject());
       result.rawset("legs", new ItemStackWrapper(it.next()).getLuaObject());

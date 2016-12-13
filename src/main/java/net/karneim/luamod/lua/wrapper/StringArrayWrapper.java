@@ -12,7 +12,7 @@ public class StringArrayWrapper extends LuaWrapper<String[]> {
 
   @Override
   protected Object toLuaObject() {
-    Table luaTable = new DefaultTable();
+    Table luaTable = DefaultTable.factory().newTable();
     if (delegate != null) {
       int idx = 0;
       for (String value : delegate) {
