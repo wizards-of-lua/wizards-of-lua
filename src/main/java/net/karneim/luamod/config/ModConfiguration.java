@@ -18,7 +18,11 @@ public class ModConfiguration {
   }
 
   public @Nullable String getStringOrNull(String category, String key) {
-    Property property = config.get(category, key, (String) null);
+    return getStringOrNull(category, key, null);
+  }
+
+  public @Nullable String getStringOrNull(String category, String key, @Nullable String defaultValue) {
+    Property property = config.get(category, key, defaultValue);
     if (property == null) {
       return null;
     }
@@ -26,7 +30,7 @@ public class ModConfiguration {
   }
 
   public void setString(String category, String key, String value) {
-    if ( value == null) {
+    if (value == null) {
       ConfigCategory cat = config.getCategory(category);
       cat.remove(key);
     } else {

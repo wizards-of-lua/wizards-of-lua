@@ -40,12 +40,17 @@ public class CommandLua extends CommandBase {
 
   @Override
   public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-    return true;
+    Permissions permissions = mod.getPermissions();
+    boolean result = permissions.isWizard(sender);
+    if ( result == false) {
+      result = super.checkPermission(server, sender);
+    }
+    return result;
   }
 
   @Override
   public int getRequiredPermissionLevel() {
-    return 0;
+    return 2;
   }
 
   @Override

@@ -17,6 +17,7 @@ import net.karneim.luamod.gist.GistRepo;
 import net.karneim.luamod.lua.CommandAdmin;
 import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
+import net.karneim.luamod.lua.Permissions;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellEntityFactory;
 import net.karneim.luamod.lua.SpellRegistry;
@@ -64,6 +65,7 @@ public class LuaMod {
   private Startup startup;
 
   private long defaultTicksLimit = 10000;
+  private Permissions permissions;
 
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) {
@@ -76,6 +78,7 @@ public class LuaMod {
     credentialsStore = new CredentialsStore(configuration);
     gistRepo = new GistRepo(fileCache);
     startup = new Startup(this, configuration);
+    permissions = new Permissions(configuration);
   }
 
   @EventHandler
@@ -183,6 +186,10 @@ public class LuaMod {
 
   public Startup getStartup() {
     return startup;
+  }
+
+  public Permissions getPermissions() {
+    return permissions;
   }
 
 }

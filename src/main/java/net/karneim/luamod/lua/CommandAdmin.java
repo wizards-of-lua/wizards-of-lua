@@ -19,6 +19,7 @@ import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.credentials.UsernamePasswordCredentials;
 import net.karneim.luamod.gist.GitHubTool;
+import net.karneim.luamod.lua.Permissions.AutoWizardPermission;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -52,6 +53,10 @@ public class CommandAdmin extends CommandBase {
   private static final String CACHE = "cache";
   private static final String GITHUB = "github";
   private static final String PROFILE = "profile";
+  private static final String PERMISSION = "permission";
+  private static final String AUTO = "auto";
+  private static final String REVOKE = "revoke";
+  private static final String GRANT = "grant";
 
   private final LuaMod mod;
   private final List<String> aliases = new ArrayList<String>();
@@ -91,7 +96,7 @@ public class CommandAdmin extends CommandBase {
       }
       if (args.length <= 1) {
         return getListOfStringsMatchingLastWord(args,
-            asList(PROFILE, GITHUB, CACHE, SPELL, STARTUP, TICKSLIMIT));
+            asList(PROFILE, GITHUB, CACHE, SPELL, STARTUP, PERMISSION, TICKSLIMIT));
       }
       if (PROFILE.equals(args[0])) {
         if (args.length <= 2) {
@@ -128,6 +133,22 @@ public class CommandAdmin extends CommandBase {
       if (STARTUP.equals(args[0])) {
         if (args.length <= 2) {
           return getListOfStringsMatchingLastWord(args, asList(SET, UNSET));
+        }
+      }
+      if (PERMISSION.equals(args[0])) {
+        if (args.length <= 2) {
+          return getListOfStringsMatchingLastWord(args, asList(AUTO, GRANT, REVOKE));
+        }
+        if (args.length <= 3 && AUTO.equals(args[1])) {
+          return getListOfStringsMatchingLastWord(args, asList(SET));
+        }
+        if (args.length <= 4 && AUTO.equals(args[1]) && SET.equals(args[2])) {
+          return getListOfStringsMatchingLastWord(args,
+              asList(Permissions.AutoWizardPermission.names()));
+        }
+
+        if (args.length <= 3 && (GRANT.equals(args[1]) || REVOKE.equals(args[1]))) {
+          return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
         }
       }
       if (TICKSLIMIT.equals(args[0])) {
@@ -304,6 +325,36 @@ public class CommandAdmin extends CommandBase {
             return;
           }
         }
+        if (PERMISSION.equals(section)) {
+          String scope = getArg(args, 1, "scope");
+          if (AUTO.equals(scope)) {
+            String action = getArg(args, 2, "action", false);
+            if (action == null) {
+              AutoWizardPermission value = mod.getPermissions().getAutoWizardPermission();
+              ITextComponent message = new TextComponentString(
+                  AutoWizardPermission.class.getSimpleName() + ": " + value);
+              sender.addChatMessage(message);
+              return;
+            } else if (SET.equals(action)) {
+              String mode = getArg(args, 3, "mode");
+              AutoWizardPermission value = AutoWizardPermission.valueOf(mode);
+              mod.getPermissions().setAutoWizardPermission(value);
+              return;
+            }
+          }
+          if (GRANT.equals(scope)) {
+            ITextComponent message =
+                new TextComponentString("Sorry - command currently not supported!");
+            sender.addChatMessage(message);
+            return;
+          }
+          if (REVOKE.equals(scope)) {
+            ITextComponent message =
+                new TextComponentString("Sorry - command currently not supported!");
+            sender.addChatMessage(message);
+            return;
+          }
+        }
         if (TICKSLIMIT.equals(section)) {
           @Nullable
           String action = getArg(args, 1, "action", false);
@@ -318,7 +369,7 @@ public class CommandAdmin extends CommandBase {
           }
         }
       }
-      sender.addChatMessage(new TextComponentString("Command not supported!"));
+      sender.addChatMessage(new TextComponentString("Unknown command!"));
     }
   }
 
@@ -548,12 +599,13 @@ public class CommandAdmin extends CommandBase {
     }
     return args[idx];
   }
-  
+
   private String getRemainingArgs(String[] args, int idx, String name) throws CommandException {
     return getRemainingArgs(args, idx, name, true);
   }
-  
-  private String getRemainingArgs(String[] args, int idx, String name, boolean mandatory) throws CommandException {
+
+  private String getRemainingArgs(String[] args, int idx, String name, boolean mandatory)
+      throws CommandException {
     if (idx >= args.length) {
       if (mandatory) {
         throw new CommandException("Missing %s. argument containing the %s!", idx, name);
@@ -562,8 +614,8 @@ public class CommandAdmin extends CommandBase {
       }
     }
     StringBuilder result = new StringBuilder();
-    for( int i=idx; i<args.length; ++i) {
-      if ( result.length()>0) {
+    for (int i = idx; i < args.length; ++i) {
+      if (result.length() > 0) {
         result.append(" ");
       }
       result.append(args[i]);
