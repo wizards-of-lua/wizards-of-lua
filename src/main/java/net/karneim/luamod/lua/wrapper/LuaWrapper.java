@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 public abstract class LuaWrapper<JavaObject> {
   protected final @Nullable JavaObject delegate;
+  private Object luaObject = null;
 
   public LuaWrapper(@Nullable JavaObject delegate) {
     this.delegate = delegate;
@@ -17,8 +18,12 @@ public abstract class LuaWrapper<JavaObject> {
     if (delegate == null) {
       return null;
     }
-    return toLuaObject();
+    if (luaObject == null) {
+      luaObject = toLuaObject();
+    }
+    return luaObject;
   }
 
   protected abstract Object toLuaObject();
+
 }

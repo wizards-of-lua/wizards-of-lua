@@ -3,9 +3,8 @@ package net.karneim.luamod.lua;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
-import java.util.HashSet;
-import java.util.Set;
 
+import net.karneim.luamod.Entities;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.Players;
 import net.karneim.luamod.credentials.Credentials;
@@ -14,9 +13,9 @@ import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.gist.GistRepo;
 import net.karneim.luamod.lua.event.Events;
-import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.CursorWrapper;
+import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.minecraft.command.ICommandSender;
@@ -64,9 +63,9 @@ public class LuaUtil {
     state = StateContexts.newDefaultInstance();
     env = state.newTable();
     loader = CompilerChunkLoader.of("LuaProgramAsJavaByteCode");
-    
+
     events = new Events(LuaMod.instance);
-    
+
     ChunkLoader modulesLoader = CompilerChunkLoader.of("RequiredModulesAsByteCode");
     RuntimeEnvironment environment = getModRuntimeEnvironment();
 
@@ -92,6 +91,7 @@ public class LuaUtil {
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, events);
     PlayersWrapper.installInto(env, new Players(LuaMod.instance.getServer(), owner));
+    EntitiesWrapper.installInto(env, new Entities(LuaMod.instance.getServer(), owner));
 
     class SleepableCountDownSchedulingContext implements SchedulingContext {
 

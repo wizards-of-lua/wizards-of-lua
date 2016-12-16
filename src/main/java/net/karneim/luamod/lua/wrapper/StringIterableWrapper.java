@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.impl.ImmutableTable;
 
-public class StringArrayWrapper extends StructuredLuaWrapper<String[]> {
-  public StringArrayWrapper(@Nullable String[] delegate) {
+public class StringIterableWrapper extends StructuredLuaWrapper<Iterable<String>> {
+  public StringIterableWrapper(@Nullable Iterable<String> delegate) {
     super(delegate);
   }
 

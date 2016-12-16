@@ -5,21 +5,19 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
+import net.sandius.rembulan.impl.ImmutableTable;
 
-public class ItemStackWrapper extends LuaWrapper<ItemStack> {
+public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
   public ItemStackWrapper(@Nullable ItemStack delegate) {
     super(delegate);
   }
 
   @Override
-  protected Table toLuaObject() {
-    Table result = DefaultTable.factory().newTable();
-    result.rawset("displayName", delegate.getDisplayName());
-    result.rawset("damage", delegate.getItemDamage());
-    result.rawset("name", getName());
-    return result;
+  protected void toLuaObject(ImmutableTable.Builder builder) {
+    super.toLuaObject(builder);
+    builder.add("displayName", delegate.getDisplayName());
+    builder.add("damage", delegate.getItemDamage());
+    builder.add("name", getName());
   }
 
   private String getName() {

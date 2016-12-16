@@ -9,6 +9,6 @@ public class EnumWrapper extends LuaWrapper<Enum<?>> {
 
   @Override
   protected Object toLuaObject() {
-    return delegate == null? null: delegate.name();
+    return delegate.name();
   }
 }
