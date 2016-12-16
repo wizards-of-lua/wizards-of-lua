@@ -6,19 +6,20 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.ImmutableTable.Builder;
 
-public abstract class StructuredLuaWrapper<JavaObject> extends LuaWrapper<JavaObject> {
+public abstract class StructuredLuaWrapper<E> extends LuaWrapper<E> {
 
-  public StructuredLuaWrapper(@Nullable JavaObject delegate) {
+  public StructuredLuaWrapper(@Nullable E delegate) {
     super(delegate);
   }
 
   @Override
   protected final Table toLuaObject() {
     ImmutableTable.Builder builder = new ImmutableTable.Builder();
-    toLuaObject(builder);
-    return builder.build();
+    addProperties(builder);
+    ImmutableTable result = builder.build();
+    return result;
   }
 
-  protected void toLuaObject(Builder builder) {}
+  protected void addProperties(Builder builder) {}
 
 }

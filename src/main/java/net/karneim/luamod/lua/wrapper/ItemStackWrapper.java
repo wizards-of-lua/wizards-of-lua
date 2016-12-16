@@ -13,8 +13,8 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("displayName", delegate.getDisplayName());
     builder.add("damage", delegate.getItemDamage());
     builder.add("name", getName());

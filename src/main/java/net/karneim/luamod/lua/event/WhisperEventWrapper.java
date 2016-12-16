@@ -11,8 +11,8 @@ public class WhisperEventWrapper extends EventWrapper<WhisperEvent> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("sender", delegate.sender);
     builder.add("message", delegate.message);
   }

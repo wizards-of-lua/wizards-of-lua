@@ -11,8 +11,8 @@ public class Vec3dWrapper extends StructuredLuaWrapper<Vec3d> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("x", delegate.xCoord);
     builder.add("y", delegate.yCoord);
     builder.add("z", delegate.zCoord);

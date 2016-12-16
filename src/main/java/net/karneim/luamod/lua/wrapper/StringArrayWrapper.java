@@ -10,8 +10,8 @@ public class StringArrayWrapper extends StructuredLuaWrapper<String[]> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     int idx = 0;
     for (String value : delegate) {
       idx++;

@@ -12,8 +12,8 @@ public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("sender", delegate.getUsername());
     builder.add("message", delegate.getMessage());
   }

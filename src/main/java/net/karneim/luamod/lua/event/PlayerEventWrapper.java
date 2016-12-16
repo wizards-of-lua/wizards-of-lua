@@ -13,8 +13,8 @@ public class PlayerEventWrapper<E extends PlayerEvent> extends EventWrapper<E> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("player", new EntityPlayerWrapper(delegate.getEntityPlayer()).getLuaObject());
   }
 }

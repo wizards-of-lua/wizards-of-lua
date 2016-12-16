@@ -2,15 +2,15 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-public abstract class LuaWrapper<JavaObject> {
-  protected final @Nullable JavaObject delegate;
+public abstract class LuaWrapper<E> {
+  protected final @Nullable E delegate;
   private Object luaObject = null;
 
-  public LuaWrapper(@Nullable JavaObject delegate) {
+  public LuaWrapper(@Nullable E delegate) {
     this.delegate = delegate;
   }
 
-  public @Nullable JavaObject getJavaObject() {
+  public @Nullable E getJavaObject() {
     return delegate;
   }
 

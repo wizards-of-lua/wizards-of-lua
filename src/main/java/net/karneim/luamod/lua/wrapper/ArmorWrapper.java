@@ -13,8 +13,8 @@ class ArmorWrapper extends StructuredLuaWrapper<Iterable<ItemStack>> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     Iterator<ItemStack> it = delegate.iterator();
     builder.add("feet", new ItemStackWrapper(it.next()).getLuaObject());
     builder.add("legs", new ItemStackWrapper(it.next()).getLuaObject());

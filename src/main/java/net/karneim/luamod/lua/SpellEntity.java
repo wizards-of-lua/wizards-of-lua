@@ -63,7 +63,7 @@ public class SpellEntity extends Entity {
     }
     this.cursor = new Cursor(owner, this, this.getEntityWorld(), pos, rotation, surface);
     Credentials credentials = mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
-    luaUtil = new LuaUtil(owner, cursor, clipboard, credentials);
+    luaUtil = new LuaUtil(this.getEntityWorld(), owner, cursor, clipboard, credentials);
     if (surface != null) {
       pos = pos.offset(surface, 1);
     }
@@ -161,10 +161,6 @@ public class SpellEntity extends Entity {
     }
   }
 
-  public void compile() {
-
-  }
-
   public void onUpdate() {
     super.onUpdate();
     if (luaUtil == null) {
@@ -175,7 +171,6 @@ public class SpellEntity extends Entity {
       luaUtil.getEvents().setCurrentTime(ticksExisted);
       switch (state) {
         case START:
-
           try {
             luaUtil.run();
             state = State.STOP;
@@ -284,7 +279,5 @@ public class SpellEntity extends Entity {
   public Events getEvents() {
     return luaUtil.getEvents();
   }
-
-
 
 }

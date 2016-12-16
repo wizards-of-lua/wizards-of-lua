@@ -1,9 +1,12 @@
 package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Entities;
+import net.karneim.luamod.lua.NBTTagUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
+import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -22,12 +25,15 @@ public class EntitiesWrapper {
   private final Entities entities;
   private final Table luaTable = DefaultTable.factory().newTable();
 
+  private final EntityWrapperFactory entityWrapperFactory = new EntityWrapperFactory();
+  
   public EntitiesWrapper(Entities entities) {
     this.entities = entities;
     luaTable.rawset("list", new ListFunction());
     luaTable.rawset("get", new GetFunction());
     luaTable.rawset("find", new FindFunction());
     luaTable.rawset("put", new PutFunction());
+    luaTable.rawset("getData", new GetDataFunction());
   }
 
   public Table getLuaTable() {
@@ -59,8 +65,33 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      EntityWrapper wrapper = new EntityWrapper(entity);
+      EntityWrapper<?> wrapper = entityWrapperFactory.create(entity);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+  
+  private class GetDataFunction extends AbstractFunction1 {
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      if (arg1 == null) {
+        throw new IllegalArgumentException(String.format("Entity ID expected but got nil!"));
+      }
+      String name = String.valueOf(arg1);
+      Entity entity = entities.get(name);
+      
+      NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
+      ImmutableTable.Builder builder = new ImmutableTable.Builder();
+      NBTTagUtil.insertValues(builder, tagCompound);
+      ImmutableTable tbl = builder.build();
+
+      context.getReturnBuffer().setTo(tbl);
     }
 
     @Override

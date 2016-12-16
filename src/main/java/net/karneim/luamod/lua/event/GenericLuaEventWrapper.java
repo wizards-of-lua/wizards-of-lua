@@ -13,8 +13,8 @@ public class GenericLuaEventWrapper extends EventWrapper<Object> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("content", copyOf(delegate));
   }
 

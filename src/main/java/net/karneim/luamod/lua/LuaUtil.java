@@ -19,6 +19,7 @@ import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -46,6 +47,7 @@ import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.sandius.rembulan.util.Check;
 
 public class LuaUtil {
+  private final World world;
   private final Credentials credentials;
   private final StateContext state;
   private final Table env;
@@ -56,8 +58,9 @@ public class LuaUtil {
 
   private Events events;
 
-  public LuaUtil(ICommandSender owner, Cursor cursor, Clipboard clipboard,
+  public LuaUtil(World world, ICommandSender owner, Cursor cursor, Clipboard clipboard,
       Credentials credentials) {
+    this.world = world;
     this.clipboard = clipboard;
     this.credentials = credentials;
     state = StateContexts.newDefaultInstance();

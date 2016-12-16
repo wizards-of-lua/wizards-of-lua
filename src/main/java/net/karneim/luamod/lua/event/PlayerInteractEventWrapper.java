@@ -15,8 +15,8 @@ public class PlayerInteractEventWrapper<E extends PlayerInteractEvent>
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("hand", new EnumWrapper(delegate.getHand()).getLuaObject());
     builder.add("item", new ItemStackWrapper(delegate.getItemStack()).getLuaObject());
     builder.add("pos", new BlockPosWrapper(delegate.getPos()).getLuaObject());

@@ -26,8 +26,8 @@ public abstract class EventWrapper<JavaObject> extends StructuredLuaWrapper<Java
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("type", type);
     builder.add("id", id);
   }

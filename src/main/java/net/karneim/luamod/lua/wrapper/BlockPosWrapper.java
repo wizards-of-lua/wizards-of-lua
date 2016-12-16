@@ -11,8 +11,8 @@ public class BlockPosWrapper extends StructuredLuaWrapper<BlockPos> {
   }
 
   @Override
-  protected void toLuaObject(ImmutableTable.Builder builder) {
-    super.toLuaObject(builder);
+  protected void addProperties(ImmutableTable.Builder builder) {
+    super.addProperties(builder);
     builder.add("x", delegate.getX());
     builder.add("y", delegate.getY());
     builder.add("z", delegate.getZ());
