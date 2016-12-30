@@ -19,6 +19,7 @@ import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
+import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
@@ -492,16 +493,32 @@ public class CursorWrapper {
     }
   }
 
-  private class SayFunction extends AbstractFunction1 {
+  private class SayFunction extends AbstractFunctionAnyArg {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      // System.out.println("say: " + arg1);
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Text value expected but got nil!"));
+    public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
+      // System.out.println("say: " + args);
+      if (args == null) {
+        args = new String[] {""};
       }
-      cursor.say(encode(String.valueOf(arg1)));
+      String text = concat("\t", args);
+      cursor.say(encode(text));
       context.getReturnBuffer().setTo();
+    }
+    
+    private String concat(String delimter, Object[] args) {
+      StringBuilder result = new StringBuilder();
+      for (int i = 0; i < args.length; ++i) {
+        if (i > 0) {
+          result.append(delimter);
+        }
+        if (args[i] == null) {
+          result.append("nil");
+        } else {
+          result.append(String.valueOf(args[i]));
+        }
+      }
+      return result.toString();
     }
 
     @Override
