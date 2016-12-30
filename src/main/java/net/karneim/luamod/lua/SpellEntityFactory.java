@@ -25,7 +25,7 @@ public class SpellEntityFactory {
 
   public SpellEntity create(World world, ICommandSender sender, ICommandSender owner)
       throws IOException, LoaderException {
-    Clipboard clipboard = getClipboard(owner);
+    Clipboard clipboard = getClipboard(sender);
     BlockPos pos = getBlockPos(sender);
     Rotation rot = getRotation(sender);
     EnumFacing surface = getSurface(sender);
@@ -34,12 +34,12 @@ public class SpellEntityFactory {
     return spell;
   }
 
-  private Clipboard getClipboard(ICommandSender owner) {
-    if (owner.getCommandSenderEntity() instanceof SpellEntity) {
-      SpellEntity lpe = (SpellEntity) owner;
+  private Clipboard getClipboard(ICommandSender sender) {
+    if (sender.getCommandSenderEntity() instanceof SpellEntity) {
+      SpellEntity lpe = (SpellEntity) sender;
       return lpe.getClipboard();
-    } else if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      return mod.getClipboards().get((EntityPlayer) owner.getCommandSenderEntity());
+    } else if (sender.getCommandSenderEntity() instanceof EntityPlayer) {
+      return mod.getClipboards().get((EntityPlayer) sender.getCommandSenderEntity());
     }
     return new Clipboard();
   }
