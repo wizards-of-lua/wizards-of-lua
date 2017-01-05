@@ -17,11 +17,11 @@ public class EventQueuesWrapper {
   private final Events eventManager;
   private final Table luaTable = DefaultTable.factory().newTable();
 
-  public EventQueuesWrapper(Collection<? extends EventQueue> queues,
-      Events eventManager) {
+  public EventQueuesWrapper(Collection<? extends EventQueue> queues, Events eventManager) {
     this.queues = queues;
     this.eventManager = eventManager;
     luaTable.rawset("deregister", new DeregisterFunction());
+    luaTable.rawset("hasNext", new HasNextFunction());
     luaTable.rawset("next", new NextFunction());
   }
 
@@ -38,6 +38,25 @@ public class EventQueuesWrapper {
         eventManager.deregister(queue);
       }
       context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class HasNextFunction extends AbstractFunction0 {
+    @Override
+    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
+      for (EventQueue queue : queues) {
+        if (queue.hasNext()) {
+          context.getReturnBuffer().setTo(true);
+          return;
+        }
+      }
+      context.getReturnBuffer().setTo(false);
     }
 
     @Override
