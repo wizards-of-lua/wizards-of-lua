@@ -75,6 +75,9 @@ public class CredentialsStore {
     if (result != null) {
       storeCredentials(realm, userId, result);
     }
+    if (result == null && !"default".equals(userId)) {
+      return retrieveCredentials(realm);
+    }
     return result;
   }
 

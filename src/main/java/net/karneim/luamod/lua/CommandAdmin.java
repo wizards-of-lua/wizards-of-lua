@@ -517,18 +517,14 @@ public class CommandAdmin extends CommandBase {
   }
 
   private @Nullable Credentials getCredentials(@Nullable ICommandSender sender) {
-    if (sender == null) {
-      return null;
+    String userId = null;
+    if (sender != null) {
+      Entity entity = sender.getCommandSenderEntity();
+      if (entity != null && entity.getUniqueID() != null) {
+        userId = entity.getUniqueID().toString();
+      }
     }
-    Entity entity = sender.getCommandSenderEntity();
-    if (entity == null) {
-      return null;
-    }
-    UUID id = entity.getUniqueID();
-    if (id == null) {
-      return null;
-    }
-    return mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, id.toString());
+    return mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
   }
 
   private List<String> getSpellIds() {
