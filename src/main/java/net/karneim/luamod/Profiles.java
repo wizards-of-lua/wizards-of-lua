@@ -25,50 +25,49 @@ public class Profiles {
     this.config = checkNotNull(config);
   }
 
-  public @Nullable URL getStartupProfile() {
+  public @Nullable String getStartupProfile() {
     return getProfile(STARTUP);
   }
 
-  public void setStartupProfile(@Nullable URL url) {
-    setProfile(STARTUP, url);
+  public void setStartupProfile(@Nullable String string) {
+    setProfile(STARTUP, string);
   }
 
-  public @Nullable URL getDefaultProfile() {
+  public @Nullable String getDefaultProfile() {
     return getProfile(DEFAULT);
   }
 
-  public void setDefaultProfile(@Nullable URL url) {
-    setProfile(DEFAULT, url);
+  public void setDefaultProfile(@Nullable String string) {
+    setProfile(DEFAULT, string);
   }
 
-  public @Nullable URL getUserProfile(@Nullable Entity owner) {
+  public @Nullable String getUserProfile(@Nullable Entity owner) {
     if (owner == null) {
       return null;
     }
     return getProfile(owner.getUniqueID().toString());
   }
 
-  public void setUserProfile(Entity owner, @Nullable URL url) {
-    setProfile(owner.getUniqueID().toString(), url);
+  public void setUserProfile(Entity owner, @Nullable String string) {
+    setProfile(owner.getUniqueID().toString(), string);
   }
 
-  private @Nullable URL getProfile(String key) {
-    String urlStr = profileMap.get(key);
-    if (urlStr == null) {
-      urlStr = config.getStringOrNull(PROFILE, key);
-      profileMap.put(key, urlStr);
+  private @Nullable String getProfile(String key) {
+    String result = profileMap.get(key);
+    if (result == null) {
+      result = config.getStringOrNull(PROFILE, key);
+      profileMap.put(key, result);
     }
-    return toUrl(urlStr);
+    return result;
   }
 
-  private void setProfile(String key, @Nullable URL url) {
-    String urlStr = toString(url);
-    if (urlStr == null) {
+  private void setProfile(String key, @Nullable String string) {
+    if (string == null) {
       profileMap.remove(key);
     } else {
-      profileMap.put(key, urlStr);
+      profileMap.put(key, string);
     }
-    config.setString(PROFILE, key, urlStr);
+    config.setString(PROFILE, key, string);
     config.save();
   }
 

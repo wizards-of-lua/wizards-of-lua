@@ -12,14 +12,17 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import net.karneim.luamod.gist.GistFileRef;
+
 public class FileCache {
 
   private final File directory;
-  // TODO expire the cache contents
-  private final Map<String,String> contents = new HashMap<String,String>();
+  // TODO remove this. no need to cache that since this cache is always empty when used.
+  private final Map<GistFileRef, String> contents = new HashMap<GistFileRef, String>();
 
   public FileCache(File directory) {
     this.directory = directory;
+    this.directory.mkdirs();
   }
 
   public void clear() throws IOException {
@@ -28,25 +31,26 @@ public class FileCache {
     contents.clear();
   }
 
-  public @Nullable String load(String id) throws IOException {
-    String result = contents.get(id);
-    if ( result == null) {
-      File file = new File(directory, id);
+  public @Nullable String load(GistFileRef ref) throws IOException {
+    String result = contents.get(ref);
+    if (result == null) {
+      File file = new File(directory, ref.asFilename());
       if (file.exists() && file.canRead()) {
         FileReader reader = new FileReader(file);
         result = IOUtils.toString(reader);
-        contents.put(id, result);
+        contents.put(ref, result);
       }
     }
     return result;
   }
 
-  public void save(String id, String content) throws IOException {
-    File file = new File(directory, id);
+  public void save(GistFileRef ref, String content) throws IOException {
+    File file = new File(directory, ref.asFilename());
+    file.getParentFile().mkdirs();
     FileWriter writer = new FileWriter(file);
     IOUtils.write(content, writer);
     writer.close();
-    contents.put(id, content);
+    contents.put(ref, content);
   }
 
 }

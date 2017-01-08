@@ -18,6 +18,7 @@ import net.karneim.luamod.credentials.AccessTokenCredentials;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.credentials.UsernamePasswordCredentials;
+import net.karneim.luamod.gist.GistFileRef;
 import net.karneim.luamod.gist.GitHubTool;
 import net.karneim.luamod.lua.Permissions.AutoWizardPermission;
 import net.minecraft.command.CommandBase;
@@ -176,22 +177,22 @@ public class CommandAdmin extends CommandBase {
           if (USER.equals(scope)) {
             String action = getArg(args, 2, "action", false);
             if (action == null) {
-              ITextComponent message = ForgeHooks.newChatWithLinks(getUserProfileUrl(sender));
+              ITextComponent message = ForgeHooks.newChatWithLinks(getUserProfileRef(sender));
               sender.addChatMessage(message);
               return;
             } else if (SET.equals(action)) {
               String url = getArg(args, 3, "url");
-              setUserProfileUrl(sender, url);
+              setUserProfileRef(sender, url);
               return;
             } else if (UNSET.equals(action)) {
-              setUserProfileUrl(sender, null);
+              setUserProfileRef(sender, null);
               return;
             }
           }
           if (DEFAULT.equals(scope)) {
             String action = getArg(args, 2, "action", false);
             if (action == null) {
-              ITextComponent message = ForgeHooks.newChatWithLinks(getDefaultProfileUrl());
+              ITextComponent message = ForgeHooks.newChatWithLinks(getDefaultProfileRef());
               sender.addChatMessage(message);
               return;
             } else if (SET.equals(action)) {
@@ -206,7 +207,7 @@ public class CommandAdmin extends CommandBase {
           if (STARTUP.equals(scope)) {
             String action = getArg(args, 2, "action", false);
             if (action == null) {
-              ITextComponent message = ForgeHooks.newChatWithLinks(getStartupProfileUrl());
+              ITextComponent message = ForgeHooks.newChatWithLinks(getStartupProfileRef());
               sender.addChatMessage(message);
               return;
             } else if (SET.equals(action)) {
@@ -440,21 +441,21 @@ public class CommandAdmin extends CommandBase {
     }
   }
 
-  private String getUserProfileUrl(ICommandSender sender) {
+  private String getUserProfileRef(ICommandSender sender) {
     Entity owner = sender.getCommandSenderEntity();
-    return toString(mod.getProfiles().getUserProfile(owner));
+    return mod.getProfiles().getUserProfile(owner);
   }
 
-  private void setUserProfileUrl(ICommandSender sender, @Nullable String urlStr)
+  private void setUserProfileRef(ICommandSender sender, @Nullable String refStr)
       throws CommandException {
     try {
       Entity owner = sender.getCommandSenderEntity();
-      URL url = toUrl(urlStr);
-      if (url != null) {
+      GistFileRef gistFileRef = toGistFileRef(refStr);
+      if (gistFileRef != null) {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
-        mod.getGistRepo().load(credentials, url);
-        mod.getProfiles().setUserProfile(owner, url);
+        mod.getGistRepo().load(credentials, gistFileRef);
+        mod.getProfiles().setUserProfile(owner, gistFileRef.toString());
         sender.addChatMessage(new TextComponentString("Profile successfully loaded."));
       } else {
         mod.getProfiles().setUserProfile(owner, null);
@@ -462,24 +463,24 @@ public class CommandAdmin extends CommandBase {
       }
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
-          urlStr, e.getMessage());
+          refStr, e.getMessage());
     }
   }
 
-  private String getDefaultProfileUrl() {
-    return toString(mod.getProfiles().getDefaultProfile());
+  private String getDefaultProfileRef() {
+    return mod.getProfiles().getDefaultProfile();
   }
 
-  private void setDefaultProfileUrl(ICommandSender sender, @Nullable String urlStr)
+  private void setDefaultProfileUrl(ICommandSender sender, @Nullable String refStr)
       throws CommandException {
     try {
       Entity owner = sender.getCommandSenderEntity();
-      URL url = toUrl(urlStr);
-      if (url != null) {
+      GistFileRef gistFileRef = toGistFileRef(refStr);
+      if (gistFileRef != null) {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
-        mod.getGistRepo().load(credentials, url);
-        mod.getProfiles().setDefaultProfile(url);
+        mod.getGistRepo().load(credentials, gistFileRef);
+        mod.getProfiles().setDefaultProfile(gistFileRef.toString());
         sender.addChatMessage(new TextComponentString("Profile successfully loaded."));
       } else {
         mod.getProfiles().setDefaultProfile(null);
@@ -487,24 +488,24 @@ public class CommandAdmin extends CommandBase {
       }
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
-          urlStr, e.getMessage());
+          refStr, e.getMessage());
     }
   }
 
-  private String getStartupProfileUrl() {
-    return toString(mod.getProfiles().getStartupProfile());
+  private String getStartupProfileRef() {
+    return mod.getProfiles().getStartupProfile();
   }
 
-  private void setStartupProfileUrl(ICommandSender sender, @Nullable String urlStr)
+  private void setStartupProfileUrl(ICommandSender sender, @Nullable String refStr)
       throws CommandException {
     try {
       Entity owner = sender.getCommandSenderEntity();
-      URL url = toUrl(urlStr);
-      if (url != null) {
+      GistFileRef gistFileRef = toGistFileRef(refStr);
+      if (gistFileRef != null) {
         // Check if profile url is accessible and can be loaded
         Credentials credentials = getCredentials(sender);
-        mod.getGistRepo().load(credentials, url);
-        mod.getProfiles().setStartupProfile(url);
+        mod.getGistRepo().load(credentials, gistFileRef);
+        mod.getProfiles().setStartupProfile(gistFileRef.toString());
         sender.addChatMessage(new TextComponentString("Profile successfully loaded."));
       } else {
         mod.getProfiles().setStartupProfile(null);
@@ -512,7 +513,7 @@ public class CommandAdmin extends CommandBase {
       }
     } catch (IOException e) {
       throw new CommandException("Can't load gist with id %s! Caught exception with message: %s!",
-          urlStr, e.getMessage());
+          refStr, e.getMessage());
     }
   }
 
@@ -650,8 +651,9 @@ public class CommandAdmin extends CommandBase {
     return result;
   }
 
-  private @Nullable URL toUrl(@Nullable String urlStr) throws MalformedURLException {
-    return urlStr == null ? null : new URL(urlStr);
+  private @Nullable GistFileRef toGistFileRef(@Nullable String gistFileRef)
+      throws MalformedURLException {
+    return GistFileRef.parseGistRef(gistFileRef);
   }
 
   private @Nullable String toString(@Nullable URL result) {

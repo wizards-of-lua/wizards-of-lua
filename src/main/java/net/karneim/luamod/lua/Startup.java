@@ -63,14 +63,14 @@ public class Startup {
   }
 
   private String getRequirements() throws IOException {
-    URL url = luaMod.getProfiles().getStartupProfile();
-    if (url == null) {
-      url = luaMod.getProfiles().getDefaultProfile();
+    String refStr = luaMod.getProfiles().getStartupProfile();
+    if (refStr == null) {
+      refStr = luaMod.getProfiles().getDefaultProfile();
     }
-    if (url == null) {
+    if (refStr == null) {
       return "";
     }
-    return "require \"" + url.toExternalForm() + "\"";
+    return "require \"" + refStr + "\"";
   }
 
   private ICommandSender sender() {

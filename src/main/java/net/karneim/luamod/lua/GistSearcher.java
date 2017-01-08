@@ -6,6 +6,7 @@ import java.net.URL;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.credentials.Credentials;
+import net.karneim.luamod.gist.GistFileRef;
 import net.karneim.luamod.gist.GistRepo;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -49,16 +50,16 @@ public class GistSearcher {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String gistUrl = String.valueOf(arg1);
-      String id = gistRepo.parseId(gistUrl);
-      if (id == null) {
+      String gistRefStr = String.valueOf(arg1);
+      GistFileRef gistRef = GistFileRef.parseGistRef(gistRefStr);
+      if (gistRef == null) {
         throw new IllegalArgumentException(
-            String.format("Expected Gist url, but got: %s", gistUrl));
+            String.format("Expected Gist reference, but got: %s", gistRefStr));
       }
       try {
-        String content = gistRepo.load(credentials, new URL(gistUrl));
-        LuaFunction fn = loader.loadTextChunk(new Variable(env), id, content);
-        context.getReturnBuffer().setTo(fn, id);
+        String content = gistRepo.load(credentials, gistRef);
+        LuaFunction fn = loader.loadTextChunk(new Variable(env), gistRef.asFilename(), content);
+        context.getReturnBuffer().setTo(fn, gistRef);
       } catch (Exception e) {
         throw new UndeclaredThrowableException(e);
       }

@@ -121,12 +121,12 @@ public class CommandLua extends CommandBase {
 
   private String getRequirements(Entity player) throws IOException {
     @Nullable
-    URL url = mod.getProfiles().getUserProfile(player);
-    if (url == null) {
-      url = mod.getProfiles().getDefaultProfile();
+    String refStr = mod.getProfiles().getUserProfile(player);
+    if (refStr == null) {
+      refStr = mod.getProfiles().getDefaultProfile();
     }
-    if (url != null) {
-      return "require \"" + url.toExternalForm() + "\"";
+    if (refStr != null) {
+      return "require \"" + refStr + "\"";
     } else {
       return "";
     }

@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.net.URL;
 
+import com.google.common.base.Preconditions;
+
 import net.karneim.luamod.cache.FileCache;
 import net.karneim.luamod.credentials.AccessTokenCredentials;
 import net.karneim.luamod.credentials.Credentials;
@@ -18,33 +20,27 @@ public class GistRepo {
     this.fileCache = checkNotNull(fileCache);
   }
 
-  public String load(Credentials credentials, URL gistUrl) throws IOException {
-    String id = parseId(gistUrl.toString());
-    if (id == null) {
-      throw new IllegalArgumentException(String.format("Can't parse Gist ID in %s", gistUrl));
-    }
-    String content = fileCache.load(id);
+  public String load(Credentials credentials, GistFileRef ref) throws IOException {
+    Preconditions.checkNotNull(ref, "ref==null!");
+    String content = fileCache.load(ref);
     if (content == null) {
-      System.out.println("Loading " + gistUrl);
+      System.out.println("Loading " + ref);
       if (credentials == null) {
-        content = GitHubTool.getGist(id);
+        content = GitHubTool.getGist(ref);
       } else if (credentials instanceof UsernamePasswordCredentials) {
         UsernamePasswordCredentials upw = (UsernamePasswordCredentials) credentials;
-        content = GitHubTool.getGist(id, upw.username, upw.password);
+        content = GitHubTool.getGist(ref, upw.username, upw.password);
       } else if (credentials instanceof AccessTokenCredentials) {
         AccessTokenCredentials atk = (AccessTokenCredentials) credentials;
-        content = GitHubTool.getGist(id, atk.token);
+        content = GitHubTool.getGist(ref, atk.token);
       } else {
         throw new IllegalStateException(
             String.format("Unknown credentials type %s", credentials.getClass().getSimpleName()));
       }
-      fileCache.save(id, content);
+      fileCache.save(ref, content);
     }
     return content;
   }
 
-  public String parseId(String gistUrlStr) {
-    return GitHubTool.parseId(gistUrlStr);
-  }
 
 }
