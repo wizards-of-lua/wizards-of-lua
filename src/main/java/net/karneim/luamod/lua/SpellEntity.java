@@ -168,7 +168,7 @@ public class SpellEntity extends Entity {
       return;
     }
     if (!getEntityWorld().isRemote) {
-      luaUtil.getEvents().setCurrentTime(ticksExisted);
+      luaUtil.setCurrentTime(ticksExisted);
       switch (state) {
         case START:
           try {
@@ -190,7 +190,7 @@ public class SpellEntity extends Entity {
           break;
         case RESUME:
           try {
-            if (!luaUtil.getEvents().isWaiting()) {
+            if (!luaUtil.isWaiting()) {
               luaUtil.resume(continuation);
               state = State.STOP;
             }

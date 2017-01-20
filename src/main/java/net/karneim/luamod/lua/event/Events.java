@@ -7,35 +7,22 @@ import java.util.Set;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
+import net.karneim.luamod.lua.SpellRegistry;
 
 public class Events {
-  private final LuaMod mod;
+  private final SpellRegistry spellRegistry;
   private final Multimap<String, EventQueue> eventQueues = HashMultimap.create();
   private final Set<EventQueue> activeQueues = new HashSet<EventQueue>();
 
   private long currentTime;
-  private long wakeUpTime;
   private long waitForEventUntil;
 
-  public Events(LuaMod mod) {
-    this.mod = mod;
+  public Events(SpellRegistry spellRegistry) {
+    this.spellRegistry = spellRegistry;
   }
 
-  public boolean isWaiting() {
-    return isSleeping() || isWaitingForEvent();
-  }
-
-  public void startSleep(long duration) {
-    this.wakeUpTime = currentTime + duration;
-  }
-
-  private boolean isSleeping() {
-    return wakeUpTime > currentTime;
-  }
-
-  private boolean isWaitingForEvent() {
+  public boolean isWaitingForEvent() {
     if (waitForEventUntil <= currentTime || activeQueues.isEmpty())
       return false;
     for (EventQueue listener : activeQueues) {
@@ -95,7 +82,7 @@ public class Events {
 
   public void fire(String eventType, Object content) {
     GenericLuaEventWrapper wrapper = new GenericLuaEventWrapper(content, eventType);
-    Iterable<SpellEntity> spells = mod.getSpellRegistry().getAll();
+    Iterable<SpellEntity> spells = spellRegistry.getAll();
     for (SpellEntity spell : spells) {
       spell.getEvents().handle(wrapper);
     }

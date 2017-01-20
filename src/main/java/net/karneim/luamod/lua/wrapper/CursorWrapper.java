@@ -22,7 +22,6 @@ import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 public class CursorWrapper {
 
@@ -71,7 +70,6 @@ public class CursorWrapper {
     luaTable.rawset("copy", new CopyFunction());
     luaTable.rawset("paste", new PasteFunction());
     luaTable.rawset("inAir", new InAirFunction());
-    luaTable.rawset("sleep", new SleepFunction());
   }
 
   public Table getLuaTable() {
@@ -505,7 +503,7 @@ public class CursorWrapper {
       cursor.say(encode(text));
       context.getReturnBuffer().setTo();
     }
-    
+
     private String concat(String delimter, Object[] args) {
       StringBuilder result = new StringBuilder();
       for (int i = 0; i < args.length; ++i) {
@@ -774,39 +772,6 @@ public class CursorWrapper {
     public void resume(ExecutionContext context, Object suspendedState)
         throws ResolvedControlThrowable {
       throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class SleepFunction extends AbstractFunction1 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      // System.out.println("sleep: " + arg1);
-      if (arg1 == null || !(arg1 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value expected but got %s!", arg1));
-      }
-      int ticks = ((Number) arg1).intValue();
-
-      eventManager.startSleep(ticks);
-      try {
-        context.pauseIfRequested();
-      } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(SleepFunction.this, "Sleeping");
-      }
-
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      try {
-        context.pauseIfRequested();
-      } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(SleepFunction.this, "Sleeping");
-      }
-      context.getReturnBuffer().setTo();
     }
   }
 

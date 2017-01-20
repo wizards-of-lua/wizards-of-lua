@@ -18,6 +18,7 @@ import net.karneim.luamod.lua.wrapper.CursorWrapper;
 import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
+import net.karneim.luamod.lua.wrapper.RuntimeWrapper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
@@ -44,7 +45,6 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
-import net.sandius.rembulan.util.Check;
 
 public class LuaUtil {
   private final World world;
@@ -56,7 +56,9 @@ public class LuaUtil {
   private final Clipboard clipboard;
   private LuaFunction main;
 
+  private Ticks ticks;
   private Events events;
+  private Runtime runtime;
 
   public LuaUtil(World world, ICommandSender owner, Cursor cursor, Clipboard clipboard,
       Credentials credentials) {
@@ -67,7 +69,9 @@ public class LuaUtil {
     env = state.newTable();
     loader = CompilerChunkLoader.of("LuaProgramAsJavaByteCode");
 
-    events = new Events(LuaMod.instance);
+    ticks = new Ticks(LuaMod.instance.getDefaultTicksLimit());
+    events = new Events(LuaMod.instance.getSpellRegistry());
+    runtime = new Runtime(ticks);
 
     ChunkLoader modulesLoader = CompilerChunkLoader.of("RequiredModulesAsByteCode");
     RuntimeEnvironment environment = getModRuntimeEnvironment();
@@ -93,43 +97,15 @@ public class LuaUtil {
     CursorWrapper.installInto(env, cursor, events, snapshots);
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, events);
+    RuntimeWrapper.installInto(env, runtime);
     PlayersWrapper.installInto(env, new Players(LuaMod.instance.getServer(), owner));
     EntitiesWrapper.installInto(env, new Entities(LuaMod.instance.getServer(), owner));
 
-    class SleepableCountDownSchedulingContext implements SchedulingContext {
-
-      private long allowance;
-
-      public SleepableCountDownSchedulingContext(long max) {
-        Check.nonNegative(max);
-        this.allowance = max;
-      }
-
-      @Override
-      public void registerTicks(int ticks) {
-        allowance -= Math.max(0, ticks);
-      }
-
-      @Override
-      public boolean shouldPause() {
-        // if (allowance <= 0) {
-        // return true;
-        // }
-        if (allowance <= 0) {
-          throw new IllegalStateException(
-              "Spell has been broken automatically since it is running for too many ticks!");
-        }
-        if (events.isWaiting()) {
-          return true;
-        }
-        return false;
-      }
-    }
     SchedulingContextFactory schedulingContextFactory = new SchedulingContextFactory() {
 
       @Override
       public SchedulingContext newInstance() {
-        return new SleepableCountDownSchedulingContext(LuaMod.instance.getDefaultTicksLimit());
+        return new SchedulingContextImpl(events, ticks, runtime);
       }
     };
     executor = DirectCallExecutor.newExecutor(schedulingContextFactory);
@@ -194,5 +170,13 @@ public class LuaUtil {
     executor.resume(continuation);
   }
 
+  public boolean isWaiting() {
+    return runtime.isSleeping() || events.isWaitingForEvent();
+  }
+
+  public void setCurrentTime(int ticksExisted) {
+    events.setCurrentTime(ticksExisted);
+    runtime.setCurrentTime(ticksExisted);
+  }
 
 }
