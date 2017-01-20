@@ -112,8 +112,12 @@ public class LuaUtil {
 
       @Override
       public boolean shouldPause() {
+        // if (allowance <= 0) {
+        // return true;
+        // }
         if (allowance <= 0) {
-          return true;
+          throw new IllegalStateException(
+              "Spell has been broken automatically since it is running for too many ticks!");
         }
         if (events.isWaiting()) {
           return true;
