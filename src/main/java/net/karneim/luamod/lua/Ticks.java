@@ -18,9 +18,13 @@ public class Ticks {
 
   public void addTicks(long ticks) {
     total += ticks;
-    allowance -= Math.max(0, ticks);
+    allowance -= ticks;
   }
 
+  public long getMax() {
+    return max;
+  }
+  
   public void resetAllowance() {
     allowance = max;
   }

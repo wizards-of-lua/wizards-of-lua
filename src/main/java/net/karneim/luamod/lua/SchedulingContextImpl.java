@@ -27,7 +27,7 @@ public class SchedulingContextImpl implements SchedulingContext {
     // if (allowance <= 0) {
     // return true;
     // }
-    if (ticks.getAllowance() <= 0) {
+    if (ticks.getAllowance() <= -ticks.getMax()) {
       throw new IllegalStateException(
           "Spell has been broken automatically since it is running for too many ticks!");
     }

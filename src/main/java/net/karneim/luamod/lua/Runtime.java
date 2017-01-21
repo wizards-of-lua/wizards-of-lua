@@ -1,14 +1,5 @@
 package net.karneim.luamod.lua;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import net.karneim.luamod.LuaMod;
-
 public class Runtime {
   private final Ticks ticks;
 
@@ -24,6 +15,9 @@ public class Runtime {
   }
 
   public void startSleep(long duration) {
+    if (duration <= 0 && ticks.getAllowance() < 0) {
+      duration = 1;
+    }
     this.wakeUpTime = currentTime + duration;
   }
 

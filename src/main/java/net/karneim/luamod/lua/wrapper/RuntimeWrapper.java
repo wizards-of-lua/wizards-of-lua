@@ -67,7 +67,11 @@ public class RuntimeWrapper {
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       // System.out.println("sleep: " + arg1);
-      if (arg1 == null || !(arg1 instanceof Number)) {
+      if ( arg1 == null) {
+        // ignore call
+        return;
+      }
+      if (!(arg1 instanceof Number)) {
         throw new IllegalArgumentException(
             String.format("Integer value expected but got %s!", arg1));
       }
