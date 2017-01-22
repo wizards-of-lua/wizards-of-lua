@@ -69,8 +69,9 @@ public class ModEventHandler {
   ////
 
   private void onEvent(EventType type, Object evt) {
+    EventWrapper<?> wrapper = type.wrap(evt);
     for (SpellEntity e : mod.getSpellRegistry().getAll()) {
-      e.getEvents().handle(type, evt);
+      e.getEvents().handle(wrapper);
     }
   }
 

@@ -15,7 +15,29 @@ public class GenericLuaEventWrapper extends EventWrapper<Object> {
   @Override
   protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
-    builder.add("content", copyOf(delegate));
+    if (delegate instanceof ByteString) {
+      builder.add("message", delegate);
+    } else if (delegate instanceof String) {
+      builder.add("message", delegate);
+    } else if (delegate instanceof Number) {
+      builder.add("message", delegate);
+    } else if (delegate instanceof Boolean) {
+      builder.add("message", delegate);
+    } else if (delegate instanceof Table) {
+      Table source = (Table) delegate;
+      Object key = source.initialKey();
+      while (key != null) {
+        String keyStr = String.valueOf(key);
+        if (keyStr.equals("id") || keyStr.equals("type")) {
+          throw new IllegalArgumentException(
+              String.format("Custom event must not contain a key with name '%s'!", key));
+        }
+        Object srcValue = source.rawget(key);
+        Object copy = copyOf(srcValue);
+        builder.add(key, srcValue);
+        key = source.successorKeyOf(key);
+      }
+    }
   }
 
   private Object copyOf(Object content) {

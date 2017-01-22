@@ -58,19 +58,9 @@ public class Events {
     this.currentTime = currentTime;
   }
 
-  public void handle(EventType type, Object evt) {
-    Collection<EventQueue> queues = eventQueues.get(type.name());
-    if (!queues.isEmpty()) {
-      // TODO move up in call stack: since the wrapper produces an immutable table, it could be
-      // created earlier
-      EventWrapper<?> wrapper = type.wrap(evt);
-      for (EventQueue queue : queues) {
-        queue.add(wrapper);
-      }
-    }
-  }
-
-  private void handle(EventWrapper event) {
+  public void handle(EventWrapper event) {
+    // Ensure that the lua object is generated in the context of the event producing action
+    event.getLuaObject();
     String eventType = event.getType();
     Collection<EventQueue> queues = eventQueues.get(eventType);
     if (!queues.isEmpty()) {

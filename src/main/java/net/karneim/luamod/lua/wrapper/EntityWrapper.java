@@ -143,8 +143,12 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
         throw new IllegalArgumentException(String.format("string expected but got nil!"));
       }
       String tag = String.valueOf(arg1);
-      delegate.addTag(tag);
-      context.getReturnBuffer().setTo();
+      if ( delegate.getTags().contains(tag)) {
+        context.getReturnBuffer().setTo(false);
+      } else {
+        delegate.addTag(tag);
+        context.getReturnBuffer().setTo(true);
+      }
     }
 
     @Override
@@ -162,8 +166,8 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
         throw new IllegalArgumentException(String.format("string expected but got nil!"));
       }
       String tag = String.valueOf(arg1);
-      delegate.removeTag(tag);
-      context.getReturnBuffer().setTo();
+      boolean changed = delegate.removeTag(tag);
+      context.getReturnBuffer().setTo(changed);
     }
 
     @Override
