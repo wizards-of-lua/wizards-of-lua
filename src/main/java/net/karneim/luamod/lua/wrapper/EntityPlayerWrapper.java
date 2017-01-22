@@ -50,6 +50,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
             String.format("number expected but got %s", arg1.getClass().getSimpleName()));
       }
       int index = ((Number) (arg1)).intValue();
+      
       ItemStack itemStack = mp.inventory.getStackInSlot(index);
       ItemStackWrapper wrapper = new ItemStackWrapper(itemStack);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());

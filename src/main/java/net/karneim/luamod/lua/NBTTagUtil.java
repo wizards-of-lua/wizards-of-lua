@@ -4,6 +4,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Ints;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
@@ -19,6 +22,7 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 
 public class NBTTagUtil {
@@ -171,7 +175,6 @@ public class NBTTagUtil {
       boolean b = ((Boolean) value).booleanValue();
       return new NBTTagByte(b ? ((byte) 1) : ((byte) 0));
     }
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -181,9 +184,23 @@ public class NBTTagUtil {
       NBTBase tag = tagCompound.getTag(key);
       Object value = convert(tag);
       if (value != null) {
-        builder.add(key, value);
+        Object luaKey = luaValueOf(key);
+        builder.add(luaKey, value);
       }
     }
+  }
+
+  private static Object luaValueOf(String str) {
+    Object result;
+    result = Ints.tryParse(str);
+    if (result != null) {
+      return result;
+    }
+    result = Doubles.tryParse(str);
+    if (result != null) {
+      return result;
+    }
+    return Conversions.canonicalRepresentationOf(str);
   }
 
   public static Object convert(NBTBase tag) {
@@ -194,13 +211,13 @@ public class NBTTagUtil {
       // ignore
       return null;
     } else if (tag instanceof NBTTagFloat) {
-      return ((NBTTagFloat) tag).getFloat();
+      return ((NBTTagFloat) tag).getDouble();
     } else if (tag instanceof NBTTagDouble) {
       return ((NBTTagDouble) tag).getDouble();
     } else if (tag instanceof NBTPrimitive) {
       return ((NBTPrimitive) tag).getLong();
     } else if (tag instanceof NBTTagString) {
-      return ((NBTTagString) tag).getString();
+      return ByteString.of((((NBTTagString) tag).getString()));
     } else if (tag instanceof NBTTagByteArray) {
       // Do we need that? Currently not supported!
       // return toTable(((NBTTagByteArray)tag).getByteArray());
@@ -232,7 +249,7 @@ public class NBTTagUtil {
       NBTBase tag = list.get(i);
       Object value = convert(tag);
       if (value != null) {
-        builder.add(String.valueOf(i + 1), value);
+        builder.add((long) (i + 1), value);
       }
     }
     return builder.build();
@@ -241,7 +258,7 @@ public class NBTTagUtil {
   public static Table toTable(int[] intArray) {
     DynamicTable.Builder builder = new DynamicTable.Builder(null);
     for (int i = 0; i < intArray.length; ++i) {
-      builder.add((i + 1), intArray[i]);
+      builder.add((long) (i + 1), intArray[i]);
     }
     return builder.build();
   }
