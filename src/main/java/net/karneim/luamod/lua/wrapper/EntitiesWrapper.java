@@ -1,12 +1,12 @@
 package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Entities;
+import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.NBTTagUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -26,7 +26,7 @@ public class EntitiesWrapper {
   private final Table luaTable = DefaultTable.factory().newTable();
 
   private final EntityWrapperFactory entityWrapperFactory = new EntityWrapperFactory();
-  
+
   public EntitiesWrapper(Entities entities) {
     this.entities = entities;
     luaTable.rawset("list", new ListFunction());
@@ -75,7 +75,7 @@ public class EntitiesWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class GetDataFunction extends AbstractFunction1 {
 
     @Override
@@ -85,11 +85,11 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      
+
       NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
-      ImmutableTable.Builder builder = new ImmutableTable.Builder();
+      DynamicTable.Builder builder = new DynamicTable.Builder(null);
       NBTTagUtil.insertValues(builder, tagCompound);
-      ImmutableTable tbl = builder.build();
+      DynamicTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }

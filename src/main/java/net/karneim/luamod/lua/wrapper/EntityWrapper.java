@@ -2,10 +2,10 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.DynamicTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction3;
@@ -19,7 +19,7 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     builder.add("id", delegate.getCachedUniqueIdString());
     builder.add("name", delegate.getName());
@@ -185,9 +185,9 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
             String.format("table expected but got %s", arg1.getClass().getSimpleName()));
       }
       delegate.getTags().clear();
-      Table table = (Table)arg1;
+      Table table = (Table) arg1;
       Object key = table.initialKey();
-      while( key != null) {
+      while (key != null) {
         String tag = String.valueOf(table.rawget(key));
         delegate.addTag(tag);
         key = table.successorKeyOf(key);

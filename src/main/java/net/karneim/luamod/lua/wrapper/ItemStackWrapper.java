@@ -3,6 +3,7 @@ package net.karneim.luamod.lua.wrapper;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.LuaMod;
+import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.NBTTagUtil;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
@@ -10,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction3;
@@ -23,7 +23,7 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     builder.add("displayName", delegate.getDisplayName());
     builder.add("damage", delegate.getItemDamage());
@@ -45,9 +45,9 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       NBTTagCompound tagCompound = delegate.getTagCompound();
-      ImmutableTable.Builder builder = new ImmutableTable.Builder();
+      DynamicTable.Builder builder = new DynamicTable.Builder(null);
       NBTTagUtil.insertValues(builder, tagCompound);
-      ImmutableTable tbl = builder.build();
+      DynamicTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }
@@ -58,7 +58,7 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class SpawnFunction extends AbstractFunction3 {
 
     @Override

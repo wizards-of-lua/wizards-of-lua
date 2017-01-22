@@ -5,8 +5,10 @@ import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
+import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.event.Events;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
@@ -454,7 +456,29 @@ public class CursorWrapper {
         throw new IllegalArgumentException(String.format("Block value expected but got nil!"));
       }
       try {
-        Block block = cursor.getBlockByName(String.valueOf(arg1));
+        Block block = null;
+        if (arg1 instanceof DynamicTable) {
+          DynamicTable table = (DynamicTable) arg1;
+          String typename = String.valueOf(table.rawget("type"));
+          if ("Block".equals(typename)) {
+            IBlockState blockState = (IBlockState) table.getModel();
+            cursor.place(blockState);
+            context.getReturnBuffer().setTo();
+            return;
+          } else {
+            throw new IllegalArgumentException(
+                String.format("Block value expected but got %s!", arg1));
+          }
+        } else if (arg1 instanceof Table) {
+          Table table = (Table) arg1;
+          String typename = String.valueOf(table.rawget("type"));
+          String name = String.valueOf(table.rawget("name"));
+          if ("Block".equals(typename)) {
+            block = cursor.getBlockByName(name);
+          }
+        } else {
+          block = cursor.getBlockByName(String.valueOf(arg1));
+        }
         if (block != null) {
           cursor.place(block);
         } else {
@@ -480,8 +504,10 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getBlock");
-      String result = cursor.getBlockState().getBlock().getRegistryName().getResourcePath();
-      context.getReturnBuffer().setTo(result);
+      IBlockState blockState = cursor.getBlockState();
+      String result = blockState.getBlock().getRegistryName().getResourcePath();
+      BlockStateWrapper wrapper = new BlockStateWrapper(blockState);
+      context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
     @Override

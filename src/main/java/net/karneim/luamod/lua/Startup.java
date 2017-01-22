@@ -3,7 +3,6 @@ package net.karneim.luamod.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
-import java.net.URL;
 
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.config.ModConfiguration;

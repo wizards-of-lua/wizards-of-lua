@@ -5,7 +5,6 @@ import static com.google.common.collect.Iterables.transform;
 import static java.util.Arrays.asList;
 import static net.karneim.luamod.lua.Permissions.AutoWizardPermission.OPERATOR;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import com.google.common.base.Function;

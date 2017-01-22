@@ -2,7 +2,6 @@ package net.karneim.luamod.lua;
 
 import net.karneim.luamod.lua.event.Events;
 import net.sandius.rembulan.runtime.SchedulingContext;
-import net.sandius.rembulan.util.Check;
 
 public class SchedulingContextImpl implements SchedulingContext {
 

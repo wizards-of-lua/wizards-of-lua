@@ -2,10 +2,10 @@ package net.karneim.luamod.lua.event;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.DynamicTable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.ImmutableTable;
 
 public class GenericLuaEventWrapper extends EventWrapper<Object> {
   public GenericLuaEventWrapper(@Nullable Object delegate, String name) {
@@ -13,7 +13,7 @@ public class GenericLuaEventWrapper extends EventWrapper<Object> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     builder.add("content", copyOf(delegate));
   }
@@ -40,8 +40,8 @@ public class GenericLuaEventWrapper extends EventWrapper<Object> {
   }
 
   private Table copyOf(Table source) {
-    if (source instanceof ImmutableTable) {
-      ImmutableTable it = (ImmutableTable) source;
+    if (source instanceof DynamicTable) {
+      DynamicTable it = (DynamicTable) source;
       return it;
     } else {
       Table result = DefaultTable.factory().newTable();

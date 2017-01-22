@@ -1,9 +1,6 @@
 package net.karneim.luamod.lua.event;
 
-import javax.annotation.Nullable;
-
-import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.ImmutableTable;
+import net.karneim.luamod.lua.DynamicTable;
 
 public class WhisperEventWrapper extends EventWrapper<WhisperEvent> {
   public WhisperEventWrapper(WhisperEvent event) {
@@ -11,7 +8,7 @@ public class WhisperEventWrapper extends EventWrapper<WhisperEvent> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     builder.add("sender", delegate.sender);
     builder.add("message", delegate.message);

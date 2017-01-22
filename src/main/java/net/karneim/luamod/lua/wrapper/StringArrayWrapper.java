@@ -2,7 +2,9 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-import net.sandius.rembulan.impl.ImmutableTable;
+import net.karneim.luamod.lua.DynamicTable;
+
+
 
 public class StringArrayWrapper extends StructuredLuaWrapper<String[]> {
   public StringArrayWrapper(@Nullable String[] delegate) {
@@ -10,7 +12,7 @@ public class StringArrayWrapper extends StructuredLuaWrapper<String[]> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     int idx = 0;
     for (String value : delegate) {

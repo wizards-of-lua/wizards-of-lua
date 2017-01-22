@@ -2,11 +2,11 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.DynamicTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.GameType;
-import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
@@ -18,7 +18,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     // delegate.getBedLocation()
     // delegate.getFoodStats().getFoodLevel()

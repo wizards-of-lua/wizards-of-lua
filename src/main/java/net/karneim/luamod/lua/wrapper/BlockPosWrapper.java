@@ -2,8 +2,8 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.DynamicTable;
 import net.minecraft.util.math.BlockPos;
-import net.sandius.rembulan.impl.ImmutableTable;
 
 public class BlockPosWrapper extends StructuredLuaWrapper<BlockPos> {
   public BlockPosWrapper(@Nullable BlockPos delegate) {
@@ -11,7 +11,7 @@ public class BlockPosWrapper extends StructuredLuaWrapper<BlockPos> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     builder.add("x", delegate.getX());
     builder.add("y", delegate.getY());

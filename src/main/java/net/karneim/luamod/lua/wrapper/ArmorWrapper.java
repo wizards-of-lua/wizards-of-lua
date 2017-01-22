@@ -4,8 +4,9 @@ import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.DynamicTable;
 import net.minecraft.item.ItemStack;
-import net.sandius.rembulan.impl.ImmutableTable;
+
 
 class ArmorWrapper extends StructuredLuaWrapper<Iterable<ItemStack>> {
   public ArmorWrapper(@Nullable Iterable<ItemStack> delegate) {
@@ -13,7 +14,7 @@ class ArmorWrapper extends StructuredLuaWrapper<Iterable<ItemStack>> {
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     Iterator<ItemStack> it = delegate.iterator();
     builder.add("feet", new ItemStackWrapper(it.next()).getLuaObject());

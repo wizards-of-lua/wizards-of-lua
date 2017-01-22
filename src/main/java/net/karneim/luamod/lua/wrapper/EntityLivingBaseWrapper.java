@@ -2,10 +2,9 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.DynamicTable;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.GameType;
-import net.sandius.rembulan.impl.ImmutableTable;
+
 
 public class EntityLivingBaseWrapper<E extends EntityLivingBase> extends EntityWrapper<E> {
   public EntityLivingBaseWrapper(@Nullable E delegate) {
@@ -13,7 +12,7 @@ public class EntityLivingBaseWrapper<E extends EntityLivingBase> extends EntityW
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(DynamicTable.Builder builder) {
     super.addProperties(builder);
     // delegate.getAbsorptionAmount();
     // delegate.getBedLocation()

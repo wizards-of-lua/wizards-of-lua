@@ -20,8 +20,6 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.ImmutableTable;
-import net.sandius.rembulan.impl.ImmutableTable.Builder;
 
 public class NBTTagUtil {
 
@@ -88,10 +86,10 @@ public class NBTTagUtil {
       }
       return new NBTTagByte(((Number) value).byteValue());
     } else if (tag instanceof NBTTagString) {
-      if ( value instanceof ByteString) {
-        String s = ((ByteString)value).decode();
+      if (value instanceof ByteString) {
+        String s = ((ByteString) value).decode();
         return new NBTTagString(s);
-      } else if ( value instanceof String) {
+      } else if (value instanceof String) {
         return new NBTTagString((String) value);
       } else {
         throw new IllegalArgumentException(
@@ -107,7 +105,7 @@ public class NBTTagUtil {
       throw new UnsupportedOperationException("Conversion of NBTTagIntArray is not supported!");
     } else if (tag instanceof NBTTagList) {
       if (value instanceof Table) {
-        return merge((NBTTagList) tag, (Table)value);  
+        return merge((NBTTagList) tag, (Table) value);
       } else {
         throw new IllegalArgumentException(
             "Expected a table but got " + (value.getClass().getSimpleName()));
@@ -177,7 +175,7 @@ public class NBTTagUtil {
     return null;
   }
 
-  public static void insertValues(Builder builder, NBTTagCompound tagCompound) {
+  public static void insertValues(DynamicTable.Builder builder, NBTTagCompound tagCompound) {
     Set<String> keys = tagCompound.getKeySet();
     for (String key : keys) {
       NBTBase tag = tagCompound.getTag(key);
@@ -222,13 +220,13 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(NBTTagCompound tagCompound) {
-    Builder builder = new ImmutableTable.Builder();
+    DynamicTable.Builder builder = new DynamicTable.Builder(null);
     insertValues(builder, tagCompound);
     return builder.build();
   }
 
   public static Table toTable(NBTTagList list) {
-    Builder builder = new ImmutableTable.Builder();
+    DynamicTable.Builder builder = new DynamicTable.Builder(null);
     int size = list.tagCount();
     for (int i = 0; i < size; ++i) {
       NBTBase tag = list.get(i);
@@ -241,7 +239,7 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(int[] intArray) {
-    Builder builder = new ImmutableTable.Builder();
+    DynamicTable.Builder builder = new DynamicTable.Builder(null);
     for (int i = 0; i < intArray.length; ++i) {
       builder.add((i + 1), intArray[i]);
     }

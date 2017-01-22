@@ -1,7 +1,6 @@
 package net.karneim.luamod.lua;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URL;
 
 import javax.annotation.Nullable;
 
