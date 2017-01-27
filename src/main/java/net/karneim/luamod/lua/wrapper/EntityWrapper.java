@@ -29,6 +29,8 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
     builder.add("orientation", new EnumWrapper(delegate.getHorizontalFacing()).getLuaObject());
     builder.add("rotationYaw", delegate.rotationYaw);
     builder.add("rotationPitch", delegate.rotationPitch);
+    builder.add("lookVec", new Vec3dWrapper(delegate.getLookVec()).getLuaObject());
+    
     Team team = delegate.getTeam();
     builder.add("team", team != null ? team.getRegisteredName() : null);
     builder.add("tags", new StringIterableWrapper(delegate.getTags()).getLuaObject());

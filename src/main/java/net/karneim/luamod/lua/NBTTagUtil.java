@@ -4,9 +4,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Ints;
-
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
@@ -22,7 +19,6 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
-import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 
 public class NBTTagUtil {
@@ -184,23 +180,10 @@ public class NBTTagUtil {
       NBTBase tag = tagCompound.getTag(key);
       Object value = convert(tag);
       if (value != null) {
-        Object luaKey = luaValueOf(key);
+        Object luaKey = LuaTypeConverter.luaValueOf(key);
         builder.add(luaKey, value);
       }
     }
-  }
-
-  private static Object luaValueOf(String str) {
-    Object result;
-    result = Ints.tryParse(str);
-    if (result != null) {
-      return result;
-    }
-    result = Doubles.tryParse(str);
-    if (result != null) {
-      return result;
-    }
-    return Conversions.canonicalRepresentationOf(str);
   }
 
   public static Object convert(NBTBase tag) {
