@@ -1,2 +1,2 @@
-Lua Command Mod
+Wizards of Lua Mod
 
