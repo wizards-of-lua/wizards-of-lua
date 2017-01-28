@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 
 import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.LuaTypeConverter;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 
@@ -30,11 +31,7 @@ public class BlockStateWrapper extends StructuredLuaWrapper<IBlockState> {
       props.put(name.getName(), luaValue);
     }
     builder.add("properties", new StringXLuaObjectMapWrapper(props).getLuaObject());
-
-    // EnumFacing facing = delegate.getValue(BlockHorizontal.FACING);
-    // if ( facing != null) {
-    // builder.add("facing", new EnumWrapper(facing).getLuaObject());
-    // }
+    builder.add("material", new MaterialWrapper(delegate.getMaterial()).getLuaObject());
   }
 
 }
