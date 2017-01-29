@@ -46,7 +46,9 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       NBTTagCompound tagCompound = delegate.getTagCompound();
       DynamicTable.Builder builder = new DynamicTable.Builder(null);
-      NBTTagUtil.insertValues(builder, tagCompound);
+      if ( tagCompound != null) {
+        NBTTagUtil.insertValues(builder, tagCompound);
+      }
       DynamicTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);

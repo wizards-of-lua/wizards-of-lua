@@ -1,8 +1,12 @@
 package net.karneim.luamod.lua;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
+
+import com.google.common.base.Preconditions;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
@@ -175,6 +179,7 @@ public class NBTTagUtil {
   }
 
   public static void insertValues(DynamicTable.Builder builder, NBTTagCompound tagCompound) {
+    checkNotNull(tagCompound,"tagCompound==null!");
     Set<String> keys = tagCompound.getKeySet();
     for (String key : keys) {
       NBTBase tag = tagCompound.getTag(key);
@@ -220,6 +225,7 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(NBTTagCompound tagCompound) {
+    checkNotNull(tagCompound,"tagCompound==null!");
     DynamicTable.Builder builder = new DynamicTable.Builder(null);
     insertValues(builder, tagCompound);
     return builder.build();

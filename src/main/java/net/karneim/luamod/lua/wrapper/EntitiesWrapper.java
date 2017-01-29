@@ -88,7 +88,9 @@ public class EntitiesWrapper {
 
       NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
       DynamicTable.Builder builder = new DynamicTable.Builder(null);
-      NBTTagUtil.insertValues(builder, tagCompound);
+      if ( tagCompound != null) {
+        NBTTagUtil.insertValues(builder, tagCompound);
+      }
       DynamicTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
