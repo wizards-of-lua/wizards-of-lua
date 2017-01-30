@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
 
-import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.LuaTypeConverter;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -19,7 +19,7 @@ public class BlockStateWrapper extends StructuredLuaWrapper<IBlockState> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.add("type", "Block");
     builder.add("name", delegate.getBlock().getRegistryName().getResourcePath());

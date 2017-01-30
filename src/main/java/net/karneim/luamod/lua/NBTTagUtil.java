@@ -8,6 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.common.base.Preconditions;
 
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
@@ -178,7 +179,7 @@ public class NBTTagUtil {
     return null;
   }
 
-  public static void insertValues(DynamicTable.Builder builder, NBTTagCompound tagCompound) {
+  public static void insertValues(DelegatingTable.Builder builder, NBTTagCompound tagCompound) {
     checkNotNull(tagCompound,"tagCompound==null!");
     Set<String> keys = tagCompound.getKeySet();
     for (String key : keys) {
@@ -226,13 +227,13 @@ public class NBTTagUtil {
 
   public static Table toTable(NBTTagCompound tagCompound) {
     checkNotNull(tagCompound,"tagCompound==null!");
-    DynamicTable.Builder builder = new DynamicTable.Builder(null);
+    DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
     insertValues(builder, tagCompound);
     return builder.build();
   }
 
   public static Table toTable(NBTTagList list) {
-    DynamicTable.Builder builder = new DynamicTable.Builder(null);
+    DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
     int size = list.tagCount();
     for (int i = 0; i < size; ++i) {
       NBTBase tag = list.get(i);
@@ -245,7 +246,7 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(int[] intArray) {
-    DynamicTable.Builder builder = new DynamicTable.Builder(null);
+    DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
     for (int i = 0; i < intArray.length; ++i) {
       builder.add((long) (i + 1), intArray[i]);
     }

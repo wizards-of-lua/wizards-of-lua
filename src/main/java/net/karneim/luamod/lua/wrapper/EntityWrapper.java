@@ -1,10 +1,18 @@
 package net.karneim.luamod.lua.wrapper;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
+import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
+
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import com.google.common.base.Preconditions;
+
+import net.karneim.luamod.lua.util.PreconditionsUtils;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
+import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -13,128 +21,45 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
-
   public EntityWrapper(@Nullable E delegate) {
     super(delegate);
   }
 
-  @Override
-  protected void addProperties(DynamicTable.Builder builder) {
-    super.addProperties(builder);
-    builder.add("id", delegate.getCachedUniqueIdString());
-    builder.add("name", delegate.getName());
-    builder.add("dimension", delegate.dimension);
-    builder.add("pos", new Vec3dWrapper(delegate.getPositionVector()).getLuaObject());
-    builder.add("blockPos", new BlockPosWrapper(delegate.getPosition()).getLuaObject());
-    builder.add("orientation", new EnumWrapper(delegate.getHorizontalFacing()).getLuaObject());
-    builder.add("rotationYaw", delegate.rotationYaw);
-    builder.add("rotationPitch", delegate.rotationPitch);
-    builder.add("lookVec", new Vec3dWrapper(delegate.getLookVec()).getLuaObject());
-    
+  private void setPosition(Object object) {
+    Table vector = checkType(object, Table.class);
+    Number x = checkType(vector.rawget("x"), Number.class);
+    Number y = checkType(vector.rawget("y"), Number.class);
+    Number z = checkType(vector.rawget("z"), Number.class);
+    delegate.setPositionAndUpdate(x.doubleValue(), y.doubleValue(), z.doubleValue());
+  }
+
+  private ByteString getTeam() {
     Team team = delegate.getTeam();
-    builder.add("team", team != null ? team.getRegisteredName() : null);
-    builder.add("tags", new StringIterableWrapper(delegate.getTags()).getLuaObject());
-
-    builder.add("setName", new SetNameFunction());
-    builder.add("setPos", new SetPosFunction());
-    builder.add("setRotationYaw", new SetRotationYawFunction());
-    builder.add("setRotationPitch", new SetRotationPitchFunction());
-    builder.add("addTag", new AddTagFunction());
-    builder.add("removeTag", new RemoveTagFunction());
-    builder.add("setTags", new SetTagsFunction());
+    return team != null ? ByteString.of(team.getRegisteredName()) : null;
   }
 
-  private class SetNameFunction extends AbstractFunction1 {
+  @Override
+  protected void addProperties(DelegatingTable.Builder b) {
+    super.addProperties(b);
+    b.add("id", delegate::getCachedUniqueIdString, null);
+    b.add("name", delegate::getName,
+        (Object name) -> delegate.setCustomNameTag(checkType(name, ByteString.class).toString()));
+    b.add("dimension", () -> delegate.dimension,
+        (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
+    b.add("pos", () -> wrap(delegate.getPositionVector()), this::setPosition);
+    b.add("blockPos", () -> wrap(delegate.getPosition()), null);
+    b.add("orientation", () -> wrap(delegate.getHorizontalFacing()), null);
+    b.add("rotationYaw", () -> delegate.rotationYaw,
+        (Object yaw) -> delegate.rotationYaw = checkType(yaw, Number.class).floatValue());
+    b.add("rotationPitch", () -> delegate.rotationPitch,
+        (Object pitch) -> delegate.rotationPitch = checkType(pitch, Number.class).floatValue());
+    b.add("lookVec", () -> wrap(delegate.getLookVec()), null);
+    b.add("team", this::getTeam, null);
+    b.add("tags", () -> wrap(delegate.getTags()), null);
 
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("string expected but got nil!"));
-      }
-      String name = String.valueOf(arg1);
-      delegate.setCustomNameTag(name);
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class SetPosFunction extends AbstractFunction3 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
-        throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Arg 1: number expected but got nil!"));
-      }
-      if (arg2 == null) {
-        throw new IllegalArgumentException(String.format("Arg 2: number expected but got nil!"));
-      }
-      if (arg3 == null) {
-        throw new IllegalArgumentException(String.format("Arg 3: number expected but got nil!"));
-      }
-      double x = ((Number) arg1).doubleValue();
-      double y = ((Number) arg2).doubleValue();
-      double z = ((Number) arg3).doubleValue();
-      delegate.setPositionAndUpdate(x, y, z);
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class SetRotationYawFunction extends AbstractFunction1 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Number expected but got nil!"));
-      }
-      float yaw = ((Number) arg1).floatValue();
-      float pitch = delegate.rotationPitch;
-      double x = delegate.posX;
-      double y = delegate.posY;
-      double z = delegate.posZ;
-      delegate.setPositionAndRotation(x, y, z, yaw, pitch);
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class SetRotationPitchFunction extends AbstractFunction1 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Number expected but got nil!"));
-      }
-      float yaw = delegate.rotationYaw;
-      float pitch = ((Number) arg1).floatValue();
-      double x = delegate.posX;
-      double y = delegate.posY;
-      double z = delegate.posZ;
-      delegate.setPositionAndRotation(x, y, z, yaw, pitch);
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
+    b.add("addTag", new AddTagFunction());
+    b.add("removeTag", new RemoveTagFunction());
+    b.add("setTags", new SetTagsFunction());
   }
 
   private class AddTagFunction extends AbstractFunction1 {
@@ -145,7 +70,7 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
         throw new IllegalArgumentException(String.format("string expected but got nil!"));
       }
       String tag = String.valueOf(arg1);
-      if ( delegate.getTags().contains(tag)) {
+      if (delegate.getTags().contains(tag)) {
         context.getReturnBuffer().setTo(false);
       } else {
         delegate.addTag(tag);

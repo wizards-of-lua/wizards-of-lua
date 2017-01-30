@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.EntityLivingBase;
 
 
@@ -12,7 +12,7 @@ public class EntityLivingBaseWrapper<E extends EntityLivingBase> extends EntityW
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     // delegate.getAbsorptionAmount();
     // delegate.getBedLocation()

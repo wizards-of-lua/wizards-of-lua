@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.item.ItemStack;
 
 
@@ -14,7 +14,7 @@ class ArmorWrapper extends StructuredLuaWrapper<Iterable<ItemStack>> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     Iterator<ItemStack> it = delegate.iterator();
     builder.add("feet", new ItemStackWrapper(it.next()).getLuaObject());

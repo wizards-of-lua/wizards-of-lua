@@ -5,8 +5,8 @@ import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
-import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.event.Events;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.NumberInvalidException;
@@ -457,11 +457,11 @@ public class CursorWrapper {
       }
       try {
         Block block = null;
-        if (arg1 instanceof DynamicTable) {
-          DynamicTable table = (DynamicTable) arg1;
+        if (arg1 instanceof DelegatingTable) {
+          DelegatingTable table = (DelegatingTable) arg1;
           String typename = String.valueOf(table.rawget("type"));
           if ("Block".equals(typename)) {
-            IBlockState blockState = (IBlockState) table.getModel();
+            IBlockState blockState = (IBlockState) table.getDelegate();
             cursor.place(blockState);
             context.getReturnBuffer().setTo();
             return;

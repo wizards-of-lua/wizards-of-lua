@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 
 public class StringXLuaObjectMapWrapper extends StructuredLuaWrapper<Map<String, Object>> {
   public StringXLuaObjectMapWrapper(@Nullable Map<String, Object> delegate) {
@@ -13,7 +13,7 @@ public class StringXLuaObjectMapWrapper extends StructuredLuaWrapper<Map<String,
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     for (Entry<String, Object> entry : delegate.entrySet()) {
       Object luaValue = entry.getValue();

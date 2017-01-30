@@ -1,8 +1,8 @@
 package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Entities;
-import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
@@ -87,11 +87,11 @@ public class EntitiesWrapper {
       Entity entity = entities.get(name);
 
       NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
-      DynamicTable.Builder builder = new DynamicTable.Builder(null);
+      DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
       if ( tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
       }
-      DynamicTable tbl = builder.build();
+      DelegatingTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }

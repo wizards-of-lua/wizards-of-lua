@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -18,7 +18,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     // delegate.getBedLocation()
     // delegate.getFoodStats().getFoodLevel()

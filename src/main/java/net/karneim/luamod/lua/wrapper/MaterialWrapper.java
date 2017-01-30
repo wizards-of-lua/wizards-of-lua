@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.block.material.Material;
 
 public class MaterialWrapper extends StructuredLuaWrapper<Material> {
@@ -11,7 +11,7 @@ public class MaterialWrapper extends StructuredLuaWrapper<Material> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.add("blocksLight", delegate.blocksLight());
     builder.add("blocksMovement", delegate.blocksMovement());

@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.wrapper.StructuredLuaWrapper;
 
 public abstract class EventWrapper<JavaObject> extends StructuredLuaWrapper<JavaObject> {
@@ -24,7 +24,7 @@ public abstract class EventWrapper<JavaObject> extends StructuredLuaWrapper<Java
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.add("type", type);
     builder.add("id", id);

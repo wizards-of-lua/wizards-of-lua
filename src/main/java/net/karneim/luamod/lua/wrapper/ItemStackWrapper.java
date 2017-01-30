@@ -3,8 +3,8 @@ package net.karneim.luamod.lua.wrapper;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.LuaMod;
-import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,7 +23,7 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.add("displayName", delegate.getDisplayName());
     builder.add("damage", delegate.getItemDamage());
@@ -45,11 +45,11 @@ public class ItemStackWrapper extends StructuredLuaWrapper<ItemStack> {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       NBTTagCompound tagCompound = delegate.getTagCompound();
-      DynamicTable.Builder builder = new DynamicTable.Builder(null);
+      DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
       if ( tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
       }
-      DynamicTable tbl = builder.build();
+      DelegatingTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }
