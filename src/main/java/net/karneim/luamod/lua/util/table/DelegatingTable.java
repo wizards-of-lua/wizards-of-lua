@@ -1,9 +1,10 @@
 package net.karneim.luamod.lua.util.table;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -19,7 +20,7 @@ public class DelegatingTable<O> extends Table {
   private final O delegate;
 
   protected DelegatingTable(O delegate, Map<?, ?> properties) {
-    this.delegate = Objects.requireNonNull(delegate);
+    this.delegate = checkNotNull(delegate, "delegate == null!");
     this.properties.putAll(properties);
   }
 
@@ -99,8 +100,8 @@ public class DelegatingTable<O> extends Table {
     /**
      * Constructs a new empty builder.
      */
-    public Builder(O delegate) {
-      this.delegate = delegate;
+    private Builder(O delegate) {
+      this.delegate = checkNotNull(delegate, "delegate == null!");
     }
 
     public <T> Builder add(Object key, @Nullable Supplier<T> get, @Nullable Consumer<T> set) {
@@ -111,7 +112,7 @@ public class DelegatingTable<O> extends Table {
       key = Conversions.normaliseKey(key);
       checkKey(key);
 
-      Objects.requireNonNull(value);
+      checkNotNull(value, "value == null!");
       value = Conversions.canonicalRepresentationOf(value);
       properties.put(key, value);
 

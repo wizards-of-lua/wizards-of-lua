@@ -7,6 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
+import net.sandius.rembulan.impl.ImmutableTable;
+import net.sandius.rembulan.impl.ImmutableTable.Builder;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -87,11 +89,11 @@ public class EntitiesWrapper {
       Entity entity = entities.get(name);
 
       NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
-      DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
-      if ( tagCompound != null) {
+      ImmutableTable.Builder builder = new ImmutableTable.Builder();
+      if (tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
       }
-      DelegatingTable tbl = builder.build();
+      ImmutableTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }

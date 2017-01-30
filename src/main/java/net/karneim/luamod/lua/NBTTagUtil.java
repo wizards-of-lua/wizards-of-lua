@@ -25,6 +25,7 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.impl.ImmutableTable;
 
 public class NBTTagUtil {
 
@@ -179,8 +180,8 @@ public class NBTTagUtil {
     return null;
   }
 
-  public static void insertValues(DelegatingTable.Builder builder, NBTTagCompound tagCompound) {
-    checkNotNull(tagCompound,"tagCompound==null!");
+  public static void insertValues(ImmutableTable.Builder builder, NBTTagCompound tagCompound) {
+    checkNotNull(tagCompound, "tagCompound==null!");
     Set<String> keys = tagCompound.getKeySet();
     for (String key : keys) {
       NBTBase tag = tagCompound.getTag(key);
@@ -226,14 +227,14 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(NBTTagCompound tagCompound) {
-    checkNotNull(tagCompound,"tagCompound==null!");
-    DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
+    checkNotNull(tagCompound, "tagCompound==null!");
+    ImmutableTable.Builder builder = new ImmutableTable.Builder();
     insertValues(builder, tagCompound);
     return builder.build();
   }
 
   public static Table toTable(NBTTagList list) {
-    DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
+    ImmutableTable.Builder builder = new ImmutableTable.Builder();
     int size = list.tagCount();
     for (int i = 0; i < size; ++i) {
       NBTBase tag = list.get(i);
@@ -246,7 +247,7 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(int[] intArray) {
-    DelegatingTable.Builder builder = new DelegatingTable.Builder(null);
+    ImmutableTable.Builder builder = new ImmutableTable.Builder();
     for (int i = 0; i < intArray.length; ++i) {
       builder.add((long) (i + 1), intArray[i]);
     }

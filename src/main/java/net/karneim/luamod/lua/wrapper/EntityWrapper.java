@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
@@ -17,7 +18,7 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
+public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
   public EntityWrapper(@Nullable E delegate) {
     super(delegate);
   }
@@ -37,7 +38,6 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
 
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
-    super.addProperties(b);
     b.add("id", delegate::getCachedUniqueIdString, null);
     b.add("name", delegate::getName,
         (Object name) -> delegate.setCustomNameTag(checkType(name, ByteString.class).toString()));

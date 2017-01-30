@@ -10,10 +10,10 @@ public abstract class ImmutableTableWrapper<J> extends LuaWrapper<J, ImmutableTa
   }
 
   @Override
-  protected ImmutableTable toLuaObject() {
-    ImmutableTable.Builder result = new ImmutableTable.Builder();
-    addProperties(result);
-    return result.build();
+  protected final ImmutableTable toLuaObject() {
+    ImmutableTable.Builder builder = new ImmutableTable.Builder();
+    addProperties(builder);
+    return builder.build();
   }
 
   protected abstract void addProperties(ImmutableTable.Builder builder);

@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 public abstract class LuaWrapper<J, L> {
   protected final @Nullable J delegate;
-  private L luaObject;
+  private @Nullable L luaObject;
 
   public LuaWrapper(@Nullable J delegate) {
     this.delegate = delegate;
