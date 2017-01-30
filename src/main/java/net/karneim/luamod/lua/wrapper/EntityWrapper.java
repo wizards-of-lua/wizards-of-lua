@@ -1,22 +1,19 @@
 package net.karneim.luamod.lua.wrapper;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
 import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Preconditions;
-
-import net.karneim.luamod.lua.util.PreconditionsUtils;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.table.Entry;
+import net.karneim.luamod.lua.util.table.TableIterable;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
-import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
@@ -116,12 +113,9 @@ public class EntityWrapper<E extends Entity> extends StructuredLuaWrapper<E> {
             String.format("table expected but got %s", arg1.getClass().getSimpleName()));
       }
       delegate.getTags().clear();
-      Table table = (Table) arg1;
-      Object key = table.initialKey();
-      while (key != null) {
-        String tag = String.valueOf(table.rawget(key));
+      for (Entry<Object, Object> entry : new TableIterable((Table) arg1)) {
+        String tag = String.valueOf(entry.getValue());
         delegate.addTag(tag);
-        key = table.successorKeyOf(key);
       }
       context.getReturnBuffer().setTo();
     }
