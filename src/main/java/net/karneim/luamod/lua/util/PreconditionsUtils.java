@@ -19,7 +19,7 @@ public class PreconditionsUtils {
       return null;
     if (type.isInstance(object))
       return type.cast(object);
-    throw new IllegalArgumentException(String.format("%s expected but %s!", type.getSimpleName(),
+    throw new IllegalArgumentException(String.format("%s expected but got %s!", type.getSimpleName(),
         object.getClass().getSimpleName()));
   }
 }
