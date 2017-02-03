@@ -4,10 +4,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
-import net.karneim.luamod.lua.wrapper.StructuredLuaWrapper;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 
-public abstract class EventWrapper<JavaObject> extends StructuredLuaWrapper<JavaObject> {
+public abstract class EventWrapper<JavaObject> extends DelegatingTableWrapper<JavaObject> {
   private final String type;
   private final long id;
   private static long idCount = 0;
@@ -24,8 +24,7 @@ public abstract class EventWrapper<JavaObject> extends StructuredLuaWrapper<Java
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
-    super.addProperties(builder);
+  protected void addProperties(DelegatingTable.Builder builder) {
     builder.add("type", type);
     builder.add("id", id);
   }

@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.event;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -13,7 +13,7 @@ public class GenericLuaEventWrapper extends EventWrapper<Object> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     if (delegate instanceof ByteString) {
       builder.add("message", delegate);
@@ -62,8 +62,8 @@ public class GenericLuaEventWrapper extends EventWrapper<Object> {
   }
 
   private Table copyOf(Table source) {
-    if (source instanceof DynamicTable) {
-      DynamicTable it = (DynamicTable) source;
+    if (source instanceof DelegatingTable) {
+      DelegatingTable it = (DelegatingTable) source;
       return it;
     } else {
       Table result = DefaultTable.factory().newTable();

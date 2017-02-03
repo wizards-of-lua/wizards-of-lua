@@ -7,20 +7,20 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
 
-import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.LuaTypeConverter;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 
-public class BlockStateWrapper extends StructuredLuaWrapper<IBlockState> {
+public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
   public BlockStateWrapper(@Nullable IBlockState delegate) {
     super(delegate);
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
-    super.addProperties(builder);
+  protected void addProperties(DelegatingTable.Builder builder) {
     builder.add("type", "Block");
     builder.add("name", delegate.getBlock().getRegistryName().getResourcePath());
     Map<String, Object> props = Maps.newHashMap();

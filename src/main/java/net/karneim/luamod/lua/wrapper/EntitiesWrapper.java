@@ -1,12 +1,14 @@
 package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Entities;
-import net.karneim.luamod.lua.DynamicTable;
 import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
+import net.sandius.rembulan.impl.ImmutableTable;
+import net.sandius.rembulan.impl.ImmutableTable.Builder;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -87,11 +89,11 @@ public class EntitiesWrapper {
       Entity entity = entities.get(name);
 
       NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
-      DynamicTable.Builder builder = new DynamicTable.Builder(null);
-      if ( tagCompound != null) {
+      ImmutableTable.Builder builder = new ImmutableTable.Builder();
+      if (tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
       }
-      DynamicTable tbl = builder.build();
+      ImmutableTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }

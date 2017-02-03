@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.event;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.wrapper.BlockPosWrapper;
 import net.karneim.luamod.lua.wrapper.EnumWrapper;
 import net.karneim.luamod.lua.wrapper.ItemStackWrapper;
@@ -15,7 +15,7 @@ public class PlayerInteractEventWrapper<E extends PlayerInteractEvent>
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.add("hand", new EnumWrapper(delegate.getHand()).getLuaObject());
     builder.add("item", new ItemStackWrapper(delegate.getItemStack()).getLuaObject());

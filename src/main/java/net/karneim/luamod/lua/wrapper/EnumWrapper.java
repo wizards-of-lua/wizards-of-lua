@@ -2,13 +2,16 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-public class EnumWrapper extends LuaWrapper<Enum<?>> {
+import net.karneim.luamod.lua.util.wrapper.LuaWrapper;
+import net.sandius.rembulan.ByteString;
+
+public class EnumWrapper extends LuaWrapper<Enum<?>, ByteString> {
   public EnumWrapper(@Nullable Enum<?> delegate) {
     super(delegate);
   }
 
   @Override
-  protected Object toLuaObject() {
-    return delegate.name();
+  protected ByteString toLuaObject() {
+    return ByteString.of(delegate.name());
   }
 }

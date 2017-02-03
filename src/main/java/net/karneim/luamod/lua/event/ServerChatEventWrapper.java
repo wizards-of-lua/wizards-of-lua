@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.event;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.DynamicTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraftforge.event.ServerChatEvent;
 
 public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
@@ -11,7 +11,7 @@ public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
   }
 
   @Override
-  protected void addProperties(DynamicTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.add("sender", delegate.getUsername());
     builder.add("message", delegate.getMessage());
