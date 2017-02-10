@@ -2,8 +2,8 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.ImmutableTableWrapper;
-import net.sandius.rembulan.impl.ImmutableTable;
 
 public class StringIterableWrapper extends ImmutableTableWrapper<Iterable<String>> {
   public StringIterableWrapper(@Nullable Iterable<String> delegate) {
@@ -11,7 +11,7 @@ public class StringIterableWrapper extends ImmutableTableWrapper<Iterable<String
   }
 
   @Override
-  protected void addProperties(ImmutableTable.Builder builder) {
+  protected void addProperties(PatchedImmutableTable.Builder builder) {
     long idx = 0;
     for (String value : delegate) {
       idx++;

@@ -177,8 +177,7 @@ public class CommandAdmin extends CommandBase {
           if (USER.equals(scope)) {
             String action = getArg(args, 2, "action", false);
             if (action == null) {
-              ITextComponent message = ForgeHooks.newChatWithLinks(getUserProfileRef(sender));
-              sender.addChatMessage(message);
+              printUserProfileRef(sender);
               return;
             } else if (SET.equals(action)) {
               String url = getArg(args, 3, "url");
@@ -192,8 +191,7 @@ public class CommandAdmin extends CommandBase {
           if (DEFAULT.equals(scope)) {
             String action = getArg(args, 2, "action", false);
             if (action == null) {
-              ITextComponent message = ForgeHooks.newChatWithLinks(getDefaultProfileRef());
-              sender.addChatMessage(message);
+              printDefaultProfileRef(sender);
               return;
             } else if (SET.equals(action)) {
               String url = getArg(args, 3, "url");
@@ -207,8 +205,7 @@ public class CommandAdmin extends CommandBase {
           if (STARTUP.equals(scope)) {
             String action = getArg(args, 2, "action", false);
             if (action == null) {
-              ITextComponent message = ForgeHooks.newChatWithLinks(getStartupProfileRef());
-              sender.addChatMessage(message);
+              printStartupProfileRef(sender);
               return;
             } else if (SET.equals(action)) {
               String url = getArg(args, 3, "url");
@@ -441,9 +438,14 @@ public class CommandAdmin extends CommandBase {
     }
   }
 
-  private String getUserProfileRef(ICommandSender sender) {
+  private void printUserProfileRef(ICommandSender sender) {
     Entity owner = sender.getCommandSenderEntity();
-    return mod.getProfiles().getUserProfile(owner);
+    String userProfile = mod.getProfiles().getUserProfile(owner);
+    if ( userProfile == null) {
+      userProfile = "<none>";
+    }
+    ITextComponent message = ForgeHooks.newChatWithLinks(userProfile);
+    sender.addChatMessage(message);
   }
 
   private void setUserProfileRef(ICommandSender sender, @Nullable String refStr)
@@ -466,9 +468,15 @@ public class CommandAdmin extends CommandBase {
           refStr, e.getMessage());
     }
   }
-
-  private String getDefaultProfileRef() {
-    return mod.getProfiles().getDefaultProfile();
+  
+  private void printDefaultProfileRef(ICommandSender sender) {
+    Entity owner = sender.getCommandSenderEntity();
+    String profile = mod.getProfiles().getDefaultProfile();
+    if ( profile == null) {
+      profile = "<none>";
+    }
+    ITextComponent message = ForgeHooks.newChatWithLinks(profile);
+    sender.addChatMessage(message);
   }
 
   private void setDefaultProfileUrl(ICommandSender sender, @Nullable String refStr)
@@ -492,8 +500,14 @@ public class CommandAdmin extends CommandBase {
     }
   }
 
-  private String getStartupProfileRef() {
-    return mod.getProfiles().getStartupProfile();
+  private void printStartupProfileRef(ICommandSender sender) {
+    Entity owner = sender.getCommandSenderEntity();
+    String profile = mod.getProfiles().getStartupProfile();
+    if ( profile == null) {
+      profile = "<none>";
+    }
+    ITextComponent message = ForgeHooks.newChatWithLinks(profile);
+    sender.addChatMessage(message);
   }
 
   private void setStartupProfileUrl(ICommandSender sender, @Nullable String refStr)

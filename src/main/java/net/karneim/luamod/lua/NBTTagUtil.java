@@ -6,9 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.google.common.base.Preconditions;
-
-import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
@@ -180,7 +178,8 @@ public class NBTTagUtil {
     return null;
   }
 
-  public static void insertValues(ImmutableTable.Builder builder, NBTTagCompound tagCompound) {
+  public static void insertValues(PatchedImmutableTable.Builder builder,
+      NBTTagCompound tagCompound) {
     checkNotNull(tagCompound, "tagCompound==null!");
     Set<String> keys = tagCompound.getKeySet();
     for (String key : keys) {
@@ -228,13 +227,13 @@ public class NBTTagUtil {
 
   public static Table toTable(NBTTagCompound tagCompound) {
     checkNotNull(tagCompound, "tagCompound==null!");
-    ImmutableTable.Builder builder = new ImmutableTable.Builder();
+    PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     insertValues(builder, tagCompound);
     return builder.build();
   }
 
   public static Table toTable(NBTTagList list) {
-    ImmutableTable.Builder builder = new ImmutableTable.Builder();
+    PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     int size = list.tagCount();
     for (int i = 0; i < size; ++i) {
       NBTBase tag = list.get(i);
@@ -247,7 +246,7 @@ public class NBTTagUtil {
   }
 
   public static Table toTable(int[] intArray) {
-    ImmutableTable.Builder builder = new ImmutableTable.Builder();
+    PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     for (int i = 0; i < intArray.length; ++i) {
       builder.add((long) (i + 1), intArray[i]);
     }

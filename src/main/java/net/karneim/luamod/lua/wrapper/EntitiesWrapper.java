@@ -2,13 +2,11 @@ package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.NBTTagUtil;
-import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.ImmutableTable;
-import net.sandius.rembulan.impl.ImmutableTable.Builder;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -34,7 +32,7 @@ public class EntitiesWrapper {
     luaTable.rawset("list", new ListFunction());
     luaTable.rawset("get", new GetFunction());
     luaTable.rawset("find", new FindFunction());
-    luaTable.rawset("put", new PutFunction());
+    // luaTable.rawset("put", new PutFunction()); // not supported so far
     luaTable.rawset("getData", new GetDataFunction());
   }
 
@@ -42,12 +40,15 @@ public class EntitiesWrapper {
     return luaTable;
   }
 
+  /**
+   * Returns the IDs of all (loaded) entities.
+   */
   private class ListFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      Iterable<String> names = entities.list();
-      StringIterableWrapper wrapper = new StringIterableWrapper(names);
+      Iterable<String> ids = entities.list();
+      StringIterableWrapper wrapper = new StringIterableWrapper(ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -58,6 +59,9 @@ public class EntitiesWrapper {
     }
   }
 
+  /**
+   * Returns the entity with the given ID.
+   */
   private class GetFunction extends AbstractFunction1 {
 
     @Override
@@ -78,6 +82,9 @@ public class EntitiesWrapper {
     }
   }
 
+  /**
+   * Returns the NBT-Data of the entity with the given ID.
+   */
   private class GetDataFunction extends AbstractFunction1 {
 
     @Override
@@ -85,15 +92,15 @@ public class EntitiesWrapper {
       if (arg1 == null) {
         throw new IllegalArgumentException(String.format("Entity ID expected but got nil!"));
       }
-      String name = String.valueOf(arg1);
-      Entity entity = entities.get(name);
+      String id = String.valueOf(arg1);
+      Entity entity = entities.get(id);
 
       NBTTagCompound tagCompound = entity.writeToNBT(new NBTTagCompound());
-      ImmutableTable.Builder builder = new ImmutableTable.Builder();
+      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
       if (tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
       }
-      ImmutableTable tbl = builder.build();
+      PatchedImmutableTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }
@@ -105,6 +112,9 @@ public class EntitiesWrapper {
     }
   }
 
+  /**
+   * Returns the IDs of all (loaded) entities matching the given selector.
+   */
   private class FindFunction extends AbstractFunction1 {
 
     @Override
@@ -125,6 +135,9 @@ public class EntitiesWrapper {
     }
   }
 
+  /**
+   * Modifies the entity with the given ID by merging the given NBT-Data-Table into it.
+   */
   private class PutFunction extends AbstractFunction2 {
 
     @Override

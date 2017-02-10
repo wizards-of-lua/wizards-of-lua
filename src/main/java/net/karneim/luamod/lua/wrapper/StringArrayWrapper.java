@@ -17,7 +17,7 @@ public class StringArrayWrapper extends DelegatingTableWrapper<String[]> {
     int idx = 0;
     for (String value : delegate) {
       idx++;
-      builder.add(idx, value);
+      builder.addNullable(idx, value);
     }
   }
 }

@@ -63,8 +63,9 @@ public class DelegatingTable<O> extends Table {
       throw new IllegalArgumentException("unknown table index");
     if (p instanceof Property<?>) {
       ((Property) p).set(value);
+    } else {
+      throw new UnsupportedOperationException("property is readonly");
     }
-    throw new UnsupportedOperationException("property is readonly");
   }
 
   @Override
@@ -116,6 +117,13 @@ public class DelegatingTable<O> extends Table {
       value = Conversions.canonicalRepresentationOf(value);
       properties.put(key, value);
 
+      return this;
+    }
+    
+    public Builder addNullable(Object key, @Nullable Object value) {
+      if ( value != null) {
+        add(key,value);
+      }
       return this;
     }
 

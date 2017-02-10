@@ -5,15 +5,19 @@ import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
@@ -40,7 +44,7 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
   protected void addProperties(DelegatingTable.Builder b) {
     b.add("id", delegate::getCachedUniqueIdString, null);
     b.add("name", delegate::getName,
-        (Object name) -> delegate.setCustomNameTag(checkType(name, ByteString.class).toString()));
+        (Object name) -> delegate.setCustomNameTag(String.valueOf(name)));
     b.add("dimension", () -> delegate.dimension,
         (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
     b.add("pos", () -> wrap(delegate.getPositionVector()), this::setPosition);
@@ -57,6 +61,7 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
     b.add("addTag", new AddTagFunction());
     b.add("removeTag", new RemoveTagFunction());
     b.add("setTags", new SetTagsFunction());
+    b.add("getData", new GetDataFunction());
   }
 
   private class AddTagFunction extends AbstractFunction1 {
@@ -127,4 +132,28 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
     }
   }
 
+  /**
+   * Returns the NBT-Data of the entity.
+   */
+  private class GetDataFunction extends AbstractFunction0 {
+
+    @Override
+    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
+      
+      NBTTagCompound tagCompound = delegate.writeToNBT(new NBTTagCompound());
+      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
+      if (tagCompound != null) {
+        NBTTagUtil.insertValues(builder, tagCompound);
+      }
+      PatchedImmutableTable tbl = builder.build();
+
+      context.getReturnBuffer().setTo(tbl);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
 }

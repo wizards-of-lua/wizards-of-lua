@@ -29,7 +29,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
       EntityPlayerMP mp = (EntityPlayerMP) delegate;
       GameType e = mp.interactionManager.getGameType();
       builder.add("gamemode", new EnumWrapper(e).getLuaObject());
-      builder.add("getInventory", new GetInventoryFunction(mp));
+      builder.addNullable("getInventory", new GetInventoryFunction(mp));
     }
   }
 

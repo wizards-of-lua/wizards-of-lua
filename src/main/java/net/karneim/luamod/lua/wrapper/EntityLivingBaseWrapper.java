@@ -19,10 +19,10 @@ public class EntityLivingBaseWrapper<E extends EntityLivingBase> extends EntityW
     // delegate.getFoodStats().getFoodLevel()
     // delegate.getFoodStats().getSaturationLevel()
     // delegate.getInventoryEnderChest()
-    builder.add("armor", new ArmorWrapper(delegate.getArmorInventoryList()).getLuaObject());
+    builder.addNullable("armor", new ArmorWrapper(delegate.getArmorInventoryList()).getLuaObject());
     builder.add("health", delegate.getHealth());
-    builder.add("mainHand", new ItemStackWrapper(delegate.getHeldItemMainhand()).getLuaObject());
-    builder.add("offHand", new ItemStackWrapper(delegate.getHeldItemOffhand()).getLuaObject());
+    builder.addNullable("mainHand", new ItemStackWrapper(delegate.getHeldItemMainhand()).getLuaObject());
+    builder.addNullable("offHand", new ItemStackWrapper(delegate.getHeldItemOffhand()).getLuaObject());
   }
 
 }

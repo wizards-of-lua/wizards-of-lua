@@ -2,19 +2,19 @@ package net.karneim.luamod.lua.util.wrapper;
 
 import javax.annotation.Nullable;
 
-import net.sandius.rembulan.impl.ImmutableTable;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 
-public abstract class ImmutableTableWrapper<J> extends LuaWrapper<J, ImmutableTable> {
+public abstract class ImmutableTableWrapper<J> extends LuaWrapper<J, PatchedImmutableTable> {
   public ImmutableTableWrapper(@Nullable J delegate) {
     super(delegate);
   }
 
   @Override
-  protected final ImmutableTable toLuaObject() {
-    ImmutableTable.Builder builder = new ImmutableTable.Builder();
+  protected final PatchedImmutableTable toLuaObject() {
+    PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     addProperties(builder);
     return builder.build();
   }
 
-  protected abstract void addProperties(ImmutableTable.Builder builder);
+  protected abstract void addProperties(PatchedImmutableTable.Builder builder);
 }

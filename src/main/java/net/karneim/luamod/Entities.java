@@ -39,9 +39,9 @@ public class Entities {
     return idsOf(list);
   }
 
-  public @Nullable Entity get(String name) {
+  public @Nullable Entity get(String id) {
     try {
-      return CommandBase.getEntity(server, context, name);
+      return CommandBase.getEntity(server, context, id);
     } catch (EntityNotFoundException e) {
       return null;
     }

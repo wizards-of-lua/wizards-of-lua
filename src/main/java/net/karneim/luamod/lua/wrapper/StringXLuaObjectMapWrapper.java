@@ -17,7 +17,7 @@ public class StringXLuaObjectMapWrapper extends DelegatingTableWrapper<Map<Strin
   protected void addProperties(DelegatingTable.Builder builder) {
     for (Entry<String, Object> entry : delegate.entrySet()) {
       Object luaValue = entry.getValue();
-      builder.add(entry.getKey(), luaValue);
+      builder.addNullable(entry.getKey(), luaValue);
     }
   }
 }

@@ -17,10 +17,10 @@ class ArmorWrapper extends DelegatingTableWrapper<Iterable<ItemStack>> {
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     Iterator<ItemStack> it = delegate.iterator();
-    builder.add("feet", new ItemStackWrapper(it.next()).getLuaObject());
-    builder.add("legs", new ItemStackWrapper(it.next()).getLuaObject());
-    builder.add("chest", new ItemStackWrapper(it.next()).getLuaObject());
-    builder.add("head", new ItemStackWrapper(it.next()).getLuaObject());
+    builder.addNullable("feet", new ItemStackWrapper(it.next()).getLuaObject());
+    builder.addNullable("legs", new ItemStackWrapper(it.next()).getLuaObject());
+    builder.addNullable("chest", new ItemStackWrapper(it.next()).getLuaObject());
+    builder.addNullable("head", new ItemStackWrapper(it.next()).getLuaObject());
   }
 
 }

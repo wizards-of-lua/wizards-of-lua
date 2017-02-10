@@ -20,7 +20,7 @@ public class MaterialWrapper extends DelegatingTableWrapper<Material> {
     builder.add("isOpaque", delegate.isOpaque());
     builder.add("isSolid", delegate.isSolid());
     builder.add("isToolNotRequired", delegate.isToolNotRequired());
-    builder.add("mobility", new EnumWrapper(delegate.getMobilityFlag()).getLuaObject());
+    builder.addNullable("mobility", new EnumWrapper(delegate.getMobilityFlag()).getLuaObject());
   }
 
 }

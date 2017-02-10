@@ -22,7 +22,7 @@ public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     builder.add("type", "Block");
-    builder.add("name", delegate.getBlock().getRegistryName().getResourcePath());
+    builder.addNullable("name", delegate.getBlock().getRegistryName().getResourcePath());
     Map<String, Object> props = Maps.newHashMap();
     Collection<IProperty<?>> names = delegate.getPropertyNames();
     for (IProperty<?> name : names) {
@@ -30,8 +30,8 @@ public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
       Object luaValue = LuaTypeConverter.luaValueOf(value);
       props.put(name.getName(), luaValue);
     }
-    builder.add("properties", new StringXLuaObjectMapWrapper(props).getLuaObject());
-    builder.add("material", new MaterialWrapper(delegate.getMaterial()).getLuaObject());
+    builder.addNullable("properties", new StringXLuaObjectMapWrapper(props).getLuaObject());
+    builder.addNullable("material", new MaterialWrapper(delegate.getMaterial()).getLuaObject());
   }
 
 }
