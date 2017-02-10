@@ -212,9 +212,7 @@ public class NBTTagUtil {
       // return toTable(((NBTTagByteArray)tag).getByteArray());
       throw new UnsupportedOperationException("Conversion of NBTTagByteArray is not supported!");
     } else if (tag instanceof NBTTagIntArray) {
-      // Do we need that? Currently not supported!
-      // return toTable(((NBTTagIntArray)tag).getIntArray());
-      throw new UnsupportedOperationException("Conversion of NBTTagIntArray is not supported!");
+      return toTable(((NBTTagIntArray)tag).getIntArray());
     } else if (tag instanceof NBTTagList) {
       return toTable(((NBTTagList) tag));
     } else if (tag instanceof NBTTagCompound) {
