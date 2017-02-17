@@ -431,6 +431,7 @@ public class CommandAdmin extends CommandBase {
   private void clearCache(ICommandSender sender) throws CommandException {
     try {
       LuaMod.instance.getLuaCache().clear();
+      LuaMod.instance.getLuaFunctionCache().clear();
       sender.addChatMessage(new TextComponentString("Cache cleared!"));
     } catch (IOException e) {
       throw new CommandException("Can't clear lua cache! Caught exception with message: %s!",

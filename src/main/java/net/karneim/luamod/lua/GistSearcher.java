@@ -4,6 +4,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.cache.LuaFunctionCache;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.gist.GistFileRef;
 import net.karneim.luamod.gist.GistRepo;
@@ -18,31 +19,33 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class GistSearcher {
 
-  public static void installInto(Table env, ChunkLoader loader, GistRepo gistRepo,
+  public static void installInto(Table env, ChunkLoader loader, LuaFunctionCache cache, GistRepo gistRepo,
       @Nullable Credentials credentials) {
     Table pkg = (Table) env.rawget("package");
     Table searchers = (Table) pkg.rawget("searchers");
     long len = searchers.rawlen();
-    searchers.rawset(len + 1, gistLoader(env, loader, gistRepo, credentials));
+    searchers.rawset(len + 1, gistLoader(env, loader, cache, gistRepo, credentials));
   }
 
-  private static Object gistLoader(Table env, ChunkLoader loader, GistRepo gistRepo,
+  private static Object gistLoader(Table env, ChunkLoader loader, LuaFunctionCache cache, GistRepo gistRepo, 
       @Nullable Credentials credentials) {
-    return new GistLoaderFunction(env, loader, gistRepo, credentials);
+    return new GistLoaderFunction(env, loader, cache, gistRepo, credentials);
   }
 
   private static class GistLoaderFunction extends AbstractFunction1 {
 
     private final Table env;
     private ChunkLoader loader;
+    private LuaFunctionCache cache;
     private GistRepo gistRepo;
     @Nullable
     private Credentials credentials;
 
-    public GistLoaderFunction(Table env, ChunkLoader loader, GistRepo gistRepo,
+    public GistLoaderFunction(Table env, ChunkLoader loader, LuaFunctionCache cache, GistRepo gistRepo,
         @Nullable Credentials credentials) {
       this.env = env;
       this.loader = loader;
+      this.cache = cache;
       this.gistRepo = gistRepo;
       this.credentials = credentials;
     }
@@ -56,8 +59,12 @@ public class GistSearcher {
             String.format("Expected Gist reference, but got: %s", gistRefStr));
       }
       try {
-        String content = gistRepo.load(credentials, gistRef);
-        LuaFunction fn = loader.loadTextChunk(new Variable(env), gistRef.asFilename(), content);
+        LuaFunction fn = cache.get(gistRefStr);
+        if ( fn == null) {
+          String content = gistRepo.load(credentials, gistRef);
+          fn = loader.loadTextChunk(new Variable(env), gistRef.asFilename(), content);
+          cache.put(gistRefStr, fn);
+        }
         context.getReturnBuffer().setTo(fn, gistRef);
       } catch (Exception e) {
         throw new UndeclaredThrowableException(e);

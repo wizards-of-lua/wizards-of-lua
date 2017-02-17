@@ -7,6 +7,7 @@ import java.nio.file.FileSystem;
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.Players;
+import net.karneim.luamod.cache.LuaFunctionCache;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
@@ -89,7 +90,8 @@ public class LuaUtil {
     Utf8Lib.installInto(state, env);
 
     GistRepo gistRepo = LuaMod.instance.getGistRepo();
-    GistSearcher.installInto(env, modulesLoader, gistRepo, credentials);
+    LuaFunctionCache luaFunctionCache = LuaMod.instance.getLuaFunctionCache();
+    GistSearcher.installInto(env, modulesLoader, luaFunctionCache, gistRepo, credentials);
 
     LuaModLib.installInto(env, owner);
     Snapshots snapshots = new Snapshots();

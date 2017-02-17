@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.karneim.luamod.cache.FileCache;
+import net.karneim.luamod.cache.LuaFunctionCache;
 import net.karneim.luamod.config.ModConfiguration;
 import net.karneim.luamod.credentials.CredentialsStore;
 import net.karneim.luamod.cursor.ClipboardRegistry;
@@ -60,6 +61,7 @@ public class LuaMod {
   private File luaDir;
   private Profiles profiles;
   private FileCache fileCache;
+  private LuaFunctionCache luaFunctionCache;
   private GistRepo gistRepo;
   private CredentialsStore credentialsStore;
   private Startup startup;
@@ -73,6 +75,7 @@ public class LuaMod {
     File configDir = createConfigDirectory(configFile);
     luaDir = createLuaDirectory(configDir);
     fileCache = new FileCache(luaDir);
+    luaFunctionCache = new LuaFunctionCache();
     configuration = new ModConfiguration(configFile);
     profiles = new Profiles(configuration);
     credentialsStore = new CredentialsStore(configuration);
@@ -170,6 +173,10 @@ public class LuaMod {
 
   public FileCache getLuaCache() {
     return fileCache;
+  }
+
+  public LuaFunctionCache getLuaFunctionCache() {
+    return luaFunctionCache;
   }
 
   public CredentialsStore getCredentialsStore() {
