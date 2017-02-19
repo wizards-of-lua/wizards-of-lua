@@ -7,13 +7,15 @@ import java.nio.file.FileSystem;
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.Players;
-import net.karneim.luamod.cache.LuaFunctionCache;
+import net.karneim.luamod.cache.LuaFunctionBinaryCache;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Cursor;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.gist.GistRepo;
 import net.karneim.luamod.lua.event.Events;
+import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
+import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.CursorWrapper;
 import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
@@ -74,11 +76,11 @@ public class LuaUtil {
     events = new Events(LuaMod.instance.getSpellRegistry());
     runtime = new Runtime(ticks);
 
-    ChunkLoader modulesLoader = CompilerChunkLoader.of("RequiredModulesAsByteCode");
+    ExtendedChunkLoader modulesLoader = PatchedCompilerChunkLoader.of("RequiredModulesAsByteCode");
     RuntimeEnvironment environment = getModRuntimeEnvironment();
 
     BasicLib.installInto(state, env, environment, modulesLoader);
-    ModuleLib.installInto(state, env, environment, modulesLoader,
+    ModuleLib.installInto(state, env, environment, /* modulesLoader */ null,
         ClassLoader.getSystemClassLoader());
 
     CoroutineLib.installInto(state, env);
@@ -90,7 +92,7 @@ public class LuaUtil {
     Utf8Lib.installInto(state, env);
 
     GistRepo gistRepo = LuaMod.instance.getGistRepo();
-    LuaFunctionCache luaFunctionCache = LuaMod.instance.getLuaFunctionCache();
+    LuaFunctionBinaryCache luaFunctionCache = LuaMod.instance.getLuaFunctionCache();
     GistSearcher.installInto(env, modulesLoader, luaFunctionCache, gistRepo, credentials);
 
     LuaModLib.installInto(env, owner);
