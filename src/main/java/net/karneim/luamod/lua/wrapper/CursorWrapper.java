@@ -10,6 +10,8 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.NumberInvalidException;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -50,6 +52,7 @@ public class CursorWrapper {
     luaTable.rawset("getOwnerPosition", new GetOwnerPositionFunction());
     luaTable.rawset("getOwnerWorldPosition", new GetOwnerWorldPositionFunction());
     luaTable.rawset("getOwnerName", new GetOwnerNameFunction());
+    luaTable.rawset("getOwner", new GetOwnerFunction());
     luaTable.rawset("setWorldPosition", new SetWorldPositionFunction());
     luaTable.rawset("getWorldPosition", new GetWorldPositionFunction());
     luaTable.rawset("rotate", new RotateFunction());
@@ -262,6 +265,31 @@ public class CursorWrapper {
       // System.out.println("getOwnerName");
       String result = cursor.getOwnerName();
       context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+  
+  private class GetOwnerFunction extends AbstractFunction0 {
+
+    @Override
+    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
+      // System.out.println("getOwner");
+      Entity result = cursor.getOwner();
+      if ( result instanceof EntityPlayer) {
+        EntityPlayer player = (EntityPlayer)result;
+        EntityPlayerWrapper wrapper = new EntityPlayerWrapper(player);
+        context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      } else if (result != null){
+        EntityWrapper wrapper = new EntityWrapper(result);
+        context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      } else {
+        context.getReturnBuffer().setTo(null);
+      }
     }
 
     @Override

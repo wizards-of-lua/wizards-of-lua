@@ -80,6 +80,10 @@ public class Cursor {
     return null;
   }
 
+  public Entity getOwner() {
+    return owner.getCommandSenderEntity();
+  }
+  
   public String getOwnerName() {
     return owner.getName();
   }
