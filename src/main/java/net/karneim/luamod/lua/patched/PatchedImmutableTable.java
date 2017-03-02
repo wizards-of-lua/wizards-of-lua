@@ -70,9 +70,10 @@ public class PatchedImmutableTable extends Table {
 
   }
 
-  PatchedImmutableTable(Map<Object, Entry> entries, Object initialKey) {
+  PatchedImmutableTable(Map<Object, Entry> entries, Object initialKey, Table metatable) {
     this.entries = Objects.requireNonNull(entries);
     this.initialKey = initialKey;
+    super.setMetatable(metatable);
   }
 
   /**
@@ -210,11 +211,6 @@ public class PatchedImmutableTable extends Table {
     throw new UnsupportedOperationException("table is immutable");
   }
 
-  @Override
-  public Table getMetatable() {
-    return null;
-  }
-
   /**
    * Throws an {@link UnsupportedOperationException}, since this table is immutable.
    *
@@ -255,6 +251,8 @@ public class PatchedImmutableTable extends Table {
   public static class Builder {
 
     private final TraversableHashMap<Object, Object> entries;
+    
+    private Table metatable = null;
 
     private static void checkKey(Object key) {
       if (key == null || (key instanceof Double && Double.isNaN(((Double) key).doubleValue()))) {
@@ -327,6 +325,11 @@ public class PatchedImmutableTable extends Table {
 
       return this;
     }
+    
+    public Builder setMetatable(Table table) {
+      metatable = table;
+      return this;
+    }
 
     /**
      * Clears the builder.
@@ -348,7 +351,7 @@ public class PatchedImmutableTable extends Table {
         tableEntries.put(e.getKey(), new Entry(e.getValue(), entries.getSuccessorOf(k)));
       }
       return new PatchedImmutableTable(Collections.unmodifiableMap(tableEntries),
-          entries.getFirstKey());
+          entries.getFirstKey(), metatable);
     }
 
   }

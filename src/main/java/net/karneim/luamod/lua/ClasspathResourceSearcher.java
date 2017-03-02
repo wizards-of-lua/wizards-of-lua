@@ -1,8 +1,11 @@
 package net.karneim.luamod.lua;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
 
 import javax.annotation.Nullable;
+
+import org.apache.commons.io.IOUtils;
 
 import net.karneim.luamod.cache.LuaFunctionBinaryCache;
 import net.karneim.luamod.credentials.Credentials;
@@ -18,56 +21,57 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class GistSearcher {
+public class ClasspathResourceSearcher {
 
   public static void installInto(Table env, ExtendedChunkLoader loader,
-      LuaFunctionBinaryCache cache, GistRepo gistRepo, @Nullable Credentials credentials) {
+      LuaFunctionBinaryCache cache, ClassLoader classloader) {
     Table pkg = (Table) env.rawget("package");
     Table searchers = (Table) pkg.rawget("searchers");
     long len = searchers.rawlen();
-    searchers.rawset(len + 1, gistLoader(env, loader, cache, gistRepo, credentials));
+    searchers.rawset(len + 1, getFunction(env, loader, cache, classloader));
   }
 
-  private static Object gistLoader(Table env, ExtendedChunkLoader loader,
-      LuaFunctionBinaryCache cache, GistRepo gistRepo, @Nullable Credentials credentials) {
-    return new GistLoaderFunction(env, loader, cache, gistRepo, credentials);
+  private static Object getFunction(Table env, ExtendedChunkLoader loader,
+      LuaFunctionBinaryCache cache, ClassLoader classloader) {
+    return new LoaderFunction(env, loader, cache, classloader);
   }
 
-  private static class GistLoaderFunction extends AbstractFunction1 {
+  private static class LoaderFunction extends AbstractFunction1 {
 
     private final Table env;
     private ExtendedChunkLoader loader;
     private LuaFunctionBinaryCache cache;
-    private GistRepo gistRepo;
-    @Nullable
-    private Credentials credentials;
+    private ClassLoader classloader;
 
-    public GistLoaderFunction(Table env, ExtendedChunkLoader loader, LuaFunctionBinaryCache cache,
-        GistRepo gistRepo, @Nullable Credentials credentials) {
+    public LoaderFunction(Table env, ExtendedChunkLoader loader, LuaFunctionBinaryCache cache, ClassLoader classloader) {
       this.env = env;
       this.loader = loader;
       this.cache = cache;
-      this.gistRepo = gistRepo;
-      this.credentials = credentials;
+      this.classloader = classloader;
     }
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String gistRefStr = String.valueOf(arg1);
-      GistFileRef gistRef = GistFileRef.parseGistRef(gistRefStr);
-      if (gistRef == null) {
-        context.getReturnBuffer().setTo("no module with name '"+gistRefStr+"' found in Gists");
-        return;
+      String moduleName = String.valueOf(arg1);
+      if (moduleName == null) {
+        throw new IllegalArgumentException(
+            String.format("Expected module name, but got: %s", moduleName));
       }
       try {
-        LuaFunctionBinary fnBin = cache.get(gistRefStr);
+        LuaFunctionBinary fnBin = cache.get(moduleName);
         if (fnBin == null) {
-          String content = gistRepo.load(credentials, gistRef);
-          fnBin = loader.compile(gistRef.asFilename(), content);
-          cache.put(gistRefStr, fnBin);
+          String name = moduleName.replaceAll("\\.", "/")+".lua";
+          URL resource = classloader.getResource(name);
+          if (resource == null) {
+            context.getReturnBuffer().setTo("no module with name '"+name+"' found in classpath");
+            return;
+          }
+          String src = IOUtils.toString(resource);
+          fnBin = loader.compile(moduleName, src);
+          cache.put(moduleName, fnBin);
         }
         LuaFunction fn = fnBin.loadInto(new Variable(env));
-        context.getReturnBuffer().setTo(fn, gistRefStr);
+        context.getReturnBuffer().setTo(fn, moduleName);
       } catch (Exception e) {
         throw new UndeclaredThrowableException(e);
       }

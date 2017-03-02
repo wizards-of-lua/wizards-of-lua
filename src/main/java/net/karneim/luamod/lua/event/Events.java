@@ -9,8 +9,10 @@ import com.google.common.collect.Multimap;
 
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
+import net.sandius.rembulan.Table;
 
 public class Events {
+  private final Table env;
   private final SpellRegistry spellRegistry;
   private final Multimap<String, EventQueue> eventQueues = HashMultimap.create();
   private final Set<EventQueue> activeQueues = new HashSet<EventQueue>();
@@ -18,7 +20,8 @@ public class Events {
   private long currentTime;
   private long waitForEventUntil;
 
-  public Events(SpellRegistry spellRegistry) {
+  public Events(Table env, SpellRegistry spellRegistry) {
+    this.env = env;
     this.spellRegistry = spellRegistry;
   }
 
@@ -58,7 +61,20 @@ public class Events {
     this.currentTime = currentTime;
   }
 
-  public void handle(EventWrapper event) {
+  public void handle(EventType type, Object evt) {
+    EventWrapper<?> evtWrapper = type.wrap(env, evt);
+    handle(evtWrapper);
+  }
+  
+  public void fire(String eventType, Object content) {
+    GenericLuaEventWrapper wrapper = new GenericLuaEventWrapper(env, content, eventType);
+    Iterable<SpellEntity> spells = spellRegistry.getAll();
+    for (SpellEntity spell : spells) {
+      spell.getEvents().handle(wrapper);
+    }
+  }
+  
+  private void handle(EventWrapper event) {
     // Ensure that the lua object is generated in the context of the event producing action
     event.getLuaObject();
     String eventType = event.getType();
@@ -67,14 +83,6 @@ public class Events {
       for (EventQueue queue : queues) {
         queue.add(event);
       }
-    }
-  }
-
-  public void fire(String eventType, Object content) {
-    GenericLuaEventWrapper wrapper = new GenericLuaEventWrapper(content, eventType);
-    Iterable<SpellEntity> spells = spellRegistry.getAll();
-    for (SpellEntity spell : spells) {
-      spell.getEvents().handle(wrapper);
     }
   }
 

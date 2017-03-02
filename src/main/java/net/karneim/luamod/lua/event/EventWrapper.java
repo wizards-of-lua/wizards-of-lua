@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
+import net.sandius.rembulan.Table;
 
 public abstract class EventWrapper<JavaObject> extends DelegatingTableWrapper<JavaObject> {
   private final String type;
@@ -13,8 +14,8 @@ public abstract class EventWrapper<JavaObject> extends DelegatingTableWrapper<Ja
   private static long idCount = 0;
 
 
-  public EventWrapper(@Nullable JavaObject javaObject, String type) {
-    super(javaObject);
+  public EventWrapper(Table env, @Nullable JavaObject javaObject, String type) {
+    super(env, javaObject);
     id = ++idCount;
     this.type = checkNotNull(type, "type == null!");
   }

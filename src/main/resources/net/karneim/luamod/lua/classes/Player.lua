@@ -1,0 +1,2 @@
+Player = Entity:new()
+

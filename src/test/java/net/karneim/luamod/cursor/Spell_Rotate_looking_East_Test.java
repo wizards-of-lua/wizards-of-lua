@@ -9,11 +9,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.Rotation;
 import net.minecraft.world.World;
 
-public class Cursor_Rotate_looking_East_Test {
+public class Spell_Rotate_looking_East_Test {
 
   private World world = Mockito.mock(World.class);
   private ICommandSender commandSender = Mockito.mock(ICommandSender.class);
-  private Cursor underTest = new Cursor(commandSender, world);
+  private Spell underTest = new Spell(commandSender, world);
 
 
   @Test

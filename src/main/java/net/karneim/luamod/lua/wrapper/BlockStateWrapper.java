@@ -13,10 +13,11 @@ import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.sandius.rembulan.Table;
 
 public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
-  public BlockStateWrapper(@Nullable IBlockState delegate) {
-    super(delegate);
+  public BlockStateWrapper(Table env, @Nullable IBlockState delegate) {
+    super(env, delegate);
   }
 
   @Override
@@ -30,8 +31,8 @@ public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
       Object luaValue = LuaTypeConverter.luaValueOf(value);
       props.put(name.getName(), luaValue);
     }
-    builder.addNullable("properties", new StringXLuaObjectMapWrapper(props).getLuaObject());
-    builder.addNullable("material", new MaterialWrapper(delegate.getMaterial()).getLuaObject());
+    builder.addNullable("properties", new StringXLuaObjectMapWrapper(env, props).getLuaObject());
+    builder.addNullable("material", new MaterialWrapper(env, delegate.getMaterial()).getLuaObject());
   }
 
 }

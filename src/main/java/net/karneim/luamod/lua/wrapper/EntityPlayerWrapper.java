@@ -2,19 +2,22 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.classes.LuaPlayer;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.GameType;
+import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
-  public EntityPlayerWrapper(@Nullable EntityPlayer delegate) {
-    super(delegate);
+  public EntityPlayerWrapper(Table env, @Nullable EntityPlayer delegate) {
+    super(env, delegate);
   }
 
   @Override
@@ -28,9 +31,10 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
     if (delegate instanceof EntityPlayerMP) {
       EntityPlayerMP mp = (EntityPlayerMP) delegate;
       GameType e = mp.interactionManager.getGameType();
-      builder.add("gamemode", new EnumWrapper(e).getLuaObject());
+      builder.add("gamemode", new EnumWrapper(env, e).getLuaObject());
       builder.addNullable("getInventory", new GetInventoryFunction(mp));
     }
+    builder.setMetatable(LuaPlayer.META_TABLE(env));
   }
 
   private class GetInventoryFunction extends AbstractFunction1 {
@@ -50,9 +54,9 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
             String.format("number expected but got %s", arg1.getClass().getSimpleName()));
       }
       int index = ((Number) (arg1)).intValue();
-      
+
       ItemStack itemStack = mp.inventory.getStackInSlot(index);
-      ItemStackWrapper wrapper = new ItemStackWrapper(itemStack);
+      ItemStackWrapper wrapper = new ItemStackWrapper(env, itemStack);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 

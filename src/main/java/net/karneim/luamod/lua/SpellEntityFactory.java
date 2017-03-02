@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.cursor.Clipboard;
-import net.karneim.luamod.cursor.CursorUtil;
+import net.karneim.luamod.cursor.SpellUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.sandius.rembulan.load.LoaderException;
 
@@ -25,7 +25,7 @@ public class SpellEntityFactory {
   public SpellEntity create(World world, ICommandSender sender, ICommandSender owner)
       throws IOException, LoaderException {
     Clipboard clipboard = getClipboard(sender);
-    BlockPos pos = getBlockPos(sender);
+    Vec3d pos = getPos(sender);
     Rotation rot = getRotation(sender);
     EnumFacing surface = getSurface(sender);
     SpellEntity spell = new SpellEntity(sender.getEntityWorld(), LuaMod.instance, owner, clipboard,
@@ -50,7 +50,7 @@ public class SpellEntityFactory {
     } else if (entity instanceof SpellEntity) {
       return null;
     } else {
-      EnumFacing side = CursorUtil.getSideLookingAt(entity);
+      EnumFacing side = SpellUtil.getSideLookingAt(entity);
       return side == null ? null : side;
     }
   }
@@ -63,19 +63,19 @@ public class SpellEntityFactory {
       SpellEntity luaProcessEntity = (SpellEntity) entity;
       return luaProcessEntity.getCursor().getRotation();
     } else {
-      return CursorUtil.getRotation(entity.getHorizontalFacing());
+      return SpellUtil.getRotation(entity.getHorizontalFacing());
     }
   }
 
-  private BlockPos getBlockPos(ICommandSender sender) {
+  private Vec3d getPos(ICommandSender sender) {
     Entity entity = sender.getCommandSenderEntity();
     if (entity == null) {
-      return sender.getPosition();
+      return sender.getPositionVector();
     } else if (entity instanceof SpellEntity) {
       SpellEntity luaProcessEntity = (SpellEntity) entity;
       return luaProcessEntity.getCursor().getWorldPosition();
     } else {
-      return CursorUtil.getPositionLookingAt(entity);
+      return new Vec3d(SpellUtil.getPositionLookingAt(entity));
     }
   }
 

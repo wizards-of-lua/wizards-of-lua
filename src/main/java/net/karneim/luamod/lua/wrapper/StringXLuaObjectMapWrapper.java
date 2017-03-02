@@ -7,10 +7,11 @@ import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
+import net.sandius.rembulan.Table;
 
 public class StringXLuaObjectMapWrapper extends DelegatingTableWrapper<Map<String, Object>> {
-  public StringXLuaObjectMapWrapper(@Nullable Map<String, Object> delegate) {
-    super(delegate);
+  public StringXLuaObjectMapWrapper(Table env, @Nullable Map<String, Object> delegate) {
+    super(env, delegate);
   }
 
   @Override

@@ -17,17 +17,19 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 public class EntitiesWrapper {
 
   public static EntitiesWrapper installInto(Table env, Entities entities) {
-    EntitiesWrapper result = new EntitiesWrapper(entities);
+    EntitiesWrapper result = new EntitiesWrapper(env, entities);
     env.rawset("entities", result.getLuaTable());
     return result;
   }
 
+  private final Table env;
   private final Entities entities;
   private final Table luaTable = DefaultTable.factory().newTable();
 
   private final EntityWrapperFactory entityWrapperFactory = new EntityWrapperFactory();
 
-  public EntitiesWrapper(Entities entities) {
+  public EntitiesWrapper(Table env, Entities entities) {
+    this.env = env;
     this.entities = entities;
     luaTable.rawset("list", new ListFunction());
     luaTable.rawset("get", new GetFunction());
@@ -48,7 +50,7 @@ public class EntitiesWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = entities.list();
-      StringIterableWrapper wrapper = new StringIterableWrapper(ids);
+      StringIterableWrapper wrapper = new StringIterableWrapper(env, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -71,7 +73,7 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      EntityWrapper<?> wrapper = entityWrapperFactory.create(entity);
+      EntityWrapper<?> wrapper = entityWrapperFactory.create(env, entity);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -124,7 +126,7 @@ public class EntitiesWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> names = entities.find(target);
-      StringIterableWrapper wrapper = new StringIterableWrapper(names);
+      StringIterableWrapper wrapper = new StringIterableWrapper(env, names);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 

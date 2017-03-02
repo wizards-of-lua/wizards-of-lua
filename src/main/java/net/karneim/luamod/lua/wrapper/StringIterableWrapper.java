@@ -4,10 +4,11 @@ import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.ImmutableTableWrapper;
+import net.sandius.rembulan.Table;
 
 public class StringIterableWrapper extends ImmutableTableWrapper<Iterable<String>> {
-  public StringIterableWrapper(@Nullable Iterable<String> delegate) {
-    super(delegate);
+  public StringIterableWrapper(Table env, @Nullable Iterable<String> delegate) {
+    super(env, delegate);
   }
 
   @Override

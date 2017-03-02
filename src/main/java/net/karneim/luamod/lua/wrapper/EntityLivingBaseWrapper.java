@@ -4,11 +4,12 @@ import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.EntityLivingBase;
+import net.sandius.rembulan.Table;
 
 
 public class EntityLivingBaseWrapper<E extends EntityLivingBase> extends EntityWrapper<E> {
-  public EntityLivingBaseWrapper(@Nullable E delegate) {
-    super(delegate);
+  public EntityLivingBaseWrapper(Table env, @Nullable E delegate) {
+    super(env, delegate);
   }
 
   @Override
@@ -19,10 +20,10 @@ public class EntityLivingBaseWrapper<E extends EntityLivingBase> extends EntityW
     // delegate.getFoodStats().getFoodLevel()
     // delegate.getFoodStats().getSaturationLevel()
     // delegate.getInventoryEnderChest()
-    builder.addNullable("armor", new ArmorWrapper(delegate.getArmorInventoryList()).getLuaObject());
+    builder.addNullable("armor", new ArmorWrapper(env, delegate.getArmorInventoryList()).getLuaObject());
     builder.add("health", delegate.getHealth());
-    builder.addNullable("mainHand", new ItemStackWrapper(delegate.getHeldItemMainhand()).getLuaObject());
-    builder.addNullable("offHand", new ItemStackWrapper(delegate.getHeldItemOffhand()).getLuaObject());
+    builder.addNullable("mainHand", new ItemStackWrapper(env, delegate.getHeldItemMainhand()).getLuaObject());
+    builder.addNullable("offHand", new ItemStackWrapper(env, delegate.getHeldItemOffhand()).getLuaObject());
   }
 
 }

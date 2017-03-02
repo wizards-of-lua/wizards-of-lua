@@ -1,15 +1,22 @@
 package net.karneim.luamod.lua;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.lua.event.EventType;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class LuaModLib {
@@ -35,49 +42,23 @@ public class LuaModLib {
       env.rawset(e.name(), e.name());
     }
     env.rawset("SURFACE","SURFACE");
-    env.rawset("print", new PrintFunction());
+    //env.rawset("print", new PrintFunction());
+    
+    OutputStream out = new ChatOutputStream();
+    LuaFunction printFunc = BasicLib.print(out, env);
+    env.rawset("print", printFunc);
   }
 
-  private class PrintFunction extends AbstractFunctionAnyArg {
+  private class ChatOutputStream extends org.apache.commons.io.output.ByteArrayOutputStream {
     @Override
-    public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      // System.out.println("print: " + args);
-      if (args == null) {
-        args = new String[] {""};
-      }
-      String text = concat("\t", args);
-      print(encode(text));
-      context.getReturnBuffer().setTo();
-    }
-
-    private String concat(String delimter, Object[] args) {
-      StringBuilder result = new StringBuilder();
-      for (int i = 0; i < args.length; ++i) {
-        if (i > 0) {
-          result.append(delimter);
-        }
-        if (args[i] == null) {
-          result.append("nil");
-        } else {
-          result.append(String.valueOf(args[i]));
-        }
-      }
-      return result.toString();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
+    public void flush() throws IOException {
+      String message = toString();
+      reset();
+      print(message);
     }
   }
-
-  private String encode(String text) {
-    return text.replaceAll("\t", "    ");
-  }
-
-  public void print(String message) {
+  
+  void print(String message) {
     owner.addChatMessage(new TextComponentString(message));
   }
-
 }

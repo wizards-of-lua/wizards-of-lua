@@ -5,10 +5,11 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.ImmutableTableWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.sandius.rembulan.Table;
 
 public class BlockPosWrapper extends ImmutableTableWrapper<BlockPos> {
-  public BlockPosWrapper(@Nullable BlockPos delegate) {
-    super(delegate);
+  public BlockPosWrapper(Table env, @Nullable BlockPos delegate) {
+    super(env, delegate);
   }
 
   @Override

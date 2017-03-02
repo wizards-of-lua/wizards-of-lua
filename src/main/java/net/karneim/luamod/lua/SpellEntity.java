@@ -6,7 +6,7 @@ import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.cursor.Clipboard;
-import net.karneim.luamod.cursor.Cursor;
+import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.event.Events;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -15,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -30,7 +31,7 @@ public class SpellEntity extends Entity {
   private LuaMod mod;
   private ICommandSender owner;
   private Clipboard clipboard;
-  private Cursor cursor;
+  private Spell spell;
 
   private enum State {
     START, RESUME, SUSPEND, PAUSE, STOP, DEAD
@@ -49,7 +50,7 @@ public class SpellEntity extends Entity {
   }
 
   public SpellEntity(World worldIn, LuaMod mod, ICommandSender aOwner, Clipboard clipboard,
-      BlockPos pos, Rotation rotation, EnumFacing surface) {
+      Vec3d pos, Rotation rotation, EnumFacing surface) {
     this(worldIn);
     this.mod = mod;
     this.owner = aOwner;
@@ -61,11 +62,11 @@ public class SpellEntity extends Entity {
     } else {
       userId = owner.getCommandSenderEntity().getUniqueID().toString();
     }
-    this.cursor = new Cursor(owner, this, this.getEntityWorld(), pos, rotation, surface);
+    this.spell = new Spell(owner, this, this.getEntityWorld(), pos, rotation, surface);
     Credentials credentials = mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
-    luaUtil = new LuaUtil(this.getEntityWorld(), owner, cursor, clipboard, credentials);
+    luaUtil = new LuaUtil(this.getEntityWorld(), owner, spell, clipboard, credentials);
     if (surface != null) {
-      pos = pos.offset(surface, 1);
+      pos = pos.add(new Vec3d(surface.getDirectionVec()));
     }
     updatePosition();
     mod.getSpellRegistry().register(this);
@@ -104,9 +105,9 @@ public class SpellEntity extends Entity {
     ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
   }
 
-  boolean isInside(ChunkPos cPos, BlockPos bPos) {
-    return cPos.getXStart() <= bPos.getX() && bPos.getX() <= cPos.getXEnd()
-        && cPos.getZStart() <= bPos.getZ() && bPos.getZ() <= cPos.getZEnd();
+  boolean isInside(ChunkPos cPos, Vec3d pos) {
+    return cPos.getXStart() <= pos.xCoord && pos.xCoord <= cPos.getXEnd()
+        && cPos.getZStart() <= pos.zCoord && pos.zCoord <= cPos.getZEnd();
   }
 
   @Override
@@ -150,12 +151,12 @@ public class SpellEntity extends Entity {
   }
 
   private void updatePosition() {
-    BlockPos pos = cursor.getWorldPosition();
-    setPosition(pos.getX(), pos.getY(), pos.getZ());
+    Vec3d pos = spell.getWorldPosition();
+    setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
     if (chunkLoaderTicket != null) {
       if (!isInside(chunkPos, pos)) {
         ForgeChunkManager.unforceChunk(chunkLoaderTicket, chunkPos);
-        chunkPos = new ChunkPos(pos);
+        chunkPos = new ChunkPos(new BlockPos(pos));
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
       }
     }
@@ -222,8 +223,8 @@ public class SpellEntity extends Entity {
   }
 
 
-  public Cursor getCursor() {
-    return cursor;
+  public Spell getCursor() {
+    return spell;
   }
 
   @Override

@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.ImmutableTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction0;
@@ -17,8 +18,8 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class ItemStackWrapper extends DelegatingTableWrapper<ItemStack> {
-  public ItemStackWrapper(@Nullable ItemStack delegate) {
-    super(delegate);
+  public ItemStackWrapper(Table env, @Nullable ItemStack delegate) {
+    super(env, delegate);
   }
 
   @Override

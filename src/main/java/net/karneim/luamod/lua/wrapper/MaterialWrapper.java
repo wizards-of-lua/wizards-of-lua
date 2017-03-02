@@ -5,10 +5,11 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.block.material.Material;
+import net.sandius.rembulan.Table;
 
 public class MaterialWrapper extends DelegatingTableWrapper<Material> {
-  public MaterialWrapper(@Nullable Material delegate) {
-    super(delegate);
+  public MaterialWrapper(Table env, @Nullable Material delegate) {
+    super(env, delegate);
   }
 
   @Override
@@ -20,7 +21,7 @@ public class MaterialWrapper extends DelegatingTableWrapper<Material> {
     builder.add("isOpaque", delegate.isOpaque());
     builder.add("isSolid", delegate.isSolid());
     builder.add("isToolNotRequired", delegate.isToolNotRequired());
-    builder.addNullable("mobility", new EnumWrapper(delegate.getMobilityFlag()).getLuaObject());
+    builder.addNullable("mobility", new EnumWrapper(env, delegate.getMobilityFlag()).getLuaObject());
   }
 
 }

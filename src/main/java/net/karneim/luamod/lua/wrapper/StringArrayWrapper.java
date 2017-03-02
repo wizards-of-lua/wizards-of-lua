@@ -4,12 +4,13 @@ import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
+import net.sandius.rembulan.Table;
 
 
 
 public class StringArrayWrapper extends DelegatingTableWrapper<String[]> {
-  public StringArrayWrapper(@Nullable String[] delegate) {
-    super(delegate);
+  public StringArrayWrapper(Table env, @Nullable String[] delegate) {
+    super(env, delegate);
   }
 
   @Override

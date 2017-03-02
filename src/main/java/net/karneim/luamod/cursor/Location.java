@@ -1,18 +1,18 @@
 package net.karneim.luamod.cursor;
 
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class Location {
-  private final BlockPos position;
+  private final Vec3d position;
   private final Rotation rotation;
 
-  public Location(BlockPos position, Rotation rotation) {
+  public Location(Vec3d position, Rotation rotation) {
     this.position = position;
     this.rotation = rotation;
   }
 
-  public BlockPos getPosition() {
+  public Vec3d getPosition() {
     return position;
   }
 

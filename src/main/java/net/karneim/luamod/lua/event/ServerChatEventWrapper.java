@@ -4,10 +4,11 @@ import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraftforge.event.ServerChatEvent;
+import net.sandius.rembulan.Table;
 
 public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
-  public ServerChatEventWrapper(@Nullable ServerChatEvent delegate) {
-    super(delegate, EventType.CHAT.name());
+  public ServerChatEventWrapper(Table env, @Nullable ServerChatEvent delegate) {
+    super(env, delegate, EventType.CHAT.name());
   }
 
   @Override

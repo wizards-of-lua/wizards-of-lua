@@ -1,17 +1,21 @@
 package net.karneim.luamod.lua.wrapper;
 
-import net.karneim.luamod.cursor.Cursor;
+import java.io.StringWriter;
+
+import org.apache.commons.io.output.WriterOutputStream;
+
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
+import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.event.Events;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -19,49 +23,50 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class CursorWrapper {
+public class SpellWrapper {
 
-  public static void installInto(Table env, Cursor cursor, Events eventManager,
-      Snapshots snapshots) {
-    CursorWrapper wrapper = new CursorWrapper(cursor, eventManager, snapshots);
-    env.rawset("cursor", wrapper.getLuaTable());
+  public static void installInto(Table env, Spell spell, Events eventManager, Snapshots snapshots) {
+    SpellWrapper wrapper = new SpellWrapper(env, spell, eventManager, snapshots);
+    env.rawset("spell", wrapper.getLuaTable());
   }
 
-  private final Cursor cursor;
+  private final Spell spell;
   private final Events eventManager;
   private final Snapshots snapshots;
 
   private final Table luaTable = DefaultTable.factory().newTable();
+  private final EntityWrapperFactory entityWrapperFactory = new EntityWrapperFactory();
+  private Table env;
 
-  public CursorWrapper(Cursor cursor, Events eventManager, Snapshots snapshots) {
-    this.cursor = cursor;
+  public SpellWrapper(Table env, Spell spell, Events eventManager, Snapshots snapshots) {
+    this.spell = spell;
     this.eventManager = eventManager;
     this.snapshots = snapshots;
+    this.env = env;
     luaTable.rawset("move", new MoveFunction());
     luaTable.rawset("moveBy", new MoveByFunction());
-    luaTable.rawset("setPosition", new SetPositionFunction());
-    luaTable.rawset("getPosition", new GetPositionFunction());
-    luaTable.rawset("getOwnerPosition", new GetOwnerPositionFunction());
     luaTable.rawset("getOwnerWorldPosition", new GetOwnerWorldPositionFunction());
     luaTable.rawset("getOwnerName", new GetOwnerNameFunction());
     luaTable.rawset("getOwner", new GetOwnerFunction());
-    luaTable.rawset("setWorldPosition", new SetWorldPositionFunction());
-    luaTable.rawset("getWorldPosition", new GetWorldPositionFunction());
+    luaTable.rawset("setPosition", new SetWorldPositionFunction());
+    luaTable.rawset("getPosition", new GetWorldPositionFunction());
     luaTable.rawset("rotate", new RotateFunction());
     luaTable.rawset("setRotation", new SetRotationFunction());
     luaTable.rawset("getRotation", new GetRotationFunction());
     luaTable.rawset("setOrientation", new SetOrientationFunction());
     luaTable.rawset("getOrientation", new GetOrientationFunction());
     luaTable.rawset("getSurface", new GetSurfaceFunction());
-    luaTable.rawset("place", new PlaceFunction());
+    luaTable.rawset("setBlock", new SetBlockFunction());
     luaTable.rawset("getBlock", new GetBlockFunction());
     luaTable.rawset("say", new SayFunction());
     luaTable.rawset("msg", new MsgFunction());
@@ -74,7 +79,6 @@ public class CursorWrapper {
     luaTable.rawset("cut", new CutFunction());
     luaTable.rawset("copy", new CopyFunction());
     luaTable.rawset("paste", new PasteFunction());
-    luaTable.rawset("inAir", new InAirFunction());
   }
 
   public Table getLuaTable() {
@@ -97,13 +101,13 @@ public class CursorWrapper {
       int length = ((Number) arg2).intValue();
       EnumFacing x = EnumFacing.byName(String.valueOf(arg1));
       if (x != null) {
-        cursor.move(x, length);
+        spell.move(x, length);
       } else {
         EnumDirection y = EnumDirection.byName(String.valueOf(arg1));
         if (y != null) {
-          cursor.move(y, length);
+          spell.move(y, length);
         } else if ("SURFACE".equals(String.valueOf(arg1))) {
-          cursor.move(cursor.getSurface(), length);
+          spell.move(spell.getSurface(), length);
         } else {
           throw new IllegalArgumentException(
               String.format("Direction value expected but got %s!", arg1));
@@ -141,7 +145,7 @@ public class CursorWrapper {
       int dx = ((Number) arg1).intValue();
       int dy = ((Number) arg2).intValue();
       int dz = ((Number) arg3).intValue();
-      cursor.moveBy(dx, dy, dz);
+      spell.moveBy(dx, dy, dz);
       context.getReturnBuffer().setTo();
     }
 
@@ -168,82 +172,12 @@ public class CursorWrapper {
   //
   // }
 
-  private class SetPositionFunction extends AbstractFunction3 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
-        throws ResolvedControlThrowable {
-      // System.out.println("setPosition: " + arg1 + "," + arg2 + "," + arg3);
-      if (arg1 == null || !(arg1 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value for x expected but got %s!", arg1));
-      }
-      if (arg2 == null || !(arg2 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value for y expected but got %s!", arg2));
-      }
-      if (arg3 == null || !(arg3 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value for z expected but got %s!", arg3));
-      }
-
-      int x = ((Number) arg1).intValue();
-      int y = ((Number) arg2).intValue();
-      int z = ((Number) arg3).intValue();
-      cursor.setPosition(new BlockPos(x, y, z));
-
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class GetPositionFunction extends AbstractFunction0 {
-
-    @Override
-    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      // System.out.println("getPosition");
-      BlockPos result = cursor.getPosition();
-      context.getReturnBuffer().setTo(result.getX(), result.getY(), result.getZ());
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class GetOwnerPositionFunction extends AbstractFunction0 {
-
-    @Override
-    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      // System.out.println("getOwnerPosition");
-      Vec3d result = cursor.getOwnerPosition();
-      if (result != null) {
-        context.getReturnBuffer().setTo(result.xCoord, result.yCoord, result.zCoord);
-      } else {
-        context.getReturnBuffer().setTo(null);
-      }
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
   private class GetOwnerWorldPositionFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getOwnerWorldPosition");
-      Vec3d result = cursor.getOwnerWorldPosition();
+      Vec3d result = spell.getOwnerWorldPosition();
       if (result != null) {
         context.getReturnBuffer().setTo(result.xCoord, result.yCoord, result.zCoord);
       } else {
@@ -263,7 +197,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getOwnerName");
-      String result = cursor.getOwnerName();
+      String result = spell.getOwnerName();
       context.getReturnBuffer().setTo(result);
     }
 
@@ -273,23 +207,14 @@ public class CursorWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class GetOwnerFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      // System.out.println("getOwner");
-      Entity result = cursor.getOwner();
-      if ( result instanceof EntityPlayer) {
-        EntityPlayer player = (EntityPlayer)result;
-        EntityPlayerWrapper wrapper = new EntityPlayerWrapper(player);
-        context.getReturnBuffer().setTo(wrapper.getLuaObject());
-      } else if (result != null){
-        EntityWrapper wrapper = new EntityWrapper(result);
-        context.getReturnBuffer().setTo(wrapper.getLuaObject());
-      } else {
-        context.getReturnBuffer().setTo(null);
-      }
+      Entity result = spell.getOwner();
+      EntityWrapper<?> wrapper = entityWrapperFactory.create(env, result);
+      context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
     @Override
@@ -300,29 +225,19 @@ public class CursorWrapper {
   }
 
 
-  private class SetWorldPositionFunction extends AbstractFunction3 {
+  private class SetWorldPositionFunction extends AbstractFunction1 {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
-        throws ResolvedControlThrowable {
-      // System.out.println("setWorldPosition: " + arg1 + "," + arg2 + "," + arg3);
-      if (arg1 == null || !(arg1 instanceof Number)) {
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      if (arg1 == null || !(arg1 instanceof Table)) {
         throw new IllegalArgumentException(
-            String.format("Integer value for x expected but got %s!", arg1));
+            String.format("Table value for pos expected but got %s!", arg1));
       }
-      if (arg2 == null || !(arg2 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value for y expected but got %s!", arg2));
-      }
-      if (arg3 == null || !(arg3 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value for z expected but got %s!", arg3));
-      }
-
-      int x = ((Number) arg1).intValue();
-      int y = ((Number) arg2).intValue();
-      int z = ((Number) arg3).intValue();
-      cursor.setWorldPosition(new BlockPos(x, y, z));
+      Table tbl = (Table) arg1;
+      double x = ((Number) tbl.rawget("x")).doubleValue();
+      double y = ((Number) tbl.rawget("y")).doubleValue();
+      double z = ((Number) tbl.rawget("z")).doubleValue();
+      spell.setWorldPosition(new Vec3d(x, y, z));
 
       context.getReturnBuffer().setTo();
     }
@@ -339,8 +254,18 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getWorldPosition");
-      BlockPos result = cursor.getWorldPosition();
-      context.getReturnBuffer().setTo(result.getX(), result.getY(), result.getZ());
+      Vec3d result = spell.getWorldPosition();
+
+      // Object vec3_from = LuaVec3.FROM(env);
+      // try {
+      // Dispatch.call(context, vec3_from, result.xCoord, result.yCoord, result.zCoord);
+      // } catch (UnresolvedControlThrowable e) {
+      // throw e.resolve(GetWorldPositionFunction.this, null);
+      // }
+
+      Vec3dWrapper wrapper = new Vec3dWrapper(env, result);
+      PatchedImmutableTable lo = wrapper.getLuaObject();
+      context.getReturnBuffer().setTo(lo);
     }
 
     @Override
@@ -357,7 +282,7 @@ public class CursorWrapper {
       // System.out.println("rotate: " + arg1);
       Rotation x = rotationByName(String.valueOf(arg1));
       if (x != null) {
-        cursor.rotate(x);
+        spell.rotate(x);
       } else {
         throw new IllegalArgumentException(
             String.format("Rotation value expected but got %s!", arg1));
@@ -383,7 +308,7 @@ public class CursorWrapper {
       // System.out.println("setRotation: " + arg1);
       Rotation x = rotationByName(String.valueOf(arg1));
       if (x != null) {
-        cursor.setRotation(x);
+        spell.setRotation(x);
       } else {
         throw new IllegalArgumentException(
             String.format("Rotation value expected but got %s!", arg1));
@@ -407,7 +332,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getRotation");
-      Rotation result = cursor.getRotation();
+      Rotation result = spell.getRotation();
       context.getReturnBuffer().setTo(result.name());
     }
 
@@ -424,7 +349,7 @@ public class CursorWrapper {
       // System.out.println("setOrientation: " + arg1);
       EnumFacing f = EnumFacing.byName(String.valueOf(arg1));
       if (f != null) {
-        cursor.setOrientation(f);
+        spell.setOrientation(f);
       } else {
         throw new IllegalArgumentException(
             String.format("Facing value expected but got %s!", arg1));
@@ -444,7 +369,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getOrientation");
-      EnumFacing result = cursor.getOrientation();
+      EnumFacing result = spell.getOrientation();
       context.getReturnBuffer().setTo(result.name());
     }
 
@@ -460,7 +385,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getSurface");
-      EnumFacing result = cursor.getSurface();
+      EnumFacing result = spell.getSurface();
       if (result != null) {
         context.getReturnBuffer().setTo(result.name());
       } else {
@@ -475,7 +400,7 @@ public class CursorWrapper {
     }
   }
 
-  private class PlaceFunction extends AbstractFunction1 {
+  private class SetBlockFunction extends AbstractFunction1 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
@@ -490,7 +415,7 @@ public class CursorWrapper {
           String typename = String.valueOf(table.rawget("type"));
           if ("Block".equals(typename)) {
             IBlockState blockState = (IBlockState) table.getDelegate();
-            cursor.place(blockState);
+            spell.setBlockState(blockState);
             context.getReturnBuffer().setTo();
             return;
           } else {
@@ -502,13 +427,13 @@ public class CursorWrapper {
           String typename = String.valueOf(table.rawget("type"));
           String name = String.valueOf(table.rawget("name"));
           if ("Block".equals(typename)) {
-            block = cursor.getBlockByName(name);
+            block = spell.getBlockByName(name);
           }
         } else {
-          block = cursor.getBlockByName(String.valueOf(arg1));
+          block = spell.getBlockByName(String.valueOf(arg1));
         }
         if (block != null) {
-          cursor.place(block);
+          spell.setBlock(block);
         } else {
           throw new IllegalArgumentException(
               String.format("Block value expected but got %s!", arg1));
@@ -532,9 +457,9 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("getBlock");
-      IBlockState blockState = cursor.getBlockState();
+      IBlockState blockState = spell.getBlockState();
       String result = blockState.getBlock().getRegistryName().getResourcePath();
-      BlockStateWrapper wrapper = new BlockStateWrapper(blockState);
+      BlockStateWrapper wrapper = new BlockStateWrapper(env, blockState);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -553,8 +478,10 @@ public class CursorWrapper {
       if (args == null) {
         args = new String[] {""};
       }
-      String text = concat("\t", args);
-      cursor.say(encode(text));
+      // String text = concat("\t", args);
+      // spell.say(encode(text));
+      String text = format(context, args);
+      spell.say(text);
       context.getReturnBuffer().setTo();
     }
 
@@ -593,7 +520,11 @@ public class CursorWrapper {
       if (arg2 == null) {
         throw new IllegalArgumentException(String.format("Text value expected but got nil!"));
       }
-      cursor.msg(String.valueOf(arg1), encode(String.valueOf(arg2)));
+      // spell.msg(String.valueOf(arg1), encode(String.valueOf(arg2)));
+
+      String text = format(context, new Object[] {arg2});
+      spell.say(text);
+
       context.getReturnBuffer().setTo();
     }
 
@@ -613,7 +544,7 @@ public class CursorWrapper {
         throw new IllegalArgumentException(String.format("Text value expected but got nil!"));
       }
       String command = String.valueOf(arg1);
-      int result = cursor.execute(command);
+      int result = spell.execute(command);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -629,7 +560,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("reset");
-      cursor.reset();
+      spell.reset();
       context.getReturnBuffer().setTo();
     }
 
@@ -645,7 +576,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("resetRotation");
-      cursor.resetRotation();
+      spell.resetRotation();
       context.getReturnBuffer().setTo();
     }
 
@@ -661,7 +592,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("resetPosition");
-      cursor.resetPosition();
+      spell.resetPosition();
       context.getReturnBuffer().setTo();
     }
 
@@ -677,7 +608,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("pushLocation");
-      cursor.pushLocation();
+      spell.pushLocation();
       context.getReturnBuffer().setTo();
     }
 
@@ -693,7 +624,7 @@ public class CursorWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       // System.out.println("popLocation");
-      boolean result = cursor.popLocation();
+      boolean result = spell.popLocation();
       context.getReturnBuffer().setTo(result);
     }
 
@@ -727,7 +658,7 @@ public class CursorWrapper {
         selection.add(pos);
         k = table.successorKeyOf(k);
       }
-      Snapshot snapshot = cursor.cut(selection);
+      Snapshot snapshot = spell.cut(selection);
       String result = snapshots.registerSnapshot(snapshot);
       context.getReturnBuffer().setTo(result);
     }
@@ -762,7 +693,7 @@ public class CursorWrapper {
         selection.add(pos);
         k = table.successorKeyOf(k);
       }
-      Snapshot snapshot = cursor.copy(selection);
+      Snapshot snapshot = spell.copy(selection);
       String result = snapshots.registerSnapshot(snapshot);
       context.getReturnBuffer().setTo(result);
     }
@@ -786,7 +717,7 @@ public class CursorWrapper {
       String id = String.valueOf(arg1);
 
       Snapshot snapshot = snapshots.getSnapshot(id);
-      Selection resultSelection = cursor.paste(snapshot);
+      Selection resultSelection = spell.paste(snapshot);
 
       Table result = DefaultTable.factory().newTable();
       long idx = 0;
@@ -804,22 +735,6 @@ public class CursorWrapper {
       result.rawset("y", pos.getY());
       result.rawset("z", pos.getZ());
       return result;
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  private class InAirFunction extends AbstractFunction0 {
-
-    @Override
-    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      // System.out.println("inAir");
-      boolean inAir = cursor.isEmpty();
-      context.getReturnBuffer().setTo(inAir);
     }
 
     @Override
@@ -847,6 +762,14 @@ public class CursorWrapper {
     int z = ((Number) oz).intValue();
 
     return new BlockPos(x, y, z);
+  }
+
+  private String format(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
+    StringWriter writer = new StringWriter();
+    WriterOutputStream out = new WriterOutputStream(writer);
+    LuaFunction printFunc = BasicLib.print(out, env);
+    printFunc.invoke(context, args);
+    return encode(writer.toString());
   }
 
 }

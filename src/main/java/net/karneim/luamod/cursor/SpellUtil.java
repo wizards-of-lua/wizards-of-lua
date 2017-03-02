@@ -4,7 +4,6 @@ import static net.minecraftforge.common.ForgeHooks.rayTraceEyes;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
@@ -13,19 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
-public class CursorUtil {
+public class SpellUtil {
   private static final double LOOK_DISTANCE = 5;
-
-  @Deprecated
-  public static Cursor createCursor(ICommandSender sender) {
-    BlockPos pos = CursorUtil.getPositionLookingAt(sender.getCommandSenderEntity());
-    EnumFacing facing = sender.getCommandSenderEntity().getHorizontalFacing();
-    Rotation rotation = CursorUtil.getRotation(facing);
-    EnumFacing side = CursorUtil.getSideLookingAt(sender.getCommandSenderEntity());
-    EnumFacing surface = side == null ? null : side;
-    Cursor cursor = new Cursor(sender, sender, sender.getEntityWorld(), pos, rotation, surface);
-    return cursor;
-  }
 
   public static BlockPos getPositionLookingAt(Entity entity) {
     RayTraceResult git = rayTraceEyes((EntityLivingBase) entity, LOOK_DISTANCE);

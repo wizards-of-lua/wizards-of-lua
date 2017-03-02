@@ -2,12 +2,16 @@ package net.karneim.luamod.lua.util.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.sandius.rembulan.Table;
+
 public abstract class LuaWrapper<J, L> {
   protected final @Nullable J delegate;
   private @Nullable L luaObject;
+  protected Table env;
 
-  public LuaWrapper(@Nullable J delegate) {
+  public LuaWrapper(Table env, @Nullable J delegate) {
     this.delegate = delegate;
+    this.env = env;
   }
 
   public @Nullable J getJavaObject() {

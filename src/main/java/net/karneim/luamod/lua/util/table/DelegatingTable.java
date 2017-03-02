@@ -95,6 +95,7 @@ public class DelegatingTable<O> extends Table {
    * Builder class for constructing instances of {@link DelegatingTable2}.
    */
   public static class Builder<O> {
+    private Table metatable;
     private final O delegate;
     private final Map<Object, Object> properties = new HashMap<>();
 
@@ -126,6 +127,11 @@ public class DelegatingTable<O> extends Table {
       }
       return this;
     }
+    
+    public Builder setMetatable(Table table) {
+      metatable = table;
+      return this;
+    }
 
     /**
      * Constructs and returns a new immutable table based on the contents of this builder.
@@ -133,7 +139,9 @@ public class DelegatingTable<O> extends Table {
      * @return a new immutable table
      */
     public DelegatingTable build() {
-      return new DelegatingTable<O>(delegate, properties);
+      DelegatingTable<O> result = new DelegatingTable<O>(delegate, properties);
+      result.setMetatable(metatable);
+      return result;
     }
   }
 }

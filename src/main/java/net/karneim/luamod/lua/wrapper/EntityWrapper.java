@@ -6,6 +6,7 @@ import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.classes.LuaEntity;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.Entry;
@@ -23,8 +24,8 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
-  public EntityWrapper(@Nullable E delegate) {
-    super(delegate);
+  public EntityWrapper(Table env, @Nullable E delegate) {
+    super(env, delegate);
   }
 
   private void setPosition(Object object) {
@@ -47,21 +48,23 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
         (Object name) -> delegate.setCustomNameTag(String.valueOf(name)));
     b.add("dimension", () -> delegate.dimension,
         (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
-    b.add("pos", () -> wrap(delegate.getPositionVector()), this::setPosition);
-    b.add("blockPos", () -> wrap(delegate.getPosition()), null);
-    b.add("orientation", () -> wrap(delegate.getHorizontalFacing()), null);
+    b.add("pos", () -> wrap(env, delegate.getPositionVector()), this::setPosition);
+    b.add("blockPos", () -> wrap(env, delegate.getPosition()), null);
+    b.add("orientation", () -> wrap(env, delegate.getHorizontalFacing()), null);
     b.add("rotationYaw", () -> delegate.rotationYaw,
         (Object yaw) -> delegate.rotationYaw = checkType(yaw, Number.class).floatValue());
     b.add("rotationPitch", () -> delegate.rotationPitch,
         (Object pitch) -> delegate.rotationPitch = checkType(pitch, Number.class).floatValue());
-    b.add("lookVec", () -> wrap(delegate.getLookVec()), null);
+    b.add("lookVec", () -> wrap(env, delegate.getLookVec()), null);
     b.add("team", this::getTeam, null);
-    b.add("tags", () -> wrap(delegate.getTags()), null);
+    b.add("tags", () -> wrap(env, delegate.getTags()), null);
 
     b.add("addTag", new AddTagFunction());
     b.add("removeTag", new RemoveTagFunction());
     b.add("setTags", new SetTagsFunction());
     b.add("getData", new GetDataFunction());
+    
+    //b.setMetatable(LuaEntity.META_TABLE(env));
   }
 
   private class AddTagFunction extends AbstractFunction1 {
