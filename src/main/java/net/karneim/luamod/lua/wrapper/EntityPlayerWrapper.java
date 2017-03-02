@@ -34,7 +34,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
       builder.add("gamemode", new EnumWrapper(env, e).getLuaObject());
       builder.addNullable("getInventory", new GetInventoryFunction(mp));
     }
-    builder.setMetatable(LuaPlayer.META_TABLE(env));
+    //builder.setMetatable(LuaPlayer.META_TABLE(env));
   }
 
   private class GetInventoryFunction extends AbstractFunction1 {

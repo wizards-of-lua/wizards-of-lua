@@ -20,7 +20,7 @@ public class Vec3dWrapper extends ImmutableTableWrapper<Vec3d> {
     builder.add("x", delegate.xCoord);
     builder.add("y", delegate.yCoord);
     builder.add("z", delegate.zCoord);
-    Table metatable = LuaVec3.META_TABLE(env);
-    builder.setMetatable(metatable);
+//    Table metatable = LuaVec3.META_TABLE(env);
+//    builder.setMetatable(metatable);
   }
 }

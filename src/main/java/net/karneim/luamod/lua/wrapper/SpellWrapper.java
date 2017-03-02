@@ -4,6 +4,7 @@ import java.io.StringWriter;
 
 import org.apache.commons.io.output.WriterOutputStream;
 
+import net.karneim.luamod.TabEncoder;
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
@@ -744,10 +745,6 @@ public class SpellWrapper {
     }
   }
 
-  private String encode(String text) {
-    return text.replaceAll("\t", "    ");
-  }
-
   private BlockPos toBlockPos(Object v) {
     if (!(v instanceof Table)) {
       throw new IllegalArgumentException(
@@ -769,7 +766,7 @@ public class SpellWrapper {
     WriterOutputStream out = new WriterOutputStream(writer);
     LuaFunction printFunc = BasicLib.print(out, env);
     printFunc.invoke(context, args);
-    return encode(writer.toString());
+    return TabEncoder.encode(writer.toString());
   }
 
 }

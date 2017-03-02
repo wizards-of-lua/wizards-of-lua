@@ -3,21 +3,16 @@ package net.karneim.luamod.lua;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import net.karneim.luamod.TabEncoder;
 import net.karneim.luamod.cursor.EnumDirection;
 import net.karneim.luamod.lua.event.EventType;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.EntityList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.lib.BasicLib;
-import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
-import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class LuaModLib {
 
@@ -42,7 +37,6 @@ public class LuaModLib {
       env.rawset(e.name(), e.name());
     }
     env.rawset("SURFACE","SURFACE");
-    //env.rawset("print", new PrintFunction());
     
     OutputStream out = new ChatOutputStream();
     LuaFunction printFunc = BasicLib.print(out, env);
@@ -58,7 +52,9 @@ public class LuaModLib {
     }
   }
   
-  void print(String message) {
-    owner.addChatMessage(new TextComponentString(message));
+  private void print(String message) {
+    owner.addChatMessage(new TextComponentString(TabEncoder.encode(message)));
   }
+  
+  
 }

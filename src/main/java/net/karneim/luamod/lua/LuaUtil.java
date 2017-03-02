@@ -104,7 +104,8 @@ public class LuaUtil {
     GistSearcher.installInto(env, modulesLoader, luaFunctionCache, gistRepo, credentials);
     
     LuaModLib.installInto(env, owner);
-    EntityMetaTables.addTablesForEntityTypes(env);
+    
+    ClassMetatables.initClassMetatables(env);
     
     Snapshots snapshots = new Snapshots();
 
@@ -115,9 +116,9 @@ public class LuaUtil {
     PlayersWrapper.installInto(env, new Players(LuaMod.instance.getServer(), owner));
     EntitiesWrapper.installInto(env, new Entities(LuaMod.instance.getServer(), owner));
 
-    require(LuaVec3.MODULE);
-    require(LuaEntity.MODULE);
-    require(LuaPlayer.MODULE);
+    //require(LuaVec3.MODULE);
+    //require(LuaEntity.MODULE);
+    //require(LuaPlayer.MODULE);
     
     SchedulingContextFactory schedulingContextFactory = new SchedulingContextFactory() {
 
