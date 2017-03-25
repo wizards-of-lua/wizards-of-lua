@@ -71,11 +71,14 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
 
     Table metatable = Metatables.get(env, CLASSNAME);
     b.setMetatable(metatable);
+  }
+  
+  public static void addFunctions(Table env) {
+    Table metatable = Metatables.get(env, CLASSNAME);
     metatable.rawset("addTag", new AddTagFunction());
     metatable.rawset("removeTag", new RemoveTagFunction());
     metatable.rawset("setTags", new SetTagsFunction());
     metatable.rawset("getData", new GetDataFunction());
-
   }
 
   private static class AddTagFunction extends AbstractFunction2 {

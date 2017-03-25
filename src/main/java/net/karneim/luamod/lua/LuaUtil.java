@@ -206,6 +206,8 @@ public class LuaUtil {
   public void run() throws CallException, CallPausedException, InterruptedException {
     executor.call(state, headerFunc);
     executor.call(state, dummyFunc);
+    EntityPlayerWrapper.addFunctions(env);
+    EntityWrapper.addFunctions(env);
     executor.call(state, commandLineFunc);
   }
 
