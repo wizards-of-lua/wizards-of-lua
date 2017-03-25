@@ -2,9 +2,9 @@ package net.karneim.luamod.lua.event;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.classes.BlockPosClass;
 import net.karneim.luamod.lua.classes.EnumClass;
 import net.karneim.luamod.lua.classes.ItemStackClass;
+import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
@@ -20,7 +20,7 @@ public class PlayerInteractEventWrapper<E extends PlayerInteractEvent>
     super.addProperties(builder);
     builder.addNullable("hand", EnumClass.get().newInstance(env, delegate.getHand()).getLuaObject());
     builder.addNullable("item", ItemStackClass.get().newInstance(env, delegate.getItemStack()).getLuaObject());
-    builder.addNullable("pos", BlockPosClass.get().newInstance(env, delegate.getPos()).getLuaObject());
+    builder.addNullable("pos", Vec3Class.get().newInstance(env, delegate.getPos()).getLuaObject());
     builder.addNullable("face", EnumClass.get().newInstance(env, delegate.getFace()).getLuaObject());
   }
 

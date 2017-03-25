@@ -1,6 +1,5 @@
 package net.karneim.luamod.lua.wrapper;
 
-import net.karneim.luamod.lua.classes.BlockPosClass;
 import net.karneim.luamod.lua.classes.EnumClass;
 import net.karneim.luamod.lua.classes.StringIterableClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
@@ -12,7 +11,7 @@ import net.sandius.rembulan.Table;
 
 public class WrapperFactory {
   public static PatchedImmutableTable wrap(Table env, BlockPos delegate) {
-    return BlockPosClass.get().newInstance(env, delegate).getLuaObject();
+    return Vec3Class.get().newInstance(env, delegate).getLuaObject();
   }
 
   public static ByteString wrap(Table env, Enum<?> delegate) {

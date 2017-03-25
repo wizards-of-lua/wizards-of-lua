@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.classes;
 
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.karneim.luamod.lua.wrapper.Vec3Instance;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -35,7 +36,12 @@ public class Vec3Class {
   public Vec3Instance newInstance(Table env, Vec3d delegate) {
     return new Vec3Instance(env, delegate, Metatables.get(env, classname));
   }
-  
+
+  public Vec3Instance newInstance(Table env, BlockPos delegate) {
+    Vec3d vec3d = new Vec3d(delegate);
+    return new Vec3Instance(env, vec3d, Metatables.get(env, classname));
+  }
+
   public LuaFunction FROM(Table env) {
     Table metatable = Metatables.get(env, classname);
     LuaFunction result = (LuaFunction) metatable.rawget("from");
