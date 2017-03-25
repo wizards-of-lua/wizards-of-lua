@@ -41,6 +41,7 @@ function class(name, base)
     end
   end 
   c.__index = c
+  setmetatable(c,base)
   
   -- extend type function
   local type_ = type
