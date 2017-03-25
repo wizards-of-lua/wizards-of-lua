@@ -24,19 +24,6 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     super(env, delegate, metatable);
   }
 
-  private void setPosition(Object object) {
-    Table vector = checkType(object, Table.class);
-    Number x = checkType(vector.rawget("x"), Number.class);
-    Number y = checkType(vector.rawget("y"), Number.class);
-    Number z = checkType(vector.rawget("z"), Number.class);
-    delegate.setPositionAndUpdate(x.doubleValue(), y.doubleValue(), z.doubleValue());
-  }
-
-  private ByteString getTeam() {
-    Team team = delegate.getTeam();
-    return team != null ? ByteString.of(team.getRegisteredName()) : null;
-  }
-
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
     b.add("id", delegate::getCachedUniqueIdString, null);
@@ -55,9 +42,18 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     b.add("lookVec", () -> wrap(env, delegate.getLookVec()), null);
     b.add("team", this::getTeam, null);
     b.add("tags", () -> wrap(env, delegate.getTags()), null);
-
-//    Table metatable = Metatables.get(env, classname);
-//    b.setMetatable(metatable);
   }
 
+  private void setPosition(Object object) {
+    Table vector = checkType(object, Table.class);
+    Number x = checkType(vector.rawget("x"), Number.class);
+    Number y = checkType(vector.rawget("y"), Number.class);
+    Number z = checkType(vector.rawget("z"), Number.class);
+    delegate.setPositionAndUpdate(x.doubleValue(), y.doubleValue(), z.doubleValue());
+  }
+
+  private ByteString getTeam() {
+    Team team = delegate.getTeam();
+    return team != null ? ByteString.of(team.getRegisteredName()) : null;
+  }
 }

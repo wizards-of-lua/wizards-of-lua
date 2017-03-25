@@ -38,6 +38,7 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class SpellWrapper {
 
+  // TODO make a SpellClass
   public static void installInto(Table env, Spell spell, Events eventManager, Snapshots snapshots) {
     SpellWrapper wrapper = new SpellWrapper(env, spell, eventManager, snapshots);
     env.rawset("spell", wrapper.getLuaTable());
