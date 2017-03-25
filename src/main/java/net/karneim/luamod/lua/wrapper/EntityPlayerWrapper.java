@@ -39,6 +39,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
 
     Table metatable = Metatables.get(env, CLASSNAME);
     builder.setMetatable(metatable);
+    
     // FIXME die metatable enthält nicht die funktionen aus EntityWrapper
     // weil hier ja eine neue erzeugt wird.
     // Besser wäre ein add.
@@ -52,13 +53,26 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
       builder.add("gamemode", new EnumWrapper(env, e).getLuaObject());
 
       // builder.addNullable("getInventory", new GetInventoryFunction(mp));
-      metatable.rawset("getInventory", new GetInventoryFunction());
+      //metatable.rawset("getInventory", new GetInventoryFunction());
+      
+      addFunctions(env);
     }
   }
+  
+  public static void addFunctions(Table env) {
+    Table metatable = Metatables.get(env, CLASSNAME);
+    metatable.rawset("getInventory", new GetInventoryFunction(env));
+  }
+  
+  
 
-  private class GetInventoryFunction extends AbstractFunction2 {
+  private static class GetInventoryFunction extends AbstractFunction2 {
 
-    GetInventoryFunction() {}
+    private Table env;
+
+    GetInventoryFunction(Table env) {
+      this.env = env;
+    }
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)

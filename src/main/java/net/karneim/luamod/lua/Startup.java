@@ -45,9 +45,8 @@ public class Startup {
   }
 
   public void runStartupProfile() throws IOException, LoaderException {
-    String requirements = getRequirements();
     String theSpell = getSpell();
-    if (requirements != null && theSpell != null) {
+    if (theSpell != null) {
       luaMod.logger.info("Running startup profile.");
       MinecraftServer server = checkNotNull(luaMod.getServer());
       ICommandSender sender = sender();
@@ -55,21 +54,19 @@ public class Startup {
 
       World entityWorld = checkNotNull(server.getEntityWorld());
       SpellEntity spellEntity = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
-      spellEntity.setRequirements(requirements);
+      String profile = getProfile();
+      spellEntity.setProfile(profile);
       spellEntity.setCommand(theSpell);
       server.getEntityWorld().spawnEntityInWorld(spellEntity);
     }
   }
 
-  private String getRequirements() throws IOException {
-    String refStr = luaMod.getProfiles().getStartupProfile();
-    if (refStr == null) {
-      refStr = luaMod.getProfiles().getDefaultProfile();
+  private String getProfile() throws IOException {
+    String result = luaMod.getProfiles().getStartupProfile();
+    if (result == null) {
+      result = luaMod.getProfiles().getDefaultProfile();
     }
-    if (refStr == null) {
-      return "";
-    }
-    return "require \"" + refStr + "\"";
+    return result;
   }
 
   private ICommandSender sender() {

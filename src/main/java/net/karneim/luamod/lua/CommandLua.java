@@ -78,8 +78,8 @@ public class CommandLua extends CommandBase {
           mod.getSpellEntityFactory().create(sender.getEntityWorld(), sender, owner);
 
       server.getEntityWorld().spawnEntityInWorld(spell);
-      String requirements = getRequirements(owner);
-      spell.setRequirements(requirements);
+      String profile = getProfile(owner);
+      spell.setProfile(profile);
       spell.setCommand(getArgString(args));
 
       if (sender.sendCommandFeedback()) {
@@ -114,21 +114,17 @@ public class CommandLua extends CommandBase {
     return "";
   }
 
-  private String getRequirements(ICommandSender owner) throws IOException {
-    return getRequirements(owner.getCommandSenderEntity());
+  private String getProfile(ICommandSender owner) throws IOException {
+    return getProfile(owner.getCommandSenderEntity());
   }
 
-  private String getRequirements(Entity player) throws IOException {
+  private String getProfile(Entity player) throws IOException {
     @Nullable
-    String refStr = mod.getProfiles().getUserProfile(player);
-    if (refStr == null) {
-      refStr = mod.getProfiles().getDefaultProfile();
+    String result = mod.getProfiles().getUserProfile(player);
+    if (result == null) {
+      result = mod.getProfiles().getDefaultProfile();
     }
-    if (refStr != null) {
-      return "require \"" + refStr + "\"";
-    } else {
-      return "";
-    }
+    return result;
   }
 
 }

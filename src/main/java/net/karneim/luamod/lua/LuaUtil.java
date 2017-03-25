@@ -62,7 +62,9 @@ public class LuaUtil {
   private final ChunkLoader loader;
   private final DirectCallExecutor executor;
   private final Clipboard clipboard;
-  private LuaFunction main;
+  private LuaFunction headerFunc;
+  private LuaFunction dummyFunc;
+  private LuaFunction commandLineFunc;
 
   private Ticks ticks;
   private Events events;
@@ -136,7 +138,7 @@ public class LuaUtil {
     standardRequirements.add(new Requirement(name, module));
   }
 
-  private void require(String module) {
+  public void require(String module) {
     standardRequirements.add(new Requirement(module));
   }
 
@@ -185,7 +187,7 @@ public class LuaUtil {
     return events;
   }
 
-  public void compile(String program) throws LoaderException {
+  public void compile(String commandLine) throws LoaderException {
     // Add Vec3 requirement
     StringBuilder buf = new StringBuilder();
     for (Requirement requirement : standardRequirements) {
@@ -194,12 +196,17 @@ public class LuaUtil {
       }
       buf.append("require ").append("\"").append(requirement.module).append("\"").append("\n");
     }
-    program = buf.toString() + program;
-    main = loader.loadTextChunk(new Variable(env), "command-line", program);
+    String header = buf.toString();
+    headerFunc = loader.loadTextChunk(new Variable(env), "header", header);
+    dummyFunc = loader.loadTextChunk(new Variable(env), "header", "dummy=1");
+    commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", commandLine);
+    System.out.println(String.format("commandLine='%s'",commandLine));
   }
 
   public void run() throws CallException, CallPausedException, InterruptedException {
-    executor.call(state, main);
+    executor.call(state, headerFunc);
+    executor.call(state, dummyFunc);
+    executor.call(state, commandLineFunc);
   }
 
   public void resume(Continuation continuation)

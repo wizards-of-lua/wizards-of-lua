@@ -43,7 +43,7 @@ public class SpellEntity extends Entity {
   private LuaUtil luaUtil;
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
-  private String requirements;
+  private String profile;
 
   public SpellEntity(World worldIn) {
     super(worldIn);
@@ -80,8 +80,8 @@ public class SpellEntity extends Entity {
     return clipboard;
   }
 
-  public void setRequirements(String requirements) {
-    this.requirements = requirements;
+  public void setProfile(String profile) {
+    this.profile = profile;
   }
 
   public @Nullable String getCommand() {
@@ -90,8 +90,8 @@ public class SpellEntity extends Entity {
 
   public void setCommand(String command) throws LoaderException {
     this.command = command;
-    if (requirements != null) {
-      command = requirements + "\n" + command;
+    if (profile != null) {
+      luaUtil.require(profile);
     }
     luaUtil.compile(command);
     onUpdate();
