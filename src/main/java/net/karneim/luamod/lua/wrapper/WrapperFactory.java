@@ -20,6 +20,6 @@ public class WrapperFactory {
   }
 
   public static PatchedImmutableTable wrap(Table env, Vec3d delegate) {
-    return new Vec3dWrapper(env, delegate).getLuaObject();
+    return new Vec3Wrapper(env, delegate).getLuaObject();
   }
 }

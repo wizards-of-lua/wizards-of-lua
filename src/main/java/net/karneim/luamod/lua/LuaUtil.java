@@ -26,7 +26,7 @@ import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.karneim.luamod.lua.wrapper.RuntimeWrapper;
 import net.karneim.luamod.lua.wrapper.SpellWrapper;
-import net.karneim.luamod.lua.wrapper.Vec3dWrapper;
+import net.karneim.luamod.lua.wrapper.Vec3Wrapper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
@@ -207,7 +207,7 @@ public class LuaUtil {
 
   public void run() throws CallException, CallPausedException, InterruptedException, LoaderException {
     executor.call(state, headerFunc);
-    Vec3dWrapper.installInto(env, loader, executor, state);
+    Vec3Wrapper.installInto(env, loader, executor, state);
     EntityWrapper.installInto(env, loader, executor, state);
     EntityPlayerWrapper.installInto(env, loader, executor, state);
     executor.call(state, profileFunc);

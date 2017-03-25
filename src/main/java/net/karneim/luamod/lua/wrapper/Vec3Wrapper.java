@@ -15,9 +15,9 @@ import net.sandius.rembulan.load.ChunkLoader;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 
-public class Vec3dWrapper extends ImmutableTableWrapper<Vec3d> {
+public class Vec3Wrapper extends ImmutableTableWrapper<Vec3d> {
 
-  private static final String CLASSNAME = "Vec3d";
+  private static final String CLASSNAME = "Vec3";
   public static final String MODULE = "net.karneim.luamod.lua.classes."+CLASSNAME;
 
   public static void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
@@ -34,7 +34,7 @@ public class Vec3dWrapper extends ImmutableTableWrapper<Vec3d> {
     return result;
   }
 
-  public Vec3dWrapper(Table env, @Nullable Vec3d delegate) {
+  public Vec3Wrapper(Table env, @Nullable Vec3d delegate) {
     super(env, delegate);
   }
 

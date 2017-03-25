@@ -264,7 +264,7 @@ public class SpellWrapper {
       // throw e.resolve(GetWorldPositionFunction.this, null);
       // }
 
-      Vec3dWrapper wrapper = new Vec3dWrapper(env, result);
+      Vec3Wrapper wrapper = new Vec3Wrapper(env, result);
       PatchedImmutableTable lo = wrapper.getLuaObject();
       context.getReturnBuffer().setTo(lo);
     }
