@@ -15,8 +15,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.Variable;
+import net.sandius.rembulan.exec.CallException;
+import net.sandius.rembulan.exec.CallPausedException;
+import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.load.ChunkLoader;
+import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
@@ -28,6 +35,22 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
   private static final String CLASSNAME = "Entity";
   public static final String MODULE = "net.karneim.luamod.lua.classes." + CLASSNAME;
 
+  public static void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
+      StateContext state) throws LoaderException, CallException, CallPausedException, InterruptedException {
+    LuaFunction classFunc =
+        loader.loadTextChunk(new Variable(env), CLASSNAME, String.format("require \"%s\"", MODULE));
+    executor.call(state, classFunc);
+    addFunctions(env);
+  }
+  
+  public static void addFunctions(Table env) {
+    Table metatable = Metatables.get(env, CLASSNAME);
+    metatable.rawset("addTag", new AddTagFunction());
+    metatable.rawset("removeTag", new RemoveTagFunction());
+    metatable.rawset("setTags", new SetTagsFunction());
+    metatable.rawset("getData", new GetDataFunction());
+  }
+  
   public static LuaFunction NEW(Table env) {
     Table metatable = Metatables.get(env, CLASSNAME);
     LuaFunction result = (LuaFunction) metatable.rawget("new");
@@ -71,14 +94,6 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
 
     Table metatable = Metatables.get(env, CLASSNAME);
     b.setMetatable(metatable);
-  }
-  
-  public static void addFunctions(Table env) {
-    Table metatable = Metatables.get(env, CLASSNAME);
-    metatable.rawset("addTag", new AddTagFunction());
-    metatable.rawset("removeTag", new RemoveTagFunction());
-    metatable.rawset("setTags", new SetTagsFunction());
-    metatable.rawset("getData", new GetDataFunction());
   }
 
   private static class AddTagFunction extends AbstractFunction2 {

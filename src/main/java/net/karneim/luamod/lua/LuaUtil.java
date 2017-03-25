@@ -63,13 +63,14 @@ public class LuaUtil {
   private final DirectCallExecutor executor;
   private final Clipboard clipboard;
   private LuaFunction headerFunc;
-  private LuaFunction dummyFunc;
+  private LuaFunction profileFunc;
   private LuaFunction commandLineFunc;
 
   private Ticks ticks;
   private Events events;
   private Runtime runtime;
   private List<Requirement> standardRequirements = new ArrayList<>();
+  private String profile;
 
   public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
       Credentials credentials) {
@@ -119,9 +120,6 @@ public class LuaUtil {
     require("inspect", "net.karneim.luamod.lua.classes.inspect");
     require("net.karneim.luamod.lua.classes.Globals");
     require("net.karneim.luamod.lua.classes.string");
-    require(Vec3dWrapper.MODULE);
-    require(EntityWrapper.MODULE);
-    require(EntityPlayerWrapper.MODULE);
     
     SchedulingContextFactory schedulingContextFactory = new SchedulingContextFactory() {
 
@@ -138,8 +136,12 @@ public class LuaUtil {
     standardRequirements.add(new Requirement(name, module));
   }
 
-  public void require(String module) {
+  private void require(String module) {
     standardRequirements.add(new Requirement(module));
+  }
+  
+  public void setProfile(String profile) {
+    this.profile = profile;
   }
 
   private RuntimeEnvironment getModRuntimeEnvironment() {
@@ -188,7 +190,6 @@ public class LuaUtil {
   }
 
   public void compile(String commandLine) throws LoaderException {
-    // Add Vec3 requirement
     StringBuilder buf = new StringBuilder();
     for (Requirement requirement : standardRequirements) {
       if ( requirement.name != null) {
@@ -198,16 +199,18 @@ public class LuaUtil {
     }
     String header = buf.toString();
     headerFunc = loader.loadTextChunk(new Variable(env), "header", header);
-    dummyFunc = loader.loadTextChunk(new Variable(env), "header", "dummy=1");
+    if ( profile != null) {
+      profileFunc = loader.loadTextChunk(new Variable(env), "profile", String.format("require \"%s\"", profile));
+    }
     commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", commandLine);
-    System.out.println(String.format("commandLine='%s'",commandLine));
   }
 
-  public void run() throws CallException, CallPausedException, InterruptedException {
+  public void run() throws CallException, CallPausedException, InterruptedException, LoaderException {
     executor.call(state, headerFunc);
-    executor.call(state, dummyFunc);
-    EntityPlayerWrapper.addFunctions(env);
-    EntityWrapper.addFunctions(env);
+    Vec3dWrapper.installInto(env, loader, executor, state);
+    EntityWrapper.installInto(env, loader, executor, state);
+    EntityPlayerWrapper.installInto(env, loader, executor, state);
+    executor.call(state, profileFunc);
     executor.call(state, commandLineFunc);
   }
 

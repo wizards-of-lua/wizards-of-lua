@@ -91,7 +91,7 @@ public class SpellEntity extends Entity {
   public void setCommand(String command) throws LoaderException {
     this.command = command;
     if (profile != null) {
-      luaUtil.require(profile);
+      luaUtil.setProfile(profile);
     }
     luaUtil.compile(command);
     onUpdate();

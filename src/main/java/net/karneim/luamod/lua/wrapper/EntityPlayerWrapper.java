@@ -7,8 +7,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.GameType;
+import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.Variable;
+import net.sandius.rembulan.exec.CallException;
+import net.sandius.rembulan.exec.CallPausedException;
+import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.load.ChunkLoader;
+import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
@@ -18,6 +25,19 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
 
   private static final String CLASSNAME = "Player";
   public static final String MODULE = "net.karneim.luamod.lua.classes." + CLASSNAME;
+  
+  public static void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
+      StateContext state) throws LoaderException, CallException, CallPausedException, InterruptedException {
+    LuaFunction classFunc =
+        loader.loadTextChunk(new Variable(env), CLASSNAME, String.format("require \"%s\"", MODULE));
+    executor.call(state, classFunc);
+    addFunctions(env);
+  }
+  
+  public static void addFunctions(Table env) {
+    Table metatable = Metatables.get(env, CLASSNAME);
+    metatable.rawset("getInventory", new GetInventoryFunction(env));
+  }
 
   public static LuaFunction NEW(Table env) {
     Table metatable = Metatables.get(env, CLASSNAME);
@@ -54,18 +74,9 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
 
       // builder.addNullable("getInventory", new GetInventoryFunction(mp));
       //metatable.rawset("getInventory", new GetInventoryFunction());
-      
-      addFunctions(env);
     }
   }
   
-  public static void addFunctions(Table env) {
-    Table metatable = Metatables.get(env, CLASSNAME);
-    metatable.rawset("getInventory", new GetInventoryFunction(env));
-  }
-  
-  
-
   private static class GetInventoryFunction extends AbstractFunction2 {
 
     private Table env;
@@ -101,4 +112,5 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
       throw new NonsuspendableFunctionException();
     }
   }
+  
 }
