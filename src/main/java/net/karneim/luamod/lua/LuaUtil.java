@@ -15,21 +15,23 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
+import net.karneim.luamod.lua.classes.ArmorClass;
+import net.karneim.luamod.lua.classes.BlockStateClass;
 import net.karneim.luamod.lua.classes.EntityClass;
+import net.karneim.luamod.lua.classes.EntityLivingClass;
 import net.karneim.luamod.lua.classes.EntityPlayerClass;
+import net.karneim.luamod.lua.classes.ItemStackClass;
+import net.karneim.luamod.lua.classes.MaterialClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
-import net.karneim.luamod.lua.wrapper.EntityPlayerInstance;
-import net.karneim.luamod.lua.wrapper.EntityInstance;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.karneim.luamod.lua.wrapper.RuntimeWrapper;
 import net.karneim.luamod.lua.wrapper.SpellWrapper;
-import net.karneim.luamod.lua.wrapper.Vec3Instance;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
@@ -104,13 +106,14 @@ public class LuaUtil {
     Utf8Lib.installInto(state, env);
 
     LuaFunctionBinaryCache luaFunctionCache = LuaMod.instance.getLuaFunctionCache();
-    ClasspathResourceSearcher.installInto(env, modulesLoader, luaFunctionCache, LuaUtil.class.getClassLoader());
+    ClasspathResourceSearcher.installInto(env, modulesLoader, luaFunctionCache,
+        LuaUtil.class.getClassLoader());
 
     GistRepo gistRepo = LuaMod.instance.getGistRepo();
     GistSearcher.installInto(env, modulesLoader, luaFunctionCache, gistRepo, credentials);
-    
+
     LuaModLib.installInto(env, owner);
-    
+
     Snapshots snapshots = new Snapshots();
 
     SpellWrapper.installInto(env, spell, events, snapshots);
@@ -123,7 +126,7 @@ public class LuaUtil {
     require("inspect", "net.karneim.luamod.lua.classes.inspect");
     require("net.karneim.luamod.lua.classes.Globals");
     require("net.karneim.luamod.lua.classes.string");
-    
+
     SchedulingContextFactory schedulingContextFactory = new SchedulingContextFactory() {
 
       @Override
@@ -142,7 +145,7 @@ public class LuaUtil {
   private void require(String module) {
     standardRequirements.add(new Requirement(module));
   }
-  
+
   public void setProfile(String profile) {
     this.profile = profile;
   }
@@ -195,23 +198,31 @@ public class LuaUtil {
   public void compile(String commandLine) throws LoaderException {
     StringBuilder buf = new StringBuilder();
     for (Requirement requirement : standardRequirements) {
-      if ( requirement.name != null) {
+      if (requirement.name != null) {
         buf.append(requirement.name).append(" = ");
       }
       buf.append("require ").append("\"").append(requirement.module).append("\"").append("\n");
     }
     String header = buf.toString();
     headerFunc = loader.loadTextChunk(new Variable(env), "header", header);
-    if ( profile != null) {
-      profileFunc = loader.loadTextChunk(new Variable(env), "profile", String.format("require \"%s\"", profile));
+    if (profile != null) {
+      profileFunc = loader.loadTextChunk(new Variable(env), "profile",
+          String.format("require \"%s\"", profile));
     }
     commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", commandLine);
   }
 
-  public void run() throws CallException, CallPausedException, InterruptedException, LoaderException {
+  public void run()
+      throws CallException, CallPausedException, InterruptedException, LoaderException {
     executor.call(state, headerFunc);
+
     Vec3Class.get().installInto(env, loader, executor, state);
+    MaterialClass.get().installInto(env, loader, executor, state);
+    ItemStackClass.get().installInto(env, loader, executor, state);
+    BlockStateClass.get().installInto(env, loader, executor, state);
+    ArmorClass.get().installInto(env, loader, executor, state);
     EntityClass.get().installInto(env, loader, executor, state);
+    EntityLivingClass.get().installInto(env, loader, executor, state);
     EntityPlayerClass.get().installInto(env, loader, executor, state);
     executor.call(state, profileFunc);
     executor.call(state, commandLineFunc);
@@ -230,21 +241,21 @@ public class LuaUtil {
     events.setCurrentTime(ticksExisted);
     runtime.setCurrentTime(ticksExisted);
   }
-  
+
   class Requirement {
     String name;
     String module;
-    
+
     public Requirement(String name, String module) {
       this.name = name;
       this.module = module;
     }
-    
+
     public Requirement(String module) {
       this.name = null;
       this.module = module;
     }
-    
+
   }
 
 }

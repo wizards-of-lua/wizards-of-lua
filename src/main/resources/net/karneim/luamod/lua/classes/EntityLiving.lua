@@ -1,0 +1,2 @@
+EntityLiving = class("EntityLiving", Entity)
+

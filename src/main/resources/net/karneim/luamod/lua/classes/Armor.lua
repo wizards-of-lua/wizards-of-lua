@@ -1,0 +1,1 @@
+Armor = class("Armor")

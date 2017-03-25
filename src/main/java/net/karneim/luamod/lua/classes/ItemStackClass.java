@@ -47,7 +47,7 @@ public class ItemStackClass {
 
   private void addFunctions(Table env) {
     Table metatable = Metatables.get(env, classname);
-    metatable.rawset("getInventory", new GetDataFunction());
+    metatable.rawset("getData", new GetDataFunction());
   }
 
   private class GetDataFunction extends AbstractFunction1 {

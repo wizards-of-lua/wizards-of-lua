@@ -41,6 +41,7 @@ function class(name, base)
     end
   end 
   c.__index = c
+  c.__classname = name
   setmetatable(c,base)
   
   -- extend type function
