@@ -6,11 +6,9 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.sandius.rembulan.Table;
 
-
-
-public class StringArrayWrapper extends DelegatingTableWrapper<String[]> {
-  public StringArrayWrapper(Table env, @Nullable String[] delegate) {
-    super(env, delegate);
+public class StringArrayInstance extends DelegatingTableWrapper<String[]> {
+  public StringArrayInstance(Table env, @Nullable String[] delegate, Table metatable) {
+    super(env, delegate, metatable);
   }
 
   @Override

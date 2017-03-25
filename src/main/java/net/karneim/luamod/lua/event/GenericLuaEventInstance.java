@@ -7,9 +7,9 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
-public class GenericLuaEventWrapper extends EventWrapper<Object> {
-  public GenericLuaEventWrapper(Table env, @Nullable Object delegate, String name) {
-    super(env, delegate, name);
+public class GenericLuaEventInstance extends EventWrapper<Object> {
+  public GenericLuaEventInstance(Table env, @Nullable Object delegate, String name, Table metatable) {
+    super(env, delegate, name, metatable);
   }
 
   @Override

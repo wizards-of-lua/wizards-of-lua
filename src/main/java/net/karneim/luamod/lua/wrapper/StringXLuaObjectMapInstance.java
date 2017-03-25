@@ -9,9 +9,9 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.sandius.rembulan.Table;
 
-public class StringXLuaObjectMapWrapper extends DelegatingTableWrapper<Map<String, Object>> {
-  public StringXLuaObjectMapWrapper(Table env, @Nullable Map<String, Object> delegate) {
-    super(env, delegate);
+public class StringXLuaObjectMapInstance extends DelegatingTableWrapper<Map<String, Object>> {
+  public StringXLuaObjectMapInstance(Table env, @Nullable Map<String, Object> delegate, Table metatable) {
+    super(env, delegate, metatable);
   }
 
   @Override

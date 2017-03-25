@@ -10,6 +10,8 @@ import net.karneim.luamod.cursor.Selection;
 import net.karneim.luamod.cursor.Snapshot;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
+import net.karneim.luamod.lua.classes.BlockStateClass;
+import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
@@ -214,7 +216,7 @@ public class SpellWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Entity result = spell.getOwner();
-      EntityWrapper<?> wrapper = entityWrapperFactory.create(env, result);
+      EntityInstance<?> wrapper = entityWrapperFactory.create(env, result);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -264,7 +266,7 @@ public class SpellWrapper {
       // throw e.resolve(GetWorldPositionFunction.this, null);
       // }
 
-      Vec3Wrapper wrapper = new Vec3Wrapper(env, result);
+      Vec3Instance wrapper = Vec3Class.get().newInstance(env, result);
       PatchedImmutableTable lo = wrapper.getLuaObject();
       context.getReturnBuffer().setTo(lo);
     }
@@ -460,7 +462,7 @@ public class SpellWrapper {
       // System.out.println("getBlock");
       IBlockState blockState = spell.getBlockState();
       String result = blockState.getBlock().getRegistryName().getResourcePath();
-      BlockStateWrapper wrapper = new BlockStateWrapper(env, blockState);
+      BlockStateInstance wrapper = BlockStateClass.get().newInstance(env, blockState);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 

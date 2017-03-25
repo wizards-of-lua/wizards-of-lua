@@ -8,16 +8,17 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 
 import net.karneim.luamod.lua.LuaTypeConverter;
+import net.karneim.luamod.lua.classes.MaterialClass;
+import net.karneim.luamod.lua.classes.StringXLuaObjectMapClass;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.sandius.rembulan.Table;
 
-public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
-  public BlockStateWrapper(Table env, @Nullable IBlockState delegate) {
-    super(env, delegate);
+public class BlockStateInstance extends DelegatingTableWrapper<IBlockState> {
+  public BlockStateInstance(Table env, @Nullable IBlockState delegate, Table metatable) {
+    super(env, delegate, metatable);
   }
 
   @Override
@@ -31,8 +32,10 @@ public class BlockStateWrapper extends DelegatingTableWrapper<IBlockState> {
       Object luaValue = LuaTypeConverter.luaValueOf(value);
       props.put(name.getName(), luaValue);
     }
-    builder.addNullable("properties", new StringXLuaObjectMapWrapper(env, props).getLuaObject());
-    builder.addNullable("material", new MaterialWrapper(env, delegate.getMaterial()).getLuaObject());
+    builder.addNullable("properties",
+        StringXLuaObjectMapClass.get().newInstance(env, props).getLuaObject());
+    builder.addNullable("material",
+        MaterialClass.get().newInstance(env, delegate.getMaterial()).getLuaObject());
   }
 
 }

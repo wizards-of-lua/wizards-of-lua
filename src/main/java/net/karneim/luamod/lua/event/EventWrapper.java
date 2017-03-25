@@ -13,9 +13,8 @@ public abstract class EventWrapper<JavaObject> extends DelegatingTableWrapper<Ja
   private final long id;
   private static long idCount = 0;
 
-
-  public EventWrapper(Table env, @Nullable JavaObject javaObject, String type) {
-    super(env, javaObject);
+  public EventWrapper(Table env, @Nullable JavaObject javaObject, String type, Table metatable) {
+    super(env, javaObject, metatable);
     id = ++idCount;
     this.type = checkNotNull(type, "type == null!");
   }

@@ -15,18 +15,21 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
+import net.karneim.luamod.lua.classes.EntityClass;
+import net.karneim.luamod.lua.classes.EntityPlayerClass;
+import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
-import net.karneim.luamod.lua.wrapper.EntityPlayerWrapper;
-import net.karneim.luamod.lua.wrapper.EntityWrapper;
+import net.karneim.luamod.lua.wrapper.EntityPlayerInstance;
+import net.karneim.luamod.lua.wrapper.EntityInstance;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.karneim.luamod.lua.wrapper.RuntimeWrapper;
 import net.karneim.luamod.lua.wrapper.SpellWrapper;
-import net.karneim.luamod.lua.wrapper.Vec3Wrapper;
+import net.karneim.luamod.lua.wrapper.Vec3Instance;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
@@ -207,9 +210,9 @@ public class LuaUtil {
 
   public void run() throws CallException, CallPausedException, InterruptedException, LoaderException {
     executor.call(state, headerFunc);
-    Vec3Wrapper.installInto(env, loader, executor, state);
-    EntityWrapper.installInto(env, loader, executor, state);
-    EntityPlayerWrapper.installInto(env, loader, executor, state);
+    Vec3Class.get().installInto(env, loader, executor, state);
+    EntityClass.get().installInto(env, loader, executor, state);
+    EntityPlayerClass.get().installInto(env, loader, executor, state);
     executor.call(state, profileFunc);
     executor.call(state, commandLineFunc);
   }

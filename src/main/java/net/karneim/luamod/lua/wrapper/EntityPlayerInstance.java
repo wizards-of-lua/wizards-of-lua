@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.classes.ItemStackClass;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,19 +22,20 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
+public class EntityPlayerInstance extends EntityLivingBaseInstance<EntityPlayer> {
 
   private static final String CLASSNAME = "Player";
   public static final String MODULE = "net.karneim.luamod.lua.classes." + CLASSNAME;
-  
+
   public static void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
-      StateContext state) throws LoaderException, CallException, CallPausedException, InterruptedException {
+      StateContext state)
+      throws LoaderException, CallException, CallPausedException, InterruptedException {
     LuaFunction classFunc =
         loader.loadTextChunk(new Variable(env), CLASSNAME, String.format("require \"%s\"", MODULE));
     executor.call(state, classFunc);
     addFunctions(env);
   }
-  
+
   public static void addFunctions(Table env) {
     Table metatable = Metatables.get(env, CLASSNAME);
     metatable.rawset("getInventory", new GetInventoryFunction(env));
@@ -45,8 +47,8 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
     return result;
   }
 
-  public EntityPlayerWrapper(Table env, @Nullable EntityPlayer delegate) {
-    super(env, delegate);
+  public EntityPlayerInstance(Table env, @Nullable EntityPlayer delegate, Table metatable) {
+    super(env, delegate, metatable);
   }
 
   @Override
@@ -59,7 +61,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
 
     Table metatable = Metatables.get(env, CLASSNAME);
     builder.setMetatable(metatable);
-    
+
     // FIXME die metatable enthält nicht die funktionen aus EntityWrapper
     // weil hier ja eine neue erzeugt wird.
     // Besser wäre ein add.
@@ -70,13 +72,13 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
     if (delegate instanceof EntityPlayerMP) {
       EntityPlayerMP mp = (EntityPlayerMP) delegate;
       GameType e = mp.interactionManager.getGameType();
-      builder.add("gamemode", new EnumWrapper(env, e).getLuaObject());
+      builder.add("gamemode", new EnumInstance(env, e).getLuaObject());
 
       // builder.addNullable("getInventory", new GetInventoryFunction(mp));
-      //metatable.rawset("getInventory", new GetInventoryFunction());
+      // metatable.rawset("getInventory", new GetInventoryFunction());
     }
   }
-  
+
   private static class GetInventoryFunction extends AbstractFunction2 {
 
     private Table env;
@@ -102,7 +104,7 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
       int index = ((Number) (arg2)).intValue();
 
       ItemStack itemStack = delegate.inventory.getStackInSlot(index);
-      ItemStackWrapper wrapper = new ItemStackWrapper(env, itemStack);
+      ItemStackInstance wrapper = ItemStackClass.get().newInstance(env, itemStack);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -112,5 +114,5 @@ public class EntityPlayerWrapper extends EntityLivingBaseWrapper<EntityPlayer> {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
 }

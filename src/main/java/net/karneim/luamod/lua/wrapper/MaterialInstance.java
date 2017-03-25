@@ -7,9 +7,9 @@ import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
 
-public class MaterialWrapper extends DelegatingTableWrapper<Material> {
-  public MaterialWrapper(Table env, @Nullable Material delegate) {
-    super(env, delegate);
+public class MaterialInstance extends DelegatingTableWrapper<Material> {
+  public MaterialInstance(Table env, @Nullable Material delegate, Table metatable) {
+    super(env, delegate, metatable);
   }
 
   @Override
@@ -21,7 +21,7 @@ public class MaterialWrapper extends DelegatingTableWrapper<Material> {
     builder.add("isOpaque", delegate.isOpaque());
     builder.add("isSolid", delegate.isSolid());
     builder.add("isToolNotRequired", delegate.isToolNotRequired());
-    builder.addNullable("mobility", new EnumWrapper(env, delegate.getMobilityFlag()).getLuaObject());
+    builder.addNullable("mobility", new EnumInstance(env, delegate.getMobilityFlag()).getLuaObject());
   }
 
 }

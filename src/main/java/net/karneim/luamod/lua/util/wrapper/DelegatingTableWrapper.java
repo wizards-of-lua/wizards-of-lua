@@ -7,15 +7,18 @@ import net.karneim.luamod.lua.wrapper.Metatables;
 import net.sandius.rembulan.Table;
 
 public abstract class DelegatingTableWrapper<J> extends LuaWrapper<J, DelegatingTable> {
-  public DelegatingTableWrapper(Table env, @Nullable J delegate) {
+  private final Table metatable;
+
+  public DelegatingTableWrapper(Table env, @Nullable J delegate, Table metatable) {
     super(env, delegate);
+    this.metatable = metatable;
   }
 
   @Override
   protected final DelegatingTable toLuaObject() {
     DelegatingTable.Builder builder = DelegatingTable.builder(delegate);
-    
     addProperties(builder);
+    builder.setMetatable(metatable);
     return builder.build();
   }
 

@@ -8,9 +8,9 @@ public class Metatables {
 
   public static Table get(Table env, String classname) {
     Table result = (Table) env.rawget(classname);
-    if (result == null) {
-      throw new IllegalStateException("Metatable for " + classname + " is undefined!");
-    }
+//    if (result == null) {
+//      throw new IllegalStateException("Metatable for " + classname + " is undefined!");
+//    }
     return result;
   }
 

@@ -6,9 +6,9 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraftforge.event.ServerChatEvent;
 import net.sandius.rembulan.Table;
 
-public class ServerChatEventWrapper extends EventWrapper<ServerChatEvent> {
-  public ServerChatEventWrapper(Table env, @Nullable ServerChatEvent delegate) {
-    super(env, delegate, EventType.CHAT.name());
+public class ServerChatEventInstance extends EventWrapper<ServerChatEvent> {
+  public ServerChatEventInstance(Table env, @Nullable ServerChatEvent delegate, Table metatable) {
+    super(env, delegate, EventType.CHAT.name(), metatable);
   }
 
   @Override

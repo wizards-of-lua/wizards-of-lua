@@ -4,8 +4,8 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.sandius.rembulan.Table;
 
 public class WhisperEventWrapper extends EventWrapper<WhisperEvent> {
-  public WhisperEventWrapper(Table env, WhisperEvent event) {
-    super(env, event, EventType.WHISPER.name());
+  public WhisperEventWrapper(Table env, WhisperEvent event, Table metatable) {
+    super(env, event, EventType.WHISPER.name(), metatable);
   }
 
   @Override

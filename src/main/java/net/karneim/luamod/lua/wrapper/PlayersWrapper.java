@@ -1,6 +1,9 @@
 package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Players;
+import net.karneim.luamod.lua.classes.EntityPlayerClass;
+import net.karneim.luamod.lua.classes.StringArrayClass;
+import net.karneim.luamod.lua.classes.StringIterableClass;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -29,7 +32,7 @@ public class PlayersWrapper {
     luaTable.rawset("list", new ListFunction());
     luaTable.rawset("get", new GetFunction());
     luaTable.rawset("find", new FindFunction());
-    
+
     luaTable.rawset("names", new NamesFunction());
     luaTable.rawset("getByName", new GetByNameFunction());
   }
@@ -43,7 +46,7 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       String[] names = players.names();
-      StringArrayWrapper wrapper = new StringArrayWrapper(env, names);
+      StringArrayInstance wrapper = StringArrayClass.get().newInstance(env, names);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -59,7 +62,7 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = players.list();
-      StringIterableWrapper wrapper = new StringIterableWrapper(env, ids);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -79,7 +82,7 @@ public class PlayersWrapper {
       }
       String id = String.valueOf(arg1);
       EntityPlayerMP player = players.get(id);
-      EntityPlayerWrapper wrapper = new EntityPlayerWrapper(env, player);
+      EntityPlayerInstance wrapper = EntityPlayerClass.get().newInstance(env, player);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -99,7 +102,7 @@ public class PlayersWrapper {
       }
       String name = String.valueOf(arg1);
       EntityPlayerMP player = players.getByName(name);
-      EntityPlayerWrapper wrapper = new EntityPlayerWrapper(env, player);
+      EntityPlayerInstance wrapper = EntityPlayerClass.get().newInstance(env, player);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -119,7 +122,7 @@ public class PlayersWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> ids = players.find(target);
-      StringIterableWrapper wrapper = new StringIterableWrapper(env, ids);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 

@@ -6,10 +6,9 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.EntityLiving;
 import net.sandius.rembulan.Table;
 
-
-public class EntityLivingWrapper<E extends EntityLiving> extends EntityLivingBaseWrapper<E> {
-  public EntityLivingWrapper(Table env, @Nullable E delegate) {
-    super(env, delegate);
+public class EntityLivingInstance<E extends EntityLiving> extends EntityLivingBaseInstance<E> {
+  public EntityLivingInstance(Table env, @Nullable E delegate, Table metatable) {
+    super(env, delegate, metatable);
   }
 
   @Override

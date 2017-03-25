@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
+import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
 import net.sandius.rembulan.Table;
 
 public class Events {
@@ -65,15 +66,16 @@ public class Events {
     EventWrapper<?> evtWrapper = type.wrap(env, evt);
     handle(evtWrapper);
   }
-  
+
   public void fire(String eventType, Object content) {
-    GenericLuaEventWrapper wrapper = new GenericLuaEventWrapper(env, content, eventType);
+    GenericLuaEventInstance wrapper =
+        GenericLuaEventClass.get().newInstance(env, content, eventType);
     Iterable<SpellEntity> spells = spellRegistry.getAll();
     for (SpellEntity spell : spells) {
       spell.getEvents().handle(wrapper);
     }
   }
-  
+
   private void handle(EventWrapper event) {
     // Ensure that the lua object is generated in the context of the event producing action
     event.getLuaObject();

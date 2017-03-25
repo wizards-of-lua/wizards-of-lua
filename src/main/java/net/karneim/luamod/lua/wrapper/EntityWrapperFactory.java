@@ -1,18 +1,22 @@
 package net.karneim.luamod.lua.wrapper;
 
+import net.karneim.luamod.lua.classes.EntityClass;
+import net.karneim.luamod.lua.classes.EntityLivingClass;
+import net.karneim.luamod.lua.classes.EntityPlayerClass;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.sandius.rembulan.Table;
 
 public class EntityWrapperFactory {
-  public EntityWrapper<?> create(Table env, Entity entity) {
+  
+  public EntityInstance<?> create(Table env, Entity entity) {
     if (entity instanceof EntityLiving) {
-      return new EntityLivingWrapper(env, (EntityLiving) entity);
+      return EntityLivingClass.get().newInstance(env, (EntityLiving) entity);
     }
     if (entity instanceof EntityPlayer) {
-      return new EntityPlayerWrapper(env, (EntityPlayer) entity);
+      return EntityPlayerClass.get().newInstance(env, (EntityPlayer) entity);
     }
-    return new EntityWrapper<Entity>(env, entity);
+    return EntityClass.get().newInstance(env, entity);
   }
 }

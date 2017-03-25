@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.classes.StringIterableClass;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +51,7 @@ public class EntitiesWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = entities.list();
-      StringIterableWrapper wrapper = new StringIterableWrapper(env, ids);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -73,7 +74,7 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      EntityWrapper<?> wrapper = entityWrapperFactory.create(env, entity);
+      EntityInstance<?> wrapper = entityWrapperFactory.create(env, entity);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -126,7 +127,7 @@ public class EntitiesWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> names = entities.find(target);
-      StringIterableWrapper wrapper = new StringIterableWrapper(env, names);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, names);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
