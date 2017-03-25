@@ -77,12 +77,11 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
     b.add("id", delegate::getCachedUniqueIdString, null);
-    b.add("name", delegate::getName,
-        (Object name) -> delegate.setCustomNameTag(String.valueOf(name)));
-    b.add("dimension", () -> delegate.dimension,
-        (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
+    b.add("name", delegate::getName, (Object name) -> delegate.setCustomNameTag(String.valueOf(name)));
+    b.add("dimension", () -> delegate.dimension, (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
     b.add("pos", () -> wrap(env, delegate.getPositionVector()), this::setPosition);
     b.add("blockPos", () -> wrap(env, delegate.getPosition()), null);
+    b.add("eyeHeight", () -> delegate.getEyeHeight(), null);
     b.add("orientation", () -> wrap(env, delegate.getHorizontalFacing()), null);
     b.add("rotationYaw", () -> delegate.rotationYaw,
         (Object yaw) -> delegate.rotationYaw = checkType(yaw, Number.class).floatValue());
@@ -92,6 +91,8 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
     b.add("team", this::getTeam, null);
     b.add("tags", () -> wrap(env, delegate.getTags()), null);
 
+    
+    
     Table metatable = Metatables.get(env, CLASSNAME);
     b.setMetatable(metatable);
   }
