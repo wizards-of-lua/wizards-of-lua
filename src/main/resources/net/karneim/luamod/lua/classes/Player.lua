@@ -1,2 +1,1 @@
-Player = Entity:new()
-
+Player = class("Player", Entity)

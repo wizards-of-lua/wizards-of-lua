@@ -15,18 +15,18 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.classes.LuaEntity;
-import net.karneim.luamod.lua.classes.LuaPlayer;
-import net.karneim.luamod.lua.classes.LuaVec3;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
+import net.karneim.luamod.lua.wrapper.EntityPlayerWrapper;
+import net.karneim.luamod.lua.wrapper.EntityWrapper;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
 import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.karneim.luamod.lua.wrapper.RuntimeWrapper;
 import net.karneim.luamod.lua.wrapper.SpellWrapper;
+import net.karneim.luamod.lua.wrapper.Vec3dWrapper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
@@ -67,7 +67,7 @@ public class LuaUtil {
   private Ticks ticks;
   private Events events;
   private Runtime runtime;
-  private List<String> standardRequirements = new ArrayList<>();
+  private List<Requirement> standardRequirements = new ArrayList<>();
 
   public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
       Credentials credentials) {
@@ -105,8 +105,6 @@ public class LuaUtil {
     
     LuaModLib.installInto(env, owner);
     
-    ClassMetatables.initClassMetatables(env);
-    
     Snapshots snapshots = new Snapshots();
 
     SpellWrapper.installInto(env, spell, events, snapshots);
@@ -116,9 +114,12 @@ public class LuaUtil {
     PlayersWrapper.installInto(env, new Players(LuaMod.instance.getServer(), owner));
     EntitiesWrapper.installInto(env, new Entities(LuaMod.instance.getServer(), owner));
 
-    //require(LuaVec3.MODULE);
-    //require(LuaEntity.MODULE);
-    //require(LuaPlayer.MODULE);
+    require("inspect", "net.karneim.luamod.lua.classes.inspect");
+    require("net.karneim.luamod.lua.classes.Globals");
+    require("net.karneim.luamod.lua.classes.string");
+    require(Vec3dWrapper.MODULE);
+    require(EntityWrapper.MODULE);
+    require(EntityPlayerWrapper.MODULE);
     
     SchedulingContextFactory schedulingContextFactory = new SchedulingContextFactory() {
 
@@ -131,8 +132,12 @@ public class LuaUtil {
 
   }
 
+  private void require(String name, String module) {
+    standardRequirements.add(new Requirement(name, module));
+  }
+
   private void require(String module) {
-    standardRequirements.add(module);
+    standardRequirements.add(new Requirement(module));
   }
 
   private RuntimeEnvironment getModRuntimeEnvironment() {
@@ -183,8 +188,11 @@ public class LuaUtil {
   public void compile(String program) throws LoaderException {
     // Add Vec3 requirement
     StringBuilder buf = new StringBuilder();
-    for (String module : standardRequirements) {
-      buf.append("require ").append("\"").append(module).append("\"").append("\n");
+    for (Requirement requirement : standardRequirements) {
+      if ( requirement.name != null) {
+        buf.append(requirement.name).append(" = ");
+      }
+      buf.append("require ").append("\"").append(requirement.module).append("\"").append("\n");
     }
     program = buf.toString() + program;
     main = loader.loadTextChunk(new Variable(env), "command-line", program);
@@ -206,6 +214,22 @@ public class LuaUtil {
   public void setCurrentTime(int ticksExisted) {
     events.setCurrentTime(ticksExisted);
     runtime.setCurrentTime(ticksExisted);
+  }
+  
+  class Requirement {
+    String name;
+    String module;
+    
+    public Requirement(String name, String module) {
+      this.name = name;
+      this.module = module;
+    }
+    
+    public Requirement(String module) {
+      this.name = null;
+      this.module = module;
+    }
+    
   }
 
 }

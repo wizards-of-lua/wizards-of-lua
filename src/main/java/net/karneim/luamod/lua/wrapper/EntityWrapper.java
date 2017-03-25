@@ -6,7 +6,6 @@ import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.NBTTagUtil;
-import net.karneim.luamod.lua.classes.LuaEntity;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.Entry;
@@ -18,12 +17,23 @@ import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
+import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
+
+  private static final String CLASSNAME = "Entity";
+  public static final String MODULE = "net.karneim.luamod.lua.classes." + CLASSNAME;
+
+  public static LuaFunction NEW(Table env) {
+    Table metatable = Metatables.get(env, CLASSNAME);
+    LuaFunction result = (LuaFunction) metatable.rawget("new");
+    return result;
+  }
+
   public EntityWrapper(Table env, @Nullable E delegate) {
     super(env, delegate);
   }
@@ -59,22 +69,30 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
     b.add("team", this::getTeam, null);
     b.add("tags", () -> wrap(env, delegate.getTags()), null);
 
-    b.add("addTag", new AddTagFunction());
-    b.add("removeTag", new RemoveTagFunction());
-    b.add("setTags", new SetTagsFunction());
-    b.add("getData", new GetDataFunction());
-    
-    //b.setMetatable(LuaEntity.META_TABLE(env));
+    Table metatable = Metatables.get(env, CLASSNAME);
+    b.setMetatable(metatable);
+    metatable.rawset("addTag", new AddTagFunction());
+    metatable.rawset("removeTag", new RemoveTagFunction());
+    metatable.rawset("setTags", new SetTagsFunction());
+    metatable.rawset("getData", new GetDataFunction());
+
   }
 
-  private class AddTagFunction extends AbstractFunction1 {
+  private static class AddTagFunction extends AbstractFunction2 {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
       if (arg1 == null) {
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
+      }
+      if (arg2 == null) {
         throw new IllegalArgumentException(String.format("string expected but got nil!"));
       }
-      String tag = String.valueOf(arg1);
+      Entity delegate = getDelegate(Entity.class, arg1);
+
+      String tag = String.valueOf(arg2);
+
       if (delegate.getTags().contains(tag)) {
         context.getReturnBuffer().setTo(false);
       } else {
@@ -90,14 +108,19 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
     }
   }
 
-  private class RemoveTagFunction extends AbstractFunction1 {
+  private static class RemoveTagFunction extends AbstractFunction2 {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
       if (arg1 == null) {
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
+      }
+      if (arg2 == null) {
         throw new IllegalArgumentException(String.format("string expected but got nil!"));
       }
-      String tag = String.valueOf(arg1);
+      Entity delegate = getDelegate(Entity.class, arg1);
+      String tag = String.valueOf(arg2);
       boolean changed = delegate.removeTag(tag);
       context.getReturnBuffer().setTo(changed);
     }
@@ -109,19 +132,24 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
     }
   }
 
-  private class SetTagsFunction extends AbstractFunction1 {
+  private static class SetTagsFunction extends AbstractFunction2 {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
       if (arg1 == null) {
         throw new IllegalArgumentException(String.format("table expected but got nil!"));
       }
-      if (!(arg1 instanceof Table)) {
-        throw new IllegalArgumentException(
-            String.format("table expected but got %s", arg1.getClass().getSimpleName()));
+      if (arg2 == null) {
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
       }
+      if (!(arg2 instanceof Table)) {
+        throw new IllegalArgumentException(
+            String.format("table expected but got %s", arg2.getClass().getSimpleName()));
+      }
+      Entity delegate = getDelegate(Entity.class, arg1);
       delegate.getTags().clear();
-      for (Entry<Object, Object> entry : new TableIterable((Table) arg1)) {
+      for (Entry<Object, Object> entry : new TableIterable((Table) arg2)) {
         String tag = String.valueOf(entry.getValue());
         delegate.addTag(tag);
       }
@@ -138,11 +166,14 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
   /**
    * Returns the NBT-Data of the entity.
    */
-  private class GetDataFunction extends AbstractFunction0 {
+  private static class GetDataFunction extends AbstractFunction1 {
 
     @Override
-    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      if (arg1 == null) {
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
+      }
+      Entity delegate = getDelegate(Entity.class, arg1);
       NBTTagCompound tagCompound = delegate.writeToNBT(new NBTTagCompound());
       PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
       if (tagCompound != null) {
@@ -159,4 +190,5 @@ public class EntityWrapper<E extends Entity> extends DelegatingTableWrapper<E> {
       throw new NonsuspendableFunctionException();
     }
   }
+
 }

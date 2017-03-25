@@ -2,14 +2,22 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.classes.LuaVec3;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.ImmutableTableWrapper;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.LuaFunction;
 
 public class Vec3dWrapper extends ImmutableTableWrapper<Vec3d> {
+
+  private static final String CLASSNAME = "Vec3d";
+  public static final String MODULE = "net.karneim.luamod.lua.classes."+CLASSNAME;
+
+  public static LuaFunction FROM(Table env) {
+    Table metatable = Metatables.get(env, CLASSNAME);
+    LuaFunction result = (LuaFunction) metatable.rawget("from");
+    return result;
+  }
 
   public Vec3dWrapper(Table env, @Nullable Vec3d delegate) {
     super(env, delegate);
@@ -20,7 +28,7 @@ public class Vec3dWrapper extends ImmutableTableWrapper<Vec3d> {
     builder.add("x", delegate.xCoord);
     builder.add("y", delegate.yCoord);
     builder.add("z", delegate.zCoord);
-//    Table metatable = LuaVec3.META_TABLE(env);
-//    builder.setMetatable(metatable);
+    Table metatable = Metatables.get(env, CLASSNAME);
+    builder.setMetatable(metatable);
   }
 }
