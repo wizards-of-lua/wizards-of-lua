@@ -32,14 +32,14 @@ public class Spell {
   private Rotation rotation;
   private ICommandSender owner;
   private ICommandSender luaProcessEntity;
+  private Snapshots snapshots;
 
   public Spell(ICommandSender owner, World world) {
-    this(owner, owner, world, Vec3d.ZERO, Rotation.NONE, null);
+    this(owner, owner, world, Vec3d.ZERO, Rotation.NONE, null, null);
   }
 
   public Spell(ICommandSender owner, ICommandSender luaProcessEntity, World world,
-      Vec3d worldPosition, @Nullable Rotation rotation, @Nullable EnumFacing surface) {
-
+      Vec3d worldPosition, @Nullable Rotation rotation, @Nullable EnumFacing surface, Snapshots snapshots) {
     this.owner = checkNotNull(owner);
     this.luaProcessEntity = checkNotNull(luaProcessEntity);
     this.world = checkNotNull(world);
@@ -48,6 +48,7 @@ public class Spell {
     this.initialRotation = checkNotNull(rotation);
     this.rotation = rotation == null ? Rotation.NONE : rotation;
     this.surface = surface;
+    this.snapshots = snapshots;
   }
 
   public void setOrigin() {
@@ -65,7 +66,6 @@ public class Spell {
   public @Nullable Vec3d getOwnerWorldPosition() {
     Entity entity = owner.getCommandSenderEntity();
     if (entity != null) {
-      // return entity.getPosition();
       return entity.getPositionVector();
     }
     return null;
@@ -205,15 +205,34 @@ public class Spell {
     return result;
   }
 
+  public String copySelection(Selection selection) {
+    Snapshot snapshot = copy(selection);
+    String result = snapshots.registerSnapshot(snapshot);
+    return result;
+  }
+
   public Snapshot cut(Selection selection) {
     Snapshot result = new Snapshot();
     result.cutFromWorld(world, new BlockPos(worldPosition), rotation, selection);
     return result;
   }
 
+  public String cutSelection(Selection selection) {
+    Snapshot snapshot = cut(selection);
+    String result = snapshots.registerSnapshot(snapshot);
+    return result;
+  }
+
   public Selection paste(Snapshot snapshot) {
     return snapshot.pasteToWorld(world, new BlockPos(worldPosition), rotation);
   }
+
+  public Selection paste(String id) {
+    Snapshot snapshot = snapshots.getSnapshot(id);
+    Selection resultSelection = paste(snapshot);
+    return resultSelection;
+  }
+
 
   public void reset() {
     resetPosition();
@@ -233,5 +252,7 @@ public class Spell {
   public void print(String message) {
     owner.addChatMessage(new TextComponentString(message));
   }
+
+
 
 }

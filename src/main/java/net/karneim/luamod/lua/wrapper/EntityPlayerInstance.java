@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua.wrapper;
 
+import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
+
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
@@ -15,8 +17,8 @@ public class EntityPlayerInstance extends EntityLivingBaseInstance<EntityPlayer>
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder builder) {
-    super.addProperties(builder);
+  protected void addProperties(DelegatingTable.Builder b) {
+    super.addProperties(b);
     // delegate.getBedLocation()
     // delegate.getFoodStats().getFoodLevel()
     // delegate.getFoodStats().getSaturationLevel()
@@ -24,9 +26,31 @@ public class EntityPlayerInstance extends EntityLivingBaseInstance<EntityPlayer>
 
     if (delegate instanceof EntityPlayerMP) {
       EntityPlayerMP mp = (EntityPlayerMP) delegate;
-      GameType e = mp.interactionManager.getGameType();
-      builder.add("gamemode", new EnumInstance(env, e).getLuaObject());
+      b.add("gamemode", () -> wrap(env, mp.interactionManager.getGameType()), this::setGameMode);
+      
+     
     }
+    // delegate.getAbsorptionAmount();
+    // delegate.getBedLocation()
+    // delegate.getInventoryEnderChest()
+    
+    b.add("foodLevel", () -> delegate.getFoodStats().getFoodLevel(), this::setFoodLevel);
+    b.add("foodSaturationLevel", () -> delegate.getFoodStats().getSaturationLevel(), this::setSaturationLevel);
   }
 
+  private void setFoodLevel(Object arg) {
+    int value = ((Number)arg).intValue();
+    delegate.getFoodStats().setFoodLevel(value);
+  }
+  
+  private void setSaturationLevel(Object arg) {
+    float value = ((Number)arg).floatValue();
+    delegate.getFoodStats().setFoodSaturationLevel(value);
+  }
+  
+  private void setGameMode(Object arg) {
+    GameType mode = GameType.valueOf(String.valueOf(arg));
+    EntityPlayerMP mp = (EntityPlayerMP) delegate;
+    mp.setGameType(mode);
+  }
 }

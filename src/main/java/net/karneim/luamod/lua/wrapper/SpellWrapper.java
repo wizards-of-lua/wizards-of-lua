@@ -526,8 +526,9 @@ public class SpellWrapper {
       }
       // spell.msg(String.valueOf(arg1), encode(String.valueOf(arg2)));
 
+      String username = String.valueOf(arg1);
       String text = format(context, new Object[] {arg2});
-      spell.say(text);
+      spell.msg(username, text);
 
       context.getReturnBuffer().setTo();
     }

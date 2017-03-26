@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua.wrapper;
 
+import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
+
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.classes.ArmorClass;
@@ -15,20 +17,20 @@ public class EntityLivingBaseInstance<E extends EntityLivingBase> extends Entity
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder builder) {
-    super.addProperties(builder);
-    // delegate.getAbsorptionAmount();
-    // delegate.getBedLocation()
-    // delegate.getFoodStats().getFoodLevel()
-    // delegate.getFoodStats().getSaturationLevel()
-    // delegate.getInventoryEnderChest()
-    builder.addNullable("armor",
+  protected void addProperties(DelegatingTable.Builder b) {
+    super.addProperties(b);
+    b.addNullable("armor",
         ArmorClass.get().newInstance(env, delegate.getArmorInventoryList()).getLuaObject());
-    builder.add("health", delegate.getHealth());
-    builder.addNullable("mainHand",
+    b.addNullable("mainHand",
         ItemStackClass.get().newInstance(env, delegate.getHeldItemMainhand()).getLuaObject());
-    builder.addNullable("offHand",
+    b.addNullable("offHand",
         ItemStackClass.get().newInstance(env, delegate.getHeldItemOffhand()).getLuaObject());
+    b.add("health", delegate::getHealth, this::setHealth);
+  }
+  
+  private void setHealth(Object arg) {
+    float value = ((Number) arg).floatValue();
+    delegate.setHealth(value);
   }
 
 }

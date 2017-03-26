@@ -6,6 +6,7 @@ import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.credentials.Credentials;
 import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.cursor.Clipboard;
+import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.event.Events;
 import net.minecraft.command.ICommandSender;
@@ -62,9 +63,10 @@ public class SpellEntity extends Entity {
     } else {
       userId = owner.getCommandSenderEntity().getUniqueID().toString();
     }
-    this.spell = new Spell(owner, this, this.getEntityWorld(), pos, rotation, surface);
+    Snapshots snapshots = new Snapshots();
+    this.spell = new Spell(owner, this, this.getEntityWorld(), pos, rotation, surface, snapshots);
     Credentials credentials = mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
-    luaUtil = new LuaUtil(this.getEntityWorld(), owner, spell, clipboard, credentials);
+    luaUtil = new LuaUtil(this.getEntityWorld(), owner, spell, clipboard, credentials, snapshots);
     if (surface != null) {
       pos = pos.add(new Vec3d(surface.getDirectionVec()));
     }

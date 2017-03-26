@@ -22,6 +22,7 @@ import net.karneim.luamod.lua.classes.EntityLivingClass;
 import net.karneim.luamod.lua.classes.EntityPlayerClass;
 import net.karneim.luamod.lua.classes.ItemStackClass;
 import net.karneim.luamod.lua.classes.MaterialClass;
+import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
@@ -76,10 +77,12 @@ public class LuaUtil {
   private Runtime runtime;
   private List<Requirement> standardRequirements = new ArrayList<>();
   private String profile;
+  private Spell spell;
 
   public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
-      Credentials credentials) {
+      Credentials credentials, Snapshots snapshots) {
     this.world = world;
+    this.spell = spell;
     this.clipboard = clipboard;
     this.credentials = credentials;
     state = StateContexts.newDefaultInstance();
@@ -114,9 +117,7 @@ public class LuaUtil {
 
     LuaModLib.installInto(env, owner);
 
-    Snapshots snapshots = new Snapshots();
-
-    SpellWrapper.installInto(env, spell, events, snapshots);
+    //SpellWrapper.installInto(env, spell, events, snapshots);
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, events);
     RuntimeWrapper.installInto(env, runtime);
@@ -224,6 +225,10 @@ public class LuaUtil {
     EntityClass.get().installInto(env, loader, executor, state);
     EntityLivingClass.get().installInto(env, loader, executor, state);
     EntityPlayerClass.get().installInto(env, loader, executor, state);
+    
+    SpellClass.get().installInto(env, loader, executor, state);
+    env.rawset("spell", SpellClass.get().newInstance(env, this.spell).getLuaObject());
+    
     executor.call(state, profileFunc);
     executor.call(state, commandLineFunc);
   }
