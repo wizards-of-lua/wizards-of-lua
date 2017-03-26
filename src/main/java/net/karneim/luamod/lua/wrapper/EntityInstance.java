@@ -42,6 +42,7 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     b.add("lookVec", () -> wrap(env, delegate.getLookVec()), null);
     b.add("team", this::getTeam, null);
     b.add("tags", () -> wrap(env, delegate.getTags()), null);
+    b.add("facing", () -> wrap(env, delegate.getAdjustedHorizontalFacing()), null);
   }
 
   private void setPosition(Object object) {

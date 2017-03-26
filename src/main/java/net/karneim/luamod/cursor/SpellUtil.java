@@ -35,13 +35,13 @@ public class SpellUtil {
   public static Rotation getRotation(EnumFacing facing) {
     switch (facing) {
       case NORTH:
-        return Rotation.NONE;
-      case EAST:
-        return Rotation.CLOCKWISE_90;
-      case SOUTH:
         return Rotation.CLOCKWISE_180;
-      case WEST:
+      case EAST:
         return Rotation.COUNTERCLOCKWISE_90;
+      case SOUTH:
+        return Rotation.NONE;
+      case WEST:
+        return Rotation.CLOCKWISE_90;
       default:
         return null;
     }
@@ -50,15 +50,30 @@ public class SpellUtil {
   public static EnumFacing getFacing(Rotation rotation) {
     switch (rotation) {
       case NONE:
-        return EnumFacing.NORTH;
-      case CLOCKWISE_90:
-        return EnumFacing.EAST;
-      case CLOCKWISE_180:
         return EnumFacing.SOUTH;
-      case COUNTERCLOCKWISE_90:
+      case CLOCKWISE_90:
         return EnumFacing.WEST;
+      case CLOCKWISE_180:
+        return EnumFacing.NORTH;
+      case COUNTERCLOCKWISE_90:
+        return EnumFacing.EAST;
       default:
         return null;
+    }
+  }
+
+  public static float getRotationYaw(EnumFacing facing) {
+    switch (facing) {
+      case SOUTH:
+        return 0;
+      case WEST:
+        return 90;
+      case NORTH:
+        return 180;
+      case EAST:
+        return 270;
+      default:
+        throw new Error("Unexpected facing " + facing);
     }
   }
 }

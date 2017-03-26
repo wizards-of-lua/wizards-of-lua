@@ -8,6 +8,7 @@ import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
+import net.karneim.luamod.cursor.SpellUtil;
 import net.karneim.luamod.lua.event.Events;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -162,6 +163,11 @@ public class SpellEntity extends Entity {
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
       }
     }
+    Rotation rot = spell.getRotation();
+    EnumFacing facing = SpellUtil.getFacing(rot);
+    float yaw = SpellUtil.getRotationYaw(facing);
+    float pitch = 0;
+    setRotation(yaw, pitch);
   }
 
   public void onUpdate() {
