@@ -75,7 +75,7 @@ public class LuaUtil {
   private Events events;
   private Runtime runtime;
   private List<Requirement> standardRequirements = new ArrayList<>();
-  private String profile;
+  private List<String> profiles;
   private Spell spell;
 
   public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
@@ -116,7 +116,7 @@ public class LuaUtil {
 
     LuaModLib.installInto(env, owner);
 
-    //SpellWrapper.installInto(env, spell, events, snapshots);
+    // SpellWrapper.installInto(env, spell, events, snapshots);
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, events);
     RuntimeWrapper.installInto(env, runtime);
@@ -146,8 +146,8 @@ public class LuaUtil {
     standardRequirements.add(new Requirement(module));
   }
 
-  public void setProfile(String profile) {
-    this.profile = profile;
+  public void setProfiles(List<String> profiles) {
+    this.profiles = profiles;
   }
 
   private RuntimeEnvironment getModRuntimeEnvironment() {
@@ -205,11 +205,18 @@ public class LuaUtil {
     }
     String header = buf.toString();
     headerFunc = loader.loadTextChunk(new Variable(env), "header", header);
-    if (profile != null) {
-      profileFunc = loader.loadTextChunk(new Variable(env), "profile",
-          String.format("require \"%s\"", profile));
+    if (profiles != null) {
+      profileFunc = loader.loadTextChunk(new Variable(env), "profile", generateCode(profiles));
     }
     commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", commandLine);
+  }
+
+  private String generateCode(List<String> moduleNames) {
+    String code = "";
+    for (String module : moduleNames) {
+      code += String.format("require \"%s\"\n", module);
+    }
+    return code;
   }
 
   public void run()
@@ -224,10 +231,10 @@ public class LuaUtil {
     EntityClass.get().installInto(env, loader, executor, state);
     EntityLivingClass.get().installInto(env, loader, executor, state);
     EntityPlayerClass.get().installInto(env, loader, executor, state);
-    
+
     SpellClass.get().installInto(env, loader, executor, state);
     env.rawset("spell", SpellClass.get().newInstance(env, this.spell).getLuaObject());
-    
+
     executor.call(state, profileFunc);
     executor.call(state, commandLineFunc);
   }
@@ -261,5 +268,6 @@ public class LuaUtil {
     }
 
   }
+
 
 }

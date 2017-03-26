@@ -54,19 +54,25 @@ public class Startup {
 
       World entityWorld = checkNotNull(server.getEntityWorld());
       SpellEntity spellEntity = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
-      String profile = getProfile();
-      spellEntity.setProfile(profile);
+      addDefaultProfile(spellEntity);
+      addStatupProfile(spellEntity);
       spellEntity.setCommand(theSpell);
       server.getEntityWorld().spawnEntityInWorld(spellEntity);
     }
   }
 
-  private String getProfile() throws IOException {
-    String result = luaMod.getProfiles().getStartupProfile();
-    if (result == null) {
-      result = luaMod.getProfiles().getDefaultProfile();
+  private void addStatupProfile(SpellEntity spellEntity) throws IOException {
+    String profile = luaMod.getProfiles().getStartupProfile();
+    if (profile != null) {
+      spellEntity.addProfile(profile);
     }
-    return result;
+  }
+
+  private void addDefaultProfile(SpellEntity spellEntity) throws IOException {
+    String profile = luaMod.getProfiles().getDefaultProfile();
+    if (profile != null) {
+      spellEntity.addProfile(profile);
+    }
   }
 
   private ICommandSender sender() {

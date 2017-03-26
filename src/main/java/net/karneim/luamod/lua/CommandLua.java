@@ -41,7 +41,7 @@ public class CommandLua extends CommandBase {
   public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
     Permissions permissions = mod.getPermissions();
     boolean result = permissions.isWizard(sender);
-    if ( result == false) {
+    if (result == false) {
       result = super.checkPermission(server, sender);
     }
     return result;
@@ -78,8 +78,8 @@ public class CommandLua extends CommandBase {
           mod.getSpellEntityFactory().create(sender.getEntityWorld(), sender, owner);
 
       server.getEntityWorld().spawnEntityInWorld(spell);
-      String profile = getProfile(owner);
-      spell.setProfile(profile);
+      addDefaultProfile(spell);
+      addUserProfile(owner, spell);
       spell.setCommand(getArgString(args));
 
       if (sender.sendCommandFeedback()) {
@@ -90,6 +90,20 @@ public class CommandLua extends CommandBase {
       throw new CommandException("Can't execute %s. Caught %s", getCommandName(), e.getMessage());
     } catch (LoaderException e) {
       throw new CommandException("Can't execute %s. Caught %s", getCommandName(), e.getMessage());
+    }
+  }
+
+  private void addUserProfile(ICommandSender owner, SpellEntity spell) throws IOException {
+    String userProfile = mod.getProfiles().getUserProfile(owner.getCommandSenderEntity());
+    if (userProfile != null) {
+      spell.addProfile(userProfile);
+    }
+  }
+
+  private void addDefaultProfile(SpellEntity spell) throws IOException {
+    String defaultProfile = mod.getProfiles().getDefaultProfile();
+    if (defaultProfile != null) {
+      spell.addProfile(defaultProfile);
     }
   }
 
@@ -112,19 +126,6 @@ public class CommandLua extends CommandBase {
       return argString;
     }
     return "";
-  }
-
-  private String getProfile(ICommandSender owner) throws IOException {
-    return getProfile(owner.getCommandSenderEntity());
-  }
-
-  private String getProfile(Entity player) throws IOException {
-    @Nullable
-    String result = mod.getProfiles().getUserProfile(player);
-    if (result == null) {
-      result = mod.getProfiles().getDefaultProfile();
-    }
-    return result;
   }
 
 }

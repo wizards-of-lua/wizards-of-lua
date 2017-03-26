@@ -1,5 +1,8 @@
 package net.karneim.luamod.lua;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.LuaMod;
@@ -8,7 +11,6 @@ import net.karneim.luamod.credentials.Realm;
 import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
-import net.karneim.luamod.cursor.SpellUtil;
 import net.karneim.luamod.lua.event.Events;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -45,7 +47,7 @@ public class SpellEntity extends Entity {
   private LuaUtil luaUtil;
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
-  private String profile;
+  private List<String> profiles = new ArrayList<>();
 
   public SpellEntity(World worldIn) {
     super(worldIn);
@@ -83,19 +85,17 @@ public class SpellEntity extends Entity {
     return clipboard;
   }
 
-  public void setProfile(String profile) {
-    this.profile = profile;
+  public void addProfile(String profile) {
+    this.profiles.add(profile);
   }
-
+  
   public @Nullable String getCommand() {
     return command;
   }
 
   public void setCommand(String command) throws LoaderException {
     this.command = command;
-    if (profile != null) {
-      luaUtil.setProfile(profile);
-    }
+    luaUtil.setProfiles(profiles);
     luaUtil.compile(command);
     onUpdate();
   }
@@ -287,5 +287,6 @@ public class SpellEntity extends Entity {
   public Events getEvents() {
     return luaUtil.getEvents();
   }
+
 
 }
