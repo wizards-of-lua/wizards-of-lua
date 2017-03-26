@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
@@ -62,6 +63,10 @@ public class SpellUtil {
     }
   }
 
+  public static float getRotationYaw(Rotation rot) {
+    return getRotationYaw(getFacing(rot));
+  }
+
   public static float getRotationYaw(EnumFacing facing) {
     switch (facing) {
       case SOUTH:
@@ -69,11 +74,43 @@ public class SpellUtil {
       case WEST:
         return 90;
       case NORTH:
-        return 180;
+        return -180;
       case EAST:
-        return 270;
+        return -90;
       default:
         throw new Error("Unexpected facing " + facing);
     }
   }
+
+  public static EnumFacing getFacing(float rotation) {
+    rotation = MathHelper.wrapDegrees(rotation);
+    if (rotation < -135) {
+      return EnumFacing.NORTH;
+    }
+    if (rotation < -45) {
+      return EnumFacing.EAST;
+    }
+    if (rotation < 45) {
+      return EnumFacing.SOUTH;
+    }
+    if (rotation < 135) {
+      return EnumFacing.WEST;
+    }
+    return EnumFacing.NORTH;
+  }
+
+  public static Rotation roundRotation(float rotation) {
+    EnumFacing facing = getFacing(rotation);
+    return getRotation(facing);
+  }
+
+  public static @Nullable Rotation roundRotation(float rotation, double precision) {
+    Rotation result = roundRotation(rotation);
+    float yaw = getRotationYaw(result);
+    if ( Math.abs(MathHelper.wrapDegrees(rotation)-MathHelper.wrapDegrees(yaw)) <= precision) {
+      return result;
+    }
+    return null;
+  }
+
 }

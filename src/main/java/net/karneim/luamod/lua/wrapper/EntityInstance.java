@@ -9,14 +9,9 @@ import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.math.MathHelper;
 import net.sandius.rembulan.ByteString;
-import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.exec.CallException;
-import net.sandius.rembulan.exec.CallPausedException;
-import net.sandius.rembulan.exec.DirectCallExecutor;
-import net.sandius.rembulan.load.ChunkLoader;
-import net.sandius.rembulan.load.LoaderException;
 
 public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> {
 
@@ -35,7 +30,7 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     b.add("blockPos", () -> wrap(env, delegate.getPosition()), null);
     b.add("eyeHeight", () -> delegate.getEyeHeight(), null);
     b.add("orientation", () -> wrap(env, delegate.getHorizontalFacing()), null);
-    b.add("rotationYaw", () -> delegate.rotationYaw,
+    b.add("rotationYaw", () -> MathHelper.wrapDegrees(delegate.rotationYaw),
         (Object yaw) -> delegate.rotationYaw = checkType(yaw, Number.class).floatValue());
     b.add("rotationPitch", () -> delegate.rotationPitch,
         (Object pitch) -> delegate.rotationPitch = checkType(pitch, Number.class).floatValue());

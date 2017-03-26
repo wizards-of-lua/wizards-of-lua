@@ -15,38 +15,43 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class Spell {
   private final World world;
   private Vec3d origin;
-  private Rotation initialRotation;
+  // private Rotation initialRotation;
+  private float initialRotation;
   @Nullable
   private EnumFacing surface;
 
   private final Stack<Location> locationStack = new Stack<Location>();
 
   private Vec3d worldPosition;
-  private Rotation rotation;
+  // private Rotation rotation;
+  private float rotation;
   private ICommandSender owner;
   private ICommandSender luaProcessEntity;
   private Snapshots snapshots;
 
+  // TODO remove this constructor
   public Spell(ICommandSender owner, World world) {
     this(owner, owner, world, Vec3d.ZERO, Rotation.NONE, null, null);
   }
 
   public Spell(ICommandSender owner, ICommandSender luaProcessEntity, World world,
-      Vec3d worldPosition, @Nullable Rotation rotation, @Nullable EnumFacing surface, Snapshots snapshots) {
+      Vec3d worldPosition, Rotation rotation, @Nullable EnumFacing surface, Snapshots snapshots) {
     this.owner = checkNotNull(owner);
     this.luaProcessEntity = checkNotNull(luaProcessEntity);
     this.world = checkNotNull(world);
     this.origin = checkNotNull(worldPosition);
     this.worldPosition = checkNotNull(worldPosition);
-    this.initialRotation = checkNotNull(rotation);
-    this.rotation = rotation == null ? Rotation.NONE : rotation;
+    this.initialRotation = SpellUtil.getRotationYaw(rotation);
+    this.rotation = initialRotation;
     this.surface = surface;
     this.snapshots = snapshots;
   }
@@ -104,12 +109,12 @@ public class Spell {
     return false;
   }
 
-  public Rotation getInitialRotation() {
+  public float getInitialRotation() {
     return initialRotation;
   }
 
-  public Rotation getRotation() {
-    return rotation;
+  public float getRotation() {
+    return MathHelper.wrapDegrees(rotation);
   }
 
   public EnumFacing getOrientation() {
@@ -119,7 +124,7 @@ public class Spell {
   public void setOrientation(EnumFacing facing) {
     Rotation rot = SpellUtil.getRotation(facing);
     if (rot != null) {
-      this.rotation = rot;
+      this.rotation = SpellUtil.getRotationYaw(rot);
     }
   }
 
@@ -128,6 +133,10 @@ public class Spell {
   }
 
   public void setRotation(Rotation rotation) {
+    setRotation(SpellUtil.getRotationYaw(rotation));
+  }
+
+  public void setRotation(float rotation) {
     this.rotation = rotation;
   }
 
@@ -166,7 +175,22 @@ public class Spell {
   }
 
   public void move(EnumDirection direction, double lenght) {
-    move(direction.rotate(rotation), lenght);
+    float angle = direction.getHorizontalAngle();
+    float yaw = rotation + angle;
+    
+    Rotation rot = SpellUtil.roundRotation(yaw, 0.01);
+    if ( rot != null) {
+      EnumFacing facing = SpellUtil.getFacing(rot);
+      Vec3d step = new Vec3d(facing.getDirectionVec()).scale(lenght);
+      worldPosition = worldPosition.add(step);
+    } else {
+      float rad = (float)Math.toRadians(yaw);
+      float x = -MathHelper.sin(rad);
+      float z = MathHelper.cos(rad);
+      
+      Vec3d step = new Vec3d(x, 0, z).scale(lenght);
+      worldPosition = worldPosition.add(step);
+    }
   }
 
   public void moveBy(double x, double y, double z) {
@@ -178,7 +202,11 @@ public class Spell {
   }
 
   public void rotate(Rotation rotation) {
-    this.rotation = this.rotation.add(rotation);
+    rotate(SpellUtil.getRotationYaw(rotation));
+  }
+
+  public void rotate(float rotationYaw) {
+    this.rotation += rotationYaw;
   }
 
   public void resetRotation() {
@@ -187,7 +215,8 @@ public class Spell {
 
   public void setBlock(Block block) {
     IBlockState state = block.getDefaultState();
-    state = state.withRotation(rotation.add(Rotation.CLOCKWISE_180));
+    Rotation rot = SpellUtil.roundRotation(rotation);
+    state = state.withRotation(rot);
     world.setBlockState(new BlockPos(worldPosition), state);
   }
 
@@ -201,19 +230,22 @@ public class Spell {
 
   public String copy(Selection selection) {
     Snapshot snapshot = new Snapshot();
-    snapshot.copyFromWorld(world, new BlockPos(worldPosition), rotation, selection);
+    snapshot.copyFromWorld(world, new BlockPos(worldPosition), SpellUtil.roundRotation(rotation),
+        selection);
     return snapshots.registerSnapshot(snapshot);
   }
 
   public String cut(Selection selection) {
     Snapshot snapshot = new Snapshot();
-    snapshot.cutFromWorld(world, new BlockPos(worldPosition), rotation, selection);
+    snapshot.cutFromWorld(world, new BlockPos(worldPosition), SpellUtil.roundRotation(rotation),
+        selection);
     return snapshots.registerSnapshot(snapshot);
   }
 
   public Selection paste(String id) {
     Snapshot snapshot = snapshots.getSnapshot(id);
-    return snapshot.pasteToWorld(world, new BlockPos(worldPosition), rotation);
+    return snapshot.pasteToWorld(world, new BlockPos(worldPosition),
+        SpellUtil.roundRotation(rotation));
   }
 
   public void reset() {
@@ -234,7 +266,5 @@ public class Spell {
   public void print(String message) {
     owner.addChatMessage(new TextComponentString(message));
   }
-
-
 
 }

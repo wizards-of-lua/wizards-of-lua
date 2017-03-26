@@ -10,7 +10,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 
 public enum EnumDirection {
-  FORWARD, BACK, LEFT, RIGHT, UP, DOWN;
+  FORWARD(0), BACK(180), LEFT(-90), RIGHT(90), UP(0), DOWN(0);
+
 
   private static final Map<String, EnumDirection> NAME_LOOKUP =
       Maps.<String, EnumDirection>newHashMap();
@@ -29,6 +30,16 @@ public enum EnumDirection {
     return name == null ? null : (EnumDirection) NAME_LOOKUP.get(name);
   }
 
+  private final float horizontalAngle;
+
+  private EnumDirection(float horizontalAngle) {
+    this.horizontalAngle = horizontalAngle;
+  }
+  
+  public float getHorizontalAngle() {
+    return horizontalAngle;
+  }
+  
   /**
    * Returns the absolute facing of this direction modified by the given rotation.
    * 

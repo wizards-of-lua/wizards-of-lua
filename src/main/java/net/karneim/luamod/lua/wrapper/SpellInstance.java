@@ -15,6 +15,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 
+// TODO extend from EntityInstance and add it to EntityWrapperFactory
 public class SpellInstance extends DelegatingTableWrapper<Spell> {
 
   public SpellInstance(Table env, @Nullable Spell delegate, Table metatable) {
@@ -24,10 +25,12 @@ public class SpellInstance extends DelegatingTableWrapper<Spell> {
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
     b.add("block", () -> WrapperFactory.wrap(env, delegate.getBlockState()), this::setBlock);
-    b.add("orientation", () -> WrapperFactory.wrap(env, delegate.getOrientation()), this::setOrientation);
+    b.add("orientation", () -> WrapperFactory.wrap(env, delegate.getOrientation()),
+        this::setOrientation);
     b.add("origin", () -> WrapperFactory.wrap(env, delegate.getOrigin()), null);
     b.add("owner", () -> WrapperFactory.wrap(env, delegate.getOwner()), null);
-    b.add("rotation", () -> WrapperFactory.wrap(env, delegate.getRotation()), this::setRotation);
+    // b.add("rotation", () -> WrapperFactory.wrap(env, delegate.getRotation()), this::setRotation);
+    b.add("rotation", () -> delegate.getRotation(), this::setRotation);
     b.add("surface", () -> WrapperFactory.wrap(env, delegate.getSurface()), null);
     b.add("pos", () -> WrapperFactory.wrap(env, delegate.getWorldPosition()), this::setPosition);
   }
@@ -42,11 +45,17 @@ public class SpellInstance extends DelegatingTableWrapper<Spell> {
   }
 
   private void setRotation(Object arg) {
-    Rotation rot = Rotation.valueOf(String.valueOf(arg));
-    if (rot != null) {
-      delegate.setRotation(rot);
+    if (arg instanceof Number) {
+      float angle = ((Number) arg).floatValue();
+      delegate.setRotation(angle);
     } else {
-      throw new IllegalArgumentException(String.format("Rotation value expected but got %s!", arg));
+      Rotation rot = Rotation.valueOf(String.valueOf(arg));
+      if (rot != null) {
+        delegate.setRotation(rot);
+      } else {
+        throw new IllegalArgumentException(
+            String.format("Rotation value expected but got %s!", arg));
+      }
     }
   }
 

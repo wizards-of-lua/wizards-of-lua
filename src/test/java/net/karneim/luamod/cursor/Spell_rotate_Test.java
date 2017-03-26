@@ -9,7 +9,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.Rotation;
 import net.minecraft.world.World;
 
-public class Spell_Rotate_looking_East_Test {
+public class Spell_rotate_Test {
 
   private World world = Mockito.mock(World.class);
   private ICommandSender commandSender = Mockito.mock(ICommandSender.class);
@@ -25,7 +25,7 @@ public class Spell_Rotate_looking_East_Test {
     underTest.rotate(Rotation.COUNTERCLOCKWISE_90);
 
     // Then:
-    assertThat(underTest.getRotation()).isEqualTo(Rotation.NONE);
+    assertThat(underTest.getRotation()).isEqualTo(0f);
   }
 
   @Test
@@ -37,7 +37,7 @@ public class Spell_Rotate_looking_East_Test {
     underTest.rotate(Rotation.CLOCKWISE_90);
 
     // Then:
-    assertThat(underTest.getRotation()).isEqualTo(Rotation.CLOCKWISE_180);
+    assertThat(underTest.getRotation()).isEqualTo(-180f);
   }
 
   @Test
@@ -49,7 +49,7 @@ public class Spell_Rotate_looking_East_Test {
     underTest.rotate(Rotation.NONE);
 
     // Then:
-    assertThat(underTest.getRotation()).isEqualTo(Rotation.CLOCKWISE_90);
+    assertThat(underTest.getRotation()).isEqualTo(90f);
   }
 
   @Test
@@ -61,6 +61,42 @@ public class Spell_Rotate_looking_East_Test {
     underTest.rotate(Rotation.CLOCKWISE_180);
 
     // Then:
-    assertThat(underTest.getRotation()).isEqualTo(Rotation.COUNTERCLOCKWISE_90);
+    assertThat(underTest.getRotation()).isEqualTo(-90);
+  }
+  
+  @Test
+  public void test_rotate_45() {
+    // Given:
+    underTest.setRotation(0);
+
+    // When:
+    underTest.rotate(45);
+
+    // Then:
+    assertThat(underTest.getRotation()).isEqualTo(45f);
+  }
+  
+  @Test
+  public void test_rotate_45_45() {
+    // Given:
+    underTest.setRotation(45);
+
+    // When:
+    underTest.rotate(45);
+
+    // Then:
+    assertThat(underTest.getRotation()).isEqualTo(90f);
+  }
+  
+  @Test
+  public void test_rotate_minus_45_45() {
+    // Given:
+    underTest.setRotation(-45);
+
+    // When:
+    underTest.rotate(45);
+
+    // Then:
+    assertThat(underTest.getRotation()).isEqualTo(0f);
   }
 }

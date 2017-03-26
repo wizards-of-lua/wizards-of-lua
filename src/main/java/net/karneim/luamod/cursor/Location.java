@@ -5,9 +5,9 @@ import net.minecraft.util.math.Vec3d;
 
 public class Location {
   private final Vec3d position;
-  private final Rotation rotation;
+  private final float rotation;
 
-  public Location(Vec3d position, Rotation rotation) {
+  public Location(Vec3d position, float rotation) {
     this.position = position;
     this.rotation = rotation;
   }
@@ -16,7 +16,7 @@ public class Location {
     return position;
   }
 
-  public Rotation getRotation() {
+  public float getRotation() {
     return rotation;
   }
 

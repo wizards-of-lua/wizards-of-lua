@@ -61,7 +61,7 @@ public class SpellEntityFactory {
       return Rotation.NONE;
     } else if (entity instanceof SpellEntity) {
       SpellEntity luaProcessEntity = (SpellEntity) entity;
-      return luaProcessEntity.getCursor().getRotation();
+      return SpellUtil.roundRotation(luaProcessEntity.getCursor().getRotation());
     } else {
       return SpellUtil.getRotation(entity.getHorizontalFacing());
     }

@@ -167,12 +167,17 @@ public class SpellClass {
         throw new IllegalArgumentException(String.format("Spell expected but got nil!"));
       }
       Spell delegate = DelegatingTableWrapper.getDelegate(Spell.class, arg0);
-      Rotation x = rotationByName(String.valueOf(arg1));
-      if (x != null) {
-        delegate.rotate(x);
+      if (arg1 instanceof Number) {
+        float angle = ((Number) arg1).floatValue();
+        delegate.rotate(angle);
       } else {
-        throw new IllegalArgumentException(
-            String.format("Rotation value expected but got %s!", arg1));
+        Rotation rot = rotationByName(String.valueOf(arg1));
+        if (rot != null) {
+          delegate.rotate(rot);
+        } else {
+          throw new IllegalArgumentException(
+              String.format("Rotation value expected but got %s!", arg1));
+        }
       }
       context.getReturnBuffer().setTo();
     }
@@ -242,7 +247,7 @@ public class SpellClass {
       }
       Spell delegate = DelegatingTableWrapper.getDelegate(Spell.class, arg0);
       String username = String.valueOf(arg1);
-      
+
       String text = format(context, env, Lists.newArrayList(arg2));
       delegate.msg(username, text);
       context.getReturnBuffer().setTo();
@@ -373,8 +378,8 @@ public class SpellClass {
       throw new NonsuspendableFunctionException();
     }
   }
-  
- 
+
+
 
   private class CutFunction extends AbstractFunction2 {
 

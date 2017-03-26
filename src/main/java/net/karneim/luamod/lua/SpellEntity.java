@@ -153,6 +153,7 @@ public class SpellEntity extends Entity {
     }
   }
 
+  // TODO Do we also need to synchronize the position (and rotation) from Entity to Spell? 
   private void updatePosition() {
     Vec3d pos = spell.getWorldPosition();
     setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
@@ -163,9 +164,7 @@ public class SpellEntity extends Entity {
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
       }
     }
-    Rotation rot = spell.getRotation();
-    EnumFacing facing = SpellUtil.getFacing(rot);
-    float yaw = SpellUtil.getRotationYaw(facing);
+    float yaw = spell.getRotation();
     float pitch = 0;
     setRotation(yaw, pitch);
   }
