@@ -35,11 +35,6 @@ function class(name, base)
   check.string(name,1)
   --  create class table
   local c = {}
-  if base ~= nil then
-    for k,v in pairs(base) do
-       c[k] = v
-    end
-  end 
   c.__index = c
   c.__classname = name
   setmetatable(c,base)
