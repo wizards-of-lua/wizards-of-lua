@@ -199,40 +199,22 @@ public class Spell {
     return world.getBlockState(new BlockPos(worldPosition));
   }
 
-  public Snapshot copy(Selection selection) {
-    Snapshot result = new Snapshot();
-    result.copyFromWorld(world, new BlockPos(worldPosition), rotation, selection);
-    return result;
+  public String copy(Selection selection) {
+    Snapshot snapshot = new Snapshot();
+    snapshot.copyFromWorld(world, new BlockPos(worldPosition), rotation, selection);
+    return snapshots.registerSnapshot(snapshot);
   }
 
-  public String copySelection(Selection selection) {
-    Snapshot snapshot = copy(selection);
-    String result = snapshots.registerSnapshot(snapshot);
-    return result;
-  }
-
-  public Snapshot cut(Selection selection) {
-    Snapshot result = new Snapshot();
-    result.cutFromWorld(world, new BlockPos(worldPosition), rotation, selection);
-    return result;
-  }
-
-  public String cutSelection(Selection selection) {
-    Snapshot snapshot = cut(selection);
-    String result = snapshots.registerSnapshot(snapshot);
-    return result;
-  }
-
-  public Selection paste(Snapshot snapshot) {
-    return snapshot.pasteToWorld(world, new BlockPos(worldPosition), rotation);
+  public String cut(Selection selection) {
+    Snapshot snapshot = new Snapshot();
+    snapshot.cutFromWorld(world, new BlockPos(worldPosition), rotation, selection);
+    return snapshots.registerSnapshot(snapshot);
   }
 
   public Selection paste(String id) {
     Snapshot snapshot = snapshots.getSnapshot(id);
-    Selection resultSelection = paste(snapshot);
-    return resultSelection;
+    return snapshot.pasteToWorld(world, new BlockPos(worldPosition), rotation);
   }
-
 
   public void reset() {
     resetPosition();

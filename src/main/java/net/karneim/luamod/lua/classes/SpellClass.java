@@ -403,7 +403,7 @@ public class SpellClass {
         selection.add(pos);
         k = table.successorKeyOf(k);
       }
-      String id = delegate.cutSelection(selection);
+      String id = delegate.cut(selection);
 
       context.getReturnBuffer().setTo(id);
     }
@@ -442,7 +442,7 @@ public class SpellClass {
         selection.add(pos);
         k = table.successorKeyOf(k);
       }
-      String id = delegate.copySelection(selection);
+      String id = delegate.copy(selection);
 
       context.getReturnBuffer().setTo(id);
     }
