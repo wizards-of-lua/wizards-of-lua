@@ -5,7 +5,7 @@ function check.Vec3(c,i)
   if tonumber(i) then
     assert(getmetatable(c)==Vec3, "bad argument #%d (Vec3 expected, got %s)",i,t)
   elseif type(i) == "string" then
-    assert(getmetatable(c)==complex, "bad argument '%s' (Vec3 expected, got %s)",i,t)
+    assert(getmetatable(c)==Vec3, "bad argument '%s' (Vec3 expected, got %s)",i,t)
   else
     error("Illegal position argument for check call: %s",i)
   end
