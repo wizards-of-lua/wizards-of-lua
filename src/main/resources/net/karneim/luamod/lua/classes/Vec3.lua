@@ -56,7 +56,7 @@ end
 Vec3.__sub = Vec3.substract
 
 function Vec3:sqrMagnitude()
-  return v1.x*v1.x + v1.y*v1.y + v1.z*v1.z
+  return self.x*self.x + self.y*self.y + self.z*self.z
 end
 
 function Vec3:magnitude()

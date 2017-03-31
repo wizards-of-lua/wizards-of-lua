@@ -3,13 +3,17 @@ package net.karneim.luamod.lua.wrapper;
 import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
 import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
 
+import java.util.function.Consumer;
+
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 
@@ -38,8 +42,32 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     b.add("team", this::getTeam, null);
     b.add("tags", () -> wrap(env, delegate.getTags()), null);
     b.add("facing", () -> wrap(env, delegate.getAdjustedHorizontalFacing()), null);
+    
+    b.add("motion", () -> wrap(env, new Vec3d(delegate.motionX, delegate.motionY, delegate.motionZ)), this::setMotion);
   }
 
+  private void setMotion(Object object) {
+    Table vector = checkType(object, Table.class);
+    double x = checkType(vector.rawget("x"), Number.class).doubleValue();
+    double y = checkType(vector.rawget("y"), Number.class).doubleValue();
+    double z = checkType(vector.rawget("z"), Number.class).doubleValue();
+    
+    // see SPacketEntityVelocity
+    double maxLen = 3.9;
+    double lenSqr = x*x+y*y+z*z;
+    if ( lenSqr > maxLen*maxLen ) {
+      double f = maxLen / Math.sqrt(lenSqr);
+      x = x * f;
+      y = y * f;
+      z = z * f;
+    }
+    
+    delegate.motionX = x;
+    delegate.motionY = y;
+    delegate.motionZ = z;
+    delegate.velocityChanged = true;
+  }
+  
   private void setPosition(Object object) {
     Table vector = checkType(object, Table.class);
     Number x = checkType(vector.rawget("x"), Number.class);
