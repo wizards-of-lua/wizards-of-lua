@@ -16,9 +16,19 @@ import net.minecraft.util.math.Vec3d;
 public class SpellUtil {
   private static final double LOOK_DISTANCE = 5;
 
-  public static BlockPos getPositionLookingAt(Entity entity) {
+  public static Vec3d getPositionLookingAt(Entity entity) {
     RayTraceResult git = rayTraceEyes((EntityLivingBase) entity, LOOK_DISTANCE);
-    return git == null ? getPositionAtLookDistance(entity) : git.getBlockPos();
+    if (git == null) {
+      return getPositionAtLookDistance(entity);
+    }
+    BlockPos blockPos = git.getBlockPos();
+    BlockPos blockPos2 = new BlockPos(git.hitVec);
+    if (blockPos.equals(blockPos2)) {
+      return git.hitVec;
+    }
+    // force the hit vector to be inside the hit block's real bounding box
+    Vec3d newHit = git.hitVec.add(entity.getLookVec().scale(0.01));
+    return newHit;
   }
 
   public static @Nullable EnumFacing getSideLookingAt(Entity entity) {
@@ -26,11 +36,11 @@ public class SpellUtil {
     return git == null ? null : git.sideHit;
   }
 
-  public static BlockPos getPositionAtLookDistance(Entity entity) {
+  public static Vec3d getPositionAtLookDistance(Entity entity) {
     Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
     Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().xCoord * LOOK_DISTANCE,
         entity.getLookVec().yCoord * LOOK_DISTANCE, entity.getLookVec().zCoord * LOOK_DISTANCE));
-    return new BlockPos(endPos);
+    return endPos;
   }
 
   public static Rotation getRotation(EnumFacing facing) {
@@ -107,7 +117,7 @@ public class SpellUtil {
   public static @Nullable Rotation roundRotation(float rotation, double precision) {
     Rotation result = roundRotation(rotation);
     float yaw = getRotationYaw(result);
-    if ( Math.abs(MathHelper.wrapDegrees(rotation)-MathHelper.wrapDegrees(yaw)) <= precision) {
+    if (Math.abs(MathHelper.wrapDegrees(rotation) - MathHelper.wrapDegrees(yaw)) <= precision) {
       return result;
     }
     return null;

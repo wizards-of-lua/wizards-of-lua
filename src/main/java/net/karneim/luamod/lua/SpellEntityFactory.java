@@ -75,7 +75,8 @@ public class SpellEntityFactory {
       SpellEntity luaProcessEntity = (SpellEntity) entity;
       return luaProcessEntity.getCursor().getWorldPosition();
     } else {
-      return new Vec3d(SpellUtil.getPositionLookingAt(entity));
+      //return new Vec3d(SpellUtil.getPositionLookingAt(entity));
+      return SpellUtil.getPositionLookingAt(entity);
     }
   }
 
