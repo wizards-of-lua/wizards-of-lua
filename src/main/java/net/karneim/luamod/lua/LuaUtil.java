@@ -2,9 +2,13 @@ package net.karneim.luamod.lua;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.LuaMod;
@@ -37,7 +41,6 @@ import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
-import net.sandius.rembulan.compiler.CompilerChunkLoader;
 import net.sandius.rembulan.env.RuntimeEnvironment;
 import net.sandius.rembulan.env.RuntimeEnvironments;
 import net.sandius.rembulan.exec.CallException;
@@ -53,8 +56,9 @@ import net.sandius.rembulan.lib.OsLib;
 import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.lib.Utf8Lib;
-import net.sandius.rembulan.load.ChunkLoader;
 import net.sandius.rembulan.load.LoaderException;
+import net.sandius.rembulan.parser.ParseException;
+import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
@@ -64,11 +68,11 @@ public class LuaUtil {
   private final Credentials credentials;
   private final StateContext state;
   private final Table env;
-  private final ChunkLoader loader;
+  private final ExtendedChunkLoader loader;
   private final DirectCallExecutor executor;
   private final Clipboard clipboard;
   private LuaFunction headerFunc;
-  private LuaFunction profileFunc;
+  private List<LuaFunction> profileFuncs = new ArrayList<>();
   private LuaFunction commandLineFunc;
 
   private Ticks ticks;
@@ -77,6 +81,7 @@ public class LuaUtil {
   private List<Requirement> standardRequirements = new ArrayList<>();
   private List<String> profiles;
   private Spell spell;
+  private String commandLine;
 
   public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
       Credentials credentials, Snapshots snapshots) {
@@ -86,16 +91,15 @@ public class LuaUtil {
     this.credentials = credentials;
     state = StateContexts.newDefaultInstance();
     env = state.newTable();
-    loader = CompilerChunkLoader.of("LuaProgramAsJavaByteCode");
+    loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
 
     ticks = new Ticks(LuaMod.instance.getDefaultTicksLimit());
     events = new Events(env, LuaMod.instance.getSpellRegistry());
     runtime = new Runtime(ticks);
 
-    ExtendedChunkLoader modulesLoader = PatchedCompilerChunkLoader.of("RequiredModulesAsByteCode");
     RuntimeEnvironment environment = getModRuntimeEnvironment();
 
-    BasicLib.installInto(state, env, environment, modulesLoader);
+    BasicLib.installInto(state, env, environment, loader);
     ModuleLib.installInto(state, env, environment, /* modulesLoader */ null,
         ClassLoader.getSystemClassLoader());
 
@@ -108,11 +112,11 @@ public class LuaUtil {
     Utf8Lib.installInto(state, env);
 
     LuaFunctionBinaryCache luaFunctionCache = LuaMod.instance.getLuaFunctionCache();
-    ClasspathResourceSearcher.installInto(env, modulesLoader, luaFunctionCache,
+    ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache,
         LuaUtil.class.getClassLoader());
 
     GistRepo gistRepo = LuaMod.instance.getGistRepo();
-    GistSearcher.installInto(env, modulesLoader, luaFunctionCache, gistRepo, credentials);
+    GistSearcher.installInto(env, loader, luaFunctionCache, gistRepo, credentials);
 
     LuaModLib.installInto(env, owner);
 
@@ -195,7 +199,11 @@ public class LuaUtil {
     return events;
   }
 
-  public void compile(String commandLine) throws LoaderException {
+  public void setCommand(String command) {
+    this.commandLine = command;
+  }
+
+  private void compile() throws LoaderException {
     StringBuilder buf = new StringBuilder();
     for (Requirement requirement : standardRequirements) {
       if (requirement.name != null) {
@@ -206,37 +214,91 @@ public class LuaUtil {
     String header = buf.toString();
     headerFunc = loader.loadTextChunk(new Variable(env), "header", header);
     if (profiles != null) {
-      profileFunc = loader.loadTextChunk(new Variable(env), "profile", generateCode(profiles));
+      for (String profile : profiles) {
+        profileFuncs.add(loader.loadTextChunk(new Variable(env), profile,
+            String.format("require \"%s\"\n", profile)));
+      }
     }
     commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", commandLine);
   }
 
-  private String generateCode(List<String> moduleNames) {
-    String code = "";
-    for (String module : moduleNames) {
-      code += String.format("require \"%s\"\n", module);
+  public void run() throws Exception {
+    try {
+      this.compile();
+      executor.call(state, headerFunc);
+
+      Vec3Class.get().installInto(env, loader, executor, state);
+      MaterialClass.get().installInto(env, loader, executor, state);
+      ItemStackClass.get().installInto(env, loader, executor, state);
+      BlockStateClass.get().installInto(env, loader, executor, state);
+      ArmorClass.get().installInto(env, loader, executor, state);
+      EntityClass.get().installInto(env, loader, executor, state);
+      EntityLivingClass.get().installInto(env, loader, executor, state);
+      EntityPlayerClass.get().installInto(env, loader, executor, state);
+
+      SpellClass.get().installInto(env, loader, executor, state);
+      env.rawset("spell", SpellClass.get().newInstance(env, this.spell).getLuaObject());
+
+      for (LuaFunction profileFunc : profileFuncs) {
+        executor.call(state, profileFunc);
+      }
+      executor.call(state, commandLineFunc);
+    } catch (CallException ex) {
+      throw newLuaException(ex);
+    } catch (Exception e) {
+      if (e.getCause() instanceof ParseException) {
+        throw newLuaException((ParseException) e.getCause());
+      }
+      throw e;
     }
-    return code;
   }
 
-  public void run()
-      throws CallException, CallPausedException, InterruptedException, LoaderException {
-    executor.call(state, headerFunc);
+  private LuaException newLuaException(Exception cause) {
+    String exMessage = getExceptionMessage(cause);
+    if (exMessage == null) {
+      exMessage = "Unknown error";
+    }
+    String strace = toString(cause);
+    Pattern p = Pattern.compile("LuaProgramAsJavaByteCode.*\\.run\\((.+):(.*)\\)");
+    Matcher m = p.matcher(strace);
+    StringBuilder modules = new StringBuilder();
+    while (m.find()) {
+      String module = m.group(1);
+      String line = m.group(2);
+      if ( modules.length()>0) {
+        modules.append("\n");
+      }
+      modules.append(" at line ").append(line).append(" of ").append(module);
+    }
+    if (modules.length() > 0) {
+      String message = String.format("%s\n%s!", exMessage, modules.toString());
+      return new LuaException(message, cause);
+    }
+    return new LuaException(exMessage, cause);
+  }
 
-    Vec3Class.get().installInto(env, loader, executor, state);
-    MaterialClass.get().installInto(env, loader, executor, state);
-    ItemStackClass.get().installInto(env, loader, executor, state);
-    BlockStateClass.get().installInto(env, loader, executor, state);
-    ArmorClass.get().installInto(env, loader, executor, state);
-    EntityClass.get().installInto(env, loader, executor, state);
-    EntityLivingClass.get().installInto(env, loader, executor, state);
-    EntityPlayerClass.get().installInto(env, loader, executor, state);
+  private String getExceptionMessage(Throwable top) {
+    Throwable cause = top;
+    while (cause != null && !(cause instanceof ParseException)) {
+      cause = cause.getCause();
+    }
+    if (cause instanceof ParseException) {
+      return cause.getMessage();
+    }
+    cause = top;
+    while (cause != null && !(cause instanceof IllegalOperationAttemptException)) {
+      cause = cause.getCause();
+    }
+    if (cause instanceof IllegalOperationAttemptException) {
+      return cause.getMessage();
+    }
+    return top.getMessage();
+  }
 
-    SpellClass.get().installInto(env, loader, executor, state);
-    env.rawset("spell", SpellClass.get().newInstance(env, this.spell).getLuaObject());
-
-    executor.call(state, profileFunc);
-    executor.call(state, commandLineFunc);
+  private String toString(Exception cause) {
+    StringWriter writer = new StringWriter();
+    cause.printStackTrace(new PrintWriter(writer));
+    return writer.toString();
   }
 
   public void resume(Continuation continuation)
@@ -268,6 +330,7 @@ public class LuaUtil {
     }
 
   }
+
 
 
 }

@@ -26,9 +26,11 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.load.LoaderException;
+import net.sandius.rembulan.parser.ParseException;
 
 public class SpellEntity extends Entity {
 
@@ -96,8 +98,9 @@ public class SpellEntity extends Entity {
   public void setCommand(String command) throws LoaderException {
     this.command = command;
     luaUtil.setProfiles(profiles);
-    luaUtil.compile(command);
-    onUpdate();
+    luaUtil.setCommand(command);
+    //luaUtil.compile(command);
+    //onUpdate();
   }
 
   @Override
@@ -189,7 +192,7 @@ public class SpellEntity extends Entity {
             }
           } catch (Exception e) {
             e.printStackTrace();
-            String message = String.format("Error during command execution: %s!", e.getMessage());
+            String message = String.format("Error during command execution: %s", e.getMessage());
             TextComponentString txt = new TextComponentString(message);
             txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
             owner.addChatMessage(txt);
