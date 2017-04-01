@@ -1,5 +1,6 @@
 package net.karneim.luamod.lua.event;
 
+import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
 import net.karneim.luamod.lua.classes.event.Player2EventClass;
 import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
@@ -60,6 +61,13 @@ public enum EventType {
           EventType.PLAYER_SPAWNED);
     }
 
+  }, //
+  ANIMATION_HAND {
+    @Override
+    public EventWrapper<?> wrap(Table env, Object evt) {
+      return AnimationHandEventClass.get().newInstance(env, (AnimationHandEvent) evt,
+          EventType.ANIMATION_HAND);
+    }
   },//
   ;
 
