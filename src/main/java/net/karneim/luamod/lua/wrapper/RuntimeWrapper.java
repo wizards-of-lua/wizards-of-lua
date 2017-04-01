@@ -26,6 +26,8 @@ public class RuntimeWrapper {
     luaTable.rawset("sleep", new SleepFunction());
     luaTable.rawset("getLuaTicksTotal", new GetLuaTicksTotalFunction());
     luaTable.rawset("getAllowance", new GetAllowanceFunction());
+    luaTable.rawset("getLifetime", new GetLifetimeFunction());
+    luaTable.rawset("currentTimeMillis", new CurrentTimeMillisFunction());
   }
 
   public Table getLuaTable() {
@@ -61,6 +63,36 @@ public class RuntimeWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
+  
+  private class GetLifetimeFunction extends AbstractFunction0 {
+
+    @Override
+    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
+      long result = runtime.getLifetime();
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+  private class CurrentTimeMillisFunction extends AbstractFunction0 {
+
+    @Override
+    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
+      long result = System.currentTimeMillis();
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+  
 
   private class SleepFunction extends AbstractFunction1 {
 

@@ -3,26 +3,26 @@ package net.karneim.luamod.lua;
 public class Runtime {
   private final Ticks ticks;
 
-  private long currentTime;
+  private long lifetime;
   private long wakeUpTime;
 
   public Runtime(Ticks ticks) {
     this.ticks = ticks;
   }
 
-  public void setCurrentTime(long currentTime) {
-    this.currentTime = currentTime;
+  public void setLifetime(long lifetime) {
+    this.lifetime = lifetime;
   }
 
   public void startSleep(long duration) {
     if (duration <= 0 && ticks.getAllowance() < 0) {
       duration = 1;
     }
-    this.wakeUpTime = currentTime + duration;
+    this.wakeUpTime = lifetime + duration;
   }
 
   public boolean isSleeping() {
-    return wakeUpTime > currentTime;
+    return wakeUpTime > lifetime;
   }
 
   public long getLuaTicksTotal() {
@@ -32,4 +32,10 @@ public class Runtime {
   public long getAllowance() {
     return ticks.getAllowance();
   }
+
+  public long getLifetime() {
+    return lifetime;
+  }
+  
+  
 }

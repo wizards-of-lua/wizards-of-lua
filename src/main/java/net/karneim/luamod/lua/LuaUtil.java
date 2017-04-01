@@ -312,7 +312,7 @@ public class LuaUtil {
 
   public void setCurrentTime(int ticksExisted) {
     events.setCurrentTime(ticksExisted);
-    runtime.setCurrentTime(ticksExisted);
+    runtime.setLifetime(ticksExisted);
   }
 
   class Requirement {
