@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua.event;
 
+import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
+
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
@@ -14,7 +16,7 @@ public class AnimationHandEventWrapper<E extends AnimationHandEvent> extends Eve
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
-    // builder.addNullable("player",
-    // EntityPlayerClass.get().newInstance(env, delegate.player).getLuaObject());
+    builder.addNullable("player", wrap(env, delegate.getPlayer()));
+    builder.addNullable("hand", wrap(env, delegate.getHand()));
   }
 }
