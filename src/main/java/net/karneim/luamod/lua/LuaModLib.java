@@ -47,6 +47,10 @@ public class LuaModLib {
     @Override
     public void flush() throws IOException {
       String message = toString();
+      // Remove trailing line-feed.
+      if ( message.endsWith("\n")) {
+        message = message.substring(0, message.length()-1);
+      }
       reset();
       print(message);
     }
