@@ -71,7 +71,7 @@ public class SpellEntity extends Entity {
     Snapshots snapshots = new Snapshots();
     this.spell = new Spell(owner, this, this.getEntityWorld(), pos, rotation, surface, snapshots);
     Credentials credentials = mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
-    luaUtil = new LuaUtil(this.getEntityWorld(), owner, spell, clipboard, credentials, snapshots);
+    luaUtil = new LuaUtil(this.getEntityWorld(), this, owner, spell, clipboard, credentials, snapshots);
     if (surface != null) {
       pos = pos.add(new Vec3d(surface.getDirectionVec()));
     }
@@ -156,20 +156,29 @@ public class SpellEntity extends Entity {
     }
   }
 
-  // TODO Do we also need to synchronize the position (and rotation) from Entity to Spell? 
-  private void updatePosition() {
-    Vec3d pos = spell.getWorldPosition();
+  /**
+   * Syncs the spell's position back into this spell entity
+   */
+  public void updatePosition() {
+    Vec3d pos = spell.getPosition();
     setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
+    float yaw = spell.getRotation();
+    float pitch = 0;
+    setRotation(yaw, pitch);
+  }
+  
+  /**
+   * Updates the ChunkManager by pasing in the entity's current position
+   */
+  private void updateChunkManager() {
     if (chunkLoaderTicket != null) {
+      Vec3d pos = getPositionVector();
       if (!isInside(chunkPos, pos)) {
         ForgeChunkManager.unforceChunk(chunkLoaderTicket, chunkPos);
         chunkPos = new ChunkPos(new BlockPos(pos));
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
       }
-    }
-    float yaw = spell.getRotation();
-    float pitch = 0;
-    setRotation(yaw, pitch);
+    }    
   }
 
   public void onUpdate() {
@@ -230,6 +239,7 @@ public class SpellEntity extends Entity {
       }
     }
     updatePosition();
+    updateChunkManager();
   }
 
 

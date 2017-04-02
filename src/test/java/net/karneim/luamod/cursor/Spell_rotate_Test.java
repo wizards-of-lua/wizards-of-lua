@@ -9,11 +9,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.Rotation;
 import net.minecraft.world.World;
 
-public class Spell_rotate_Test {
+public class Spell_rotate_Test extends TestBase {
 
   private World world = Mockito.mock(World.class);
   private ICommandSender commandSender = Mockito.mock(ICommandSender.class);
-  private Spell underTest = new Spell(commandSender, world);
+  private Spell underTest = newSpell(commandSender, world);
 
 
   @Test

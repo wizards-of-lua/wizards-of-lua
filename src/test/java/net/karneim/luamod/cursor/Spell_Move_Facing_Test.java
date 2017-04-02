@@ -11,11 +11,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class Spell_Move_Facing_Test {
+public class Spell_Move_Facing_Test extends TestBase {
 
   private World world = Mockito.mock(World.class);
   private ICommandSender commandSender = Mockito.mock(ICommandSender.class);
-  private Spell underTest = new Spell(commandSender, world);
+  private Spell underTest = newSpell(commandSender, world);
 
 
   @Test
@@ -26,7 +26,7 @@ public class Spell_Move_Facing_Test {
     underTest.move(EnumFacing.NORTH);
 
     // Then:
-    assertThat(underTest.getWorldPosition()).isEqualTo(new Vec3d(0, 0, -1));
+    assertThat(underTest.getPosition()).isEqualTo(new Vec3d(0, 0, -1));
   }
 
   @Test
@@ -37,7 +37,7 @@ public class Spell_Move_Facing_Test {
     underTest.move(EnumFacing.EAST);
 
     // Then:
-    assertThat(underTest.getWorldPosition()).isEqualTo(new Vec3d(1, 0, 0));
+    assertThat(underTest.getPosition()).isEqualTo(new Vec3d(1, 0, 0));
   }
 
   @Test
@@ -48,7 +48,7 @@ public class Spell_Move_Facing_Test {
     underTest.move(EnumFacing.SOUTH);
 
     // Then:
-    assertThat(underTest.getWorldPosition()).isEqualTo(new Vec3d(0, 0, 1));
+    assertThat(underTest.getPosition()).isEqualTo(new Vec3d(0, 0, 1));
   }
 
   @Test
@@ -59,6 +59,6 @@ public class Spell_Move_Facing_Test {
     underTest.move(EnumFacing.WEST);
 
     // Then:
-    assertThat(underTest.getWorldPosition()).isEqualTo(new Vec3d(-1, 0, 0));
+    assertThat(underTest.getPosition()).isEqualTo(new Vec3d(-1, 0, 0));
   }
 }

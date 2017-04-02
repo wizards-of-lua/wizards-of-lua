@@ -34,7 +34,7 @@ public class SpellInstance extends DelegatingTableWrapper<Spell> {
     // this::setRotation);
     b.add("rotation", () -> delegate.getRotation(), this::setRotation);
     b.add("surface", () -> WrapperFactory.wrap(getRepo(), delegate.getSurface()), null);
-    b.add("pos", () -> WrapperFactory.wrap(getRepo(), delegate.getWorldPosition()),
+    b.add("pos", () -> WrapperFactory.wrap(getRepo(), delegate.getPosition()),
         this::setPosition);
   }
 
@@ -44,7 +44,7 @@ public class SpellInstance extends DelegatingTableWrapper<Spell> {
     Number y = checkType(vector.rawget("y"), Number.class);
     Number z = checkType(vector.rawget("z"), Number.class);
     Vec3d v = new Vec3d(x.doubleValue(), y.doubleValue(), z.doubleValue());
-    delegate.setWorldPosition(v);
+    delegate.setPosition(v);
   }
 
   private void setRotation(Object arg) {

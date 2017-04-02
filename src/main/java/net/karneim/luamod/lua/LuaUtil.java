@@ -91,10 +91,12 @@ public class LuaUtil {
   private Spell spell;
   private String commandLine;
   private Entities entities;
+  private SpellEntity entity;
 
-  public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
+  public LuaUtil(World world, SpellEntity entity, ICommandSender owner, Spell spell, Clipboard clipboard,
       Credentials credentials, Snapshots snapshots) {
     this.world = world;
+    this.entity = entity;
     this.spell = spell;
     this.clipboard = clipboard;
     this.credentials = credentials;
@@ -102,7 +104,7 @@ public class LuaUtil {
     state = StateContexts.newDefaultInstance();
     env = state.newTable();
 
-    entities = new Entities(LuaMod.instance.getServer(), owner);
+    entities = new Entities(LuaMod.instance.getServer(), entity);
     typesRepo = new LuaTypesRepo(env);
     typesRepo.register(new Vec3Class());
     typesRepo.register(new MaterialClass());
