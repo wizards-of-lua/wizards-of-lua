@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Players;
 import net.karneim.luamod.lua.classes.EntityPlayerClass;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.StringArrayClass;
 import net.karneim.luamod.lua.classes.StringIterableClass;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,18 +16,18 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class PlayersWrapper {
 
-  public static PlayersWrapper installInto(Table env, Players players) {
-    PlayersWrapper result = new PlayersWrapper(env, players);
-    env.rawset("players", result.getLuaTable());
+  public static PlayersWrapper installInto(LuaTypesRepo repo, Players players) {
+    PlayersWrapper result = new PlayersWrapper(repo, players);
+    repo.getEnv().rawset("players", result.getLuaTable());
     return result;
   }
 
-  private final Table env;
+  private final LuaTypesRepo repo;
   private final Players players;
   private final Table luaTable = DefaultTable.factory().newTable();
 
-  public PlayersWrapper(Table env, Players players) {
-    this.env = env;
+  public PlayersWrapper(LuaTypesRepo repo, Players players) {
+    this.repo = repo;
     this.players = players;
 
     luaTable.rawset("list", new ListFunction());
@@ -46,7 +47,7 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       String[] names = players.names();
-      StringArrayInstance wrapper = StringArrayClass.get().newInstance(env, names);
+      StringArrayInstance wrapper = StringArrayClass.get().newInstance(repo, names);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -62,7 +63,7 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = players.list();
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, ids);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -82,7 +83,7 @@ public class PlayersWrapper {
       }
       String id = String.valueOf(arg1);
       EntityPlayerMP player = players.get(id);
-      EntityPlayerInstance wrapper = EntityPlayerClass.get().newInstance(env, player);
+      EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -102,7 +103,7 @@ public class PlayersWrapper {
       }
       String name = String.valueOf(arg1);
       EntityPlayerMP player = players.getByName(name);
-      EntityPlayerInstance wrapper = EntityPlayerClass.get().newInstance(env, player);
+      EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -122,7 +123,7 @@ public class PlayersWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> ids = players.find(target);
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, ids);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 

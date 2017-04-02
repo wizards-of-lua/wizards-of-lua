@@ -1,9 +1,13 @@
 package net.karneim.luamod.lua.wrapper;
 
+import com.google.common.base.Preconditions;
+
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.StringIterableClass;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
@@ -17,20 +21,18 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EntitiesWrapper {
 
-  public static EntitiesWrapper installInto(Table env, Entities entities) {
-    EntitiesWrapper result = new EntitiesWrapper(env, entities);
-    env.rawset("entities", result.getLuaTable());
+  public static EntitiesWrapper installInto(LuaTypesRepo repo, Entities entities) {
+    EntitiesWrapper result = new EntitiesWrapper(repo, entities);
+    repo.getEnv().rawset("entities", result.getLuaTable());
     return result;
   }
 
-  private final Table env;
+  private final LuaTypesRepo repo;
   private final Entities entities;
   private final Table luaTable = DefaultTable.factory().newTable();
 
-  private final EntityWrapperFactory entityWrapperFactory = new EntityWrapperFactory();
-
-  public EntitiesWrapper(Table env, Entities entities) {
-    this.env = env;
+  public EntitiesWrapper(LuaTypesRepo repo, Entities entities) {
+    this.repo = Preconditions.checkNotNull(repo);
     this.entities = entities;
     luaTable.rawset("list", new ListFunction());
     luaTable.rawset("get", new GetFunction());
@@ -51,7 +53,7 @@ public class EntitiesWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = entities.list();
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, ids);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, ids);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 
@@ -74,8 +76,8 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      EntityInstance<?> wrapper = entityWrapperFactory.create(env, entity);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      DelegatingTable result = WrapperFactory.wrap(repo, entity);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override
@@ -127,7 +129,7 @@ public class EntitiesWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> names = entities.find(target);
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(env, names);
+      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, names);
       context.getReturnBuffer().setTo(wrapper.getLuaObject());
     }
 

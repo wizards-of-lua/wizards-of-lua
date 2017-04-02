@@ -26,7 +26,6 @@ import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.lib.BasicLib;
-import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.ChunkLoader;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -38,37 +37,30 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class SpellClass {
+@TypeName("Spell")
+@ModulePackage(Constants.MODULE_PACKAGE)
+public class SpellClass extends AbstractLuaType {
 
-  private final String classname = "Spell";
-  public final String module = "net.karneim.luamod.lua.classes." + classname;
-
-  private static final SpellClass SINGLETON = new SpellClass();
-
-  public static SpellClass get() {
-    return SINGLETON;
-  }
-
-  public void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
-      StateContext state)
+  public void installInto(ChunkLoader loader, DirectCallExecutor executor, StateContext state)
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-    LuaFunction classFunc =
-        loader.loadTextChunk(new Variable(env), classname, String.format("require \"%s\"", module));
+    LuaFunction classFunc = loader.loadTextChunk(new Variable(getRepo().getEnv()), getTypeName(),
+        String.format("require \"%s\"", getModule()));
     executor.call(state, classFunc);
-    addFunctions(env);
+    addFunctions();
   }
 
-  public SpellInstance newInstance(Table env, Spell delegate) {
-    return new SpellInstance(env, delegate, Metatables.get(env, classname));
+  public SpellInstance newInstance(Spell delegate) {
+    return new SpellInstance(getRepo(), delegate,
+        Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
-  private void addFunctions(Table env) {
-    Table metatable = Metatables.get(env, classname);
+  private void addFunctions() {
+    Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
     metatable.rawset("move", new MoveFunction());
     metatable.rawset("moveBy", new MoveByFunction());
     metatable.rawset("rotate", new RotateFunction());
-    metatable.rawset("say", new SayFunction(env));
-    metatable.rawset("msg", new MsgFunction(env));
+    metatable.rawset("say", new SayFunction(getRepo().getEnv()));
+    metatable.rawset("msg", new MsgFunction(getRepo().getEnv()));
     metatable.rawset("execute", new ExecuteFunction());
     metatable.rawset("reset", new ResetFunction());
     metatable.rawset("resetRotation", new ResetRotationFunction());

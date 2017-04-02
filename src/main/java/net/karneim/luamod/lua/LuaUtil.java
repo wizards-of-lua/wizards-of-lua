@@ -25,9 +25,16 @@ import net.karneim.luamod.lua.classes.EntityClass;
 import net.karneim.luamod.lua.classes.EntityLivingClass;
 import net.karneim.luamod.lua.classes.EntityPlayerClass;
 import net.karneim.luamod.lua.classes.ItemStackClass;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.MaterialClass;
 import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
+import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
+import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
+import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
+import net.karneim.luamod.lua.classes.event.WhisperEventClass;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
@@ -71,6 +78,7 @@ public class LuaUtil {
   private final ExtendedChunkLoader loader;
   private final DirectCallExecutor executor;
   private final Clipboard clipboard;
+  private final LuaTypesRepo typesRepo;
   private LuaFunction headerFunc;
   private List<LuaFunction> profileFuncs = new ArrayList<>();
   private LuaFunction commandLineFunc;
@@ -82,6 +90,7 @@ public class LuaUtil {
   private List<String> profiles;
   private Spell spell;
   private String commandLine;
+  private Entities entities;
 
   public LuaUtil(World world, ICommandSender owner, Spell spell, Clipboard clipboard,
       Credentials credentials, Snapshots snapshots) {
@@ -89,12 +98,32 @@ public class LuaUtil {
     this.spell = spell;
     this.clipboard = clipboard;
     this.credentials = credentials;
+
     state = StateContexts.newDefaultInstance();
     env = state.newTable();
-    loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
 
+    entities = new Entities(LuaMod.instance.getServer(), owner);
+    typesRepo = new LuaTypesRepo(env);
+    typesRepo.register(new Vec3Class());
+    typesRepo.register(new MaterialClass());
+    typesRepo.register(new ItemStackClass());
+    typesRepo.register(new BlockStateClass());
+    typesRepo.register(new ArmorClass());
+    typesRepo.register(new EntityClass(entities));
+    typesRepo.register(new EntityLivingClass());
+    typesRepo.register(new EntityPlayerClass());
+    typesRepo.register(new SpellClass());
+    typesRepo.register(new GenericLuaEventClass());
+    typesRepo.register(new AnimationHandEventClass());
+    typesRepo.register(new PlayerEventClass());
+    typesRepo.register(new PlayerInteractEventClass());
+    typesRepo.register(new ServerChatEventClass());
+    typesRepo.register(new WhisperEventClass());
+
+
+    loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
     ticks = new Ticks(LuaMod.instance.getDefaultTicksLimit());
-    events = new Events(env, LuaMod.instance.getSpellRegistry());
+    events = new Events(typesRepo, LuaMod.instance.getSpellRegistry());
     runtime = new Runtime(ticks);
 
     RuntimeEnvironment environment = getModRuntimeEnvironment();
@@ -124,8 +153,8 @@ public class LuaUtil {
     ClipboardWrapper.installInto(env, clipboard, snapshots);
     EventsWrapper.installInto(env, events);
     RuntimeWrapper.installInto(env, runtime);
-    PlayersWrapper.installInto(env, new Players(LuaMod.instance.getServer(), owner));
-    EntitiesWrapper.installInto(env, new Entities(LuaMod.instance.getServer(), owner));
+    PlayersWrapper.installInto(typesRepo, new Players(LuaMod.instance.getServer(), owner));
+    EntitiesWrapper.installInto(typesRepo, entities);
 
     require("inspect", "net.karneim.luamod.lua.classes.inspect");
     require("net.karneim.luamod.lua.classes.Globals");
@@ -227,17 +256,16 @@ public class LuaUtil {
       this.compile();
       executor.call(state, headerFunc);
 
-      Vec3Class.get().installInto(env, loader, executor, state);
-      MaterialClass.get().installInto(env, loader, executor, state);
-      ItemStackClass.get().installInto(env, loader, executor, state);
-      BlockStateClass.get().installInto(env, loader, executor, state);
-      ArmorClass.get().installInto(env, loader, executor, state);
-      EntityClass.get().installInto(env, loader, executor, state);
-      EntityLivingClass.get().installInto(env, loader, executor, state);
-      EntityPlayerClass.get().installInto(env, loader, executor, state);
-
-      SpellClass.get().installInto(env, loader, executor, state);
-      env.rawset("spell", SpellClass.get().newInstance(env, this.spell).getLuaObject());
+      typesRepo.get(Vec3Class.class).installInto(loader, executor, state);
+      typesRepo.get(MaterialClass.class).installInto(loader, executor, state);
+      typesRepo.get(ItemStackClass.class).installInto(loader, executor, state);
+      typesRepo.get(BlockStateClass.class).installInto(loader, executor, state);
+      typesRepo.get(ArmorClass.class).installInto(loader, executor, state);
+      typesRepo.get(EntityClass.class).installInto(loader, executor, state);
+      typesRepo.get(EntityLivingClass.class).installInto(loader, executor, state);
+      typesRepo.get(EntityPlayerClass.class).installInto(loader, executor, state);
+      typesRepo.get(SpellClass.class).installInto(loader, executor, state);
+      env.rawset("spell", typesRepo.get(SpellClass.class).newInstance(this.spell).getLuaObject());
 
       for (LuaFunction profileFunc : profileFuncs) {
         executor.call(state, profileFunc);
@@ -265,7 +293,7 @@ public class LuaUtil {
     while (m.find()) {
       String module = m.group(1);
       String line = m.group(2);
-      if ( modules.length()>0) {
+      if (modules.length() > 0) {
         modules.append("\n");
       }
       modules.append(" at line ").append(line).append(" of ").append(module);

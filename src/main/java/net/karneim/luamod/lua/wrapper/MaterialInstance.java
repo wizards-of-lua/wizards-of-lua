@@ -2,14 +2,15 @@ package net.karneim.luamod.lua.wrapper;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
 
 public class MaterialInstance extends DelegatingTableWrapper<Material> {
-  public MaterialInstance(Table env, @Nullable Material delegate, Table metatable) {
-    super(env, delegate, metatable);
+  public MaterialInstance(LuaTypesRepo repo, @Nullable Material delegate, Table metatable) {
+    super(repo, delegate, metatable);
   }
 
   @Override
@@ -21,7 +22,8 @@ public class MaterialInstance extends DelegatingTableWrapper<Material> {
     builder.add("isOpaque", delegate.isOpaque());
     builder.add("isSolid", delegate.isSolid());
     builder.add("isToolNotRequired", delegate.isToolNotRequired());
-    builder.addNullable("mobility", new EnumInstance(env, delegate.getMobilityFlag()).getLuaObject());
+    builder.addNullable("mobility",
+        new EnumInstance(getRepo(), delegate.getMobilityFlag()).getLuaObject());
   }
 
 }

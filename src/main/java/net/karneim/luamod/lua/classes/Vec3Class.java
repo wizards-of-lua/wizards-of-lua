@@ -14,36 +14,28 @@ import net.sandius.rembulan.load.ChunkLoader;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 
-public class Vec3Class {
+@TypeName("Vec3")
+@ModulePackage(Constants.MODULE_PACKAGE)
+public class Vec3Class extends AbstractLuaType {
 
-  private final String classname = "Vec3";
-  public final String module = "net.karneim.luamod.lua.classes." + classname;
-
-  private static final Vec3Class SINGLETON = new Vec3Class();
-
-  public static Vec3Class get() {
-    return SINGLETON;
-  }
-
-  public void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
-      StateContext state)
+  public void installInto(ChunkLoader loader, DirectCallExecutor executor, StateContext state)
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-    LuaFunction classFunc =
-        loader.loadTextChunk(new Variable(env), classname, String.format("require \"%s\"", module));
+    LuaFunction classFunc = loader.loadTextChunk(new Variable(getRepo().getEnv()), getTypeName(),
+        String.format("require \"%s\"", getModule()));
     executor.call(state, classFunc);
   }
 
-  public Vec3Instance newInstance(Table env, Vec3d delegate) {
-    return new Vec3Instance(env, delegate, Metatables.get(env, classname));
+  public Vec3Instance newInstance(Vec3d delegate) {
+    return new Vec3Instance(getRepo(), delegate, Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
-  public Vec3Instance newInstance(Table env, BlockPos delegate) {
+  public Vec3Instance newInstance(BlockPos delegate) {
     Vec3d vec3d = new Vec3d(delegate);
-    return new Vec3Instance(env, vec3d, Metatables.get(env, classname));
+    return new Vec3Instance(getRepo(), vec3d, Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
-  public LuaFunction FROM(Table env) {
-    Table metatable = Metatables.get(env, classname);
+  public LuaFunction FROM() {
+    Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
     LuaFunction result = (LuaFunction) metatable.rawget("from");
     return result;
   }

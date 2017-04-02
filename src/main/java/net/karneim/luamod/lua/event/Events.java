@@ -4,16 +4,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
-import net.sandius.rembulan.Table;
 
 public class Events {
-  private final Table env;
+  private final LuaTypesRepo repo;
   private final SpellRegistry spellRegistry;
   private final Multimap<String, EventQueue> eventQueues = HashMultimap.create();
   private final Set<EventQueue> activeQueues = new HashSet<EventQueue>();
@@ -21,9 +22,9 @@ public class Events {
   private long currentTime;
   private long waitForEventUntil;
 
-  public Events(Table env, SpellRegistry spellRegistry) {
-    this.env = env;
-    this.spellRegistry = spellRegistry;
+  public Events(LuaTypesRepo repo, SpellRegistry spellRegistry) {
+    this.repo = Preconditions.checkNotNull(repo);
+    this.spellRegistry = Preconditions.checkNotNull(spellRegistry);
   }
 
   public boolean isWaitingForEvent() {
@@ -63,13 +64,13 @@ public class Events {
   }
 
   public void handle(EventType type, Object evt) {
-    EventWrapper<?> evtWrapper = type.wrap(env, evt);
+    EventWrapper<?> evtWrapper = type.wrap(repo, evt);
     handle(evtWrapper);
   }
 
   public void fire(String eventType, Object content) {
     GenericLuaEventInstance wrapper =
-        GenericLuaEventClass.get().newInstance(env, content, eventType);
+        repo.get(GenericLuaEventClass.class).newInstance(content, eventType);
     Iterable<SpellEntity> spells = spellRegistry.getAll();
     for (SpellEntity spell : spells) {
       spell.getEvents().handle(wrapper);

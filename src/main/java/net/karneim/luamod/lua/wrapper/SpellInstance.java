@@ -5,6 +5,7 @@ import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.cursor.Spell;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.block.Block;
@@ -18,21 +19,23 @@ import net.sandius.rembulan.Table;
 // TODO extend from EntityInstance and add it to EntityWrapperFactory
 public class SpellInstance extends DelegatingTableWrapper<Spell> {
 
-  public SpellInstance(Table env, @Nullable Spell delegate, Table metatable) {
-    super(env, delegate, metatable);
+  public SpellInstance(LuaTypesRepo repo, @Nullable Spell delegate, Table metatable) {
+    super(repo, delegate, metatable);
   }
 
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
-    b.add("block", () -> WrapperFactory.wrap(env, delegate.getBlockState()), this::setBlock);
-    b.add("orientation", () -> WrapperFactory.wrap(env, delegate.getOrientation()),
+    b.add("block", () -> WrapperFactory.wrap(getRepo(), delegate.getBlockState()), this::setBlock);
+    b.add("orientation", () -> WrapperFactory.wrap(getRepo(), delegate.getOrientation()),
         this::setOrientation);
-    b.add("origin", () -> WrapperFactory.wrap(env, delegate.getOrigin()), null);
-    b.add("owner", () -> WrapperFactory.wrap(env, delegate.getOwner()), null);
-    // b.add("rotation", () -> WrapperFactory.wrap(env, delegate.getRotation()), this::setRotation);
+    b.add("origin", () -> WrapperFactory.wrap(getRepo(), delegate.getOrigin()), null);
+    b.add("owner", () -> WrapperFactory.wrap(getRepo(), delegate.getOwner()), null);
+    // b.add("rotation", () -> WrapperFactory.wrap(getRepo(), delegate.getRotation()),
+    // this::setRotation);
     b.add("rotation", () -> delegate.getRotation(), this::setRotation);
-    b.add("surface", () -> WrapperFactory.wrap(env, delegate.getSurface()), null);
-    b.add("pos", () -> WrapperFactory.wrap(env, delegate.getWorldPosition()), this::setPosition);
+    b.add("surface", () -> WrapperFactory.wrap(getRepo(), delegate.getSurface()), null);
+    b.add("pos", () -> WrapperFactory.wrap(getRepo(), delegate.getWorldPosition()),
+        this::setPosition);
   }
 
   private void setPosition(Object arg) {

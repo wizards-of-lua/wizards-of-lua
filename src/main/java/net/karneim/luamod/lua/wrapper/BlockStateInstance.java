@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 
 import net.karneim.luamod.lua.LuaTypeConverter;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.MaterialClass;
 import net.karneim.luamod.lua.classes.StringXLuaObjectMapClass;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
@@ -17,8 +18,8 @@ import net.minecraft.block.state.IBlockState;
 import net.sandius.rembulan.Table;
 
 public class BlockStateInstance extends DelegatingTableWrapper<IBlockState> {
-  public BlockStateInstance(Table env, @Nullable IBlockState delegate, Table metatable) {
-    super(env, delegate, metatable);
+  public BlockStateInstance(LuaTypesRepo repo, @Nullable IBlockState delegate, Table metatable) {
+    super(repo, delegate, metatable);
   }
 
   @Override
@@ -33,9 +34,9 @@ public class BlockStateInstance extends DelegatingTableWrapper<IBlockState> {
       props.put(name.getName(), luaValue);
     }
     builder.addNullable("properties",
-        StringXLuaObjectMapClass.get().newInstance(env, props).getLuaObject());
+        StringXLuaObjectMapClass.get().newInstance(getRepo(), props).getLuaObject());
     builder.addNullable("material",
-        MaterialClass.get().newInstance(env, delegate.getMaterial()).getLuaObject());
+        getRepo().get(MaterialClass.class).newInstance(delegate.getMaterial()).getLuaObject());
   }
 
 }

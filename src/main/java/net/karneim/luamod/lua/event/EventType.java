@@ -1,7 +1,8 @@
 package net.karneim.luamod.lua.event;
 
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
-import net.karneim.luamod.lua.classes.event.Player2EventClass;
+import net.karneim.luamod.lua.classes.event.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
 import net.karneim.luamod.lua.classes.event.WhisperEventClass;
@@ -11,65 +12,64 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
-import net.sandius.rembulan.Table;
 
 public enum EventType {
   CHAT {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return ServerChatEventClass.get().newInstance(env, (ServerChatEvent) evt);
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(ServerChatEventClass.class).newInstance((ServerChatEvent) evt);
     }
   }, //
   WHISPER {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return WhisperEventClass.get().newInstance(env, (WhisperEvent) evt);
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(WhisperEventClass.class).newInstance((WhisperEvent) evt);
     }
   }, //
   LEFT_CLICK {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return PlayerInteractEventClass.get().newInstance(env, (LeftClickBlock) evt,
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(PlayerInteractEventClass.class).newInstance((LeftClickBlock) evt,
           EventType.LEFT_CLICK);
     }
   }, //
   RIGHT_CLICK {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return PlayerInteractEventClass.get().newInstance(env, (RightClickBlock) evt,
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(PlayerInteractEventClass.class).newInstance((RightClickBlock) evt,
           EventType.RIGHT_CLICK);
     }
   }, //
   PLAYER_JOINED {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return Player2EventClass.get().newInstance(env, (PlayerLoggedInEvent) evt,
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(PlayerEventClass.class).newInstance((PlayerLoggedInEvent) evt,
           EventType.PLAYER_JOINED);
     }
   }, //
   PLAYER_LEFT {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return Player2EventClass.get().newInstance(env, (PlayerLoggedOutEvent) evt,
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(PlayerEventClass.class).newInstance((PlayerLoggedOutEvent) evt,
           EventType.PLAYER_LEFT);
     }
   }, //
   PLAYER_SPAWNED {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return Player2EventClass.get().newInstance(env, (PlayerRespawnEvent) evt,
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(PlayerEventClass.class).newInstance((PlayerRespawnEvent) evt,
           EventType.PLAYER_SPAWNED);
     }
 
   }, //
   ANIMATION_HAND {
     @Override
-    public EventWrapper<?> wrap(Table env, Object evt) {
-      return AnimationHandEventClass.get().newInstance(env, (AnimationHandEvent) evt,
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      return repo.get(AnimationHandEventClass.class).newInstance((AnimationHandEvent) evt,
           EventType.ANIMATION_HAND);
     }
   },//
   ;
 
-  public abstract EventWrapper<?> wrap(Table env, Object evt);
+  public abstract EventWrapper<?> wrap(LuaTypesRepo repo, Object evt);
 }

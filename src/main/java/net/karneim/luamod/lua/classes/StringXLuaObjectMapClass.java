@@ -3,7 +3,6 @@ package net.karneim.luamod.lua.classes;
 import java.util.Map;
 
 import net.karneim.luamod.lua.wrapper.StringXLuaObjectMapInstance;
-import net.sandius.rembulan.Table;
 
 public class StringXLuaObjectMapClass {
   private static final StringXLuaObjectMapClass SINGLETON = new StringXLuaObjectMapClass();
@@ -12,8 +11,8 @@ public class StringXLuaObjectMapClass {
     return SINGLETON;
   }
 
-  public StringXLuaObjectMapInstance newInstance(Table env, Map<String, Object> delegate) {
-    return new StringXLuaObjectMapInstance(env, delegate, null);
+  public StringXLuaObjectMapInstance newInstance(LuaTypesRepo repo, Map<String, Object> delegate) {
+    return new StringXLuaObjectMapInstance(repo, delegate, null);
   }
 
 }

@@ -1,8 +1,8 @@
 package net.karneim.luamod.lua.classes;
 
 import net.karneim.luamod.lua.wrapper.EnumInstance;
-import net.sandius.rembulan.Table;
 
+// TODO should we make a lua type of this?
 public class EnumClass {
 
   private static final EnumClass SINGLETON = new EnumClass();
@@ -11,8 +11,8 @@ public class EnumClass {
     return SINGLETON;
   }
 
-  public EnumInstance newInstance(Table env, Enum<?> delegate) {
-    return new EnumInstance(env, delegate);
+  public EnumInstance newInstance(LuaTypesRepo repo, Enum<?> delegate) {
+    return new EnumInstance(repo, delegate);
   }
 
 }

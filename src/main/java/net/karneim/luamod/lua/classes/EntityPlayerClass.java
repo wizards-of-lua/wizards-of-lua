@@ -3,7 +3,6 @@ package net.karneim.luamod.lua.classes;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.karneim.luamod.lua.wrapper.EntityPlayerInstance;
-import net.karneim.luamod.lua.wrapper.ItemStackInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,42 +21,29 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class EntityPlayerClass {
+@TypeName("Player")
+@ModulePackage(Constants.MODULE_PACKAGE)
+public class EntityPlayerClass extends AbstractLuaType {
 
-  private final String classname = "Player";
-  public final String module = "net.karneim.luamod.lua.classes." + classname;
-
-  private static final EntityPlayerClass SINGLETON = new EntityPlayerClass();
-
-  public static EntityPlayerClass get() {
-    return SINGLETON;
-  }
-
-  public void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
-      StateContext state)
+  public void installInto(ChunkLoader loader, DirectCallExecutor executor, StateContext state)
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-    LuaFunction classFunc =
-        loader.loadTextChunk(new Variable(env), classname, String.format("require \"%s\"", module));
+    LuaFunction classFunc = loader.loadTextChunk(new Variable(getRepo().getEnv()), getTypeName(),
+        String.format("require \"%s\"", getModule()));
     executor.call(state, classFunc);
-    addFunctions(env);
+    addFunctions();
   }
 
-  public EntityPlayerInstance newInstance(Table env, EntityPlayer delegate) {
-    return new EntityPlayerInstance(env, delegate, Metatables.get(env, classname));
+  public EntityPlayerInstance newInstance(EntityPlayer delegate) {
+    return new EntityPlayerInstance(getRepo(), delegate,
+        Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
-  private void addFunctions(Table env) {
-    Table metatable = Metatables.get(env, classname);
-    metatable.rawset("getInventory", new GetInventoryFunction(env));
+  private void addFunctions() {
+    Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
+    metatable.rawset("getInventory", new GetInventoryFunction());
   }
 
-  private static class GetInventoryFunction extends AbstractFunction2 {
-
-    private Table env;
-
-    GetInventoryFunction(Table env) {
-      this.env = env;
-    }
+  private class GetInventoryFunction extends AbstractFunction2 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
@@ -76,7 +62,9 @@ public class EntityPlayerClass {
       int index = ((Number) (arg2)).intValue();
 
       ItemStack itemStack = delegate.inventory.getStackInSlot(index);
-      DelegatingTable result = ItemStackClass.get().newInstance(env, itemStack).getLuaObject();
+      DelegatingTable result =
+          getRepo().get(ItemStackClass.class).newInstance(itemStack).getLuaObject();
+
       context.getReturnBuffer().setTo(result);
     }
 

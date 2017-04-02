@@ -21,32 +21,25 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-public class ItemStackClass {
+@TypeName("ItemStack")
+@ModulePackage(Constants.MODULE_PACKAGE)
+public class ItemStackClass extends AbstractLuaType {
 
-  private final String classname = "ItemStack";
-  public final String module = "net.karneim.luamod.lua.classes." + classname;
-
-  private static final ItemStackClass SINGLETON = new ItemStackClass();
-
-  public static ItemStackClass get() {
-    return SINGLETON;
-  }
-
-  public void installInto(Table env, ChunkLoader loader, DirectCallExecutor executor,
-      StateContext state)
+  public void installInto(ChunkLoader loader, DirectCallExecutor executor, StateContext state)
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-    LuaFunction classFunc =
-        loader.loadTextChunk(new Variable(env), classname, String.format("require \"%s\"", module));
+    LuaFunction classFunc = loader.loadTextChunk(new Variable(getRepo().getEnv()), getTypeName(),
+        String.format("require \"%s\"", getModule()));
     executor.call(state, classFunc);
-    addFunctions(env);
+    addFunctions();
   }
 
-  public ItemStackInstance newInstance(Table env, ItemStack delegate) {
-    return new ItemStackInstance(env, delegate, Metatables.get(env, classname));
+  public ItemStackInstance newInstance(ItemStack delegate) {
+    return new ItemStackInstance(getRepo(), delegate,
+        Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
-  private void addFunctions(Table env) {
-    Table metatable = Metatables.get(env, classname);
+  private void addFunctions() {
+    Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
     metatable.rawset("getData", new GetDataFunction());
   }
 

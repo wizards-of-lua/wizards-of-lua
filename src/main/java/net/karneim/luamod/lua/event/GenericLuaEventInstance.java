@@ -2,14 +2,16 @@ package net.karneim.luamod.lua.event;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
 public class GenericLuaEventInstance extends EventWrapper<Object> {
-  public GenericLuaEventInstance(Table env, @Nullable Object delegate, String name, Table metatable) {
-    super(env, delegate, name, metatable);
+  public GenericLuaEventInstance(LuaTypesRepo repo, @Nullable Object delegate, String name,
+      Table metatable) {
+    super(repo, delegate, name, metatable);
   }
 
   @Override

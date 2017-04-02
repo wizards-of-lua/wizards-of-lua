@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.sandius.rembulan.Table;
@@ -13,8 +14,9 @@ public abstract class EventWrapper<JavaObject> extends DelegatingTableWrapper<Ja
   private final long id;
   private static long idCount = 0;
 
-  public EventWrapper(Table env, @Nullable JavaObject javaObject, String type, Table metatable) {
-    super(env, javaObject, metatable);
+  public EventWrapper(LuaTypesRepo repo, @Nullable JavaObject javaObject, String type,
+      Table metatable) {
+    super(repo, javaObject, metatable);
     id = ++idCount;
     this.type = checkNotNull(type, "type == null!");
   }
