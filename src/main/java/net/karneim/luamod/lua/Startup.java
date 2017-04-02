@@ -55,13 +55,15 @@ public class Startup {
       World entityWorld = checkNotNull(server.getEntityWorld());
       SpellEntity spellEntity = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
       addDefaultProfile(spellEntity);
-      addStatupProfile(spellEntity);
+      addStartupProfile(spellEntity);
       spellEntity.setCommand(theSpell);
       server.getEntityWorld().spawnEntityInWorld(spellEntity);
+      // TODO this is needed in order to really execute that stuff. but why? 
+      spellEntity.onUpdate();
     }
   }
 
-  private void addStatupProfile(SpellEntity spellEntity) throws IOException {
+  private void addStartupProfile(SpellEntity spellEntity) throws IOException {
     String profile = luaMod.getProfiles().getStartupProfile();
     if (profile != null) {
       spellEntity.addProfile(profile);
