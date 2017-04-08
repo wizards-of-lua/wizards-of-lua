@@ -17,16 +17,17 @@ public class ArmorInstance extends DelegatingTableWrapper<Iterable<ItemStack>> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder builder) {
+  protected void addProperties(DelegatingTable.Builder b) {
     Iterator<ItemStack> it = delegate.iterator();
-    builder.addNullable("feet",
-        getRepo().get(ItemStackClass.class).newInstance(it.next()).getLuaObject());
-    builder.addNullable("legs",
-        getRepo().get(ItemStackClass.class).newInstance(it.next()).getLuaObject());
-    builder.addNullable("chest",
-        getRepo().get(ItemStackClass.class).newInstance(it.next()).getLuaObject());
-    builder.addNullable("head",
-        getRepo().get(ItemStackClass.class).newInstance(it.next()).getLuaObject());
+    final ItemStack feet = it.next();
+    b.add("feet", () -> getRepo().get(ItemStackClass.class).newInstance(feet).getLuaObject(), null);
+    final ItemStack legs = it.next();
+    b.add("legs", () -> getRepo().get(ItemStackClass.class).newInstance(legs).getLuaObject(), null);
+    final ItemStack chest = it.next();
+    b.add("chest", () -> getRepo().get(ItemStackClass.class).newInstance(chest).getLuaObject(),
+        null);
+    final ItemStack head = it.next();
+    b.add("head", () -> getRepo().get(ItemStackClass.class).newInstance(head).getLuaObject(), null);
   }
 
 }
