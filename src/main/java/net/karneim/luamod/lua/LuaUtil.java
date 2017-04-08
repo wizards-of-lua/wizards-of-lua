@@ -45,6 +45,7 @@ import net.karneim.luamod.lua.wrapper.PlayersWrapper;
 import net.karneim.luamod.lua.wrapper.RuntimeWrapper;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
+import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -65,7 +66,6 @@ import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.lib.Utf8Lib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.parser.ParseException;
-import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
@@ -93,8 +93,8 @@ public class LuaUtil {
   private Entities entities;
   private SpellEntity entity;
 
-  public LuaUtil(World world, SpellEntity entity, ICommandSender owner, Spell spell, Clipboard clipboard,
-      Credentials credentials, Snapshots snapshots) {
+  public LuaUtil(World world, SpellEntity entity, ICommandSender owner, Spell spell,
+      Clipboard clipboard, Credentials credentials, Snapshots snapshots) {
     this.world = world;
     this.entity = entity;
     this.spell = spell;
@@ -275,6 +275,8 @@ public class LuaUtil {
       executor.call(state, commandLineFunc);
     } catch (CallException ex) {
       throw newLuaException(ex);
+    } catch (LuaRuntimeException ex) {
+      throw newLuaException(ex);
     } catch (Exception e) {
       if (e.getCause() instanceof ParseException) {
         throw newLuaException((ParseException) e.getCause());
@@ -316,10 +318,10 @@ public class LuaUtil {
       return cause.getMessage();
     }
     cause = top;
-    while (cause != null && !(cause instanceof IllegalOperationAttemptException)) {
+    while (cause != null && !(cause instanceof LuaRuntimeException)) {
       cause = cause.getCause();
     }
-    if (cause instanceof IllegalOperationAttemptException) {
+    if (cause instanceof LuaRuntimeException) {
       return cause.getMessage();
     }
     return top.getMessage();
