@@ -51,8 +51,6 @@ public class Startup {
       luaMod.logger.info("Running startup profile.");
       MinecraftServer server = checkNotNull(luaMod.getServer());
       
-      // return world.getMinecraftServer().getCommandManager().executeCommand(spellEntity, command);
-      
       server.addScheduledTask(new Runnable() {
         @Override
         public void run() {
@@ -60,29 +58,13 @@ public class Startup {
             ICommandSender sender = sender();
             ICommandSender owner = sender;
 
-//            World entityWorld = checkNotNull(server.getEntityWorld());
-//            SpellEntity spellEntity =
-//                luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
-//            addDefaultProfile(spellEntity);
-//            addStartupProfile(spellEntity);
-//            spellEntity.setCommand(theSpell);
-//            server.getEntityWorld().spawnEntityInWorld(spellEntity);
-//
-//            // TODO this is needed in order to really execute that stuff. but why?
-//            spellEntity.onUpdate();
-            
-            String rawCommand = "lua ";
-            String defProfile = luaMod.getProfiles().getDefaultProfile();
-            if (defProfile != null) {
-              rawCommand += String.format("require '%s'; ", defProfile);
-            }
-            String startProfile = luaMod.getProfiles().getStartupProfile();
-            if (startProfile != null) {
-              rawCommand += String.format("require '%s'; ", startProfile);
-            }
-            rawCommand += theSpell;
-            
-            server.getCommandManager().executeCommand(sender, rawCommand);
+            World entityWorld = checkNotNull(server.getEntityWorld());
+            SpellEntity spellEntity =
+                luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
+            addDefaultProfile(spellEntity);
+            addStartupProfile(spellEntity);
+            spellEntity.setCommand(theSpell);
+            server.getEntityWorld().spawnEntityInWorld(spellEntity);
 
           } catch (Exception e) {
             TextComponentString text =
@@ -92,7 +74,6 @@ public class Startup {
           }
         }
       });
-
     }
   }
 
@@ -127,11 +108,11 @@ public class Startup {
       }
 
       public BlockPos getPosition() {
-        return BlockPos.ORIGIN;
+        return luaMod.getServer().getEntityWorld().getSpawnPoint();
       }
 
       public Vec3d getPositionVector() {
-        return Vec3d.ZERO;
+        return new Vec3d(getPosition());
       }
 
       public World getEntityWorld() {
