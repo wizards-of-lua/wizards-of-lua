@@ -18,10 +18,10 @@ public class ModConfiguration {
   }
 
   public @Nullable String getStringOrNull(String category, String key) {
-    return getStringOrNull(category, key, null);
+    return getStringOrDefault(category, key, null);
   }
 
-  public @Nullable String getStringOrNull(String category, String key, @Nullable String defaultValue) {
+  public @Nullable String getStringOrDefault(String category, String key, @Nullable String defaultValue) {
     Property property = config.get(category, key, defaultValue);
     if (property == null) {
       return null;

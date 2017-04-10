@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -66,7 +67,9 @@ public class LuaMod {
   private CredentialsStore credentialsStore;
   private Startup startup;
 
-  private long defaultTicksLimit = 10000;
+  private Long ticksLimit;
+  private long DEFAULT_TICKS_LIMIT = 10000;
+
   private Permissions permissions;
 
   @EventHandler
@@ -108,7 +111,10 @@ public class LuaMod {
             // to do here anything.
           }
         });
+  }
 
+  @EventHandler
+  public void serverStarted(FMLServerStartedEvent event) {
     try {
       startup.runStartupProfile();
     } catch (IOException e) {
@@ -141,12 +147,19 @@ public class LuaMod {
     return luaDir;
   }
 
-  public long getDefaultTicksLimit() {
-    return defaultTicksLimit;
+  public long getTicksLimit() {
+    if (ticksLimit == null) {
+      String v = configuration.getStringOrDefault("runtime", "tickslimit",
+          String.valueOf(DEFAULT_TICKS_LIMIT));
+      ticksLimit = Long.parseLong(v);
+    }
+    return ticksLimit;
   }
 
-  public void setDefaultTicksLimit(long defaultTicksLimit) {
-    this.defaultTicksLimit = defaultTicksLimit;
+  public void setTicksLimit(long aTicksLimit) {
+    this.ticksLimit = aTicksLimit;
+    configuration.setString("runtime", "tickslimit", String.valueOf(aTicksLimit));
+    configuration.save();
   }
 
   public Profiles getProfiles() {

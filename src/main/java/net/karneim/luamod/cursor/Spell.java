@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import javax.annotation.Nullable;
 
+import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -78,6 +79,7 @@ public class Spell {
   }
 
   public int execute(String command) {
+    //LuaMod.instance.logger.info("Execute: "+command);
     return world.getMinecraftServer().getCommandManager().executeCommand(spellEntity, command);
   }
 

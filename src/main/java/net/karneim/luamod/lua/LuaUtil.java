@@ -124,7 +124,7 @@ public class LuaUtil {
 
 
     loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
-    ticks = new Ticks(LuaMod.instance.getDefaultTicksLimit());
+    ticks = new Ticks(LuaMod.instance.getTicksLimit());
     events = new Events(typesRepo, LuaMod.instance.getSpellRegistry());
     runtime = new Runtime(ticks);
 

@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.sandius.rembulan.load.LoaderException;
 
@@ -49,17 +50,49 @@ public class Startup {
     if (theSpell != null) {
       luaMod.logger.info("Running startup profile.");
       MinecraftServer server = checkNotNull(luaMod.getServer());
-      ICommandSender sender = sender();
-      ICommandSender owner = sender;
+      
+      // return world.getMinecraftServer().getCommandManager().executeCommand(spellEntity, command);
+      
+      server.addScheduledTask(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            ICommandSender sender = sender();
+            ICommandSender owner = sender;
 
-      World entityWorld = checkNotNull(server.getEntityWorld());
-      SpellEntity spellEntity = luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
-      addDefaultProfile(spellEntity);
-      addStartupProfile(spellEntity);
-      spellEntity.setCommand(theSpell);
-      server.getEntityWorld().spawnEntityInWorld(spellEntity);
-      // TODO this is needed in order to really execute that stuff. but why? 
-      spellEntity.onUpdate();
+//            World entityWorld = checkNotNull(server.getEntityWorld());
+//            SpellEntity spellEntity =
+//                luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
+//            addDefaultProfile(spellEntity);
+//            addStartupProfile(spellEntity);
+//            spellEntity.setCommand(theSpell);
+//            server.getEntityWorld().spawnEntityInWorld(spellEntity);
+//
+//            // TODO this is needed in order to really execute that stuff. but why?
+//            spellEntity.onUpdate();
+            
+            String rawCommand = "lua ";
+            String defProfile = luaMod.getProfiles().getDefaultProfile();
+            if (defProfile != null) {
+              rawCommand += String.format("require '%s'; ", defProfile);
+            }
+            String startProfile = luaMod.getProfiles().getStartupProfile();
+            if (startProfile != null) {
+              rawCommand += String.format("require '%s'; ", startProfile);
+            }
+            rawCommand += theSpell;
+            
+            server.getCommandManager().executeCommand(sender, rawCommand);
+
+          } catch (Exception e) {
+            TextComponentString text =
+                new TextComponentString("Error during startup: " + e.getMessage());
+            server.getPlayerList().sendChatMsg(
+                new TextComponentTranslation("chat.type.announcement", new Object[] {"WoL", text}));
+          }
+        }
+      });
+
     }
   }
 

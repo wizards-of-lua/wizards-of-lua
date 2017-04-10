@@ -1,14 +1,11 @@
 package net.karneim.luamod.credentials;
 
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.config.ModConfiguration;
 

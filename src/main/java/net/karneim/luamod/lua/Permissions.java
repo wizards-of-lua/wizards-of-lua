@@ -78,7 +78,7 @@ public class Permissions {
   public AutoWizardPermission getAutoWizardPermission() {
     if (autoWizardPermission == null) {
       String value =
-          configuration.getStringOrNull(PERMISSIONS, AUTO_WIZ_KEY, DEFAULT_AUT_WIZ_VALUE.name());
+          configuration.getStringOrDefault(PERMISSIONS, AUTO_WIZ_KEY, DEFAULT_AUT_WIZ_VALUE.name());
       autoWizardPermission = AutoWizardPermission.valueOf(value);
       configuration.save();
     }
