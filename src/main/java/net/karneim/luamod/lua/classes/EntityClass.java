@@ -1,16 +1,15 @@
 package net.karneim.luamod.lua.classes;
 
+import java.util.UUID;
+
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.karneim.luamod.lua.wrapper.EntityInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
-import net.karneim.luamod.lua.wrapper.StringIterableInstance;
-import net.karneim.luamod.lua.wrapper.WrapperFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.StateContext;
@@ -22,7 +21,6 @@ import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.load.ChunkLoader;
 import net.sandius.rembulan.load.LoaderException;
-import net.sandius.rembulan.runtime.AbstractFunction0;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
@@ -58,6 +56,7 @@ public class EntityClass extends AbstractLuaType {
     metatable.rawset("removeTag", new RemoveTagFunction());
     metatable.rawset("setTags", new SetTagsFunction());
     metatable.rawset("getData", new GetDataFunction());
+    metatable.rawset("putData", new PutDataFunction());
   }
 
   private class AddTagFunction extends AbstractFunction2 {
@@ -173,95 +172,30 @@ public class EntityClass extends AbstractLuaType {
     }
   }
 
-  ///////////
-
-  // Class Functions
-
   /**
-   * Returns the IDs of all (loaded) entities.
+   * Put the NBT-Data into the entity.
    */
-  private class IdsFunction extends AbstractFunction0 {
-
-    @Override
-    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      Iterable<String> ids = entities.list();
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(getRepo(), ids);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  /**
-   * Returns the entity with the given ID.
-   */
-  private class GetFunction extends AbstractFunction1 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Entity ID expected but got nil!"));
-      }
-      String name = String.valueOf(arg1);
-      Entity entity = entities.get(name);
-      DelegatingTable result = WrapperFactory.wrap(getRepo(), entity);
-      context.getReturnBuffer().setTo(result);
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  /**
-   * Returns the IDs of all (loaded) entities matching the given selector.
-   */
-  private class FindFunction extends AbstractFunction1 {
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("@ expression expected but got nil!"));
-      }
-      String target = String.valueOf(arg1);
-      Iterable<String> names = entities.find(target);
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(getRepo(), names);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-
-  /**
-   * Modifies the entity with the given ID by merging the given NBT-Data-Table into it.
-   */
-  private class PutFunction extends AbstractFunction2 {
+  private class PutDataFunction extends AbstractFunction2 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
       if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Arg 1: Entity ID expected but got nil!"));
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
       }
+      Entity delegate = DelegatingTableWrapper.getDelegate(Entity.class, arg1);
       if (arg2 == null) {
-        throw new IllegalArgumentException(String.format("Arg 2: Table expected but got nil!"));
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
       }
       if (!(arg2 instanceof Table)) {
-        throw new IllegalArgumentException(
-            String.format("Arg 2: Table expected but got %s", arg2.getClass().getSimpleName()));
+        throw new IllegalArgumentException(String.format("table expected but got %s", arg2));
       }
-      String name = String.valueOf(arg1);
-      entities.put(name, ((Table) arg2));
+      Table data = (Table) arg2;
+      UUID uuid = delegate.getUniqueID();
+      NBTTagCompound origTag = delegate.writeToNBT(new NBTTagCompound());
+      NBTTagCompound mergedTag = NBTTagUtil.merge(origTag, data);
+      delegate.readFromNBT(mergedTag);
+      delegate.setUniqueId(uuid);
       context.getReturnBuffer().setTo();
     }
 
@@ -271,5 +205,7 @@ public class EntityClass extends AbstractLuaType {
       throw new NonsuspendableFunctionException();
     }
   }
+
+
 
 }
