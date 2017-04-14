@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.karneim.luamod.Blocks;
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.Players;
@@ -38,6 +39,7 @@ import net.karneim.luamod.lua.classes.event.WhisperEventClass;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
+import net.karneim.luamod.lua.wrapper.BlocksWrapper;
 import net.karneim.luamod.lua.wrapper.ClipboardWrapper;
 import net.karneim.luamod.lua.wrapper.EntitiesWrapper;
 import net.karneim.luamod.lua.wrapper.EventsWrapper;
@@ -92,6 +94,7 @@ public class LuaUtil {
   private String commandLine;
   private Entities entities;
   private SpellEntity entity;
+  private Blocks blocks;
 
   public LuaUtil(World world, SpellEntity entity, ICommandSender owner, Spell spell,
       Clipboard clipboard, Credentials credentials, Snapshots snapshots) {
@@ -122,6 +125,7 @@ public class LuaUtil {
     typesRepo.register(new ServerChatEventClass());
     typesRepo.register(new WhisperEventClass());
 
+    blocks = new Blocks(world);
 
     loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
     ticks = new Ticks(LuaMod.instance.getTicksLimit());
@@ -157,6 +161,7 @@ public class LuaUtil {
     RuntimeWrapper.installInto(env, runtime);
     PlayersWrapper.installInto(typesRepo, new Players(LuaMod.instance.getServer(), owner));
     EntitiesWrapper.installInto(typesRepo, entities);
+    BlocksWrapper.installInto(typesRepo, blocks);
 
     require("inspect", "net.karneim.luamod.lua.classes.inspect");
     require("net.karneim.luamod.lua.classes.Globals");
