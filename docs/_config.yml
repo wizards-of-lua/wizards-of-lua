@@ -5,7 +5,11 @@ defaults:
       path: "images"
     values:
       image: true
-
+  - scope:
+      path: ""
+      type: modules
+    values:
+      layout: page
 collections:
   modules:
     output: true
