@@ -1,9 +1,11 @@
 ---
-layout: default
 title: TODO
 name: Armor
 properties:
 functions:
 ---
+{% include module-head.md %}
 
-TODO
+TODO 
+
+{% include module-body.md %}

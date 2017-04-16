@@ -1,5 +1,4 @@
 ---
-layout: default
 title: The Spell's Essence - How to Controll the Aspects of an Active Spell
 name: Spell
 properties:
@@ -78,23 +77,23 @@ functions:
     results: nil
     description: TODO  
   - name: reset
-    parameters: nil
-    results: nil
+    parameters:
+    results:
     description: TODO
   - name: resetRotation
-    parameters: nil
+    parameters:
     results: nil
     description: TODO
   - name: resetPosition
-    parameters: nil
+    parameters:
     results: nil
     description: TODO
   - name: pushLocation
-    parameters: nil
+    parameters:
     results: nil
     description: TODO
   - name: popLocation
-    parameters: nil
+    parameters:
     results: nil
     description: TODO
   - name: cut
@@ -110,57 +109,11 @@ functions:
     results: selection
     description: TODO
 ---
-# The {{ page.name }}
-{% assign properties = page.properties | sort: 'name' %}
-{% assign functions = page.functions | sort: 'name' %}
+{% include module-head.md %}
 
-"Spell" is one of the main magic words used in most known spells. It is used to
+"Spell" is one of the main magic types used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.
 For example, you specify the exact location in the world where the spell will
 be acting apon.
 
-Here is a brief list of the spell's *properties*:
-
-| Property             | Type          | read / write |
-| ---------------------|---------------| :-----------:|
-{% for prop in properties %}| [{{ prop.name }}](#{{ prop.name }}) | {{ prop.type }} | {{ prop.access }} |
-{% endfor %}
-
-Here is a brief list of the spell's *functions*:
-
-| Function             | Parameters    | Results      |
-| ---------------------|---------------| :-----------:|
-{% for func in functions %}| [{{ func.name }}](#{{ func.name }}) | {{ func.parameters }} | {{ func.results }} |
-{% endfor %}
-
-## Properties
-
-Below you find a short description about each of the {{ page.name }}'s properties
-and some examples about how to used them in your spells.
-
----
-{% for prop in properties %}
-<a name="{{ prop.name }}"></a>
-### {{ prop.name }} : {{ prop.type }}
-{{ prop.description }}
-{% for ex in prop.examples %}
-{% include_relative {{ ex.url }} %}
-{% endfor %}
----
-{% endfor %}
-
-## Functions
-
-Below you find a short description about each of the {{ page.name }}'s functions
-and some examples about how to used them in your spells.
-
----
-{% for func in functions %}
-<a name="{{ func.name }}"></a>
-### {{ func.name }} ({{ func.parameters }}) -> {{ func.results }}
-{{ func.description }}
-{% for ex in func.examples %}
-{% include_relative {{ ex.url }} %}
-{% endfor %}
----
-{% endfor %}
+{% include module-body.md %}
