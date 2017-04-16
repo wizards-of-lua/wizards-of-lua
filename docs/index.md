@@ -68,6 +68,6 @@ available, about the options you have to influence these effects.
 
 {% assign modules = site.modules %}
 {% for module in modules %}
+* <a href="{{ module.relative_path }}">{{ module.name }}: {{ module.title }}</a>
 
-* <a href="{{ module.url }}">{{ module.name }}: {{ module.title }}</a>
 {% endfor %}
