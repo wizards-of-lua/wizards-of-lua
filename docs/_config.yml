@@ -13,3 +13,4 @@ defaults:
 collections:
   modules:
     output: true
+    permalink: /modules-xxx/:path/
