@@ -1,6 +1,8 @@
 title: Wizards of Lua
 theme: jekyll-theme-midnight
-#baseurl: /webpage
+encoding: "utf-8"
+show_dir_listing: false
+
 defaults:
   - scope:
       path: "images"

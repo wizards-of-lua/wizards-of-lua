@@ -66,7 +66,7 @@ Every magic word is documented within its own section.
 Next to its name you find a brief description about its main effects and, if
 available, about the options you have to influence these effects.
 
-{% assign modules = site.modules %}
+{% assign modules = site.modules | sort: 'name' %}
 {% for module in modules %}
 * <a href="{{ module.url }}">{{ module.name }}: {{ module.title }}</a>
 {% endfor %}

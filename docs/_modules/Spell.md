@@ -100,7 +100,7 @@ functions:
   - name: cut
     parameters: selection
     results: snapshot
-    description: TODO
+    description: TODO  
   - name: copy
     parameters: selection
     results: snapshot
@@ -111,6 +111,8 @@ functions:
     description: TODO
 ---
 # The {{ page.name }}
+{% assign properties = page.properties | sort: 'name' %}
+{% assign functions = page.functions | sort: 'name' %}
 
 "Spell" is one of the main magic words used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.
@@ -121,22 +123,23 @@ Here is a brief list of the spell's *properties*:
 
 | Property             | Type          | read / write |
 | ---------------------|---------------| :-----------:|
-{% for prop in page.properties %}| [{{ prop.name }}](#{{ prop.name }}) | {{ prop.type }} | {{ prop.access }} |
+{% for prop in properties %}| [{{ prop.name }}](#{{ prop.name }}) | {{ prop.type }} | {{ prop.access }} |
 {% endfor %}
 
 Here is a brief list of the spell's *functions*:
 
 | Function             | Parameters    | Results      |
 | ---------------------|---------------| :-----------:|
-{% for func in page.functions %}| [{{ func.name }}](#{{ func.name }}) | {{ func.parameters }} | {{ func.results }} |
+{% for func in functions %}| [{{ func.name }}](#{{ func.name }}) | {{ func.parameters }} | {{ func.results }} |
 {% endfor %}
+
+## Properties
 
 Below you find a short description about each of the {{ page.name }}'s properties
 and some examples about how to used them in your spells.
 
 ---
-## Properties
-{% for prop in page.properties %}
+{% for prop in properties %}
 <a name="{{ prop.name }}"></a>
 ### {{ prop.name }} : {{ prop.type }}
 {{ prop.description }}
@@ -146,12 +149,13 @@ and some examples about how to used them in your spells.
 ---
 {% endfor %}
 
+## Functions
+
 Below you find a short description about each of the {{ page.name }}'s functions
 and some examples about how to used them in your spells.
 
 ---
-## Functions
-{% for func in page.functions %}
+{% for func in functions %}
 <a name="{{ func.name }}"></a>
 ### {{ func.name }} ({{ func.parameters }}) -> {{ func.results }}
 {{ func.description }}
