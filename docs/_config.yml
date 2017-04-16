@@ -7,11 +7,10 @@ defaults:
     values:
       image: true
   - scope:
-      path: ""
       type: modules
     values:
-      layout: page
+      layout: default
 collections:
   modules:
     output: true
-    permalink: /webpage/modules-xxx/:path/
+    permalink: /modules/:path/
