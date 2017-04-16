@@ -1,1 +1,11 @@
+title: Wizards of Lua
 theme: jekyll-theme-midnight
+defaults:
+  - scope:
+      path: "images"
+    values:
+      image: true
+
+collections:
+  modules:
+    output: true
