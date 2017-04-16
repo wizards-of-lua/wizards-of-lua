@@ -66,17 +66,7 @@ Every magic word is documented within its own section.
 Next to its name you find a brief description about its main effects and, if
 available, about the options you have to influence these effects.
 
-# Collections:
-{% for collection in site.collections %}
-* {{ collection.label }}
-{% endfor %}
-
-# Modules
 {% assign modules = site.modules %}
-
 {% for module in modules %}
-* module.collection: {{ module.collection }}
-* relative_path: <a href="{{ module.relative_path }}">{{ module.name }}: {{ module.title }}</a>
-* url: <a href="{{ module.url }}">{{ module.name }}: {{ module.title }}</a>
-* path: <a href="{{ module.path | remove: "_" }}">{{ module.path | remove: "_" }}</a>
+* <a href="{{ module.url }}">{{ module.name }}: {{ module.title }}</a>
 {% endfor %}
