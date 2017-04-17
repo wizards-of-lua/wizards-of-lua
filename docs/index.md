@@ -6,7 +6,7 @@ title: The Art of Spell Crafting
 
 ![Manison](images/manison.jpg)
 
-The Wizards of Lua are a [community of programmers and their friends](members.md).
+The Wizards of Lua are a [community of programmers and their friends](members.md),
 who want to spread the knowlede of programming to all people.
 
 The Wizards of Lua are also some decent gamers
