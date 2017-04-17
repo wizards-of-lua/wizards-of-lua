@@ -40,7 +40,8 @@ properties:
     type: number
     access: r
     description: "The 'eyeHeight' is the y-offset from the entity's feet position
-    where the entity's eyes are located, of course only if it has any at all.
+    to the point where the entity's eyes are located, of course only if it has
+    any at all.
     For entities that have no eyes, this normally is the upper end of their
     body.
     "
