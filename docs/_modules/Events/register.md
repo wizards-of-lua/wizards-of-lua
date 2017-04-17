@@ -3,7 +3,7 @@ Register for CHAT events and echo the received messages:
 ```lua
 local queue = events.register( "CHAT")
 for e in queue.next do
-  say( e.message)
+  spell:say( e.message)
 end
 ```
 #### Example
@@ -12,7 +12,7 @@ the world what happend:
 ```lua
 local queue = events.register( "LEFT_CLICK", "RIGHT_CLICK")
 for e in queue.next do
-  say( e.type.." at "..e.pos);
+  spell:say( e.type.." at "..e.pos);
 end
 ```
 #### Example
@@ -21,6 +21,6 @@ the world what happend:
 ```lua
 local queue = events.register( "my event type name")
 for e in queue.next do
-  say( inspect( e) )
+  spell:say( inspect( e) )
 end
 ```
