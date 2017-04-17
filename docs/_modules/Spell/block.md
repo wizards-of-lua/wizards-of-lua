@@ -4,7 +4,12 @@ Print the name of the block at the spell's position:
 print( spell.block.name )
 ```
 #### Example
-Change the block at the spell's position to dirt:
+Inspect the block state the spell's position:
+```lua
+print( inspect( spell.block))
+```
+#### Example
+Change the block at the spell's position into dirt:
 ```lua
 spell.block = "dirt"
 ```
