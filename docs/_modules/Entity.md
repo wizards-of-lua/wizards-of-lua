@@ -115,7 +115,7 @@ functions:
     parameters: tags
     results: nil
     description: "The 'setTags' function marks the current entity with the
-    given tags. Any other tags this entity had before, will be removed."
+    given tags. All other tags this entity had before, will be removed."
   - name: getData
     parameters:
     results: table
