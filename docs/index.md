@@ -1,7 +1,6 @@
 ---
 title: The Art of Spell Crafting
 ---
-<div STYLE="font-family: Arial Black; font-size: 24px; color: yellow">Coming Soon!</div>
 # Welcome to the Home of the Wizards of Lua
 
 ![Manison](images/manison.jpg)
