@@ -7,7 +7,7 @@ spell:say("hello!")
 Tell all players every second what time it is.
 ```lua
 while true do
-  say( runtime.getRealtime(), runtime.getGametime(), runtime.getLuatime())
+  spell:say( runtime.getRealtime(), runtime.getGametime(), runtime.getLuatime())
   sleep( 20)
 end
 ```
