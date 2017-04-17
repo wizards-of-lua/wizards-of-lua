@@ -1,5 +1,5 @@
 ---
-page.title: The Art of Spell Crafting
+title: The Art of Spell Crafting
 ---
 # Welcome to the Home of the Wizards of Lua
 

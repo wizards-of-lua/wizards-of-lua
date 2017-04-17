@@ -1,36 +1,36 @@
 ---
-page.title: The Art of Spell Crafting
+title: The Art of Spell Crafting
 ---
 # Welcome to the Home of the Wizards of Lua
 
 ![Manison](images/manison.jpg)
 
-The Wizards of Lua are a community of programmers and their friends
+The Wizards of Lua are a [community of programmers and their friends](members.md).
 who want to spread the knowlede of programming to all people.
 
 The Wizards of Lua are also some decent gamers
 who belive that interactive programming opens a wide channel to transform
 the creativity of former plain consumers into a multitude of game contents
-and experience.
+and experiences.
 
 And finally The Wizards of Lua is a Minecraft modification that simply adds
 the `/lua` command to the game.
 
 # The Lingua Magica
-By installing 'Wizards of Lua' onto your Minecraft server, you are
-changing the very nature of your Minecraft game: it becomes magical in a wordly
-sense.
-The mod makes Lua, a programming language, available from the in-game chat window,
-so that that players can use it online to cast powerful 'spells' to control
-almost any aspect of the world.
+By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/luamod)
+onto your Minecraft server, you are changing the very nature of your Minecraft
+game: it becomes magical in a wordly sense.
+This mod makes Lua, a programming language, available from the in-game chat
+window, so that that players can use it online to cast powerful 'spells' to
+control almost any aspect of the world.
 
-By using existing spell books ('function libraries') players can enjoy
+By using existing function libraries (so called 'spell books') players can enjoy
 completely new variants of the Minecraft game, without any need to understand
 the underlying 'magic'.
-But by studying Lua, the lingua magica, players can gain a deep knowledge about
-how the magic works and how anybody can use little 'magic words'
-to craft their own unique spells that can do things that were not possible
-before.
+But by studying the spell books and Lua, the lingua magica, players can gain a
+deep knowledge about how the magic works and how anybody can use little
+'magic words' to craft their own unique spells that can do things that were
+not possible before.
 
 # Casting a Spell
 As any other Minecraft command you can execute it directly from the chat
