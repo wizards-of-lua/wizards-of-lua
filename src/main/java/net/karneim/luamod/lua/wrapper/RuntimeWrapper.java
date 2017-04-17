@@ -24,21 +24,36 @@ public class RuntimeWrapper {
   public RuntimeWrapper(Runtime runtime) {
     this.runtime = runtime;
     luaTable.rawset("sleep", new SleepFunction());
-    luaTable.rawset("getLuaTicksTotal", new GetLuaTicksTotalFunction());
     luaTable.rawset("getAllowance", new GetAllowanceFunction());
-    luaTable.rawset("getLifetime", new GetLifetimeFunction());
-    luaTable.rawset("currentTimeMillis", new CurrentTimeMillisFunction());
+    luaTable.rawset("getRealtime", new GetRealtimeFunction());
+    luaTable.rawset("getGametime", new GetGametimeFunction());
+    luaTable.rawset("getLuatime", new GetLuatimeFunction());
   }
 
   public Table getLuaTable() {
     return luaTable;
   }
 
-  private class GetLuaTicksTotalFunction extends AbstractFunction0 {
+  private class GetLuatimeFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      long result = runtime.getLuaTicksTotal();
+      long result = runtime.getLuaTicks();
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+  
+  private class GetGametimeFunction extends AbstractFunction0 {
+
+    @Override
+    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
+      long result = runtime.getGameTotalTime();
       context.getReturnBuffer().setTo(result);
     }
 
@@ -63,22 +78,8 @@ public class RuntimeWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
-  private class GetLifetimeFunction extends AbstractFunction0 {
 
-    @Override
-    public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      long result = runtime.getLifetime();
-      context.getReturnBuffer().setTo(result);
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
-  }
-  private class CurrentTimeMillisFunction extends AbstractFunction0 {
+  private class GetRealtimeFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
@@ -92,7 +93,6 @@ public class RuntimeWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
 
   private class SleepFunction extends AbstractFunction1 {
 

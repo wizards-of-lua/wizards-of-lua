@@ -85,7 +85,7 @@ public class LuaUtil {
   private List<LuaFunction> profileFuncs = new ArrayList<>();
   private LuaFunction commandLineFunc;
 
-  private Ticks ticks;
+  private LuaTicks ticks;
   private Events events;
   private Runtime runtime;
   private List<Requirement> standardRequirements = new ArrayList<>();
@@ -128,9 +128,9 @@ public class LuaUtil {
     blocks = new Blocks(world);
 
     loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
-    ticks = new Ticks(LuaMod.instance.getTicksLimit());
+    ticks = new LuaTicks(LuaMod.instance.getTicksLimit());
     events = new Events(typesRepo, LuaMod.instance.getSpellRegistry());
-    runtime = new Runtime(ticks);
+    runtime = new Runtime(world, ticks);
 
     RuntimeEnvironment environment = getModRuntimeEnvironment();
 
@@ -349,7 +349,11 @@ public class LuaUtil {
 
   public void setCurrentTime(int ticksExisted) {
     events.setCurrentTime(ticksExisted);
-    runtime.setLifetime(ticksExisted);
+    runtime.setSpellLifetime(ticksExisted);
+  }
+
+  public Runtime getRuntime() {
+    return runtime;
   }
 
   class Requirement {

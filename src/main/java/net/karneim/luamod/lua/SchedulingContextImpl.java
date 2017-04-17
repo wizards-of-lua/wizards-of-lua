@@ -5,11 +5,11 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 
 public class SchedulingContextImpl implements SchedulingContext {
 
-  private final Ticks ticks;
+  private final LuaTicks ticks;
   private final Events events;
   private final Runtime runtime;
 
-  public SchedulingContextImpl(Events events, Ticks ticks, Runtime runtime) {
+  public SchedulingContextImpl(Events events, LuaTicks ticks, Runtime runtime) {
     this.events = events;
     this.ticks = ticks;
     this.runtime = runtime;

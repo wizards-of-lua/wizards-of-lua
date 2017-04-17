@@ -2,12 +2,12 @@ package net.karneim.luamod.lua;
 
 import net.sandius.rembulan.util.Check;
 
-public class Ticks {
+public class LuaTicks {
   private long total = 0;
   private long max;
   private long allowance;
 
-  public Ticks(long max) {
+  public LuaTicks(long max) {
     this.max = max;
     this.allowance = Check.nonNegative(max);
   }

@@ -6,7 +6,6 @@ import java.util.Stack;
 
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -37,8 +36,8 @@ public class Spell {
   private SpellEntity spellEntity;
   private Snapshots snapshots;
 
-  public Spell(ICommandSender owner, SpellEntity spellEntity, World world,
-      Vec3d worldPosition, Rotation rotation, @Nullable EnumFacing surface, Snapshots snapshots) {
+  public Spell(ICommandSender owner, SpellEntity spellEntity, World world, Vec3d worldPosition,
+      Rotation rotation, @Nullable EnumFacing surface, Snapshots snapshots) {
     this.owner = checkNotNull(owner);
     this.spellEntity = checkNotNull(spellEntity);
     this.world = checkNotNull(world);
@@ -79,7 +78,7 @@ public class Spell {
   }
 
   public int execute(String command) {
-    //LuaMod.instance.logger.info("Execute: "+command);
+    // LuaMod.instance.logger.info("Execute: "+command);
     return world.getMinecraftServer().getCommandManager().executeCommand(spellEntity, command);
   }
 
@@ -241,8 +240,7 @@ public class Spell {
 
   public Selection paste(String id) {
     Snapshot snapshot = snapshots.getSnapshot(id);
-    return snapshot.pasteToWorld(world, new BlockPos(position),
-        SpellUtil.roundRotation(rotation));
+    return snapshot.pasteToWorld(world, new BlockPos(position), SpellUtil.roundRotation(rotation));
   }
 
   public void reset() {
@@ -251,11 +249,10 @@ public class Spell {
   }
 
   public void say(String message) {
-    world.getMinecraftServer().getCommandManager().executeCommand(spellEntity,
-        "say " + message);
+    world.getMinecraftServer().getCommandManager().executeCommand(spellEntity, "say " + message);
   }
 
-  public void msg(String target, String message) {
+  public void whisper(String target, String message) {
     world.getMinecraftServer().getCommandManager().executeCommand(spellEntity,
         "msg " + target + " " + message);
   }

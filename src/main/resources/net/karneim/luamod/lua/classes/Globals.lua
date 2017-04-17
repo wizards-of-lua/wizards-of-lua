@@ -95,3 +95,7 @@ end
 function str(obj)
   return inspect(obj)
 end
+
+function sleep(ticks)
+  runtime.sleep(ticks)
+end

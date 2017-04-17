@@ -36,6 +36,7 @@ import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 @TypeName("Spell")
 @ModulePackage(Constants.MODULE_PACKAGE)
@@ -56,11 +57,12 @@ public class SpellClass extends AbstractLuaType {
 
   private void addFunctions() {
     Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
+
     metatable.rawset("move", new MoveFunction());
     metatable.rawset("moveBy", new MoveByFunction());
     metatable.rawset("rotate", new RotateFunction());
     metatable.rawset("say", new SayFunction(getRepo().getEnv()));
-    metatable.rawset("msg", new MsgFunction(getRepo().getEnv()));
+    metatable.rawset("whisper", new WhisperFunction(getRepo().getEnv()));
     metatable.rawset("execute", new ExecuteFunction());
     metatable.rawset("reset", new ResetFunction());
     metatable.rawset("resetRotation", new ResetRotationFunction());
@@ -216,32 +218,34 @@ public class SpellClass extends AbstractLuaType {
     }
   }
 
-  private class MsgFunction extends AbstractFunction3 {
+  private class WhisperFunction extends AbstractFunctionAnyArg {
 
     private final Table env;
 
-    public MsgFunction(Table env) {
+    public WhisperFunction(Table env) {
       this.env = env;
     }
 
     @Override
-    public void invoke(ExecutionContext context, Object arg0, Object arg1, Object arg2)
-        throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
+      Object arg0 = args[0];
       if (arg0 == null) {
         throw new IllegalArgumentException(String.format("Spell expected but got nil!"));
       }
+      Object arg1 = args[1];
       if (arg1 == null) {
         throw new IllegalArgumentException(
             String.format("Entity name value expected but got nil!"));
       }
-      if (arg2 == null) {
-        throw new IllegalArgumentException(String.format("Text value expected but got nil!"));
-      }
+      List<Object> values = Lists.newArrayList(args);
+      values.remove(0);
+      values.remove(0);
+
       Spell delegate = DelegatingTableWrapper.getDelegate(Spell.class, arg0);
       String username = String.valueOf(arg1);
 
-      String text = format(context, env, Lists.newArrayList(arg2));
-      delegate.msg(username, text);
+      String text = format(context, env, values);
+      delegate.whisper(username, text);
       context.getReturnBuffer().setTo();
     }
 

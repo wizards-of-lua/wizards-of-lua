@@ -1,41 +1,53 @@
 package net.karneim.luamod.lua;
 
+import net.minecraft.world.World;
+
 public class Runtime {
-  private final Ticks ticks;
+  private final World world;
+  private final LuaTicks luaticks;
 
-  private long lifetime;
-  private long wakeUpTime;
+  // Time measured in Game-Ticks:
+  private long spellLifetime;
+  private long nextSpellWakeUpTime;
 
-  public Runtime(Ticks ticks) {
-    this.ticks = ticks;
+  public Runtime(World world, LuaTicks luaticks) {
+    this.world = world;
+    this.luaticks = luaticks;
   }
 
-  public void setLifetime(long lifetime) {
-    this.lifetime = lifetime;
+  public void setSpellLifetime(long lifetime) {
+    this.spellLifetime = lifetime;
+  }
+
+  public long getSpellLifetime() {
+    return spellLifetime;
+  }
+
+  public long getGameDayTime() {
+    return world.getWorldTime();
+  }
+
+  public long getGameTotalTime() {
+    return world.getTotalWorldTime();
   }
 
   public void startSleep(long duration) {
-    if (duration <= 0 && ticks.getAllowance() < 0) {
+    if (duration <= 0 && luaticks.getAllowance() < 0) {
       duration = 1;
     }
-    this.wakeUpTime = lifetime + duration;
+    this.nextSpellWakeUpTime = spellLifetime + duration;
   }
 
   public boolean isSleeping() {
-    return wakeUpTime > lifetime;
+    return nextSpellWakeUpTime > spellLifetime;
   }
 
-  public long getLuaTicksTotal() {
-    return ticks.getTotal();
+  public long getLuaTicks() {
+    return luaticks.getTotal();
   }
 
   public long getAllowance() {
-    return ticks.getAllowance();
+    return luaticks.getAllowance();
   }
 
-  public long getLifetime() {
-    return lifetime;
-  }
-  
-  
 }
