@@ -6,7 +6,7 @@ properties:
     type: BlockState
     access: r/w
     description: "The 'block' denotes the *block's state* at the spell's position. Use
-    it to find out about what material the block is contsructed of, or in which
+    it to find out about what material the block is constructed of, or in which
     direction it is facing.
     "
     examples:
@@ -53,29 +53,50 @@ functions:
   - name: move
     parameters: direction, distance
     results: nil
-    description: "The 'move' function teleports the spell instantly to a
-    location into the specified direction at a specified distance. If no
-    distance is specified, 1 Meter is taken as default."
+    description: "The 'move' function teleports the spell instantly into
+    the specified direction at the specified distance. If no
+    distance is specified, 1 Meter is taken as default distance."
   - name: moveBy
     parameters: dx, dy, dz
     results: nil
-    description: TODO
+    description: "The 'moveBy' function teleports the spell instantly to
+    the position at the specified distance defined by the given distance
+    componnets dx, dy, and dz.
+    "
   - name: rotate
     parameters: angle
     results: nil
-    description: TODO
+    description: "The 'rotate' function rotates the spell by the given angle
+    around its Y-axis. The angle must be specified in degrees."
+    examples:
+      - url: Spell/rotate.md
   - name: say
-    parameters: message, arguments...
+    parameters: message...
     results: nil
-    description: TODO
-  - name: msg
+    description: "The 'say' function sends the given message to all players
+    in the world. If there is more than one function argument specified,
+    then all of them are composed into a single message where each part is
+    separated by a tablulator character, similar to the workings of
+    the global `print()` function.
+    "
+    examples:
+      - url: Spell/say.md
+  - name: whisper
     parameters: recipient, message
     results: nil
-    description: TODO
+    description: "The 'whisper' function sends the given message only to the
+    given recipient.
+    "
+    examples:
+      - url: Spell/whisper.md
   - name: execute
     parameters: command
     results: nil
-    description: TODO  
+    description: "Executes the given minecraft command relative to the current
+    spell.
+    "
+    examples:
+      - url: Spell/execute.md
   - name: reset
     parameters:
     results:

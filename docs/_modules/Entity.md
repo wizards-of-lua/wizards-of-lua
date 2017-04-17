@@ -33,7 +33,8 @@ properties:
     access: r
     description: "The 'blockPos' is the position of the block
     where the entity is currently located. A block is a logical cube with
-    one meter in length, so the vector components are integer numbers.  
+    one meter in length. That means that the vector components are always
+    integer numbers.  
     "
   - name: eyeHeight
     type: number

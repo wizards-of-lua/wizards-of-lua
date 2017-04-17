@@ -1,6 +1,7 @@
 ---
 title: The Art of Spell Crafting
 ---
+<div STYLE="font-family: Arial Black; font-size: 24px; color: yellow">Coming Soon!</div>
 # Welcome to the Home of the Wizards of Lua
 
 ![Manison](images/manison.jpg)
@@ -13,8 +14,8 @@ who belive that interactive programming opens a wide channel to transform
 the creativity of former plain consumers into a multitude of game contents
 and experiences.
 
-And finally The Wizards of Lua is a Minecraft modification that simply adds
-the `/lua` command to the game.
+And finally 'The Wizards of Lua' is the name of a Minecraft modification that
+simply adds the `/lua` command to the game.
 
 # The Lingua Magica
 By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/luamod)
