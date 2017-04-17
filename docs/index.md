@@ -39,7 +39,7 @@ Just type 't' to open the chat and command prompt and begin typing: `/lua`.
 Next to this command you can enter any sequence of statements that form
 a valid Lua program.
 
-For example, you could enter the following line:
+For example, you could enter the following line into the chat:
 ```lua
 /lua for i=1,10 do spell.block = "stone"; spell:move("UP"); end
 ```
