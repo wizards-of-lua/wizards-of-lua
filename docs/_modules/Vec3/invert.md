@@ -1,5 +1,5 @@
 #### Example
-Invarting a vector:
+Inverting a vector:
 ```lua
 local p1 = vec3( 5, 2 , -1)
 local p2 = p1:invert()
