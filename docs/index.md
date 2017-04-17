@@ -66,6 +66,8 @@ The books listed below cover all those categories, but not all words completely.
 There are, almost certainly, more words out there, but to begin with, this library
 is a good starting point.
 
+![Library of Lua](images/library-of-lua.jpg)
+
 Below you find a list of books that are organized by modules and types.
 Every type and module is documented within its own book.
 Inside each book you will find sections about properties and functions.
@@ -76,7 +78,7 @@ To make it easy for the reader, the authors have added some small examples to
 each section, that can be used as recipes for crafting spells.
 
 This list is sorted alphabetically.
-                                 
+
 {% assign modules = site.modules | where_exp:"m", "m.title != 'TODO'" %}
 {% assign modulesAvail = modules | sort: 'name' %}
 {% for module in modulesAvail %}
