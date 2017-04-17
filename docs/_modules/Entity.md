@@ -99,6 +99,31 @@ properties:
     That means, if it is walking there by itself, the motion vector is (0,0,0).
     "
 functions:
+  - name: addTag
+    parameters: tag
+    results: nil
+    description: "The 'addTag' function marks the current entity with the
+    given tag."
+  - name: removeTag
+    parameters: tag
+    results: nil
+    description: "The 'removeTag' function removes the given tag from the
+    current entity."
+  - name: setTags
+    parameters: tags
+    results: nil
+    description: "The 'setTags' function marks the current entity with the
+    given tags. Any other tags this entity had before, will be removed."
+  - name: getData
+    parameters:
+    results: table
+    description: "The 'getData' function returns a table with the NBT-Data
+    properties of this entity."
+  - name: setData
+    parameters: table
+    results: nil
+    description: "The 'setData' function merges the given table contents into
+    the NBT-Data properties of this entity."
 ---
 {% include module-head.md %}
 

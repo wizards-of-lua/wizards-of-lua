@@ -18,7 +18,7 @@ Here is a brief list of the {{ page.name }}'s *functions*:
 {% if page.properties %}
 ## Properties
 
-Below you find a short description about each of the {{ page.name }}'s properties
+Below you find short descriptions about each of the {{ page.name }}'s properties
 and some examples about how to used them in your spells.
 
 ---
@@ -36,7 +36,7 @@ and some examples about how to used them in your spells.
 {% if page.functions %}
 ## Functions
 
-Below you find a short description about each of the {{ page.name }}'s functions
+Below you find short descriptions about each of the {{ page.name }}'s functions
 and some examples about how to used them in your spells.
 
 ---
