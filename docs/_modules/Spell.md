@@ -134,7 +134,7 @@ functions:
 
 "Spell" is one of the main magic types used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.
-For example, you specify the exact location in the world where the spell will
-be acting apon.
+For example, you can specify the exact location in the world where the spell will
+be acting apon by calling something like `spell.pos = vec3(100,64,200)`.
 
 {% include module-body.md %}
