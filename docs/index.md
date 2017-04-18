@@ -6,7 +6,7 @@ title: The Art of Spell Crafting
 ![Manison](images/manison.jpg)
 
 The Wizards of Lua are a [community of programmers and their friends](members.md),
-who want to spread the knowlede of programming to all people.
+who want to spread the knowledge of programming to all people.
 
 The Wizards of Lua are also some decent gamers
 who belive that interactive programming opens a wide channel to transform
@@ -35,9 +35,12 @@ not possible before.
 # Casting a Spell
 As any other Minecraft command you can execute it directly from the chat
 window.
-Just type 't' to open the chat and command prompt and begin typing: `/lua`.
+Just type 't' to open the command prompt and begin typing: `/lua`.
 Next to this command you can enter any sequence of statements that form
 a valid Lua program.
+
+
+
 
 For example, you could enter the following line into the chat:
 ```lua
