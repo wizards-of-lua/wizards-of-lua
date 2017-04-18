@@ -2,7 +2,7 @@ title: Wizards of Lua
 description: The Art of Spell Crafting
 theme: jekyll-theme-midnight
 encoding: "utf-8"
-show_header: false
+show_header: true
 show_dir_listing: false
 defaults:
   - scope:
