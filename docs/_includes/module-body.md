@@ -23,7 +23,7 @@ and some examples about how to used them in your spells.
 
 ---
 {% for prop in properties %}
-<a name="{{ prop.name }}"></a>
+<a style="position:relative; top:-70px; display:block;" name="{{ prop.name }}"></a>
 ### {{ prop.name }} : {{ prop.type }}
 {{ prop.description }}
 {% for ex in prop.examples %}
@@ -41,7 +41,7 @@ and some examples about how to used them in your spells.
 
 ---
 {% for func in functions %}
-<a name="{{ func.name }}"></a>
+<a style="position:relative; top:-70px; display:block;" name="{{ func.name }}"></a>
 ### {{ func.name }} ({{ func.parameters }}) -> {{ func.results }}
 {{ func.description }}
 {% for ex in func.examples %}
