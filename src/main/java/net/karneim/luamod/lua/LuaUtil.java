@@ -339,8 +339,19 @@ public class LuaUtil {
   }
 
   public void resume(Continuation continuation)
-      throws CallException, CallPausedException, InterruptedException {
-    executor.resume(continuation);
+      throws Exception {
+    try {
+      executor.resume(continuation);
+    } catch (CallException ex) {
+      throw newLuaException(ex);
+    } catch (LuaRuntimeException ex) {
+      throw newLuaException(ex);
+    } catch (Exception e) {
+      if (e.getCause() instanceof ParseException) {
+        throw newLuaException((ParseException) e.getCause());
+      }
+      throw e;
+    }
   }
 
   public boolean isWaiting() {
