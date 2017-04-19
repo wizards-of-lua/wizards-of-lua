@@ -9,6 +9,7 @@ import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -32,10 +33,8 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     b.add("blockPos", () -> wrap(getRepo(), delegate.getPosition()), null);
     b.add("eyeHeight", () -> delegate.getEyeHeight(), null);
     b.add("orientation", () -> wrap(getRepo(), delegate.getHorizontalFacing()), null);
-    b.add("rotationYaw", () -> MathHelper.wrapDegrees(delegate.rotationYaw),
-        (Object yaw) -> delegate.rotationYaw = checkType(yaw, Number.class).floatValue());
-    b.add("rotationPitch", () -> delegate.rotationPitch,
-        (Object pitch) -> delegate.rotationPitch = checkType(pitch, Number.class).floatValue());
+    b.add("rotationYaw", () -> MathHelper.wrapDegrees(delegate.rotationYaw), this::setRotationYaw);
+    b.add("rotationPitch", () -> delegate.rotationPitch, this::setRotationPitch);
     b.add("lookVec", () -> wrap(getRepo(), delegate.getLookVec()), null);
     b.add("team", this::getTeam, null);
     b.add("tags", () -> wrap(getRepo(), delegate.getTags()), null);
@@ -44,6 +43,26 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
     b.add("motion",
         () -> wrap(getRepo(), new Vec3d(delegate.motionX, delegate.motionY, delegate.motionZ)),
         this::setMotion);
+  }
+
+  private void setRotationYaw(Object object) {
+    float yaw = checkType(object, Number.class).floatValue();
+    delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw,
+        delegate.rotationPitch);
+    if (delegate instanceof EntityPlayerMP) {
+      ((EntityPlayerMP) delegate).connection.setPlayerLocation(delegate.posX, delegate.posY,
+          delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
+    }
+  }
+
+  private void setRotationPitch(Object object) {
+    float pitch = checkType(object, Number.class).floatValue();
+    delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ,
+        delegate.rotationPitch, pitch);
+    if (delegate instanceof EntityPlayerMP) {
+      ((EntityPlayerMP) delegate).connection.setPlayerLocation(delegate.posX, delegate.posY,
+          delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
+    }
   }
 
   private void setMotion(Object object) {
