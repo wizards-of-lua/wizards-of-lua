@@ -23,7 +23,7 @@ public class BlocksWrapper {
 
   public static BlocksWrapper installInto(LuaTypesRepo repo, Blocks blocks) {
     BlocksWrapper result = new BlocksWrapper(blocks);
-    repo.getEnv().rawset("blocks", result.getLuaTable());
+    repo.getEnv().rawset("Blocks", result.getLuaTable());
     return result;
   }
 
