@@ -90,10 +90,18 @@ functions:
     examples:
       - url: Spell/whisper.md
   - name: execute
-    parameters: command
+    parameters: command, ...
     results: nil
-    description: "Executes the given minecraft command relative to the current
-    spell.
+    description: "This function executes the given minecraft command as if it was
+    entered into the chat window.
+
+
+    The owner of the current spell will be treated as the new command's sender.
+    The new command is executed at the current spell's position.
+
+    This function supports additional arguments which are 'formatted'
+    into special placeholders in the command string. See [`string.format()`](http://lua-users.org/wiki/StringLibraryTutorial)
+    for more information.
     "
     examples:
       - url: Spell/execute.md
