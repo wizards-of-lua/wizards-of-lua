@@ -23,7 +23,7 @@ public class EntitiesWrapper {
 
   public static EntitiesWrapper installInto(LuaTypesRepo repo, Entities entities) {
     EntitiesWrapper result = new EntitiesWrapper(repo, entities);
-    repo.getEnv().rawset("entities", result.getLuaTable());
+    repo.getEnv().rawset("Entities", result.getLuaTable());
     return result;
   }
 
