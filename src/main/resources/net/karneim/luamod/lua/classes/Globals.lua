@@ -1,10 +1,14 @@
 -- Global Utility Functions 
 
-local error_=error
-function error(fmt,...)  error_(string.format(fmt,...)) end
+local error_ = error
+function error( fmt, ...)  
+  error_( string.format( fmt, ...))
+end
 
-local assert_=assert
-function assert(b,fmt,...) return fmt and assert_(b,string.format(fmt,...)) or assert_(b) end
+local assert_ = assert
+function assert(b, fmt, ...)
+  return fmt and assert_( b, string.format( fmt, ...)) or assert_( b)
+end
 
 local type__=type
 
