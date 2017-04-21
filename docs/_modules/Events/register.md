@@ -1,7 +1,7 @@
 #### Example
 Register for CHAT events and echo the received messages:
 ```lua
-local queue = events.register( "CHAT")
+local queue = Events.register( "CHAT")
 for e in queue.next do
   spell:say( e.message)
 end
@@ -10,7 +10,7 @@ end
 Register for LEFT_CLICK and RIGHT_CLICK events and tell
 the world what happend:
 ```lua
-local queue = events.register( "LEFT_CLICK", "RIGHT_CLICK")
+local queue = Events.register( "LEFT_CLICK", "RIGHT_CLICK")
 for e in queue.next do
   spell:say( e.type.." at "..e.pos);
 end
@@ -19,7 +19,7 @@ end
 Register for some custom event type and tell
 the world what happend:
 ```lua
-local queue = events.register( "my event type name")
+local queue = Events.register( "my event type name")
 for e in queue.next do
   spell:say( inspect( e) )
 end

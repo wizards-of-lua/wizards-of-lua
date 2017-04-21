@@ -10,7 +10,7 @@ spell's surface:
 if spell.surface ~= nil then
   local copy = spell.block
   for i=1,3 do
-    move(spell.surface)
+    spell:move( spell.surface)
     spell.block = copy
   end
 end
