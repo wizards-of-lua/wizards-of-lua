@@ -15,7 +15,7 @@ public class ClipboardWrapper {
 
   public static ClipboardWrapper installInto(Table env, Clipboard clipboard, Snapshots snapshots) {
     ClipboardWrapper result = new ClipboardWrapper(clipboard, snapshots);
-    env.rawset("clipboard", result.getLuaTable());
+    env.rawset("Clipboard", result.getLuaTable());
     return result;
   }
 
