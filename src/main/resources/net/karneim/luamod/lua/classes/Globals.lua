@@ -58,40 +58,6 @@ end
 function table.format(tbl)
 end
 
---function str(obj,vis,indent)  
---  vis = vis or {}
---  indent = indent or ""
---  if obj == nil then
---    return "nil"
---  end
---  if type__(obj) == "table" then
---    if not isempty(obj) and vis[obj] == 1 then
---      return "<skipping endless recursion>"
---    end
---    vis[obj] = 1
---  end
---
---  if type__(obj)=="table" then
---    local res = "{"
---    for k,v in pairs(obj) do
---      if #res > 1 then
---        res = res..",\n "..indent
---      end
---      res = res..k.."="..str(v,vis,indent.."  ")
---    end
---    res = res.."\n"..indent.."}"
---    return res
---  elseif type(obj)=="boolean" then
---    return tostring(obj)
---  elseif type(obj)=="number" then
---    return obj
---  elseif type(obj)=="string" then
---    return "'"..obj.."'"
---  else
---    return type(obj)
---  end
---end
-
 function str(obj)
   return inspect(obj)
 end
