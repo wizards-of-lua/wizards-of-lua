@@ -26,6 +26,7 @@ import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.lib.BasicLib;
+import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.load.ChunkLoader;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
@@ -256,19 +257,23 @@ public class SpellClass extends AbstractLuaType {
     }
   }
 
-  private class ExecuteFunction extends AbstractFunction2 {
+  private class ExecuteFunction extends AbstractFunctionAnyArg {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg0, Object arg1)
+    public void invoke(ExecutionContext context, Object[] args)
         throws ResolvedControlThrowable {
+      Object arg0 = args[0];
       if (arg0 == null) {
         throw new IllegalArgumentException(String.format("Spell expected but got nil!"));
       }
-      if (arg1 == null) {
-        throw new IllegalArgumentException(String.format("Text value expected but got nil!"));
-      }
       Spell delegate = DelegatingTableWrapper.getDelegate(Spell.class, arg0);
-      String command = String.valueOf(arg1);
+      
+      LuaFunction formatFunc = StringLib.format();
+      Object[] argArray = new Object[args.length-1];
+      System.arraycopy(args, 1, argArray, 0, args.length-1);
+      formatFunc.invoke(context, argArray);
+      String command = String.valueOf(context.getReturnBuffer().get(0));
+      
       int result = delegate.execute(command);
       context.getReturnBuffer().setTo(result);
     }
