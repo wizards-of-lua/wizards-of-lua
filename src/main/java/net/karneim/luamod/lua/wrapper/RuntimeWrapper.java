@@ -14,7 +14,7 @@ public class RuntimeWrapper {
 
   public static RuntimeWrapper installInto(Table env, Runtime runtime) {
     RuntimeWrapper result = new RuntimeWrapper(runtime);
-    env.rawset("runtime", result.getLuaTable());
+    env.rawset("Runtime", result.getLuaTable());
     return result;
   }
 

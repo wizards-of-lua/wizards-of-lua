@@ -97,5 +97,5 @@ function str(obj)
 end
 
 function sleep(ticks)
-  runtime.sleep(ticks)
+  Runtime.sleep(ticks)
 end
