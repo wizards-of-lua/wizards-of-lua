@@ -3,6 +3,7 @@ package net.karneim.luamod.lua.classes;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.karneim.luamod.lua.wrapper.EntityPlayerInstance;
+import net.karneim.luamod.lua.wrapper.ItemStackInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -62,8 +63,7 @@ public class EntityPlayerClass extends AbstractLuaType {
       int index = ((Number) (arg2)).intValue();
 
       ItemStack itemStack = delegate.inventory.getStackInSlot(index);
-      DelegatingTable result =
-          getRepo().get(ItemStackClass.class).newInstance(itemStack).getLuaObject();
+      DelegatingTable result = getRepo().get(ItemStackClass.class).newInstance(itemStack).getLuaObject();
 
       context.getReturnBuffer().setTo(result);
     }
