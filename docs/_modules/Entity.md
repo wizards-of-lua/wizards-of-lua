@@ -116,6 +116,11 @@ functions:
     results: nil
     description: "The 'setTags' function marks the current entity with the
     given tags. All other tags this entity had before, will be removed."
+  - name: hasTag
+    parameters: tag
+    results: bool
+    description: "Searches the current entity's tags for the given tag and
+    returns true if it finds it, false otherwise."
   - name: getData
     parameters:
     results: table
