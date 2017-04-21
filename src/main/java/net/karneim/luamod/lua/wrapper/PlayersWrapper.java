@@ -18,7 +18,7 @@ public class PlayersWrapper {
 
   public static PlayersWrapper installInto(LuaTypesRepo repo, Players players) {
     PlayersWrapper result = new PlayersWrapper(repo, players);
-    repo.getEnv().rawset("players", result.getLuaTable());
+    repo.getEnv().rawset("Players", result.getLuaTable());
     return result;
   }
 
