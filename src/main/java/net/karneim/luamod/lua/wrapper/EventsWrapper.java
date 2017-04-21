@@ -19,7 +19,7 @@ public class EventsWrapper {
 
   public static EventsWrapper installInto(Table env, Events events) {
     EventsWrapper result = new EventsWrapper(events);
-    env.rawset("events", result.getLuaTable());
+    env.rawset("Events", result.getLuaTable());
     return result;
   }
 
