@@ -129,6 +129,10 @@ functions:
     parameters: snapshot
     results: selection
     description: TODO
+  - name: select
+    parameters: selection
+    results: nil
+    description: "Adds the current spell's position to the given selection."
 ---
 {% include module-head.md %}
 
