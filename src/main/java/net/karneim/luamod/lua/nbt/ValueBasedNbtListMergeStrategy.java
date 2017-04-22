@@ -1,6 +1,5 @@
 package net.karneim.luamod.lua.nbt;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nullable;
@@ -13,7 +12,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
 
 /**
- * Merges {@link NBTTagList}s by matching the elements via their list index.
+ * Merges {@link NBTTagList}s of type Compound by matching the elements via the value of the
+ * specified key.
  * 
  * @author Adrodoc55
  */
