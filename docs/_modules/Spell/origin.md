@@ -1,5 +1,5 @@
 #### Example
-Print the origin:
+Printing the origin:
 ```lua
 print( spell.origin )
 ```

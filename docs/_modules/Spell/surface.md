@@ -1,10 +1,10 @@
 #### Example
-Print the spell's surface:
+Printing the spell's surface:
 ```lua
 print( spell.surface )
 ```
 #### Example
-Copy the block at the spell's position 3 times into the direction of the
+Copying the block at the spell's position 3 times into the direction of the
 spell's surface:
 ```lua
 if spell.surface ~= nil then

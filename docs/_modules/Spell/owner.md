@@ -1,5 +1,5 @@
 #### Example
-Print the spell's onwer's name:
+Printing the spell's onwer's name:
 ```lua
 print( spell.owner.name )
 ```

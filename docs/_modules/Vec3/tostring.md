@@ -1,5 +1,5 @@
 #### Example
-Print the vector using tostring():
+Printing the vector using tostring():
 ```lua
 local p = vec3( 11, 22, 33)
 print( p:tostring() )

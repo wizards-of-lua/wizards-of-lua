@@ -1,5 +1,5 @@
 ---
-title: The Spell's Essence - How to Controll the Aspects of an Active Spell
+title: How to Controll the Aspects of an Active Spell
 name: Spell
 properties:
   - name: block

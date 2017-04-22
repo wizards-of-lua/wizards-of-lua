@@ -1,5 +1,5 @@
 #### Example
-Register for CHAT events and echo the received messages:
+Registering for CHAT events and echoing the received messages:
 ```lua
 local queue = Events.register( "CHAT")
 for e in queue.next do
@@ -7,7 +7,7 @@ for e in queue.next do
 end
 ```
 #### Example
-Register for LEFT_CLICK and RIGHT_CLICK events and tell
+Registering for LEFT_CLICK and RIGHT_CLICK events and telling
 the world what happend:
 ```lua
 local queue = Events.register( "LEFT_CLICK", "RIGHT_CLICK")
@@ -16,7 +16,7 @@ for e in queue.next do
 end
 ```
 #### Example
-Register for some custom event type and tell
+Registering for some custom event type and telling
 the world what happend:
 ```lua
 local queue = Events.register( "my event type name")

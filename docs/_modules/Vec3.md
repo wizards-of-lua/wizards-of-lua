@@ -1,5 +1,5 @@
 ---
-title: Vector Mathematics - How to Manipulate Location and Motion
+title: Using Vector Math to Manipulate Location and Motion
 name: Vec3
 properties:
   - name: x
