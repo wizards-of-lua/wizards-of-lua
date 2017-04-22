@@ -1,0 +1,1 @@
+ServerChatEvent = class("ServerChatEvent", Event)

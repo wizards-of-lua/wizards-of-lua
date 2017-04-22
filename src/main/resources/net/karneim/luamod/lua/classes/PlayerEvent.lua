@@ -1,0 +1,1 @@
+PlayerEvent = class("PlayerEvent", Event)

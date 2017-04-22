@@ -1,0 +1,1 @@
+WhisperEvent = class("WhisperEvent", Event)

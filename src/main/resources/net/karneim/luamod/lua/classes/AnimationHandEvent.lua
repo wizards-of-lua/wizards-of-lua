@@ -1,0 +1,1 @@
+AnimationHandEvent = class("AnimationHandEvent", Event)

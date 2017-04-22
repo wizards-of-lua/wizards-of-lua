@@ -31,6 +31,7 @@ import net.karneim.luamod.lua.classes.MaterialClass;
 import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
+import net.karneim.luamod.lua.classes.event.EventClass;
 import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
@@ -118,6 +119,7 @@ public class LuaUtil {
     typesRepo.register(new EntityLivingClass());
     typesRepo.register(new EntityPlayerClass());
     typesRepo.register(new SpellClass());
+    typesRepo.register(new EventClass());
     typesRepo.register(new GenericLuaEventClass());
     typesRepo.register(new AnimationHandEventClass());
     typesRepo.register(new PlayerEventClass());
@@ -272,6 +274,15 @@ public class LuaUtil {
       typesRepo.get(EntityLivingClass.class).installInto(loader, executor, state);
       typesRepo.get(EntityPlayerClass.class).installInto(loader, executor, state);
       typesRepo.get(SpellClass.class).installInto(loader, executor, state);
+      
+      typesRepo.get(EventClass.class).installInto(loader, executor, state);
+      typesRepo.get(AnimationHandEventClass.class).installInto(loader, executor, state);
+      typesRepo.get(GenericLuaEventClass.class).installInto(loader, executor, state);
+      typesRepo.get(PlayerEventClass.class).installInto(loader, executor, state);
+      typesRepo.get(PlayerInteractEventClass.class).installInto(loader, executor, state);
+      typesRepo.get(ServerChatEventClass.class).installInto(loader, executor, state);
+      typesRepo.get(WhisperEventClass.class).installInto(loader, executor, state);
+      
       env.rawset("spell", typesRepo.get(SpellClass.class).newInstance(this.spell).getLuaObject());
 
       for (LuaFunction profileFunc : profileFuncs) {

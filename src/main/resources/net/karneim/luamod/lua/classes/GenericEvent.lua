@@ -1,0 +1,1 @@
+GenericEvent = class("GenericEvent", Event)
