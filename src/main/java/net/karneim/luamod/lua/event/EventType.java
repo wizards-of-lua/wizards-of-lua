@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.event;
 
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
+import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
@@ -67,6 +68,14 @@ public enum EventType {
     public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
       return repo.get(AnimationHandEventClass.class).newInstance((AnimationHandEvent) evt,
           EventType.ANIMATION_HAND);
+    }
+  }, //
+  CLICK_WINDOW {
+    @Override
+    public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
+      ClickWindowEventClass cls = repo.get(ClickWindowEventClass.class);
+      return cls.newInstance((ClickWindowEvent) evt,
+          EventType.CLICK_WINDOW);
     }
   },//
   ;

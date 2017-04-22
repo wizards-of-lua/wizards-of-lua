@@ -1,0 +1,1 @@
+ClickWindowEvent = class("ClickWindowEvent", Event)

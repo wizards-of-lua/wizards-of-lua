@@ -31,6 +31,7 @@ import net.karneim.luamod.lua.classes.MaterialClass;
 import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
 import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
+import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.EventClass;
 import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerEventClass;
@@ -55,7 +56,6 @@ import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.env.RuntimeEnvironment;
 import net.sandius.rembulan.env.RuntimeEnvironments;
 import net.sandius.rembulan.exec.CallException;
-import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.StateContexts;
@@ -122,6 +122,7 @@ public class LuaUtil {
     typesRepo.register(new EventClass());
     typesRepo.register(new GenericLuaEventClass());
     typesRepo.register(new AnimationHandEventClass());
+    typesRepo.register(new ClickWindowEventClass());
     typesRepo.register(new PlayerEventClass());
     typesRepo.register(new PlayerInteractEventClass());
     typesRepo.register(new ServerChatEventClass());
@@ -274,15 +275,16 @@ public class LuaUtil {
       typesRepo.get(EntityLivingClass.class).installInto(loader, executor, state);
       typesRepo.get(EntityPlayerClass.class).installInto(loader, executor, state);
       typesRepo.get(SpellClass.class).installInto(loader, executor, state);
-      
+
       typesRepo.get(EventClass.class).installInto(loader, executor, state);
       typesRepo.get(AnimationHandEventClass.class).installInto(loader, executor, state);
+      typesRepo.get(ClickWindowEventClass.class).installInto(loader, executor, state);
       typesRepo.get(GenericLuaEventClass.class).installInto(loader, executor, state);
       typesRepo.get(PlayerEventClass.class).installInto(loader, executor, state);
       typesRepo.get(PlayerInteractEventClass.class).installInto(loader, executor, state);
       typesRepo.get(ServerChatEventClass.class).installInto(loader, executor, state);
       typesRepo.get(WhisperEventClass.class).installInto(loader, executor, state);
-      
+
       env.rawset("spell", typesRepo.get(SpellClass.class).newInstance(this.spell).getLuaObject());
 
       for (LuaFunction profileFunc : profileFuncs) {
@@ -349,8 +351,7 @@ public class LuaUtil {
     return writer.toString();
   }
 
-  public void resume(Continuation continuation)
-      throws Exception {
+  public void resume(Continuation continuation) throws Exception {
     try {
       executor.resume(continuation);
     } catch (CallException ex) {
