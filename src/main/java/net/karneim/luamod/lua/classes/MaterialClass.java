@@ -4,8 +4,7 @@ import net.karneim.luamod.lua.wrapper.MaterialInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.minecraft.block.material.Material;
 
-@TypeName("Material")
-@ModulePackage(Constants.MODULE_PACKAGE)
+@LuaClass("Material")
 public class MaterialClass extends AbstractLuaType {
   public MaterialInstance newInstance(Material delegate) {
     return new MaterialInstance(getRepo(), delegate,

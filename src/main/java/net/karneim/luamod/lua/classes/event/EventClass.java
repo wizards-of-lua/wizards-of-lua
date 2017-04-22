@@ -1,12 +1,9 @@
 package net.karneim.luamod.lua.classes.event;
 
 import net.karneim.luamod.lua.classes.AbstractLuaType;
-import net.karneim.luamod.lua.classes.Constants;
-import net.karneim.luamod.lua.classes.ModulePackage;
-import net.karneim.luamod.lua.classes.TypeName;
+import net.karneim.luamod.lua.classes.LuaClass;
 
-@TypeName("Event")
-@ModulePackage(Constants.MODULE_PACKAGE)
+@LuaClass("Event")
 public class EventClass extends AbstractLuaType {
   @Override
   protected void addFunctions() {}

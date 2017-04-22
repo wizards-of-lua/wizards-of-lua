@@ -19,8 +19,7 @@ import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-@TypeName("Entity")
-@ModulePackage(Constants.MODULE_PACKAGE)
+@LuaClass("Entity")
 public class EntityClass extends AbstractLuaType {
   private final Entities entities;
 

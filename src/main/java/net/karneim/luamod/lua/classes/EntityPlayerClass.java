@@ -13,8 +13,7 @@ import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-@TypeName("Player")
-@ModulePackage(Constants.MODULE_PACKAGE)
+@LuaClass("Player")
 public class EntityPlayerClass extends AbstractLuaType {
   public EntityPlayerInstance newInstance(EntityPlayer delegate) {
     return new EntityPlayerInstance(getRepo(), delegate,

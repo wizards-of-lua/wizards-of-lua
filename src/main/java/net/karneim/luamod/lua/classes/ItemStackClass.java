@@ -13,8 +13,7 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-@TypeName("ItemStack")
-@ModulePackage(Constants.MODULE_PACKAGE)
+@LuaClass("ItemStack")
 public class ItemStackClass extends AbstractLuaType {
   public ItemStackInstance newInstance(ItemStack delegate) {
     return new ItemStackInstance(getRepo(), delegate,

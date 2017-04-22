@@ -7,12 +7,12 @@ public interface LuaType {
   }
 
   public static String typeNameOf(Class<? extends LuaType> type) {
-    TypeName a = type.getAnnotation(TypeName.class);
-    if (a != null) {
-      return a.value();
+    LuaClass luaClass = type.getAnnotation(LuaClass.class);
+    if (luaClass != null) {
+      return luaClass.value();
     }
     throw new IllegalArgumentException(
-        String.format("Class %s has no %s", type, TypeName.class.getSimpleName()));
+        String.format("Class %s has no @%s", type, LuaClass.class.getSimpleName()));
   }
 
   public default String getModulePackage() {
@@ -20,12 +20,12 @@ public interface LuaType {
   }
 
   public static String modulePackageOf(Class<? extends LuaType> type) {
-    ModulePackage a = type.getAnnotation(ModulePackage.class);
-    if (a != null) {
-      return a.value();
+    LuaClass luaClass = type.getAnnotation(LuaClass.class);
+    if (luaClass != null) {
+      return luaClass.packageName();
     }
     throw new IllegalArgumentException(
-        String.format("Class %s has no %s", type, ModulePackage.class.getSimpleName()));
+        String.format("Class %s has no @%s", type, LuaClass.class.getSimpleName()));
   }
 
   public default String getModule() {
