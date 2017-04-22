@@ -73,8 +73,7 @@ public enum EventType {
   CLICK_WINDOW {
     @Override
     public EventWrapper<?> wrap(LuaTypesRepo repo, Object evt) {
-      ClickWindowEventClass cls = repo.get(ClickWindowEventClass.class);
-      return cls.newInstance((ClickWindowEvent) evt,
+      return repo.get(ClickWindowEventClass.class).newInstance((ClickWindowEvent) evt,
           EventType.CLICK_WINDOW);
     }
   },//
