@@ -5,8 +5,8 @@ import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
 import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.Blocks;
-import net.karneim.luamod.lua.NBTTagUtil;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
+import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;

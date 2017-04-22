@@ -59,7 +59,6 @@ public class PatchedImmutableTable extends Table {
   private final Object initialKey; // null iff the table is empty
 
   static class Entry {
-
     private final Object value;
     private final Object nextKey; // may be null
 
@@ -68,6 +67,10 @@ public class PatchedImmutableTable extends Table {
       this.nextKey = nextKey;
     }
 
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
   }
 
   PatchedImmutableTable(Map<Object, Entry> entries, Object initialKey, Table metatable) {
@@ -245,13 +248,18 @@ public class PatchedImmutableTable extends Table {
     // no-op
   }
 
+  @Override
+  public String toString() {
+    return entries.toString();
+  }
+
   /**
    * Builder class for constructing instances of {@link PatchedImmutableTable}.
    */
   public static class Builder {
 
     private final TraversableHashMap<Object, Object> entries;
-    
+
     private Table metatable = null;
 
     private static void checkKey(Object key) {
@@ -325,7 +333,7 @@ public class PatchedImmutableTable extends Table {
 
       return this;
     }
-    
+
     public Builder setMetatable(Table table) {
       metatable = table;
       return this;

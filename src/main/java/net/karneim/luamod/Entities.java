@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
-import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.EntityNotFoundException;
 import net.minecraft.command.EntitySelector;

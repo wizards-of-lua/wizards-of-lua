@@ -1,4 +1,4 @@
-package net.karneim.luamod.lua;
+package net.karneim.luamod.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -6,7 +6,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
+import net.karneim.luamod.lua.LuaTypeConverter;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.table.Entry;
+import net.karneim.luamod.lua.util.table.TableIterable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
@@ -23,9 +26,9 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.ImmutableTable;
 
 public class NBTTagUtil {
+  public static int COMPOUND_TAG_TYPE = 10;
 
   public static NBTTagCompound merge(NBTTagCompound origTagCompound, Table data) {
     NBTTagCompound resultTagCompound = new NBTTagCompound();
@@ -38,7 +41,7 @@ public class NBTTagUtil {
       }
       NBTBase oldValue = origTagCompound.getTag(key);
       if (luaValue != null) {
-        NBTBase newValue = merge(oldValue, luaValue);
+        NBTBase newValue = merge(key, oldValue, luaValue);
         resultTagCompound.setTag(key, newValue);
       } else {
         resultTagCompound.setTag(key, oldValue.copy());
@@ -47,24 +50,23 @@ public class NBTTagUtil {
     return resultTagCompound;
   }
 
-  private static NBTTagList merge(NBTTagList origTagList, Table data) {
-    NBTTagList resultTagList = origTagList.copy();
-    int size = origTagList.tagCount();
-    for (int i = 0; i < size; ++i) {
-      int luaIdx = i + 1;
-      Object luaValue = data.rawget(luaIdx);
-      NBTBase oldValue = origTagList.get(i);
-      if (luaValue != null) {
-        NBTBase newValue = merge(oldValue, luaValue);
-        resultTagList.set(i, newValue);
-      } else {
-        resultTagList.set(i, oldValue.copy());
-      }
+  private static NBTTagList merge(String key, NBTTagList origTagList, Table data) {
+    switch (key) {
+      case "Items":
+      case "Inventory":
+        return new ValueBasedNbtListMergeStrategy("Slot").merge(origTagList, data);
+      case "Tags":
+        NBTTagList result = new NBTTagList();
+        for (Entry<Object, Object> entry : new TableIterable(data)) {
+          result.appendTag(new NBTTagString(entry.getValue().toString()));
+        }
+        return result;
+      default:
+        return new IndexBasedNbtListMergeStrategy().merge(origTagList, data);
     }
-    return resultTagList;
   }
 
-  private static NBTBase merge(NBTBase tag, Object value) {
+  static NBTBase merge(String key, NBTBase tag, Object value) {
     if (tag == null) {
       // ignore
       return null;
@@ -109,7 +111,7 @@ public class NBTTagUtil {
       throw new UnsupportedOperationException("Conversion of NBTTagIntArray is not supported!");
     } else if (tag instanceof NBTTagList) {
       if (value instanceof Table) {
-        return merge((NBTTagList) tag, (Table) value);
+        return merge(key, (NBTTagList) tag, (Table) value);
       } else {
         throw new IllegalArgumentException(
             "Expected a table but got " + (value.getClass().getSimpleName()));
@@ -171,6 +173,12 @@ public class NBTTagUtil {
     if (value instanceof Byte) {
       return new NBTTagByte((Byte) value);
     }
+    if (value instanceof String) {
+      return new NBTTagString((String) value);
+    }
+    if (value instanceof ByteString) {
+      return new NBTTagString(((ByteString) value).decode());
+    }
     if (value instanceof Boolean) {
       boolean b = ((Boolean) value).booleanValue();
       return new NBTTagByte(b ? ((byte) 1) : ((byte) 0));
@@ -212,7 +220,7 @@ public class NBTTagUtil {
       // return toTable(((NBTTagByteArray)tag).getByteArray());
       throw new UnsupportedOperationException("Conversion of NBTTagByteArray is not supported!");
     } else if (tag instanceof NBTTagIntArray) {
-      return toTable(((NBTTagIntArray)tag).getIntArray());
+      return toTable(((NBTTagIntArray) tag).getIntArray());
     } else if (tag instanceof NBTTagList) {
       return toTable(((NBTTagList) tag));
     } else if (tag instanceof NBTTagCompound) {
