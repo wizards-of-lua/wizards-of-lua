@@ -7,7 +7,7 @@ import net.karneim.luamod.lua.event.ClickWindowEventWrapper;
 import net.karneim.luamod.lua.event.EventType;
 import net.karneim.luamod.lua.wrapper.Metatables;
 
-@LuaClass("ClickWindowEventClass")
+@LuaClass("ClickWindowEvent")
 public class ClickWindowEventClass extends AbstractLuaType {
   public ClickWindowEventWrapper newInstance(ClickWindowEvent delegate, EventType eventType) {
     return new ClickWindowEventWrapper(getRepo(), delegate, eventType,

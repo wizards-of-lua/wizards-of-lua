@@ -49,6 +49,7 @@ function class(name, base)
     return getmetatable(x)==c and name or type_(x)
   end
   
+  _G[name] = c
   return c
 end
 

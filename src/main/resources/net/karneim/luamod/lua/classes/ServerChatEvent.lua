@@ -1,1 +1,1 @@
-ServerChatEvent = class("ServerChatEvent", Event)
+class("ServerChatEvent", Event)

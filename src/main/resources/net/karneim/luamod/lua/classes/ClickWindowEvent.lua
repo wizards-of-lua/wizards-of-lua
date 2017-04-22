@@ -1,1 +1,1 @@
-ClickWindowEvent = class("ClickWindowEvent", Event)
+class("ClickWindowEvent", Event)

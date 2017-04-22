@@ -1,1 +1,1 @@
-ItemStack = class("ItemStack")
+class("ItemStack")

@@ -1,4 +1,4 @@
-Vec3 = class("Vec3")
+class("Vec3")
 
 function check.Vec3(c,i)
   local t=type(c)

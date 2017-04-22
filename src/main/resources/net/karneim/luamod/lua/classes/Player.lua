@@ -1,1 +1,1 @@
-Player = class("Player", Entity)
+class("Player", Entity)
