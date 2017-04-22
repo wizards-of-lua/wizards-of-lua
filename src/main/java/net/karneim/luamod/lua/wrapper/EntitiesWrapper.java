@@ -3,9 +3,9 @@ package net.karneim.luamod.lua.wrapper;
 import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.Entities;
-import net.karneim.luamod.lua.NBTTagUtil;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.StringIterableClass;
+import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;

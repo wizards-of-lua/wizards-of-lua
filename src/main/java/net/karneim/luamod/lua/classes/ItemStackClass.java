@@ -1,6 +1,6 @@
 package net.karneim.luamod.lua.classes;
 
-import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingTableWrapper;
 import net.karneim.luamod.lua.wrapper.ItemStackInstance;

@@ -3,7 +3,7 @@ package net.karneim.luamod.lua.classes;
 import java.util.UUID;
 
 import net.karneim.luamod.Entities;
-import net.karneim.luamod.lua.NBTTagUtil;
+import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
