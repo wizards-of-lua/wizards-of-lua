@@ -11,14 +11,14 @@ functions:
     "
     examples:
       - url: Blocks/getData.md
-  - name: setData
+  - name: putData
     parameters: Vec3, table
     results: nil
-    description: "The 'setData' function merges the given table contents into
+    description: "The 'putData' function merges the given table contents into
     the NBT-Data of the block at the given position.
     "
     examples:
-      - url: Blocks/setData.md
+      - url: Blocks/putData.md
 ---
 {% include module-head.md %}
 
