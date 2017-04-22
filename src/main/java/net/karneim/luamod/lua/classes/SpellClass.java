@@ -17,18 +17,11 @@ import net.karneim.luamod.lua.wrapper.SpellInstance;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.Variable;
-import net.sandius.rembulan.exec.CallException;
-import net.sandius.rembulan.exec.CallPausedException;
-import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.lib.StringLib;
-import net.sandius.rembulan.load.ChunkLoader;
-import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
@@ -37,26 +30,18 @@ import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 @TypeName("Spell")
 @ModulePackage(Constants.MODULE_PACKAGE)
 public class SpellClass extends AbstractLuaType {
-
-  public void installInto(ChunkLoader loader, DirectCallExecutor executor, StateContext state)
-      throws LoaderException, CallException, CallPausedException, InterruptedException {
-    LuaFunction classFunc = loader.loadTextChunk(new Variable(getRepo().getEnv()), getTypeName(),
-        String.format("require \"%s\"", getModule()));
-    executor.call(state, classFunc);
-    addFunctions();
-  }
 
   public SpellInstance newInstance(Spell delegate) {
     return new SpellInstance(getRepo(), delegate,
         Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
-  private void addFunctions() {
+  @Override
+  protected void addFunctions() {
     Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
 
     metatable.rawset("move", new MoveFunction());
@@ -260,20 +245,19 @@ public class SpellClass extends AbstractLuaType {
   private class ExecuteFunction extends AbstractFunctionAnyArg {
 
     @Override
-    public void invoke(ExecutionContext context, Object[] args)
-        throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
       if (arg0 == null) {
         throw new IllegalArgumentException(String.format("Spell expected but got nil!"));
       }
       Spell delegate = DelegatingTableWrapper.getDelegate(Spell.class, arg0);
-      
+
       LuaFunction formatFunc = StringLib.format();
-      Object[] argArray = new Object[args.length-1];
-      System.arraycopy(args, 1, argArray, 0, args.length-1);
+      Object[] argArray = new Object[args.length - 1];
+      System.arraycopy(args, 1, argArray, 0, args.length - 1);
       formatFunc.invoke(context, argArray);
       String command = String.valueOf(context.getReturnBuffer().get(0));
-      
+
       int result = delegate.execute(command);
       context.getReturnBuffer().setTo(result);
     }

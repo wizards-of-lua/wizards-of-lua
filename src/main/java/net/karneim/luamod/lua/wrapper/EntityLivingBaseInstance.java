@@ -17,11 +17,11 @@ public class EntityLivingBaseInstance<E extends EntityLivingBase> extends Entity
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
     super.addProperties(b);
-    b.add("armor", () -> getRepo().get(ArmorClass.class)
+    b.add("armor", () -> repo.get(ArmorClass.class)
         .newInstance(delegate.getArmorInventoryList()).getLuaObject(), null);
-    b.add("mainHand", () -> getRepo().get(ItemStackClass.class)
+    b.add("mainHand", () -> repo.get(ItemStackClass.class)
         .newInstance(delegate.getHeldItemMainhand()).getLuaObject(), null);
-    b.add("offHand", () -> getRepo().get(ItemStackClass.class)
+    b.add("offHand", () -> repo.get(ItemStackClass.class)
         .newInstance(delegate.getHeldItemOffhand()).getLuaObject(), null);
     b.add("health", delegate::getHealth, this::setHealth);
   }

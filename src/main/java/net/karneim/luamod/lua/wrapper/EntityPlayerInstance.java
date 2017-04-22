@@ -27,7 +27,7 @@ public class EntityPlayerInstance extends EntityLivingBaseInstance<EntityPlayer>
 
     if (delegate instanceof EntityPlayerMP) {
       EntityPlayerMP mp = (EntityPlayerMP) delegate;
-      b.add("gamemode", () -> wrap(getRepo(), mp.interactionManager.getGameType()),
+      b.add("gamemode", () -> wrap(repo, mp.interactionManager.getGameType()),
           this::setGameMode);
 
 

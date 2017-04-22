@@ -17,9 +17,9 @@ public class ClickWindowEventWrapper<E extends ClickWindowEvent> extends EventWr
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
-    builder.addNullable("clickedItem", wrap(getRepo(), delegate.getClickedItem()));
-    builder.addNullable("clickType", wrap(getRepo(), delegate.getClickType()));
-    builder.addNullable("player", wrap(getRepo(), delegate.getPlayer()));
+    builder.addNullable("clickedItem", wrap(repo, delegate.getClickedItem()));
+    builder.addNullable("clickType", wrap(repo, delegate.getClickType()));
+    builder.addNullable("player", wrap(repo, delegate.getPlayer()));
     builder.addNullable("slotId", delegate.getSlotId());
   }
 }

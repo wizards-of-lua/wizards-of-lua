@@ -21,13 +21,13 @@ public class PlayerInteractEventWrapper<E extends PlayerInteractEvent>
   protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
     builder.addNullable("hand",
-        EnumClass.get().newInstance(getRepo(), delegate.getHand()).getLuaObject());
+        EnumClass.get().newInstance(repo, delegate.getHand()).getLuaObject());
     builder.addNullable("item",
-        getRepo().get(ItemStackClass.class).newInstance(delegate.getItemStack()).getLuaObject());
+        repo.get(ItemStackClass.class).newInstance(delegate.getItemStack()).getLuaObject());
     builder.addNullable("pos",
-        getRepo().get(Vec3Class.class).newInstance(delegate.getPos()).getLuaObject());
+        repo.get(Vec3Class.class).newInstance(delegate.getPos()).getLuaObject());
     builder.addNullable("face",
-        EnumClass.get().newInstance(getRepo(), delegate.getFace()).getLuaObject());
+        EnumClass.get().newInstance(repo, delegate.getFace()).getLuaObject());
   }
 
 }

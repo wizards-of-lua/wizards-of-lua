@@ -23,7 +23,7 @@ public class MaterialInstance extends DelegatingTableWrapper<Material> {
     builder.add("isSolid", delegate.isSolid());
     builder.add("isToolNotRequired", delegate.isToolNotRequired());
     builder.addNullable("mobility",
-        new EnumInstance(getRepo(), delegate.getMobilityFlag()).getLuaObject());
+        new EnumInstance(repo, delegate.getMobilityFlag()).getLuaObject());
   }
 
 }

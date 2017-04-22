@@ -27,13 +27,13 @@ public interface LuaType {
     throw new IllegalArgumentException(
         String.format("Class %s has no %s", type, ModulePackage.class.getSimpleName()));
   }
-  
+
   public default String getModule() {
-    return getModulePackage()+"."+getTypeName();
+    return getModulePackage() + "." + getTypeName();
   }
-  
+
   public void setRepo(LuaTypesRepo repo);
-  
+
   public LuaTypesRepo getRepo();
-  
+
 }

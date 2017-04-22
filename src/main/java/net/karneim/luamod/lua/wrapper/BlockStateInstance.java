@@ -34,9 +34,9 @@ public class BlockStateInstance extends DelegatingTableWrapper<IBlockState> {
       props.put(name.getName(), luaValue);
     }
     builder.addNullable("properties",
-        StringXLuaObjectMapClass.get().newInstance(getRepo(), props).getLuaObject());
+        StringXLuaObjectMapClass.get().newInstance(repo, props).getLuaObject());
     builder.addNullable("material",
-        getRepo().get(MaterialClass.class).newInstance(delegate.getMaterial()).getLuaObject());
+        repo.get(MaterialClass.class).newInstance(delegate.getMaterial()).getLuaObject());
   }
 
 }

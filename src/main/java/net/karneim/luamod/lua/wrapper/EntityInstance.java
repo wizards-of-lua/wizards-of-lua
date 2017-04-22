@@ -29,19 +29,19 @@ public class EntityInstance<E extends Entity> extends DelegatingTableWrapper<E> 
         (Object name) -> delegate.setCustomNameTag(String.valueOf(name)));
     b.add("dimension", () -> delegate.dimension,
         (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
-    b.add("pos", () -> wrap(getRepo(), delegate.getPositionVector()), this::setPosition);
-    b.add("blockPos", () -> wrap(getRepo(), delegate.getPosition()), null);
+    b.add("pos", () -> wrap(repo, delegate.getPositionVector()), this::setPosition);
+    b.add("blockPos", () -> wrap(repo, delegate.getPosition()), null);
     b.add("eyeHeight", () -> delegate.getEyeHeight(), null);
-    b.add("orientation", () -> wrap(getRepo(), delegate.getHorizontalFacing()), null);
+    b.add("orientation", () -> wrap(repo, delegate.getHorizontalFacing()), null);
     b.add("rotationYaw", () -> MathHelper.wrapDegrees(delegate.rotationYaw), this::setRotationYaw);
     b.add("rotationPitch", () -> delegate.rotationPitch, this::setRotationPitch);
-    b.add("lookVec", () -> wrap(getRepo(), delegate.getLookVec()), null);
+    b.add("lookVec", () -> wrap(repo, delegate.getLookVec()), null);
     b.add("team", this::getTeam, null);
-    b.add("tags", () -> wrap(getRepo(), delegate.getTags()), null);
-    b.add("facing", () -> wrap(getRepo(), delegate.getAdjustedHorizontalFacing()), null);
+    b.add("tags", () -> wrap(repo, delegate.getTags()), null);
+    b.add("facing", () -> wrap(repo, delegate.getAdjustedHorizontalFacing()), null);
 
     b.add("motion",
-        () -> wrap(getRepo(), new Vec3d(delegate.motionX, delegate.motionY, delegate.motionZ)),
+        () -> wrap(repo, new Vec3d(delegate.motionX, delegate.motionY, delegate.motionZ)),
         this::setMotion);
   }
 

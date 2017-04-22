@@ -17,7 +17,7 @@ public class AnimationHandEventWrapper<E extends AnimationHandEvent> extends Eve
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
-    builder.addNullable("player", wrap(getRepo(), delegate.getPlayer()));
-    builder.addNullable("hand", wrap(getRepo(), delegate.getHand()));
+    builder.addNullable("player", wrap(repo, delegate.getPlayer()));
+    builder.addNullable("hand", wrap(repo, delegate.getHand()));
   }
 }
