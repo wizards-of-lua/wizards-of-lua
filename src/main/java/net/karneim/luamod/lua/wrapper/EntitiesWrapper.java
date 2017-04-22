@@ -34,7 +34,7 @@ public class EntitiesWrapper {
   public EntitiesWrapper(LuaTypesRepo repo, Entities entities) {
     this.repo = Preconditions.checkNotNull(repo);
     this.entities = entities;
-    luaTable.rawset("list", new ListFunction());
+    luaTable.rawset("ids", new IdsFunction());
     luaTable.rawset("get", new GetFunction());
     luaTable.rawset("find", new FindFunction());
     // luaTable.rawset("put", new PutFunction()); // not supported so far
@@ -48,7 +48,7 @@ public class EntitiesWrapper {
   /**
    * Returns the IDs of all (loaded) entities.
    */
-  private class ListFunction extends AbstractFunction0 {
+  private class IdsFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {

@@ -30,7 +30,7 @@ public class PlayersWrapper {
     this.repo = repo;
     this.players = players;
 
-    luaTable.rawset("list", new ListFunction());
+    luaTable.rawset("ids", new IdsFunction());
     luaTable.rawset("get", new GetFunction());
     luaTable.rawset("find", new FindFunction());
 
@@ -58,7 +58,7 @@ public class PlayersWrapper {
     }
   }
 
-  private class ListFunction extends AbstractFunction0 {
+  private class IdsFunction extends AbstractFunction0 {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
@@ -83,8 +83,12 @@ public class PlayersWrapper {
       }
       String id = String.valueOf(arg1);
       EntityPlayerMP player = players.get(id);
-      EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      if ( player != null) {
+        EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
+        context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      } else {
+        context.getReturnBuffer().setTo();
+      }
     }
 
     @Override
@@ -103,8 +107,12 @@ public class PlayersWrapper {
       }
       String name = String.valueOf(arg1);
       EntityPlayerMP player = players.getByName(name);
-      EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      if ( player != null) {
+        EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
+        context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      } else {
+        context.getReturnBuffer().setTo();
+      }
     }
 
     @Override
