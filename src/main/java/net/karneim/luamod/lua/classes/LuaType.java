@@ -1,5 +1,12 @@
 package net.karneim.luamod.lua.classes;
 
+import net.sandius.rembulan.StateContext;
+import net.sandius.rembulan.exec.CallException;
+import net.sandius.rembulan.exec.CallPausedException;
+import net.sandius.rembulan.exec.DirectCallExecutor;
+import net.sandius.rembulan.load.ChunkLoader;
+import net.sandius.rembulan.load.LoaderException;
+
 public interface LuaType {
 
   public default String getTypeName() {
@@ -36,4 +43,6 @@ public interface LuaType {
 
   public LuaTypesRepo getRepo();
 
+  void installInto(ChunkLoader loader, DirectCallExecutor executor, StateContext state)
+      throws LoaderException, CallException, CallPausedException, InterruptedException;
 }

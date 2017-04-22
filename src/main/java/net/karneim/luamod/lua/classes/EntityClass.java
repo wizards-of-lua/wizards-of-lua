@@ -2,7 +2,6 @@ package net.karneim.luamod.lua.classes;
 
 import java.util.UUID;
 
-import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.Entry;
@@ -21,12 +20,6 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 @LuaClass("Entity")
 public class EntityClass extends AbstractLuaType {
-  private final Entities entities;
-
-  public EntityClass(Entities entities) {
-    this.entities = entities;
-  }
-
   @Override
   protected void addFunctions() {}
 
