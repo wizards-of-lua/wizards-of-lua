@@ -35,6 +35,18 @@ function check.number(n,i)
   end
 end
 
+function check.class( obj, cls, i)
+  local t=type( obj)
+  local name = cls.__classname
+  if tonumber( i) then
+    assert( getmetatable( obj)==cls, "bad argument #%d (%s expected, got %s)", i, name, t)
+  elseif type(i) == "string" then
+    assert( getmetatable( obj)==cls, "bad argument '%s' (%s expected, got %s)", i, name, t)
+  else
+    error( "Illegal position argument for check call: %s", i)
+  end
+end
+
 function class(name, base)
   check.string(name,1)
   --  create class table
