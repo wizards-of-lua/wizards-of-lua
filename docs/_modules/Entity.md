@@ -121,15 +121,15 @@ functions:
     results: bool
     description: "Searches the current entity's tags for the given tag and
     returns true if it finds it, false otherwise."
-  - name: getData
+  - name: getNbt
     parameters:
     results: table
-    description: "The 'getData' function returns a table with the NBT-Data
+    description: "The 'getNbt' function returns a table with the NBT-Data
     properties of this entity."
-  - name: setData
+  - name: putNbt
     parameters: table
     results: nil
-    description: "The 'setData' function merges the given table contents into
+    description: "The 'putNbt' function merges the given table contents into
     the NBT-Data properties of this entity."
 ---
 {% include module-head.md %}
