@@ -32,8 +32,8 @@ public class BlocksWrapper {
 
   public BlocksWrapper(Blocks blocks) {
     this.blocks = Preconditions.checkNotNull(blocks);
-    luaTable.rawset("getData", new GetDataFunction());
-    luaTable.rawset("putData", new PutDataFunction());
+    luaTable.rawset("getNbt", new GetNbtFunction());
+    luaTable.rawset("putNbt", new PutNbtFunction());
   }
 
   public Table getLuaTable() {
@@ -43,7 +43,7 @@ public class BlocksWrapper {
   /**
    * Returns the NBT-Data of the block at the given location
    */
-  private class GetDataFunction extends AbstractFunction1 {
+  private class GetNbtFunction extends AbstractFunction1 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
@@ -78,7 +78,7 @@ public class BlocksWrapper {
   /**
    * Merges the NBT-Data into the block at the given location
    */
-  private class PutDataFunction extends AbstractFunction2 {
+  private class PutNbtFunction extends AbstractFunction2 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)

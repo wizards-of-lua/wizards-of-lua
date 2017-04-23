@@ -25,11 +25,11 @@ public class ItemStackClass extends AbstractLuaType {
   @Override
   protected void addFunctions() {
     Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
-    metatable.rawset("getData", new GetDataFunction());
-    metatable.rawset("putData", new PutDataFunction());
+    metatable.rawset("getNbt", new GetNbtFunction());
+    metatable.rawset("putNbt", new PutNbtFunction());
   }
 
-  private class GetDataFunction extends AbstractFunction1 {
+  private class GetNbtFunction extends AbstractFunction1 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
@@ -55,7 +55,7 @@ public class ItemStackClass extends AbstractLuaType {
     }
   }
 
-  private class PutDataFunction extends AbstractFunction2 {
+  private class PutNbtFunction extends AbstractFunction2 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)

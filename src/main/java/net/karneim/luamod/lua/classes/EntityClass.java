@@ -27,8 +27,8 @@ public class EntityClass extends AbstractLuaType {
     metatable.rawset("addTag", new AddTagFunction());
     metatable.rawset("removeTag", new RemoveTagFunction());
     metatable.rawset("setTags", new SetTagsFunction());
-    metatable.rawset("getData", new GetDataFunction());
-    metatable.rawset("putData", new PutDataFunction());
+    metatable.rawset("getNbt", new GetNbtFunction());
+    metatable.rawset("putNbt", new PutNbtFunction());
   }
 
   public EntityInstance<Entity> newInstance(Entity delegate) {
@@ -124,7 +124,7 @@ public class EntityClass extends AbstractLuaType {
   /**
    * Returns the NBT-Data of the entity.
    */
-  private class GetDataFunction extends AbstractFunction1 {
+  private class GetNbtFunction extends AbstractFunction1 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
@@ -152,7 +152,7 @@ public class EntityClass extends AbstractLuaType {
   /**
    * Put the NBT-Data into the entity.
    */
-  private class PutDataFunction extends AbstractFunction2 {
+  private class PutNbtFunction extends AbstractFunction2 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
