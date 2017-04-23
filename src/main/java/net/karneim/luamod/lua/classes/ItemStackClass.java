@@ -7,9 +7,11 @@ import net.karneim.luamod.lua.wrapper.ItemStackInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
+import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
@@ -24,6 +26,7 @@ public class ItemStackClass extends AbstractLuaType {
   protected void addFunctions() {
     Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
     metatable.rawset("getData", new GetDataFunction());
+    metatable.rawset("putData", new PutDataFunction());
   }
 
   private class GetDataFunction extends AbstractFunction1 {
@@ -34,7 +37,8 @@ public class ItemStackClass extends AbstractLuaType {
         throw new IllegalArgumentException(String.format("table expected but got nil!"));
       }
       ItemStack delegate = DelegatingTableWrapper.getDelegate(ItemStack.class, arg1);
-      NBTTagCompound tagCompound = delegate.getTagCompound();
+      
+      NBTTagCompound tagCompound = delegate.writeToNBT(new NBTTagCompound());
       PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
       if (tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
@@ -42,6 +46,37 @@ public class ItemStackClass extends AbstractLuaType {
       PatchedImmutableTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class PutDataFunction extends AbstractFunction2 {
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      if (arg1 == null) {
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
+      }
+      ItemStack delegate = DelegatingTableWrapper.getDelegate(ItemStack.class, arg1);
+      if (arg2 == null) {
+        throw new IllegalArgumentException(String.format("table expected but got nil!"));
+      }
+      if (!(arg2 instanceof Table)) {
+        throw new IllegalArgumentException(String.format("table expected but got %s", arg2));
+      }
+      Table data = (Table) arg2;
+
+      NBTTagCompound origTag = delegate.writeToNBT(new NBTTagCompound());
+      NBTTagCompound mergedTag = NBTTagUtil.merge(origTag, data);
+      delegate.readFromNBT(mergedTag);
+      
+      context.getReturnBuffer().setTo();
     }
 
     @Override

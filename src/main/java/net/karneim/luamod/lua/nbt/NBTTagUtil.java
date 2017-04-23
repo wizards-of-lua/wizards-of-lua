@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -33,11 +34,17 @@ public class NBTTagUtil {
   public static NBTTagCompound merge(NBTTagCompound origTagCompound, Table data) {
     NBTTagCompound resultTagCompound = new NBTTagCompound();
     Set<String> keys = origTagCompound.getKeySet();
+    Set<Object> usedKeys = new HashSet<>();
     for (String key : keys) {
       Object luaValue = data.rawget(key);
-      if (luaValue == null && isANumber(key)) {
+      if ( luaValue != null) {
+        usedKeys.add(key);
+      } else if (luaValue == null && isANumber(key)) {
         double dval = Double.parseDouble(key);
         luaValue = data.rawget(dval);
+        if ( luaValue != null) {
+          usedKeys.add(dval);
+        }
       }
       NBTBase oldValue = origTagCompound.getTag(key);
       if (luaValue != null) {
@@ -46,6 +53,16 @@ public class NBTTagUtil {
       } else {
         resultTagCompound.setTag(key, oldValue.copy());
       }
+    }
+    Object tblKey = data.initialKey();
+    while( tblKey != null) {
+      if ( !usedKeys.contains(tblKey)) {
+        Object luaValue = data.rawget(tblKey);
+        String key = String.valueOf(tblKey);
+        NBTBase value = toTag(luaValue);
+        resultTagCompound.setTag(key,value);
+      }
+      tblKey = data.successorKeyOf(tblKey);
     }
     return resultTagCompound;
   }
