@@ -5,8 +5,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
-
 import net.sandius.rembulan.Table;
 
 public class LuaTypesRepo {
@@ -17,7 +15,7 @@ public class LuaTypesRepo {
   public LuaTypesRepo(Table env) {
     this.env = checkNotNull(env);
   }
-  
+
   public Table getEnv() {
     return env;
   }
@@ -38,7 +36,11 @@ public class LuaTypesRepo {
     types.put(name, luaType);
   }
 
-  private <T extends LuaType> T get(String name) {
+  public boolean isRegistered(String name) {
+    return types.containsKey(name);
+  }
+
+  public <T extends LuaType> T get(String name) {
     LuaType obj = types.get(name);
     return (T) obj;
   }

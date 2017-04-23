@@ -37,9 +37,8 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
-  public void onCommand(CommandEvent evt) {
-    // System.out.println("onCommand: " + evt.getCommand().getCommandName() + " "
-    // + Arrays.toString(evt.getParameters()));
+  public void onChat(ServerChatEvent evt) {
+    onEvent(EventType.CHAT, evt);
   }
 
   @SubscribeEvent
@@ -66,15 +65,6 @@ public class ModEventHandler {
         super.channelRead(ctx, msg);
       }
 
-      private @Nullable EntityPlayer getPlayer(ChannelHandlerContext ctx) {
-        ChannelHandler xx = ctx.pipeline().get("fml:packet_handler");
-        if (xx instanceof NetworkDispatcher) {
-          NetworkDispatcher nx = (NetworkDispatcher) xx;
-          return getEntityPlayer(nx);
-        }
-        return null;
-      }
-
       private EntityPlayer getEntityPlayer(NetworkDispatcher nx) {
         try {
           Field f = NetworkDispatcher.class.getDeclaredField("player");
@@ -86,6 +76,15 @@ public class ModEventHandler {
         }
       }
 
+      private @Nullable EntityPlayer getPlayer(ChannelHandlerContext ctx) {
+        ChannelHandler xx = ctx.pipeline().get("fml:packet_handler");
+        if (xx instanceof NetworkDispatcher) {
+          NetworkDispatcher nx = (NetworkDispatcher) xx;
+          return getEntityPlayer(nx);
+        }
+        return null;
+      }
+
       private void onEvent(EventType eventType, Object event) {
         mod.getServer().addScheduledTask(() -> ModEventHandler.this.onEvent(eventType, event));
       }
@@ -94,8 +93,15 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
-  public void onChat(ServerChatEvent evt) {
-    onEvent(EventType.CHAT, evt);
+  public void onCommand(CommandEvent evt) {
+    // System.out.println("onCommand: " + evt.getCommand().getCommandName() + " "
+    // + Arrays.toString(evt.getParameters()));
+  }
+
+  private void onEvent(EventType type, Object evt) {
+    for (SpellEntity e : mod.getSpellRegistry().getAll()) {
+      e.getEvents().handle(type, evt);
+    }
   }
 
   @SubscribeEvent
@@ -104,14 +110,6 @@ public class ModEventHandler {
       return;
     }
     onEvent(EventType.LEFT_CLICK, evt);
-  }
-
-  @SubscribeEvent
-  public void onRightClickBlock(RightClickBlock evt) {
-    if (evt.getWorld().isRemote) {
-      return;
-    }
-    onEvent(EventType.RIGHT_CLICK, evt);
   }
 
   @SubscribeEvent
@@ -131,16 +129,18 @@ public class ModEventHandler {
 
   /////
 
-  public void onWhisper(WhisperEvent evt) {
-    onEvent(EventType.WHISPER, evt);
+  @SubscribeEvent
+  public void onRightClickBlock(RightClickBlock evt) {
+    if (evt.getWorld().isRemote) {
+      return;
+    }
+    onEvent(EventType.RIGHT_CLICK, evt);
   }
 
   ////
 
-  private void onEvent(EventType type, Object evt) {
-    for (SpellEntity e : mod.getSpellRegistry().getAll()) {
-      e.getEvents().handle(type, evt);
-    }
+  public void onWhisper(WhisperEvent evt) {
+    onEvent(EventType.WHISPER, evt);
   }
 
 }

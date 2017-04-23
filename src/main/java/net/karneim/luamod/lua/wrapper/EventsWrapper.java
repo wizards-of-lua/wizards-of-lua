@@ -1,5 +1,8 @@
 package net.karneim.luamod.lua.wrapper;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.event.EventQueuesWrapper;
 import net.karneim.luamod.lua.event.EventType;
 import net.karneim.luamod.lua.event.Events;
+import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -67,9 +71,11 @@ public class EventsWrapper {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
+      checkNotNull(arg1, "Expected first argument not to be nil");
+      checkArgument(arg1 instanceof ByteString || arg1 instanceof String,
+          "Expected first argument to be a String");
       String eventType = String.valueOf(arg1);
-      Object content = arg2;
-      events.fire(eventType, content);
+      events.fire(eventType, arg2);
       context.getReturnBuffer().setTo(null);
     }
 

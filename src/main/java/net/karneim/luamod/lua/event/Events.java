@@ -69,6 +69,7 @@ public class Events {
   }
 
   public void fire(String eventType, Object content) {
+    // FIXME: Check that eventType is not a common type like ClickWindowEvent or AnimationHandEvent
     GenericLuaEventInstance wrapper =
         repo.get(GenericLuaEventClass.class).newInstance(content, eventType);
     Iterable<SpellEntity> spells = spellRegistry.getAll();
