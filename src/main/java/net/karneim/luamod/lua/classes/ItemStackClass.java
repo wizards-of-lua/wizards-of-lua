@@ -20,8 +20,8 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 @LuaModule("ItemStack")
 public class ItemStackClass extends DelegatingLuaClass<ItemStack> {
-  public ItemStackClass(Table env) {
-    super(env);
+  public ItemStackClass(LuaTypesRepo repo) {
+    super(repo);
   }
 
   @Override

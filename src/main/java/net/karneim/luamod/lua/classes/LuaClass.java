@@ -48,7 +48,7 @@ public abstract class LuaClass {
   }
 
   public String getModule() {
-    return getModulePackage() + "." + getModuleName();
+    return getModuleOf(this.getClass());
   }
 
   public static String getModulePackageOf(Class<? extends LuaClass> cls) {
@@ -57,6 +57,10 @@ public abstract class LuaClass {
 
   public static String getModuleNameOf(Class<? extends LuaClass> cls) {
     return getLuaClassAnnotationOf(cls).value();
+  }
+
+  public static String getModuleOf(Class<? extends LuaClass> cls) {
+    return getModulePackageOf(cls) + "." + getModuleNameOf(cls);
   }
 
   private static LuaModule getLuaClassAnnotationOf(Class<? extends LuaClass> cls) {

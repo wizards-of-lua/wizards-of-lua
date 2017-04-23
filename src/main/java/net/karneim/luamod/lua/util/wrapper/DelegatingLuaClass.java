@@ -1,14 +1,21 @@
 package net.karneim.luamod.lua.util.wrapper;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.karneim.luamod.lua.classes.LuaClass;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
-import net.sandius.rembulan.Table;
 
 public abstract class DelegatingLuaClass<D> extends LuaClass
     implements LuaWrapper<D, DelegatingTable<D>> {
-  public DelegatingLuaClass(Table env) {
-    super(env);
+  protected final LuaTypesRepo repo;
+
+  public DelegatingLuaClass(LuaTypesRepo repo) {
+    super(repo.getEnv());
+    this.repo = checkNotNull(repo, "repo == null!");
   }
+
+  protected abstract void addProperties(DelegatingTable.Builder<D> builder, D delegate);
 
   @Override
   public final DelegatingTable<D> toLuaObject(D delegate) {
@@ -17,6 +24,4 @@ public abstract class DelegatingLuaClass<D> extends LuaClass
     builder.setMetatable(getLuaClassTable());
     return builder.build();
   }
-
-  protected abstract void addProperties(DelegatingTable.Builder<D> builder, D delegate);
 }

@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
@@ -26,8 +28,8 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaClass;
+import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.event.Events;
@@ -123,8 +125,10 @@ public class LuaUtil {
     typesRepo = new LuaTypesRepo(env);
     for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
       try {
-        typesRepo.register(luaClass.newInstance());
-      } catch (InstantiationException | IllegalAccessException ex) {
+        Constructor<? extends LuaClass> constructor = luaClass.getConstructor(LuaTypesRepo.class);
+        typesRepo.register(constructor.newInstance(typesRepo));
+      } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+          | SecurityException | InvocationTargetException ex) {
         throw new UndeclaredThrowableException(ex);
       }
     }

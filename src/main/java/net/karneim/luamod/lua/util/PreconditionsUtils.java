@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nullable;
 
+import net.sandius.rembulan.ByteString;
+
 public class PreconditionsUtils {
   public static <T> T checkType(Object arg, Class<T> type) {
     checkNotNull(type, "type == null!");
@@ -34,8 +36,27 @@ public class PreconditionsUtils {
     if (arg == null) {
       return null;
     }
-    checkArgument(type.isInstance(arg), "Expected %s for argument%s but got %s",
+    checkArgument(type.isInstance(arg), "Expected %s for argument %s but got %s",
         type.getSimpleName(), argIndex, arg.getClass().getSimpleName());
     return type.cast(arg);
+  }
+
+  public static String checkTypeString(int argIndex, Object arg) {
+    checkArgument(arg != null, "Expected String for argument %s but got nil", argIndex);
+    return checkTypeStringNullable(argIndex, arg);
+  }
+
+  public static String checkTypeStringNullable(int argIndex, Object arg) {
+    if (arg == null) {
+      return null;
+    }
+    if (arg instanceof String) {
+      return (String) arg;
+    }
+    if (arg instanceof ByteString) {
+      return arg.toString();
+    }
+    throw new IllegalArgumentException(String.format("Expected String for argument %s but got %s",
+        argIndex, arg.getClass().getSimpleName()));
   }
 }
