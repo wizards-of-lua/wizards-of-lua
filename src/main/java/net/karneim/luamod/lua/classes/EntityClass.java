@@ -20,21 +20,20 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 @LuaClass("Entity")
 public class EntityClass extends AbstractLuaType {
+
   @Override
-  protected void addFunctions() {}
-
-  public EntityInstance<Entity> newInstance(Entity delegate) {
-    return new EntityInstance<Entity>(getRepo(), delegate,
-        Metatables.get(getRepo().getEnv(), getTypeName()));
-  }
-
-  private void addFunctions(Table env) {
+  protected void addFunctions() {
     Table metatable = Metatables.get(getRepo().getEnv(), getTypeName());
     metatable.rawset("addTag", new AddTagFunction());
     metatable.rawset("removeTag", new RemoveTagFunction());
     metatable.rawset("setTags", new SetTagsFunction());
     metatable.rawset("getData", new GetDataFunction());
     metatable.rawset("putData", new PutDataFunction());
+  }
+
+  public EntityInstance<Entity> newInstance(Entity delegate) {
+    return new EntityInstance<Entity>(getRepo(), delegate,
+        Metatables.get(getRepo().getEnv(), getTypeName()));
   }
 
   private class AddTagFunction extends AbstractFunction2 {
