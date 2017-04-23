@@ -4,7 +4,7 @@ import net.karneim.luamod.lua.wrapper.EntityLivingInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.minecraft.entity.EntityLiving;
 
-@LuaClass("EntityLiving")
+@LuaModule("EntityLiving")
 public class EntityLivingClass extends AbstractLuaType {
   public EntityLivingInstance<EntityLiving> newInstance(EntityLiving delegate) {
     return new EntityLivingInstance<EntityLiving>(getRepo(), delegate,

@@ -9,15 +9,15 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.sandius.rembulan.Table;
 
 public class PlayerEventWrapper<E extends PlayerEvent> extends EventWrapper<E> {
-  public PlayerEventWrapper(LuaTypesRepo repo, @Nullable E event, EventType eventType,
+  public PlayerEventWrapper(LuaTypesRepo repo, @Nullable E event, String eventType,
       Table metatable) {
-    super(repo, event, eventType.name(), metatable);
+    super(repo, event, eventType, metatable);
   }
 
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
-    builder.addNullable("player", repo.get(EntityPlayerClass.class)
-        .newInstance(delegate.getEntityPlayer()).getLuaObject());
+    builder.addNullable("player",
+        repo.get(EntityPlayerClass.class).newInstance(delegate.getEntityPlayer()).getLuaObject());
   }
 }

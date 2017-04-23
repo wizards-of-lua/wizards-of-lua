@@ -4,7 +4,7 @@ import net.karneim.luamod.lua.wrapper.ArmorInstance;
 import net.karneim.luamod.lua.wrapper.Metatables;
 import net.minecraft.item.ItemStack;
 
-@LuaClass("Armor")
+@LuaModule("Armor")
 public class ArmorClass extends AbstractLuaType {
   public ArmorInstance newInstance(Iterable<ItemStack> delegate) {
     return new ArmorInstance(getRepo(), delegate,

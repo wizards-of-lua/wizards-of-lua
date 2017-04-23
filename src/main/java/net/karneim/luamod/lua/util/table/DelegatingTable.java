@@ -42,7 +42,7 @@ public class DelegatingTable<O> extends Table {
     key = Conversions.normaliseKey(key);
     Object result = properties.get(key);
     if (result instanceof Property<?>) {
-      result = ((Property) result).get();
+      result = ((Property<?>) result).get();
     }
     return result;
   }
@@ -62,7 +62,7 @@ public class DelegatingTable<O> extends Table {
     if (p == null)
       throw new IllegalArgumentException("unknown table index");
     if (p instanceof Property<?>) {
-      ((Property) p).set(value);
+      ((Property<?>) p).set(value);
     } else {
       throw new UnsupportedOperationException("property is readonly");
     }
@@ -106,11 +106,12 @@ public class DelegatingTable<O> extends Table {
       this.delegate = checkNotNull(delegate, "delegate == null!");
     }
 
-    public <T> Builder add(Object key, @Nullable Supplier<T> get, @Nullable Consumer<T> set) {
-      return add(key, new Property(get, set));
+    public <T> Builder<O> add(Object key, @Nullable Supplier<T> get,
+        @Nullable Consumer<Object> set) {
+      return add(key, new Property<T>(get, set));
     }
 
-    public Builder add(Object key, Object value) {
+    public Builder<O> add(Object key, Object value) {
       key = Conversions.normaliseKey(key);
       checkKey(key);
 
@@ -120,15 +121,15 @@ public class DelegatingTable<O> extends Table {
 
       return this;
     }
-    
-    public Builder addNullable(Object key, @Nullable Object value) {
-      if ( value != null) {
-        add(key,value);
+
+    public Builder<O> addNullable(Object key, @Nullable Object value) {
+      if (value != null) {
+        add(key, value);
       }
       return this;
     }
-    
-    public Builder setMetatable(Table table) {
+
+    public Builder<O> setMetatable(Table table) {
       metatable = table;
       return this;
     }
@@ -138,7 +139,7 @@ public class DelegatingTable<O> extends Table {
      *
      * @return a new immutable table
      */
-    public DelegatingTable build() {
+    public DelegatingTable<O> build() {
       DelegatingTable<O> result = new DelegatingTable<O>(delegate, properties);
       result.setMetatable(metatable);
       return result;

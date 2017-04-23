@@ -31,7 +31,7 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
-@LuaClass("Spell")
+@LuaModule("Spell")
 public class SpellClass extends AbstractLuaType {
 
   public SpellInstance newInstance(Spell delegate) {

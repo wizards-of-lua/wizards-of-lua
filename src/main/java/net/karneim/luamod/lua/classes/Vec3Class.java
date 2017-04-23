@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
 
-@LuaClass("Vec3")
+@LuaModule("Vec3")
 public class Vec3Class extends AbstractLuaType {
   public Vec3Instance newInstance(Vec3d delegate) {
     return new Vec3Instance(getRepo(), delegate, Metatables.get(getRepo().getEnv(), getTypeName()));

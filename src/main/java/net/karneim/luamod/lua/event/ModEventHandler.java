@@ -12,14 +12,14 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
+import net.karneim.luamod.lua.classes.LuaClass;
+import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketClickWindow;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -98,7 +98,7 @@ public class ModEventHandler {
     // + Arrays.toString(evt.getParameters()));
   }
 
-  private void onEvent(EventType type, Object evt) {
+  private <J, L extends EventWrapper<J>> void onEvent(Class<? extends LuaClass<J, L>> type, J evt) {
     for (SpellEntity e : mod.getSpellRegistry().getAll()) {
       e.getEvents().handle(type, evt);
     }
@@ -109,7 +109,7 @@ public class ModEventHandler {
     if (evt.getWorld().isRemote) {
       return;
     }
-    onEvent(EventType.LEFT_CLICK, evt);
+    onEvent(PlayerInteractEventClass.class, evt);
   }
 
   @SubscribeEvent

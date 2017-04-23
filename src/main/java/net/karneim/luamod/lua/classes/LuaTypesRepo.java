@@ -9,7 +9,7 @@ import net.sandius.rembulan.Table;
 
 public class LuaTypesRepo {
 
-  private final Map<String, LuaType> types = new HashMap<String, LuaType>();
+  private final Map<String, LuaClass> types = new HashMap<String, LuaClass>();
   private final Table env;
 
   public LuaTypesRepo(Table env) {
@@ -20,15 +20,15 @@ public class LuaTypesRepo {
     return env;
   }
 
-  public <T extends LuaType> void register(T luaType) {
+  public <T extends LuaClass> void register(T luaType) {
     put(luaType.getTypeName(), luaType);
   }
 
-  public <T extends LuaType> T get(Class<T> cls) {
-    return get(LuaType.typeNameOf(cls));
+  public <T extends LuaClass> T get(Class<T> cls) {
+    return get(LuaClass.simpleNameOf(cls));
   }
 
-  private <T extends LuaType> void put(String name, T luaType) {
+  private <T extends LuaClass> void put(String name, T luaType) {
     if (types.containsKey(name)) {
       throw new IllegalArgumentException(String.format("Type %s is already definded!", luaType));
     }
@@ -40,8 +40,8 @@ public class LuaTypesRepo {
     return types.containsKey(name);
   }
 
-  public <T extends LuaType> T get(String name) {
-    LuaType obj = types.get(name);
+  public <T extends LuaClass> T get(String name) {
+    LuaClass obj = types.get(name);
     return (T) obj;
   }
 }

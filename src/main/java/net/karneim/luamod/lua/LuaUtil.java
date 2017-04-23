@@ -26,8 +26,8 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
+import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaClass;
-import net.karneim.luamod.lua.classes.LuaType;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.event.Events;
@@ -66,7 +66,7 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
 
 public class LuaUtil {
-  private static final List<Class<? extends LuaType>> LUA_CLASSES = new ArrayList<>();
+  private static final List<Class<? extends LuaClass>> LUA_CLASSES = new ArrayList<>();
   static {
     ClassPath cp;
     try {
@@ -78,8 +78,8 @@ public class LuaUtil {
         cp.getTopLevelClassesRecursive("net.karneim.luamod.lua.classes");
     for (ClassInfo classInfo : classes) {
       Class<?> cls = classInfo.load();
-      if (LuaType.class.isAssignableFrom(cls) && cls.isAnnotationPresent(LuaClass.class)) {
-        LUA_CLASSES.add((Class<? extends LuaType>) cls);
+      if (LuaClass.class.isAssignableFrom(cls) && cls.isAnnotationPresent(LuaModule.class)) {
+        LUA_CLASSES.add((Class<? extends LuaClass>) cls);
       }
     }
   }
@@ -121,7 +121,7 @@ public class LuaUtil {
     entities = new Entities(LuaMod.instance.getServer(), entity);
 
     typesRepo = new LuaTypesRepo(env);
-    for (Class<? extends LuaType> luaClass : LUA_CLASSES) {
+    for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
       try {
         typesRepo.register(luaClass.newInstance());
       } catch (InstantiationException | IllegalAccessException ex) {
@@ -267,7 +267,7 @@ public class LuaUtil {
       this.compile();
       executor.call(state, headerFunc);
 
-      for (Class<? extends LuaType> luaClass : LUA_CLASSES) {
+      for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
         typesRepo.get(luaClass).installInto(loader, executor, state);
       }
 

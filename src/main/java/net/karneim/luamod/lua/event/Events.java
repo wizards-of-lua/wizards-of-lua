@@ -10,8 +10,9 @@ import com.google.common.collect.Multimap;
 
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
+import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
+import net.karneim.luamod.lua.classes.event.CustomLuaEventClass;
 
 public class Events {
   private final LuaTypesRepo repo;
@@ -63,15 +64,16 @@ public class Events {
     this.currentTime = currentTime;
   }
 
-  public void handle(EventType type, Object evt) {
-    EventWrapper<?> evtWrapper = type.wrap(repo, evt);
-    handle(evtWrapper);
+  public <J, L extends EventWrapper<J>> void handle(Class<? extends LuaClass<J, L>> type, J evt) {
+    L wrapper = repo.get(type).newInstance(evt);
+    handle(wrapper);
   }
 
   public void fire(String eventType, Object content) {
-    // FIXME: Check that eventType is not a common type like ClickWindowEvent or AnimationHandEvent
+    // FIXME: Check that eventType is not a common event type like ClickWindowEvent or
+    // AnimationHandEvent
     GenericLuaEventInstance wrapper =
-        repo.get(GenericLuaEventClass.class).newInstance(content, eventType);
+        repo.get(CustomLuaEventClass.class).newInstance(content, eventType);
     Iterable<SpellEntity> spells = spellRegistry.getAll();
     for (SpellEntity spell : spells) {
       spell.getEvents().handle(wrapper);
