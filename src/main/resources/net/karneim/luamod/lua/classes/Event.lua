@@ -1,1 +1,1 @@
-Event = class("Event")
+class("Event")

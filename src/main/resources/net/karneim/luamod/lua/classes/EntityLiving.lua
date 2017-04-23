@@ -1,2 +1,2 @@
-EntityLiving = class("EntityLiving", Entity)
+class("EntityLiving", Entity)
 

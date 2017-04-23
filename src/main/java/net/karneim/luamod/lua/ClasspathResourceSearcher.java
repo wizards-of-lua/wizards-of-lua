@@ -3,14 +3,9 @@ package net.karneim.luamod.lua;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.io.IOUtils;
 
 import net.karneim.luamod.cache.LuaFunctionBinaryCache;
-import net.karneim.luamod.credentials.Credentials;
-import net.karneim.luamod.gist.GistFileRef;
-import net.karneim.luamod.gist.GistRepo;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.LuaFunctionBinary;
 import net.sandius.rembulan.Table;

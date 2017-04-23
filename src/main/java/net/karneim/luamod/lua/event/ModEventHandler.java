@@ -3,6 +3,8 @@ package net.karneim.luamod.lua.event;
 import java.lang.reflect.Field;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import javax.annotation.Nullable;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,8 +15,11 @@ import net.karneim.luamod.lua.SpellEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketClickWindow;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -46,20 +51,28 @@ public class ModEventHandler {
       @Override
       public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof CPacketAnimation) {
-          ChannelHandler xx = ctx.pipeline().get("fml:packet_handler");
-          if (xx instanceof NetworkDispatcher) {
-            NetworkDispatcher nx = (NetworkDispatcher) xx;
-            EntityPlayer p = getEntityPlayer(nx);
-            AnimationHandEvent evt = new AnimationHandEvent((CPacketAnimation) msg, p);
-            mod.getServer().addScheduledTask(new Runnable() {
-              @Override
-              public void run() {
-                onEvent(EventType.ANIMATION_HAND, evt);
-              }
-            });
+          EntityPlayer player = getPlayer(ctx);
+          if (player != null) {
+            CPacketAnimation animation = (CPacketAnimation) msg;
+            onEvent(EventType.ANIMATION_HAND, new AnimationHandEvent(player, animation.getHand()));
+          }
+        } else if (msg instanceof CPacketClickWindow) {
+          EntityPlayer player = getPlayer(ctx);
+          if (player != null) {
+            CPacketClickWindow clickWindow = (CPacketClickWindow) msg;
+            onEvent(EventType.CLICK_WINDOW, new ClickWindowEvent(player, clickWindow));
           }
         }
         super.channelRead(ctx, msg);
+      }
+
+      private @Nullable EntityPlayer getPlayer(ChannelHandlerContext ctx) {
+        ChannelHandler xx = ctx.pipeline().get("fml:packet_handler");
+        if (xx instanceof NetworkDispatcher) {
+          NetworkDispatcher nx = (NetworkDispatcher) xx;
+          return getEntityPlayer(nx);
+        }
+        return null;
       }
 
       private EntityPlayer getEntityPlayer(NetworkDispatcher nx) {
@@ -68,10 +81,13 @@ public class ModEventHandler {
           f.setAccessible(true);
           EntityPlayer result = (EntityPlayer) f.get(nx);
           return result;
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
-            | SecurityException e) {
+        } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
           throw new UndeclaredThrowableException(e);
         }
+      }
+
+      private void onEvent(EventType eventType, Object event) {
+        mod.getServer().addScheduledTask(() -> ModEventHandler.this.onEvent(eventType, event));
       }
     };
     pipeline.addAfter("fml:packet_handler", "luamod:packet_handler", handler);

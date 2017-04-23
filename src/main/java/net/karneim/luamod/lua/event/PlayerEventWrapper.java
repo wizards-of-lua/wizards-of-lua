@@ -17,7 +17,7 @@ public class PlayerEventWrapper<E extends PlayerEvent> extends EventWrapper<E> {
   @Override
   protected void addProperties(DelegatingTable.Builder builder) {
     super.addProperties(builder);
-    builder.addNullable("player", getRepo().get(EntityPlayerClass.class)
+    builder.addNullable("player", repo.get(EntityPlayerClass.class)
         .newInstance(delegate.getEntityPlayer()).getLuaObject());
   }
 }

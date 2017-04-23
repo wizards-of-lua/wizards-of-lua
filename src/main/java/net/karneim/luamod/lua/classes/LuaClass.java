@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ModulePackage {
+public @interface LuaClass {
+  String packageName() default Constants.MODULE_PACKAGE;
+
   String value();
 }

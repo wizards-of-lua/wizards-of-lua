@@ -1,1 +1,1 @@
-Material = class("Material")
+class("Material")

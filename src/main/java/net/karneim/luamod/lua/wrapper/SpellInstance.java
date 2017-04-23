@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua.wrapper;
 
 import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
+import static net.karneim.luamod.lua.wrapper.WrapperFactory.wrap;
 
 import javax.annotation.Nullable;
 
@@ -25,17 +26,14 @@ public class SpellInstance extends DelegatingTableWrapper<Spell> {
 
   @Override
   protected void addProperties(DelegatingTable.Builder b) {
-    b.add("block", () -> WrapperFactory.wrap(getRepo(), delegate.getBlockState()), this::setBlock);
-    b.add("orientation", () -> WrapperFactory.wrap(getRepo(), delegate.getOrientation()),
-        this::setOrientation);
-    b.add("origin", () -> WrapperFactory.wrap(getRepo(), delegate.getOrigin()), null);
-    b.add("owner", () -> WrapperFactory.wrap(getRepo(), delegate.getOwner()), null);
-    // b.add("rotation", () -> WrapperFactory.wrap(getRepo(), delegate.getRotation()),
-    // this::setRotation);
+    b.add("block", () -> wrap(repo, delegate.getBlockState()), this::setBlock);
+    b.add("orientation", () -> wrap(repo, delegate.getOrientation()), this::setOrientation);
+    b.add("origin", () -> wrap(repo, delegate.getOrigin()), null);
+    b.add("owner", () -> wrap(repo, delegate.getOwner()), null);
+    // b.add("rotation", () -> wrap(getRepo(), delegate.getRotation()), this::setRotation);
     b.add("rotation", () -> delegate.getRotation(), this::setRotation);
-    b.add("surface", () -> WrapperFactory.wrap(getRepo(), delegate.getSurface()), null);
-    b.add("pos", () -> WrapperFactory.wrap(getRepo(), delegate.getPosition()),
-        this::setPosition);
+    b.add("surface", () -> wrap(repo, delegate.getSurface()), null);
+    b.add("pos", () -> wrap(repo, delegate.getPosition()), this::setPosition);
   }
 
   private void setPosition(Object arg) {

@@ -20,14 +20,14 @@ public class ArmorInstance extends DelegatingTableWrapper<Iterable<ItemStack>> {
   protected void addProperties(DelegatingTable.Builder b) {
     Iterator<ItemStack> it = delegate.iterator();
     final ItemStack feet = it.next();
-    b.add("feet", () -> getRepo().get(ItemStackClass.class).newInstance(feet).getLuaObject(), null);
+    b.add("feet", () -> repo.get(ItemStackClass.class).newInstance(feet).getLuaObject(), null);
     final ItemStack legs = it.next();
-    b.add("legs", () -> getRepo().get(ItemStackClass.class).newInstance(legs).getLuaObject(), null);
+    b.add("legs", () -> repo.get(ItemStackClass.class).newInstance(legs).getLuaObject(), null);
     final ItemStack chest = it.next();
-    b.add("chest", () -> getRepo().get(ItemStackClass.class).newInstance(chest).getLuaObject(),
+    b.add("chest", () -> repo.get(ItemStackClass.class).newInstance(chest).getLuaObject(),
         null);
     final ItemStack head = it.next();
-    b.add("head", () -> getRepo().get(ItemStackClass.class).newInstance(head).getLuaObject(), null);
+    b.add("head", () -> repo.get(ItemStackClass.class).newInstance(head).getLuaObject(), null);
   }
 
 }

@@ -1,14 +1,20 @@
 package net.karneim.luamod.lua;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.karneim.luamod.Blocks;
 import net.karneim.luamod.Entities;
@@ -20,23 +26,10 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.classes.ArmorClass;
-import net.karneim.luamod.lua.classes.BlockStateClass;
-import net.karneim.luamod.lua.classes.EntityClass;
-import net.karneim.luamod.lua.classes.EntityLivingClass;
-import net.karneim.luamod.lua.classes.EntityPlayerClass;
-import net.karneim.luamod.lua.classes.ItemStackClass;
+import net.karneim.luamod.lua.classes.LuaClass;
+import net.karneim.luamod.lua.classes.LuaType;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.classes.MaterialClass;
 import net.karneim.luamod.lua.classes.SpellClass;
-import net.karneim.luamod.lua.classes.Vec3Class;
-import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
-import net.karneim.luamod.lua.classes.event.EventClass;
-import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
-import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
-import net.karneim.luamod.lua.classes.event.WhisperEventClass;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
@@ -55,7 +48,6 @@ import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.env.RuntimeEnvironment;
 import net.sandius.rembulan.env.RuntimeEnvironments;
 import net.sandius.rembulan.exec.CallException;
-import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.StateContexts;
@@ -74,6 +66,24 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
 
 public class LuaUtil {
+  private static final List<Class<? extends LuaType>> LUA_CLASSES = new ArrayList<>();
+  static {
+    ClassPath cp;
+    try {
+      cp = ClassPath.from(LuaUtil.class.getClassLoader());
+    } catch (IOException ex) {
+      throw new UndeclaredThrowableException(ex);
+    }
+    ImmutableSet<ClassInfo> classes =
+        cp.getTopLevelClassesRecursive("net.karneim.luamod.lua.classes");
+    for (ClassInfo classInfo : classes) {
+      Class<?> cls = classInfo.load();
+      if (LuaType.class.isAssignableFrom(cls) && cls.isAnnotationPresent(LuaClass.class)) {
+        LUA_CLASSES.add((Class<? extends LuaType>) cls);
+      }
+    }
+  }
+
   private final World world;
   private final Credentials credentials;
   private final StateContext state;
@@ -109,23 +119,15 @@ public class LuaUtil {
     env = state.newTable();
 
     entities = new Entities(LuaMod.instance.getServer(), entity);
+
     typesRepo = new LuaTypesRepo(env);
-    typesRepo.register(new Vec3Class());
-    typesRepo.register(new MaterialClass());
-    typesRepo.register(new ItemStackClass());
-    typesRepo.register(new BlockStateClass());
-    typesRepo.register(new ArmorClass());
-    typesRepo.register(new EntityClass(entities));
-    typesRepo.register(new EntityLivingClass());
-    typesRepo.register(new EntityPlayerClass());
-    typesRepo.register(new SpellClass());
-    typesRepo.register(new EventClass());
-    typesRepo.register(new GenericLuaEventClass());
-    typesRepo.register(new AnimationHandEventClass());
-    typesRepo.register(new PlayerEventClass());
-    typesRepo.register(new PlayerInteractEventClass());
-    typesRepo.register(new ServerChatEventClass());
-    typesRepo.register(new WhisperEventClass());
+    for (Class<? extends LuaType> luaClass : LUA_CLASSES) {
+      try {
+        typesRepo.register(luaClass.newInstance());
+      } catch (InstantiationException | IllegalAccessException ex) {
+        throw new UndeclaredThrowableException(ex);
+      }
+    }
 
     blocks = new Blocks(world);
 
@@ -265,24 +267,10 @@ public class LuaUtil {
       this.compile();
       executor.call(state, headerFunc);
 
-      typesRepo.get(Vec3Class.class).installInto(loader, executor, state);
-      typesRepo.get(MaterialClass.class).installInto(loader, executor, state);
-      typesRepo.get(ItemStackClass.class).installInto(loader, executor, state);
-      typesRepo.get(BlockStateClass.class).installInto(loader, executor, state);
-      typesRepo.get(ArmorClass.class).installInto(loader, executor, state);
-      typesRepo.get(EntityClass.class).installInto(loader, executor, state);
-      typesRepo.get(EntityLivingClass.class).installInto(loader, executor, state);
-      typesRepo.get(EntityPlayerClass.class).installInto(loader, executor, state);
-      typesRepo.get(SpellClass.class).installInto(loader, executor, state);
-      
-      typesRepo.get(EventClass.class).installInto(loader, executor, state);
-      typesRepo.get(AnimationHandEventClass.class).installInto(loader, executor, state);
-      typesRepo.get(GenericLuaEventClass.class).installInto(loader, executor, state);
-      typesRepo.get(PlayerEventClass.class).installInto(loader, executor, state);
-      typesRepo.get(PlayerInteractEventClass.class).installInto(loader, executor, state);
-      typesRepo.get(ServerChatEventClass.class).installInto(loader, executor, state);
-      typesRepo.get(WhisperEventClass.class).installInto(loader, executor, state);
-      
+      for (Class<? extends LuaType> luaClass : LUA_CLASSES) {
+        typesRepo.get(luaClass).installInto(loader, executor, state);
+      }
+
       env.rawset("spell", typesRepo.get(SpellClass.class).newInstance(this.spell).getLuaObject());
 
       for (LuaFunction profileFunc : profileFuncs) {
@@ -349,8 +337,7 @@ public class LuaUtil {
     return writer.toString();
   }
 
-  public void resume(Continuation continuation)
-      throws Exception {
+  public void resume(Continuation continuation) throws Exception {
     try {
       executor.resume(continuation);
     } catch (CallException ex) {

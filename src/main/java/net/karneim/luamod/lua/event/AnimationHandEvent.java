@@ -1,17 +1,15 @@
 package net.karneim.luamod.lua.event;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.util.EnumHand;
 
 public class AnimationHandEvent {
-
-  private final CPacketAnimation msg;
   private final EntityPlayer player;
+  private final EnumHand hand;
 
-  public AnimationHandEvent(CPacketAnimation msg, EntityPlayer player) {
-    this.msg = msg;
+  public AnimationHandEvent(EntityPlayer player, EnumHand hand) {
     this.player = player;
+    this.hand = hand;
   }
 
   public EntityPlayer getPlayer() {
@@ -19,6 +17,6 @@ public class AnimationHandEvent {
   }
 
   public EnumHand getHand() {
-    return msg.getHand();
+    return hand;
   }
 }

@@ -1,1 +1,1 @@
-GenericEvent = class("GenericEvent", Event)
+class("GenericEvent", Event)

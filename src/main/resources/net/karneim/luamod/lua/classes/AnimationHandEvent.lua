@@ -1,1 +1,1 @@
-AnimationHandEvent = class("AnimationHandEvent", Event)
+class("AnimationHandEvent", Event)

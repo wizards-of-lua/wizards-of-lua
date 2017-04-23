@@ -5,6 +5,7 @@ import net.karneim.luamod.lua.classes.EntityClass;
 import net.karneim.luamod.lua.classes.EntityLivingClass;
 import net.karneim.luamod.lua.classes.EntityPlayerClass;
 import net.karneim.luamod.lua.classes.EnumClass;
+import net.karneim.luamod.lua.classes.ItemStackClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.StringIterableClass;
 import net.karneim.luamod.lua.classes.Vec3Class;
@@ -14,11 +15,16 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 
 public class WrapperFactory {
+
+  public static DelegatingTable wrap(LuaTypesRepo repo, ItemStack delegate) {
+    return repo.get(ItemStackClass.class).newInstance(delegate).getLuaObject();
+  }
 
   public static PatchedImmutableTable wrap(LuaTypesRepo repo, BlockPos delegate) {
     return repo.get(Vec3Class.class).newInstance(delegate).getLuaObject();

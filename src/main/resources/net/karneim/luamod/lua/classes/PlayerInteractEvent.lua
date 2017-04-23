@@ -1,1 +1,1 @@
-PlayerInteractEvent = class("PlayerInteractEvent", Event)
+class("PlayerInteractEvent", Event)

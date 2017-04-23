@@ -1,1 +1,1 @@
-BlockState = class("BlockState")
+class("BlockState")
