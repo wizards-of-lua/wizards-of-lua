@@ -45,15 +45,6 @@ public class ModEventHandler {
     this.mod = mod;
   }
 
-  private boolean isListenerRegisteredFor(String eventType) {
-    for (SpellEntity e : mod.getSpellRegistry().getAll()) {
-      if (e.getEvents().getRegisteredEventTypes().contains(eventType)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   @SubscribeEvent
   public void onChat(ServerChatEvent evt) {
     onEvent(ServerChatEventClass.class, evt);
@@ -117,9 +108,9 @@ public class ModEventHandler {
   }
 
   private void onEvent(String eventType, Event event) {
-    if (isListenerRegisteredFor(eventType)) {
-      for (SpellEntity e : mod.getSpellRegistry().getAll()) {
-        Events events = e.getEvents();
+    for (SpellEntity e : mod.getSpellRegistry().getAll()) {
+      Events events = e.getEvents();
+      if (events.getRegisteredEventTypes().contains(eventType)) {
         PatchedImmutableTable luaEvent = events.getRepo().wrap(event);
         events.handle(eventType, luaEvent);
       }
