@@ -42,7 +42,7 @@ public class EntityClass extends DelegatingLuaClass<Entity> {
         (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
     b.add("pos", () -> repo.wrap(delegate.getPositionVector()), d::setPosition);
     b.addReadOnly("blockPos", () -> repo.wrap(delegate.getPosition()));
-    b.addReadOnly("eyeHeight", () -> delegate.getEyeHeight());
+    b.addReadOnly("eyeHeight", delegate::getEyeHeight);
     b.addReadOnly("orientation", () -> repo.wrap(delegate.getHorizontalFacing()));
     b.add("rotationYaw", () -> MathHelper.wrapDegrees(delegate.rotationYaw), d::setRotationYaw);
     b.add("rotationPitch", () -> delegate.rotationPitch, d::setRotationPitch);

@@ -13,13 +13,13 @@ public class MaterialClass extends ImmutableLuaClass<Material> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, Material delegate) {
-    b.add("blocksLight", delegate.blocksLight());
-    b.add("blocksMovement", delegate.blocksMovement());
-    b.add("canBurn", delegate.getCanBurn());
-    b.add("isLiquid", delegate.isLiquid());
-    b.add("isOpaque", delegate.isOpaque());
-    b.add("isSolid", delegate.isSolid());
-    b.add("isToolNotRequired", delegate.isToolNotRequired());
+    b.add("blocksLight", repo.wrap(delegate.blocksLight()));
+    b.add("blocksMovement", repo.wrap(delegate.blocksMovement()));
+    b.add("canBurn", repo.wrap(delegate.getCanBurn()));
+    b.add("isLiquid", repo.wrap(delegate.isLiquid()));
+    b.add("isOpaque", repo.wrap(delegate.isOpaque()));
+    b.add("isSolid", repo.wrap(delegate.isSolid()));
+    b.add("isToolNotRequired", repo.wrap(delegate.isToolNotRequired()));
     b.add("mobility", repo.wrap(delegate.getMobilityFlag()));
   }
 

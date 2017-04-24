@@ -52,7 +52,7 @@ public class SpellClass extends DelegatingLuaClass<Spell> {
     b.addReadOnly("origin", () -> repo.wrap(delegate.getOrigin()));
     b.addReadOnly("owner", () -> repo.wrap(delegate.getOwner()));
     // b.add("rotation", () -> repo.wrap(getRepo(), delegate.getRotation()), d::setRotation);
-    b.add("rotation", () -> delegate.getRotation(), d::setRotation);
+    b.add("rotation", delegate::getRotation, d::setRotation);
     b.addReadOnly("surface", () -> repo.wrap(delegate.getSurface()));
     b.add("pos", () -> repo.wrap(delegate.getPosition()), d::setPosition);
   }

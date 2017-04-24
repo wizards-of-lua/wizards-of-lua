@@ -15,7 +15,7 @@ public class RightClickBlockEventClass extends ImmutableLuaClass<RightClickBlock
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, RightClickBlock event) {
-    b.add("hitVec", event.getHitVec());
+    b.add("hitVec", repo.wrap(event.getHitVec()));
   }
 
   @Override

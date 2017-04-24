@@ -14,9 +14,9 @@ public class Vec3Class extends ImmutableLuaClass<Vec3d> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder builder, Vec3d javaObject) {
-    builder.add("x", javaObject.xCoord);
-    builder.add("y", javaObject.yCoord);
-    builder.add("z", javaObject.zCoord);
+    builder.add("x", repo.wrap(javaObject.xCoord));
+    builder.add("y", repo.wrap(javaObject.yCoord));
+    builder.add("z", repo.wrap(javaObject.zCoord));
   }
 
   @Override

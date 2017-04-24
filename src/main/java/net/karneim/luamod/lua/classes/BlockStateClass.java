@@ -19,7 +19,7 @@ public class BlockStateClass extends ImmutableLuaClass<IBlockState> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, IBlockState delegate) {
-    b.add("name", delegate.getBlock().getRegistryName().getResourcePath());
+    b.add("name", repo.wrap(delegate.getBlock().getRegistryName().getResourcePath()));
     Map<Object, Object> props = new HashMap<>();
     Collection<IProperty<?>> names = delegate.getPropertyNames();
     for (IProperty<?> name : names) {
