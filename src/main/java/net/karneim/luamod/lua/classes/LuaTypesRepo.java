@@ -44,7 +44,7 @@ import net.sandius.rembulan.Table;
 
 public class LuaTypesRepo {
 
-  private final Map<String, LuaClass> types = new HashMap<String, LuaClass>();
+  private final Map<String, LuaClass> types = new HashMap<>();
   private final Table env;
 
   public LuaTypesRepo(Table env) {

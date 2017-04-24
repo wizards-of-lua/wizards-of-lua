@@ -96,7 +96,7 @@ public class EventQueuesWrapper {
       for (EventQueue queue : queues) {
         if (queue.hasNext()) {
           eventManager.stopWaitingForEvent();
-          context.getReturnBuffer().setTo(queue.pop().getLuaObject());
+          context.getReturnBuffer().setTo(queue.pop());
           return;
         }
       }

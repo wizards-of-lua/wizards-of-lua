@@ -1,6 +1,5 @@
 package net.karneim.luamod.lua.event;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayDeque;
@@ -8,7 +7,7 @@ import java.util.Deque;
 
 public final class EventQueue {
   private final String type;
-  private final Deque<EventWrapper<?>> events = new ArrayDeque<EventWrapper<?>>();
+  private final Deque<Object> events = new ArrayDeque<>();
 
   public EventQueue(String type) {
     this.type = checkNotNull(type, "type==null!");
@@ -18,14 +17,12 @@ public final class EventQueue {
     return type;
   }
 
-  public void add(EventWrapper<?> event) {
-    checkNotNull(event, "event==null!");
-    checkArgument(type.equals(event.getType()),
-        "event.type!=event.type: " + event.getType() + ", queue.type=" + getType());
-    events.add(event);
+  public void add(Object luaEvent) {
+    checkNotNull(luaEvent, "luaEvent == null!");
+    events.add(luaEvent);
   }
 
-  public EventWrapper<?> pop() {
+  public Object pop() {
     return events.pop();
   }
 
