@@ -46,7 +46,8 @@ public abstract class LuaClass {
   }
 
   public @Nullable Table getSuperClassTable() {
-    return getLuaClassTable().getMetatable();
+    Table luaClassTable = getLuaClassTable();
+    return luaClassTable.getMetatable();
   }
 
   public @Nullable LuaClass getSuperClass() {

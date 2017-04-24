@@ -80,7 +80,9 @@ public class LuaUtil {
     for (ClassInfo classInfo : classes) {
       Class<?> cls = classInfo.load();
       if (LuaClass.class.isAssignableFrom(cls) && cls.isAnnotationPresent(LuaModule.class)) {
-        LUA_CLASSES.add((Class<? extends LuaClass>) cls);
+        @SuppressWarnings("unchecked")
+        Class<? extends LuaClass> luaClass = (Class<? extends LuaClass>) cls;
+        LUA_CLASSES.add(luaClass);
       }
     }
   }
