@@ -113,7 +113,7 @@ public class LuaTypesRepo {
 
   public PatchedImmutableTable wrap(EntityEvent javaObject) {
     if (javaObject instanceof LivingEvent) {
-      wrap((LivingEvent) javaObject);
+      return wrap((LivingEvent) javaObject);
     }
     return get(EntityEventClass.class).toLuaObject(javaObject);
   }
@@ -142,16 +142,16 @@ public class LuaTypesRepo {
 
   public PatchedImmutableTable wrap(Event javaObject) {
     if (javaObject instanceof CustomLuaEvent) {
-      wrap((CustomLuaEvent) javaObject);
+      return wrap((CustomLuaEvent) javaObject);
     }
     if (javaObject instanceof EntityEvent) {
-      wrap((EntityEvent) javaObject);
+      return wrap((EntityEvent) javaObject);
     }
     if (javaObject instanceof ServerChatEvent) {
-      wrap((ServerChatEvent) javaObject);
+      return wrap((ServerChatEvent) javaObject);
     }
     if (javaObject instanceof WhisperEvent) {
-      wrap((WhisperEvent) javaObject);
+      return wrap((WhisperEvent) javaObject);
     }
     return get(EventClass.class).toLuaObject(javaObject);
   }
@@ -178,7 +178,7 @@ public class LuaTypesRepo {
 
   public PatchedImmutableTable wrap(LivingEvent javaObject) {
     if (javaObject instanceof PlayerEvent) {
-      wrap((PlayerEvent) javaObject);
+      return wrap((PlayerEvent) javaObject);
     }
     return get(LivingEventClass.class).toLuaObject(javaObject);
   }
@@ -197,20 +197,20 @@ public class LuaTypesRepo {
 
   public PatchedImmutableTable wrap(PlayerEvent javaObject) {
     if (javaObject instanceof AnimationHandEvent) {
-      wrap((AnimationHandEvent) javaObject);
+      return wrap((AnimationHandEvent) javaObject);
     }
     if (javaObject instanceof ClickWindowEvent) {
-      wrap((ClickWindowEvent) javaObject);
+      return wrap((ClickWindowEvent) javaObject);
     }
     if (javaObject instanceof PlayerInteractEvent) {
-      wrap((PlayerInteractEvent) javaObject);
+      return wrap((PlayerInteractEvent) javaObject);
     }
     return get(PlayerEventClass.class).toLuaObject(javaObject);
   }
 
   public PatchedImmutableTable wrap(PlayerInteractEvent javaObject) {
     if (javaObject instanceof RightClickBlock) {
-      wrap((RightClickBlock) javaObject);
+      return wrap((RightClickBlock) javaObject);
     }
     return get(PlayerInteractEventClass.class).toLuaObject(javaObject);
   }
