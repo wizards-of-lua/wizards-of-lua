@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
 import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
@@ -76,8 +78,8 @@ public class LuaTypesRepo {
     types.put(name, luaClass);
   }
 
-  public PatchedImmutableTable wrap(AnimationHandEvent javaObject) {
-    return get(AnimationHandEventClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable AnimationHandEvent javaObject) {
+    return get(AnimationHandEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public boolean wrap(boolean javaObject) {
@@ -88,59 +90,60 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
-  public ByteString wrap(ByteString javaObject) {
+  public @Nullable ByteString wrap(@Nullable ByteString javaObject) {
     return javaObject;
   }
 
-  public PatchedImmutableTable wrap(ClickWindowEvent javaObject) {
-    return get(ClickWindowEventClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable ClickWindowEvent javaObject) {
+    return get(ClickWindowEventClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(CustomLuaEvent javaObject) {
-    return get(CustomLuaEventClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable CustomLuaEvent javaObject) {
+    return get(CustomLuaEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public double wrap(double javaObject) {
     return javaObject;
   }
 
-  public DelegatingTable<? extends Entity> wrap(Entity javaObject) {
+  public @Nullable DelegatingTable<? extends Entity> wrap(@Nullable Entity javaObject) {
     if (javaObject instanceof EntityLivingBase) {
       return wrap((EntityLivingBase) javaObject);
     }
-    return get(EntityClass.class).toLuaObject(javaObject);
+    return get(EntityClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(EntityEvent javaObject) {
+  public @Nullable PatchedImmutableTable wrap(@Nullable EntityEvent javaObject) {
     if (javaObject instanceof LivingEvent) {
       return wrap((LivingEvent) javaObject);
     }
-    return get(EntityEventClass.class).toLuaObject(javaObject);
+    return get(EntityEventClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public DelegatingTable<? extends EntityLiving> wrap(EntityLiving javaObject) {
-    return get(EntityLivingClass.class).toLuaObject(javaObject);
+  public @Nullable DelegatingTable<? extends EntityLiving> wrap(@Nullable EntityLiving javaObject) {
+    return get(EntityLivingClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public DelegatingTable<? extends EntityLivingBase> wrap(EntityLivingBase javaObject) {
+  public @Nullable DelegatingTable<? extends EntityLivingBase> wrap(
+      @Nullable EntityLivingBase javaObject) {
     if (javaObject instanceof EntityLiving) {
       return wrap((EntityLiving) javaObject);
     }
     if (javaObject instanceof EntityPlayer) {
       return wrap((EntityPlayer) javaObject);
     }
-    return get(EntityLivingBaseClass.class).toLuaObject(javaObject);
+    return get(EntityLivingBaseClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public DelegatingTable<? extends EntityPlayer> wrap(EntityPlayer javaObject) {
-    return get(EntityPlayerClass.class).toLuaObject(javaObject);
+  public @Nullable DelegatingTable<? extends EntityPlayer> wrap(@Nullable EntityPlayer javaObject) {
+    return get(EntityPlayerClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public ByteString wrap(Enum<?> javaObject) {
-    return ByteString.of(javaObject.name());
+  public @Nullable ByteString wrap(@Nullable Enum<?> javaObject) {
+    return javaObject == null ? null : ByteString.of(javaObject.name());
   }
 
-  public PatchedImmutableTable wrap(Event javaObject) {
+  public @Nullable PatchedImmutableTable wrap(@Nullable Event javaObject) {
     if (javaObject instanceof CustomLuaEvent) {
       return wrap((CustomLuaEvent) javaObject);
     }
@@ -153,49 +156,50 @@ public class LuaTypesRepo {
     if (javaObject instanceof WhisperEvent) {
       return wrap((WhisperEvent) javaObject);
     }
-    return get(EventClass.class).toLuaObject(javaObject);
+    return get(EventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public double wrap(float javaObject) {
     return javaObject;
   }
 
-  public PatchedImmutableTable wrap(IBlockState javaObject) {
-    return get(BlockStateClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable IBlockState javaObject) {
+    return get(BlockStateClass.class).toLuaObjectNullable(javaObject);
   }
 
   public long wrap(int javaObject) {
     return javaObject;
   }
 
-  public DelegatingTable<? extends ItemStack> wrap(ItemStack javaObject) {
-    return get(ItemStackClass.class).toLuaObject(javaObject);
+  public @Nullable DelegatingTable<? extends ItemStack> wrap(@Nullable ItemStack javaObject) {
+    return get(ItemStackClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public DelegatingTable<? extends Iterable<ItemStack>> wrap(Iterable<ItemStack> javaObject) {
-    return get(ArmorClass.class).toLuaObject(javaObject);
+  public @Nullable DelegatingTable<? extends Iterable<ItemStack>> wrap(
+      @Nullable Iterable<ItemStack> javaObject) {
+    return get(ArmorClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(LivingEvent javaObject) {
+  public @Nullable PatchedImmutableTable wrap(@Nullable LivingEvent javaObject) {
     if (javaObject instanceof PlayerEvent) {
       return wrap((PlayerEvent) javaObject);
     }
-    return get(LivingEventClass.class).toLuaObject(javaObject);
+    return get(LivingEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public long wrap(long javaObject) {
     return javaObject;
   }
 
-  public PatchedImmutableTable wrap(Material javaObject) {
-    return get(MaterialClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable Material javaObject) {
+    return get(MaterialClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(ServerChatEvent javaObject) {
-    return get(ServerChatEventClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable ServerChatEvent javaObject) {
+    return get(ServerChatEventClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(PlayerEvent javaObject) {
+  public @Nullable PatchedImmutableTable wrap(@Nullable PlayerEvent javaObject) {
     if (javaObject instanceof AnimationHandEvent) {
       return wrap((AnimationHandEvent) javaObject);
     }
@@ -205,45 +209,48 @@ public class LuaTypesRepo {
     if (javaObject instanceof PlayerInteractEvent) {
       return wrap((PlayerInteractEvent) javaObject);
     }
-    return get(PlayerEventClass.class).toLuaObject(javaObject);
+    return get(PlayerEventClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(PlayerInteractEvent javaObject) {
+  public @Nullable PatchedImmutableTable wrap(@Nullable PlayerInteractEvent javaObject) {
     if (javaObject instanceof RightClickBlock) {
       return wrap((RightClickBlock) javaObject);
     }
-    return get(PlayerInteractEventClass.class).toLuaObject(javaObject);
+    return get(PlayerInteractEventClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(RightClickBlock javaObject) {
-    return get(RightClickBlockEventClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable RightClickBlock javaObject) {
+    return get(RightClickBlockEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public long wrap(short javaObject) {
     return javaObject;
   }
 
-  public DelegatingTable<? extends Spell> wrap(Spell javaObject) {
-    return get(SpellClass.class).toLuaObject(javaObject);
+  public @Nullable DelegatingTable<? extends Spell> wrap(@Nullable Spell javaObject) {
+    return get(SpellClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public ByteString wrap(String javaObject) {
-    return ByteString.of(javaObject);
+  public @Nullable ByteString wrap(@Nullable String javaObject) {
+    return javaObject == null ? null : ByteString.of(javaObject);
   }
 
-  public PatchedImmutableTable wrap(Vec3d javaObject) {
-    return get(Vec3Class.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable Vec3d javaObject) {
+    return get(Vec3Class.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(WhisperEvent javaObject) {
-    return get(WhisperEventClass.class).toLuaObject(javaObject);
+  public @Nullable PatchedImmutableTable wrap(@Nullable WhisperEvent javaObject) {
+    return get(WhisperEventClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public PatchedImmutableTable wrap(Vec3i javaObject) {
-    return wrap(new Vec3d(javaObject));
+  public @Nullable PatchedImmutableTable wrap(@Nullable Vec3i javaObject) {
+    return javaObject == null ? null : wrap(new Vec3d(javaObject));
   }
 
   public PatchedImmutableTable wrapStrings(Iterable<String> javaObject) {
+    if (javaObject == null) {
+      return null;
+    }
     PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     long idx = 0;
     for (String value : javaObject) {
@@ -254,6 +261,9 @@ public class LuaTypesRepo {
   }
 
   public PatchedImmutableTable wrapStrings(String[] javaObject) {
+    if (javaObject == null) {
+      return null;
+    }
     PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     long idx = 0;
     for (String value : javaObject) {
