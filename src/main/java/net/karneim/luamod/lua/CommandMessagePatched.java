@@ -21,7 +21,7 @@ public class CommandMessagePatched extends CommandMessage {
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
     super.execute(server, sender, args);
-    modEventHandler.onWhisper(new WhisperEvent(sender.getName(), concat(args, 1, args.length)));
+    modEventHandler.onEvent(new WhisperEvent(sender.getName(), concat(args, 1, args.length)));
   }
 
   private String concat(String[] text, int from, int to) {
