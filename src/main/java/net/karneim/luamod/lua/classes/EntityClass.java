@@ -1,15 +1,15 @@
 package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkTypeString;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeString;
 
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
-import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.Entity;
@@ -35,21 +35,21 @@ public class EntityClass extends DelegatingLuaClass<Entity> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends Entity> b, Entity delegate) {
     EntityWrapper d = new EntityWrapper(delegate);
-    b.add("id", delegate::getCachedUniqueIdString, null);
+    b.addReadOnly("id", delegate::getCachedUniqueIdString);
     b.add("name", delegate::getName,
         (Object name) -> delegate.setCustomNameTag(String.valueOf(name)));
     b.add("dimension", () -> delegate.dimension,
         (Object dimension) -> delegate.dimension = checkType(dimension, Number.class).intValue());
     b.add("pos", () -> repo.wrap(delegate.getPositionVector()), d::setPosition);
-    b.add("blockPos", () -> repo.wrap(new Vec3d(delegate.getPosition())), null);
-    b.add("eyeHeight", () -> delegate.getEyeHeight(), null);
-    b.add("orientation", () -> repo.wrap(delegate.getHorizontalFacing()), null);
+    b.addReadOnly("blockPos", () -> repo.wrap(delegate.getPosition()));
+    b.addReadOnly("eyeHeight", () -> delegate.getEyeHeight());
+    b.addReadOnly("orientation", () -> repo.wrap(delegate.getHorizontalFacing()));
     b.add("rotationYaw", () -> MathHelper.wrapDegrees(delegate.rotationYaw), d::setRotationYaw);
     b.add("rotationPitch", () -> delegate.rotationPitch, d::setRotationPitch);
-    b.add("lookVec", () -> repo.wrap(delegate.getLookVec()), null);
-    b.add("team", d::getTeam, null);
-    b.add("tags", () -> repo.wrapStrings(delegate.getTags()), null);
-    b.add("facing", () -> repo.wrap(delegate.getAdjustedHorizontalFacing()), null);
+    b.addReadOnly("lookVec", () -> repo.wrap(delegate.getLookVec()));
+    b.addReadOnly("team", d::getTeam);
+    b.addReadOnly("tags", () -> repo.wrapStrings(delegate.getTags()));
+    b.addReadOnly("facing", () -> repo.wrap(delegate.getAdjustedHorizontalFacing()));
     b.add("motion",
         () -> repo.wrap(new Vec3d(delegate.motionX, delegate.motionY, delegate.motionZ)),
         d::setMotion);

@@ -106,12 +106,16 @@ public class DelegatingTable<O> extends Table {
       this.delegate = checkNotNull(delegate, "delegate == null!");
     }
 
-    public <T> Builder<O> add(Object key, @Nullable Supplier<T> get,
-        @Nullable Consumer<Object> set) {
-      return add(key, new Property<T>(get, set));
+    public <T> Builder<O> addReadOnly(Object key, Supplier<T> get) {
+      return addImmutable(key, new Property<T>(get, null));
     }
 
-    public Builder<O> add(Object key, Object value) {
+    public <T> Builder<O> add(Object key, @Nullable Supplier<T> get, Consumer<Object> set) {
+      checkNotNull(set, "set == null!");
+      return addImmutable(key, new Property<T>(get, set));
+    }
+
+    public Builder<O> addImmutable(Object key, Object value) {
       key = Conversions.normaliseKey(key);
       checkKey(key);
 
@@ -122,9 +126,9 @@ public class DelegatingTable<O> extends Table {
       return this;
     }
 
-    public Builder<O> addNullable(Object key, @Nullable Object value) {
+    public Builder<O> addImmutableNullable(Object key, @Nullable Object value) {
       if (value != null) {
-        add(key, value);
+        addImmutable(key, value);
       }
       return this;
     }

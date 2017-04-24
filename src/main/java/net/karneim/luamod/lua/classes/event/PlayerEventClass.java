@@ -1,19 +1,23 @@
 package net.karneim.luamod.lua.classes.event;
 
-import net.karneim.luamod.lua.classes.AbstractLuaType;
 import net.karneim.luamod.lua.classes.LuaModule;
-import net.karneim.luamod.lua.event.EventType;
-import net.karneim.luamod.lua.event.Player2EventWrapper;
-import net.karneim.luamod.lua.wrapper.Metatables;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.sandius.rembulan.Table;
 
 @LuaModule("PlayerEvent")
-public class PlayerEventClass extends AbstractLuaType {
-  public Player2EventWrapper newInstance(PlayerEvent delegate, EventType eventType) {
-    return new Player2EventWrapper(getRepo(), delegate, eventType,
-        Metatables.get(getRepo().getEnv(), getTypeName()));
+public class PlayerEventClass extends ImmutableLuaClass<PlayerEvent> {
+  public PlayerEventClass(LuaTypesRepo repo) {
+    super(repo);
   }
 
   @Override
-  protected void addFunctions() {}
+  protected void addProperties(PatchedImmutableTable.Builder b, PlayerEvent event) {
+    b.add("player", repo.wrap(event.getEntityPlayer()));
+  }
+
+  @Override
+  protected void addFunctions(Table luaClass) {}
 }

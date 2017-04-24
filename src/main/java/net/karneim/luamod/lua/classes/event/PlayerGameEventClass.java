@@ -4,21 +4,18 @@ import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
 
-@LuaModule("Event")
-public class EventClass extends ImmutableLuaClass<Event> {
-  private long id;
-
-  public EventClass(LuaTypesRepo repo) {
+@LuaModule("PlayerGameEvent")
+public class PlayerGameEventClass extends ImmutableLuaClass<PlayerEvent> {
+  public PlayerGameEventClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, Event event) {
-    b.add("id", id++);
-    b.add("type", repo.wrap(getModuleName()));
+  protected void addProperties(PatchedImmutableTable.Builder b, PlayerEvent event) {
+    b.add("player", repo.wrap(event.player));
   }
 
   @Override

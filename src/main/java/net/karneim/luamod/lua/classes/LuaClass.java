@@ -2,8 +2,8 @@ package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkTypeString;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeString;
 
 import javax.annotation.Nullable;
 
@@ -73,7 +73,11 @@ public abstract class LuaClass {
   }
 
   public static String getModulePackageOf(Class<? extends LuaClass> cls) {
-    return getLuaClassAnnotationOf(cls).packageName();
+    String packageName = getLuaClassAnnotationOf(cls).packageName();
+    if (packageName.isEmpty()) {
+      return cls.getPackage().getName();
+    }
+    return packageName;
   }
 
   public static String getModuleNameOf(Class<? extends LuaClass> cls) {

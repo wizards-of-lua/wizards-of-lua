@@ -10,20 +10,24 @@ public abstract class DelegatingLuaClass<D> extends LuaClass
     super(repo);
   }
 
-  protected abstract void addProperties(DelegatingTable.Builder<? extends D> builder, D delegate);
-
   @Override
   public final DelegatingTable<D> toLuaObject(D delegate) {
     DelegatingTable.Builder<D> builder = DelegatingTable.builder(delegate);
+    addAllProperties(builder, delegate);
+    builder.setMetatable(getLuaClassTable());
+    return builder.build();
+  }
+
+  public final void addAllProperties(DelegatingTable.Builder<? extends D> builder, D delegate) {
     LuaClass superClass = getSuperClass();
     if (superClass != null && superClass instanceof DelegatingLuaClass) {
       @SuppressWarnings("unchecked")
       DelegatingLuaClass<? super D> uncheckedSuperClass =
           (DelegatingLuaClass<? super D>) superClass;
-      uncheckedSuperClass.addProperties(builder, delegate);
+      uncheckedSuperClass.addAllProperties(builder, delegate);
     }
     addProperties(builder, delegate);
-    builder.setMetatable(getLuaClassTable());
-    return builder.build();
   }
+
+  protected abstract void addProperties(DelegatingTable.Builder<? extends D> builder, D delegate);
 }

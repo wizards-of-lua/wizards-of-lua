@@ -18,13 +18,13 @@ public class ArmorClass extends DelegatingLuaClass<Iterable<ItemStack>> {
       Iterable<ItemStack> delegate) {
     Iterator<ItemStack> it = delegate.iterator();
     final ItemStack feet = it.next();
-    b.add("feet", () -> repo.wrap(feet), null);
+    b.addReadOnly("feet", () -> repo.wrap(feet));
     final ItemStack legs = it.next();
-    b.add("legs", () -> repo.wrap(legs), null);
+    b.addReadOnly("legs", () -> repo.wrap(legs));
     final ItemStack chest = it.next();
-    b.add("chest", () -> repo.wrap(chest), null);
+    b.addReadOnly("chest", () -> repo.wrap(chest));
     final ItemStack head = it.next();
-    b.add("head", () -> repo.wrap(head), null);
+    b.addReadOnly("head", () -> repo.wrap(head));
   }
 
   @Override

@@ -10,19 +10,23 @@ public abstract class ImmutableLuaClass<J> extends LuaClass
     super(repo);
   }
 
-  protected abstract void addProperties(PatchedImmutableTable.Builder builder, J javaObject);
-
   @Override
   public final PatchedImmutableTable toLuaObject(J javaObject) {
     PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
+    addAllProperties(builder, javaObject);
+    builder.setMetatable(getLuaClassTable());
+    return builder.build();
+  }
+
+  public final void addAllProperties(PatchedImmutableTable.Builder builder, J javaObject) {
     LuaClass superClass = getSuperClass();
     if (superClass != null && superClass instanceof ImmutableLuaClass) {
       @SuppressWarnings("unchecked")
       ImmutableLuaClass<? super J> uncheckedSuperClass = (ImmutableLuaClass<? super J>) superClass;
-      uncheckedSuperClass.addProperties(builder, javaObject);
+      uncheckedSuperClass.addAllProperties(builder, javaObject);
     }
     addProperties(builder, javaObject);
-    builder.setMetatable(getLuaClassTable());
-    return builder.build();
   }
+
+  protected abstract void addProperties(PatchedImmutableTable.Builder builder, J javaObject);
 }

@@ -1,6 +1,6 @@
 package net.karneim.luamod.lua.wrapper;
 
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
 
 import com.google.common.base.Preconditions;
 

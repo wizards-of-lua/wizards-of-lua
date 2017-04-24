@@ -1,7 +1,7 @@
 package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
 
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
@@ -27,7 +27,7 @@ public class ItemStackClass extends DelegatingLuaClass<ItemStack> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends ItemStack> b, ItemStack delegate) {
     ItemStackWrapper d = new ItemStackWrapper(delegate);
-    b.addNullable("name", d.getName());
+    b.addReadOnly("name", d::getName);
     b.add("displayName", delegate::getDisplayName, d::setDisplayName);
     b.add("damage", delegate::getItemDamage, d::setItemDamage);
     b.add("repairCost", delegate::getRepairCost, d::setRepairCost);

@@ -4,16 +4,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketClickWindow;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
-public class ClickWindowEvent {
-  private final EntityPlayer player;
+public class ClickWindowEvent extends PlayerEvent {
   private final ItemStack clickedItem;
   private final ClickType clickType;
   private final int slotId;
 
   public ClickWindowEvent(EntityPlayer player, ItemStack clickedItem, ClickType clickType,
       int slotId) {
-    this.player = player;
+    super(player);
     this.clickedItem = clickedItem;
     this.clickType = clickType;
     this.slotId = slotId;
@@ -21,10 +21,6 @@ public class ClickWindowEvent {
 
   public ClickWindowEvent(EntityPlayer player, CPacketClickWindow clickWindow) {
     this(player, clickWindow.getClickedItem(), clickWindow.getClickType(), clickWindow.getSlotId());
-  }
-
-  public EntityPlayer getPlayer() {
-    return player;
   }
 
   public ItemStack getClickedItem() {

@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
 
-public class PreconditionsUtils {
+public class LuaPreconditions {
   public static <T> T checkType(Object arg, Class<T> type) {
     checkNotNull(type, "type == null!");
     checkArgument(arg != null, "Expected %s but got nil", type.getSimpleName());

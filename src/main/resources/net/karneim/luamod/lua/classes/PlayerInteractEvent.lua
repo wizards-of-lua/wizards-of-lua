@@ -1,1 +1,0 @@
-class("PlayerInteractEvent", Event)

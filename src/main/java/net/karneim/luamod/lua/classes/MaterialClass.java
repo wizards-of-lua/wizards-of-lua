@@ -1,18 +1,18 @@
 package net.karneim.luamod.lua.classes;
 
-import net.karneim.luamod.lua.util.table.DelegatingTable;
-import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
 
 @LuaModule("Material")
-public class MaterialClass extends DelegatingLuaClass<Material> {
+public class MaterialClass extends ImmutableLuaClass<Material> {
   public MaterialClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder<? extends Material> b, Material delegate) {
+  protected void addProperties(PatchedImmutableTable.Builder b, Material delegate) {
     b.add("blocksLight", delegate.blocksLight());
     b.add("blocksMovement", delegate.blocksMovement());
     b.add("canBurn", delegate.getCanBurn());
@@ -20,7 +20,7 @@ public class MaterialClass extends DelegatingLuaClass<Material> {
     b.add("isOpaque", delegate.isOpaque());
     b.add("isSolid", delegate.isSolid());
     b.add("isToolNotRequired", delegate.isToolNotRequired());
-    b.addNullable("mobility", repo.wrap(delegate.getMobilityFlag()));
+    b.add("mobility", repo.wrap(delegate.getMobilityFlag()));
   }
 
   @Override

@@ -8,7 +8,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LuaModule {
-  String packageName() default Constants.MODULE_PACKAGE;
+  /**
+   * The package name of the lua module. This is the package name of the annotated class by default.
+   *
+   * @return the package name of the lua module
+   */
+  String packageName() default "";
 
+  /**
+   * The name of the lua module.
+   *
+   * @return the name of the lua module
+   */
   String value();
 }

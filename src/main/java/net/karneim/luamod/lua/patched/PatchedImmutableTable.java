@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import net.karneim.luamod.lua.util.table.TableIterable;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
@@ -77,6 +78,17 @@ public class PatchedImmutableTable extends Table {
     this.entries = Objects.requireNonNull(entries);
     this.initialKey = initialKey;
     super.setMetatable(metatable);
+  }
+
+  /**
+   * Returns an {@code ImmutableTable} based on the contents of the specified {@link Table}.
+   *
+   * @param table must not be {@code null}
+   * @return an immutable table based on the contents of {@code table}
+   * @see #of(Iterable)
+   */
+  public static PatchedImmutableTable of(Table table) {
+    return of(new TableIterable(table));
   }
 
   /**

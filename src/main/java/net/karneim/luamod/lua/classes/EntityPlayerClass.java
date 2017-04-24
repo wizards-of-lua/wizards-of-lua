@@ -1,7 +1,7 @@
 package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
 
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;

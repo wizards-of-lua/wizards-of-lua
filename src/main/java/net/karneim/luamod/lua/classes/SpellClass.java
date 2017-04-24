@@ -1,8 +1,8 @@
 package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkType;
-import static net.karneim.luamod.lua.util.PreconditionsUtils.checkTypeString;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeString;
 
 import java.io.StringWriter;
 import java.util.List;
@@ -49,11 +49,11 @@ public class SpellClass extends DelegatingLuaClass<Spell> {
     SpellWrapper d = new SpellWrapper(delegate);
     b.add("block", () -> repo.wrap(delegate.getBlockState()), d::setBlock);
     b.add("orientation", () -> repo.wrap(delegate.getOrientation()), d::setOrientation);
-    b.add("origin", () -> repo.wrap(delegate.getOrigin()), null);
-    b.add("owner", () -> repo.wrap(delegate.getOwner()), null);
+    b.addReadOnly("origin", () -> repo.wrap(delegate.getOrigin()));
+    b.addReadOnly("owner", () -> repo.wrap(delegate.getOwner()));
     // b.add("rotation", () -> repo.wrap(getRepo(), delegate.getRotation()), d::setRotation);
     b.add("rotation", () -> delegate.getRotation(), d::setRotation);
-    b.add("surface", () -> repo.wrap(delegate.getSurface()), null);
+    b.addReadOnly("surface", () -> repo.wrap(delegate.getSurface()));
     b.add("pos", () -> repo.wrap(delegate.getPosition()), d::setPosition);
   }
 

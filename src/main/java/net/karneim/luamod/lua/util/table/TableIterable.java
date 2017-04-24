@@ -3,6 +3,7 @@ package net.karneim.luamod.lua.util.table;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import net.sandius.rembulan.Table;
 

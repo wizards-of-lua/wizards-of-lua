@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.karneim.luamod.lua.event.EventQueue;
 import net.karneim.luamod.lua.event.EventQueuesWrapper;
-import net.karneim.luamod.lua.event.EventType;
 import net.karneim.luamod.lua.event.Events;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
@@ -52,11 +51,6 @@ public class EventsWrapper {
       }
       EventQueuesWrapper wrapper = new EventQueuesWrapper(queues, events);
       context.getReturnBuffer().setTo(wrapper.getLuaTable());
-    }
-
-    private EventType getEventType(Object arg) {
-      String name = String.valueOf(arg);
-      return EventType.valueOf(name);
     }
 
     @Override
