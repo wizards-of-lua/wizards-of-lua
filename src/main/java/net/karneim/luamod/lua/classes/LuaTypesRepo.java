@@ -13,9 +13,14 @@ import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.CustomLuaEventClass;
 import net.karneim.luamod.lua.classes.event.EntityEventClass;
 import net.karneim.luamod.lua.classes.event.EventClass;
+import net.karneim.luamod.lua.classes.event.LeftClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.LivingEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerGameEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerLoggedInEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerLoggedOutEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerRespawnEventClass;
 import net.karneim.luamod.lua.classes.event.RightClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
 import net.karneim.luamod.lua.classes.event.WhisperEventClass;
@@ -39,8 +44,12 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 
@@ -180,6 +189,10 @@ public class LuaTypesRepo {
     return get(ArmorClass.class).toLuaObjectNullable(javaObject);
   }
 
+  public @Nullable PatchedImmutableTable wrap(@Nullable LeftClickBlock javaObject) {
+    return get(LeftClickBlockEventClass.class).toLuaObjectNullable(javaObject);
+  }
+
   public @Nullable PatchedImmutableTable wrap(@Nullable LivingEvent javaObject) {
     if (javaObject instanceof PlayerEvent) {
       return wrap((PlayerEvent) javaObject);
@@ -195,8 +208,18 @@ public class LuaTypesRepo {
     return get(MaterialClass.class).toLuaObjectNullable(javaObject);
   }
 
-  public @Nullable PatchedImmutableTable wrap(@Nullable ServerChatEvent javaObject) {
-    return get(ServerChatEventClass.class).toLuaObjectNullable(javaObject);
+  public @Nullable PatchedImmutableTable wrap(
+      @Nullable net.minecraftforge.fml.common.gameevent.PlayerEvent javaObject) {
+    if (javaObject instanceof PlayerLoggedInEvent) {
+      return wrap((PlayerLoggedInEvent) javaObject);
+    }
+    if (javaObject instanceof PlayerLoggedOutEvent) {
+      return wrap((PlayerLoggedOutEvent) javaObject);
+    }
+    if (javaObject instanceof PlayerRespawnEvent) {
+      return wrap((PlayerRespawnEvent) javaObject);
+    }
+    return get(PlayerGameEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public @Nullable PatchedImmutableTable wrap(@Nullable PlayerEvent javaObject) {
@@ -213,14 +236,33 @@ public class LuaTypesRepo {
   }
 
   public @Nullable PatchedImmutableTable wrap(@Nullable PlayerInteractEvent javaObject) {
+    if (javaObject instanceof LeftClickBlock) {
+      return wrap((LeftClickBlock) javaObject);
+    }
     if (javaObject instanceof RightClickBlock) {
       return wrap((RightClickBlock) javaObject);
     }
     return get(PlayerInteractEventClass.class).toLuaObjectNullable(javaObject);
   }
 
+  public @Nullable PatchedImmutableTable wrap(@Nullable PlayerLoggedInEvent javaObject) {
+    return get(PlayerLoggedInEventClass.class).toLuaObjectNullable(javaObject);
+  }
+
+  public @Nullable PatchedImmutableTable wrap(@Nullable PlayerLoggedOutEvent javaObject) {
+    return get(PlayerLoggedOutEventClass.class).toLuaObjectNullable(javaObject);
+  }
+
+  public @Nullable PatchedImmutableTable wrap(@Nullable PlayerRespawnEvent javaObject) {
+    return get(PlayerRespawnEventClass.class).toLuaObjectNullable(javaObject);
+  }
+
   public @Nullable PatchedImmutableTable wrap(@Nullable RightClickBlock javaObject) {
     return get(RightClickBlockEventClass.class).toLuaObjectNullable(javaObject);
+  }
+
+  public @Nullable PatchedImmutableTable wrap(@Nullable ServerChatEvent javaObject) {
+    return get(ServerChatEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public long wrap(short javaObject) {
@@ -239,12 +281,12 @@ public class LuaTypesRepo {
     return get(Vec3Class.class).toLuaObjectNullable(javaObject);
   }
 
-  public @Nullable PatchedImmutableTable wrap(@Nullable WhisperEvent javaObject) {
-    return get(WhisperEventClass.class).toLuaObjectNullable(javaObject);
-  }
-
   public @Nullable PatchedImmutableTable wrap(@Nullable Vec3i javaObject) {
     return javaObject == null ? null : wrap(new Vec3d(javaObject));
+  }
+
+  public @Nullable PatchedImmutableTable wrap(@Nullable WhisperEvent javaObject) {
+    return get(WhisperEventClass.class).toLuaObjectNullable(javaObject);
   }
 
   public PatchedImmutableTable wrapStrings(Iterable<String> javaObject) {

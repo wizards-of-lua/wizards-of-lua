@@ -1,0 +1,1 @@
+class("PlayerLoggedOutEvent", PlayerGameEvent)

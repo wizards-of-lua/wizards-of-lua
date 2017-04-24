@@ -16,8 +16,10 @@ import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
 import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerGameEventClass;
 import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerLoggedInEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerLoggedOutEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerRespawnEventClass;
 import net.karneim.luamod.lua.classes.event.RightClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
 import net.karneim.luamod.lua.classes.event.WhisperEventClass;
@@ -127,17 +129,17 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onPlayerLoggedIn(PlayerLoggedInEvent evt) {
-    onEvent(PlayerGameEventClass.class, evt);
+    onEvent(PlayerLoggedInEventClass.class, evt);
   }
 
   @SubscribeEvent
   public void onPlayerLoggedOut(PlayerLoggedOutEvent evt) {
-    onEvent(PlayerGameEventClass.class, evt);
+    onEvent(PlayerLoggedOutEventClass.class, evt);
   }
 
   @SubscribeEvent
   public void onPlayerRespawn(PlayerRespawnEvent evt) {
-    onEvent(PlayerGameEventClass.class, evt);
+    onEvent(PlayerRespawnEventClass.class, evt);
   }
 
   @SubscribeEvent
