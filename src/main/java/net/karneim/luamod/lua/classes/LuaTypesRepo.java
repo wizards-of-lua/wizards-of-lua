@@ -5,11 +5,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
@@ -61,8 +65,29 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
-  public DelegatingTable<Entity> wrap(Entity javaObject) {
+  public DelegatingTable<? extends Entity> wrap(Entity javaObject) {
+    if (javaObject instanceof EntityLivingBase) {
+      return wrap((EntityLivingBase) javaObject);
+    }
     return get(EntityClass.class).toLuaObject(javaObject);
+  }
+
+  public DelegatingTable<? extends EntityLiving> wrap(EntityLiving javaObject) {
+    return get(EntityLivingClass.class).toLuaObject(javaObject);
+  }
+
+  public DelegatingTable<? extends EntityLivingBase> wrap(EntityLivingBase javaObject) {
+    if (javaObject instanceof EntityLiving) {
+      return wrap((EntityLiving) javaObject);
+    }
+    if (javaObject instanceof EntityPlayer) {
+      return wrap((EntityPlayer) javaObject);
+    }
+    return get(EntityLivingBaseClass.class).toLuaObject(javaObject);
+  }
+
+  public DelegatingTable<? extends EntityPlayer> wrap(EntityPlayer javaObject) {
+    return get(EntityPlayerClass.class).toLuaObject(javaObject);
   }
 
   public ByteString wrap(Enum<?> javaObject) {
@@ -73,7 +98,7 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
-  public DelegatingTable<IBlockState> wrap(IBlockState javaObject) {
+  public DelegatingTable<? extends IBlockState> wrap(IBlockState javaObject) {
     return get(BlockStateClass.class).toLuaObject(javaObject);
   }
 
@@ -81,11 +106,11 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
-  public DelegatingTable<ItemStack> wrap(ItemStack javaObject) {
+  public DelegatingTable<? extends ItemStack> wrap(ItemStack javaObject) {
     return get(ItemStackClass.class).toLuaObject(javaObject);
   }
 
-  public DelegatingTable<Iterable<ItemStack>> wrap(Iterable<ItemStack> javaObject) {
+  public DelegatingTable<? extends Iterable<ItemStack>> wrap(Iterable<ItemStack> javaObject) {
     return get(ArmorClass.class).toLuaObject(javaObject);
   }
 
@@ -93,12 +118,16 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
-  public DelegatingTable<Material> wrap(Material javaObject) {
+  public DelegatingTable<? extends Material> wrap(Material javaObject) {
     return get(MaterialClass.class).toLuaObject(javaObject);
   }
 
   public long wrap(short javaObject) {
     return javaObject;
+  }
+
+  public DelegatingTable<? extends Spell> wrap(Spell javaObject) {
+    return get(SpellClass.class).toLuaObject(javaObject);
   }
 
   public ByteString wrap(String javaObject) {
@@ -110,6 +139,16 @@ public class LuaTypesRepo {
   }
 
   public PatchedImmutableTable wrapStrings(Iterable<String> javaObject) {
+    PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
+    long idx = 0;
+    for (String value : javaObject) {
+      idx++;
+      builder.add(idx, value);
+    }
+    return builder.build();
+  }
+
+  public PatchedImmutableTable wrapStrings(String[] javaObject) {
     PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     long idx = 0;
     for (String value : javaObject) {

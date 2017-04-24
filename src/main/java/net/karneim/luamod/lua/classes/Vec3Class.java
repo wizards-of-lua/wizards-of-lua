@@ -8,8 +8,8 @@ import net.sandius.rembulan.runtime.LuaFunction;
 
 @LuaModule("Vec3")
 public class Vec3Class extends ImmutableLuaClass<Vec3d> {
-  public Vec3Class(Table env) {
-    super(env);
+  public Vec3Class(LuaTypesRepo repo) {
+    super(repo);
   }
 
   @Override

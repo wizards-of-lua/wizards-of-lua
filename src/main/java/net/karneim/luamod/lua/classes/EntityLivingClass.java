@@ -1,16 +1,20 @@
 package net.karneim.luamod.lua.classes;
 
-import net.karneim.luamod.lua.wrapper.EntityLivingInstance;
-import net.karneim.luamod.lua.wrapper.Metatables;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.EntityLiving;
+import net.sandius.rembulan.Table;
 
 @LuaModule("EntityLiving")
-public class EntityLivingClass extends AbstractLuaType {
-  public EntityLivingInstance<EntityLiving> newInstance(EntityLiving delegate) {
-    return new EntityLivingInstance<EntityLiving>(getRepo(), delegate,
-        Metatables.get(getRepo().getEnv(), getTypeName()));
+public class EntityLivingClass extends DelegatingLuaClass<EntityLiving> {
+  public EntityLivingClass(LuaTypesRepo repo) {
+    super(repo);
   }
 
   @Override
-  protected void addFunctions() {}
+  protected void addProperties(DelegatingTable.Builder<? extends EntityLiving> b,
+      EntityLiving delegate) {}
+
+  @Override
+  protected void addFunctions(Table luaClass) {}
 }

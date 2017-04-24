@@ -9,7 +9,6 @@ import java.util.UUID;
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
-import net.karneim.luamod.lua.util.table.DelegatingTable.Builder;
 import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
@@ -34,7 +33,7 @@ public class EntityClass extends DelegatingLuaClass<Entity> {
   }
 
   @Override
-  protected void addProperties(Builder<Entity> b, Entity delegate) {
+  protected void addProperties(DelegatingTable.Builder<? extends Entity> b, Entity delegate) {
     EntityWrapper d = new EntityWrapper(delegate);
     b.add("id", delegate::getCachedUniqueIdString, null);
     b.add("name", delegate::getName,

@@ -14,7 +14,7 @@ public class ArmorClass extends DelegatingLuaClass<Iterable<ItemStack>> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder<Iterable<ItemStack>> b,
+  protected void addProperties(DelegatingTable.Builder<? extends Iterable<ItemStack>> b,
       Iterable<ItemStack> delegate) {
     Iterator<ItemStack> it = delegate.iterator();
     final ItemStack feet = it.next();

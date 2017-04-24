@@ -19,7 +19,8 @@ public class BlockStateClass extends DelegatingLuaClass<IBlockState> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder<IBlockState> b, IBlockState delegate) {
+  protected void addProperties(DelegatingTable.Builder<? extends IBlockState> b,
+      IBlockState delegate) {
     b.add("type", "Block");
     b.addNullable("name", delegate.getBlock().getRegistryName().getResourcePath());
     Map<Object, Object> props = new HashMap<>();

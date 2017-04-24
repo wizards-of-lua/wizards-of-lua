@@ -25,7 +25,7 @@ public class ItemStackClass extends DelegatingLuaClass<ItemStack> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder<ItemStack> b, ItemStack delegate) {
+  protected void addProperties(DelegatingTable.Builder<? extends ItemStack> b, ItemStack delegate) {
     ItemStackWrapper d = new ItemStackWrapper(delegate);
     b.addNullable("name", d.getName());
     b.add("displayName", delegate::getDisplayName, d::setDisplayName);

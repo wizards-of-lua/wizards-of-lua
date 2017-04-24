@@ -12,7 +12,7 @@ public class MaterialClass extends DelegatingLuaClass<Material> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder<Material> b, Material delegate) {
+  protected void addProperties(DelegatingTable.Builder<? extends Material> b, Material delegate) {
     b.add("blocksLight", delegate.blocksLight());
     b.add("blocksMovement", delegate.blocksMovement());
     b.add("canBurn", delegate.getCanBurn());
@@ -20,7 +20,7 @@ public class MaterialClass extends DelegatingLuaClass<Material> {
     b.add("isOpaque", delegate.isOpaque());
     b.add("isSolid", delegate.isSolid());
     b.add("isToolNotRequired", delegate.isToolNotRequired());
-    b.addNullable("mobility", wrap(delegate.getMobilityFlag()));
+    b.addNullable("mobility", repo.wrap(delegate.getMobilityFlag()));
   }
 
   @Override

@@ -41,6 +41,25 @@ public class PreconditionsUtils {
     return type.cast(arg);
   }
 
+  public static String checkTypeString(Object arg) {
+    checkArgument(arg != null, "Expected String but got nil");
+    return checkTypeStringNullable(arg);
+  }
+
+  public static String checkTypeStringNullable(Object arg) {
+    if (arg == null) {
+      return null;
+    }
+    if (arg instanceof String) {
+      return (String) arg;
+    }
+    if (arg instanceof ByteString) {
+      return arg.toString();
+    }
+    throw new IllegalArgumentException(
+        String.format("Expected String but got %s", arg.getClass().getSimpleName()));
+  }
+
   public static String checkTypeString(int argIndex, Object arg) {
     checkArgument(arg != null, "Expected String for argument %s but got nil", argIndex);
     return checkTypeStringNullable(argIndex, arg);

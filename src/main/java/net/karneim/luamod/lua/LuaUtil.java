@@ -31,7 +31,6 @@ import net.karneim.luamod.gist.GistRepo;
 import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.classes.SpellClass;
 import net.karneim.luamod.lua.event.Events;
 import net.karneim.luamod.lua.patched.ExtendedChunkLoader;
 import net.karneim.luamod.lua.patched.PatchedCompilerChunkLoader;
@@ -275,7 +274,7 @@ public class LuaUtil {
         typesRepo.get(luaClass).installInto(loader, executor, state);
       }
 
-      env.rawset("spell", typesRepo.get(SpellClass.class).newInstance(this.spell).getLuaObject());
+      env.rawset("spell", typesRepo.wrap(this.spell));
 
       for (LuaFunction profileFunc : profileFuncs) {
         executor.call(state, profileFunc);

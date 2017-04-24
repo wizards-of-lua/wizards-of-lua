@@ -1,10 +1,10 @@
 package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Players;
-import net.karneim.luamod.lua.classes.EntityPlayerClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.classes.StringArrayClass;
-import net.karneim.luamod.lua.classes.StringIterableClass;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -47,8 +47,8 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       String[] names = players.names();
-      StringArrayInstance wrapper = StringArrayClass.get().newInstance(repo, names);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      PatchedImmutableTable result = repo.wrapStrings(names);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override
@@ -63,8 +63,8 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = players.list();
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, ids);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      PatchedImmutableTable result = repo.wrapStrings(ids);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override
@@ -83,9 +83,9 @@ public class PlayersWrapper {
       }
       String id = String.valueOf(arg1);
       EntityPlayerMP player = players.get(id);
-      if ( player != null) {
-        EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
-        context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      if (player != null) {
+        DelegatingTable<? extends EntityPlayer> result = repo.wrap(player);
+        context.getReturnBuffer().setTo(result);
       } else {
         context.getReturnBuffer().setTo();
       }
@@ -107,9 +107,9 @@ public class PlayersWrapper {
       }
       String name = String.valueOf(arg1);
       EntityPlayerMP player = players.getByName(name);
-      if ( player != null) {
-        EntityPlayerInstance wrapper = repo.get(EntityPlayerClass.class).newInstance(player);
-        context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      if (player != null) {
+        DelegatingTable<? extends EntityPlayer> result = repo.wrap(player);
+        context.getReturnBuffer().setTo(result);
       } else {
         context.getReturnBuffer().setTo();
       }
@@ -131,8 +131,8 @@ public class PlayersWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> ids = players.find(target);
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, ids);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      PatchedImmutableTable result = repo.wrapStrings(ids);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override
