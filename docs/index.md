@@ -21,7 +21,7 @@ By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/luamo
 onto your Minecraft server, you are changing the very nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod makes Lua, a programming language, available from the in-game chat
-window, so that that players can use it online to cast powerful 'spells' to
+window, so that players can use it online to cast powerful 'spells' to
 control almost any aspect of the world.
 
 By using existing function libraries (so called 'spell books') players can enjoy
