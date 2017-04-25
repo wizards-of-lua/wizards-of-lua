@@ -4,14 +4,13 @@ import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 
-public abstract class ImmutableLuaClass<J> extends LuaClass
-    implements LuaWrapper<J, PatchedImmutableTable> {
+public abstract class ImmutableLuaClass<J> extends CachingLuaClass<J, PatchedImmutableTable> {
   public ImmutableLuaClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  public final PatchedImmutableTable toLuaObject(J javaObject) {
+  public final PatchedImmutableTable createLuaObject(J javaObject) {
     PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
     addAllProperties(builder, javaObject);
     builder.setMetatable(getLuaClassTable());

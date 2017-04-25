@@ -4,14 +4,13 @@ import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 
-public abstract class DelegatingLuaClass<D> extends LuaClass
-    implements LuaWrapper<D, DelegatingTable<D>> {
+public abstract class DelegatingLuaClass<D> extends CachingLuaClass<D, DelegatingTable<D>> {
   public DelegatingLuaClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  public final DelegatingTable<D> toLuaObject(D delegate) {
+  public final DelegatingTable<D> createLuaObject(D delegate) {
     DelegatingTable.Builder<D> builder = DelegatingTable.builder(delegate);
     addAllProperties(builder, delegate);
     builder.setMetatable(getLuaClassTable());
