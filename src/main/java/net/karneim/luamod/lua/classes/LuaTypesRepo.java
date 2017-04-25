@@ -63,12 +63,13 @@ public class LuaTypesRepo {
   }
 
   public <T extends LuaClass> T get(Class<T> cls) {
-    return get(LuaClass.getModuleNameOf(cls));
+    String moduleName = LuaClass.getModuleNameOf(cls);
+    LuaClass luaClass = get(moduleName);
+    return cls.cast(luaClass);
   }
 
-  public <T extends LuaClass> T get(String name) {
-    LuaClass obj = types.get(name);
-    return (T) obj;
+  public LuaClass get(String name) {
+    return types.get(name);
   }
 
   public Table getEnv() {
