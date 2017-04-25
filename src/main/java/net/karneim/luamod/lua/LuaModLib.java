@@ -5,7 +5,6 @@ import java.io.OutputStream;
 
 import net.karneim.luamod.TabEncoder;
 import net.karneim.luamod.cursor.EnumDirection;
-import net.karneim.luamod.lua.event.EventType;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Rotation;
@@ -33,11 +32,8 @@ public class LuaModLib {
     for (Rotation e : Rotation.values()) {
       env.rawset(e.name(), e.name());
     }
-    for (EventType e : EventType.values()) {
-      env.rawset(e.name(), e.name());
-    }
-    env.rawset("SURFACE","SURFACE");
-    
+    env.rawset("SURFACE", "SURFACE");
+
     OutputStream out = new ChatOutputStream();
     LuaFunction printFunc = BasicLib.print(out, env);
     env.rawset("print", printFunc);
@@ -48,17 +44,17 @@ public class LuaModLib {
     public void flush() throws IOException {
       String message = toString();
       // Remove trailing line-feed.
-      if ( message.endsWith("\n")) {
-        message = message.substring(0, message.length()-1);
+      if (message.endsWith("\n")) {
+        message = message.substring(0, message.length() - 1);
       }
       reset();
       print(message);
     }
   }
-  
+
   private void print(String message) {
     owner.addChatMessage(new TextComponentString(TabEncoder.encode(message)));
   }
-  
-  
+
+
 }

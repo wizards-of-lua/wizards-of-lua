@@ -1,1 +1,0 @@
-class("WhisperEvent", Event)

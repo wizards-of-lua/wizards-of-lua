@@ -20,13 +20,8 @@ public class CommandMessagePatched extends CommandMessage {
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
-    if (args.length < 2) {
-      // this will throw an exception
-      super.execute(server, sender, args);
-    } else {
-      modEventHandler.onWhisper(new WhisperEvent(sender.getName(), concat(args, 1, args.length)));
-      super.execute(server, sender, args);
-    }
+    super.execute(server, sender, args);
+    modEventHandler.onEvent(new WhisperEvent(sender.getName(), concat(args, 1, args.length)));
   }
 
   private String concat(String[] text, int from, int to) {

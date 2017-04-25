@@ -1,2 +1,1 @@
-class("EntityLiving", Entity)
-
+class("EntityLiving", EntityLivingBase)

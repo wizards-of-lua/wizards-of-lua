@@ -1,1 +1,1 @@
-class("Player", Entity)
+class("Player", EntityLivingBase)

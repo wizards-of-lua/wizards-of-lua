@@ -1,7 +1,7 @@
--- Global Utility Functions 
+-- Global Utility Functions
 
 local error_ = error
-function error( fmt, ...)  
+function error( fmt, ...)
   error_( string.format( fmt, ...))
 end
 
@@ -48,19 +48,20 @@ function check.class( obj, cls, i)
 end
 
 function class(name, base)
-  check.string(name,1)
+  check.string(name, 1)
+
   --  create class table
   local c = {}
   c.__index = c
   c.__classname = name
-  setmetatable(c,base)
-  
+  setmetatable(c, base)
+
   -- extend type function
   local type_ = type
   type = function(x)
     return getmetatable(x)==c and name or type_(x)
   end
-  
+
   _G[name] = c
   return c
 end

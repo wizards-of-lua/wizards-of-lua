@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua.event;
 
+import static java.util.Collections.unmodifiableSet;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +13,7 @@ import com.google.common.collect.Multimap;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.classes.event.GenericLuaEventClass;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 
 public class Events {
   private final LuaTypesRepo repo;
@@ -25,6 +27,10 @@ public class Events {
   public Events(LuaTypesRepo repo, SpellRegistry spellRegistry) {
     this.repo = Preconditions.checkNotNull(repo);
     this.spellRegistry = Preconditions.checkNotNull(spellRegistry);
+  }
+
+  public LuaTypesRepo getRepo() {
+    return repo;
   }
 
   public boolean isWaitingForEvent() {
@@ -63,30 +69,27 @@ public class Events {
     this.currentTime = currentTime;
   }
 
-  public void handle(EventType type, Object evt) {
-    EventWrapper<?> evtWrapper = type.wrap(repo, evt);
-    handle(evtWrapper);
+  public Set<String> getRegisteredEventTypes() {
+    return unmodifiableSet(eventQueues.keySet());
   }
 
-  public void fire(String eventType, Object content) {
-    GenericLuaEventInstance wrapper =
-        repo.get(GenericLuaEventClass.class).newInstance(content, eventType);
-    Iterable<SpellEntity> spells = spellRegistry.getAll();
-    for (SpellEntity spell : spells) {
-      spell.getEvents().handle(wrapper);
+  public void fire(String eventType, Object data) {
+    // FIXME: Check that eventType is not a common event type like AnimationHandEvent or
+    // RightClickBlockEvent
+
+    for (SpellEntity spell : spellRegistry.getAll()) {
+      Events events = spell.getEvents();
+      PatchedImmutableTable luaEvent = events.getRepo().wrap(new CustomLuaEvent(eventType, data));
+      events.handle(eventType, luaEvent);
     }
   }
 
-  private void handle(EventWrapper event) {
-    // Ensure that the lua object is generated in the context of the event producing action
-    event.getLuaObject();
-    String eventType = event.getType();
+  public void handle(String eventType, Object luaEvent) {
     Collection<EventQueue> queues = eventQueues.get(eventType);
     if (!queues.isEmpty()) {
       for (EventQueue queue : queues) {
-        queue.add(event);
+        queue.add(luaEvent);
       }
     }
   }
-
 }

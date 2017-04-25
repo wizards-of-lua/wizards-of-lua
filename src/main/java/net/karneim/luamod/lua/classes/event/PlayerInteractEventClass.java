@@ -1,19 +1,26 @@
 package net.karneim.luamod.lua.classes.event;
 
-import net.karneim.luamod.lua.classes.AbstractLuaType;
-import net.karneim.luamod.lua.classes.LuaClass;
-import net.karneim.luamod.lua.event.EventType;
-import net.karneim.luamod.lua.event.PlayerInteractEventWrapper;
-import net.karneim.luamod.lua.wrapper.Metatables;
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.sandius.rembulan.Table;
 
-@LuaClass("PlayerInteractEvent")
-public class PlayerInteractEventClass extends AbstractLuaType {
-  public PlayerInteractEventWrapper newInstance(PlayerInteractEvent delegate, EventType eventType) {
-    return new PlayerInteractEventWrapper(getRepo(), delegate, eventType,
-        Metatables.get(getRepo().getEnv(), getTypeName()));
+@LuaModule("PlayerInteractEvent")
+public class PlayerInteractEventClass extends ImmutableLuaClass<PlayerInteractEvent> {
+  public PlayerInteractEventClass(LuaTypesRepo repo) {
+    super(repo);
   }
 
   @Override
-  protected void addFunctions() {}
+  protected void addProperties(PatchedImmutableTable.Builder b, PlayerInteractEvent event) {
+    b.add("hand", repo.wrap(event.getHand()));
+    b.add("item", repo.wrap(event.getItemStack()));
+    b.add("pos", repo.wrap(event.getPos()));
+    b.add("face", repo.wrap(event.getFace()));
+  }
+
+  @Override
+  protected void addFunctions(Table luaClass) {}
 }

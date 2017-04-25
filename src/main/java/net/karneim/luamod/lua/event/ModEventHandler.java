@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua.event;
 
+import static net.karneim.luamod.lua.classes.LuaClass.getModuleNameOf;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.UndeclaredThrowableException;
 
@@ -12,16 +14,35 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
+import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
+import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
+import net.karneim.luamod.lua.classes.event.EntityEventClass;
+import net.karneim.luamod.lua.classes.event.EventClass;
+import net.karneim.luamod.lua.classes.event.LeftClickBlockEventClass;
+import net.karneim.luamod.lua.classes.event.LivingEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerGameEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerLoggedInEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerLoggedOutEventClass;
+import net.karneim.luamod.lua.classes.event.PlayerRespawnEventClass;
+import net.karneim.luamod.lua.classes.event.RightClickBlockEventClass;
+import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
+import net.karneim.luamod.lua.classes.event.WhisperEventClass;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketClickWindow;
-import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
@@ -37,12 +58,6 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
-  public void onCommand(CommandEvent evt) {
-    // System.out.println("onCommand: " + evt.getCommand().getCommandName() + " "
-    // + Arrays.toString(evt.getParameters()));
-  }
-
-  @SubscribeEvent
   public void onClientConnected(ServerConnectionFromClientEvent evt) {
     NetworkManager networkManager = evt.getManager();
     Channel channel = networkManager.channel();
@@ -54,25 +69,17 @@ public class ModEventHandler {
           EntityPlayer player = getPlayer(ctx);
           if (player != null) {
             CPacketAnimation animation = (CPacketAnimation) msg;
-            onEvent(EventType.ANIMATION_HAND, new AnimationHandEvent(player, animation.getHand()));
+            onLuaEvent(AnimationHandEventClass.class,
+                new AnimationHandEvent(player, animation.getHand()));
           }
         } else if (msg instanceof CPacketClickWindow) {
           EntityPlayer player = getPlayer(ctx);
           if (player != null) {
             CPacketClickWindow clickWindow = (CPacketClickWindow) msg;
-            onEvent(EventType.CLICK_WINDOW, new ClickWindowEvent(player, clickWindow));
+            onLuaEvent(ClickWindowEventClass.class, new ClickWindowEvent(player, clickWindow));
           }
         }
         super.channelRead(ctx, msg);
-      }
-
-      private @Nullable EntityPlayer getPlayer(ChannelHandlerContext ctx) {
-        ChannelHandler xx = ctx.pipeline().get("fml:packet_handler");
-        if (xx instanceof NetworkDispatcher) {
-          NetworkDispatcher nx = (NetworkDispatcher) xx;
-          return getEntityPlayer(nx);
-        }
-        return null;
       }
 
       private EntityPlayer getEntityPlayer(NetworkDispatcher nx) {
@@ -86,61 +93,108 @@ public class ModEventHandler {
         }
       }
 
-      private void onEvent(EventType eventType, Object event) {
-        mod.getServer().addScheduledTask(() -> ModEventHandler.this.onEvent(eventType, event));
+      private @Nullable EntityPlayer getPlayer(ChannelHandlerContext ctx) {
+        ChannelHandler xx = ctx.pipeline().get("fml:packet_handler");
+        if (xx instanceof NetworkDispatcher) {
+          NetworkDispatcher nx = (NetworkDispatcher) xx;
+          return getEntityPlayer(nx);
+        }
+        return null;
+      }
+
+      private <E extends Event> void onLuaEvent(Class<? extends ImmutableLuaClass<E>> luaClass,
+          E event) {
+        mod.getServer().addScheduledTask(() -> ModEventHandler.this.onLuaEvent(luaClass, event));
       }
     };
     pipeline.addAfter("fml:packet_handler", "luamod:packet_handler", handler);
   }
 
   @SubscribeEvent
-  public void onChat(ServerChatEvent evt) {
-    onEvent(EventType.CHAT, evt);
+  public void onEvent(EntityEvent evt) {
+    onLuaEvent(EntityEventClass.class, evt);
   }
 
   @SubscribeEvent
-  public void onLeftClickBlock(LeftClickBlock evt) {
+  public void onEvent(Event evt) {
+    onLuaEvent(EventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LeftClickBlock evt) {
     if (evt.getWorld().isRemote) {
       return;
     }
-    onEvent(EventType.LEFT_CLICK, evt);
+    onLuaEvent(LeftClickBlockEventClass.class, evt);
   }
 
   @SubscribeEvent
-  public void onRightClickBlock(RightClickBlock evt) {
+  public void onEvent(LivingEvent evt) {
+    onLuaEvent(LivingEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent evt) {
+    onLuaEvent(PlayerGameEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(PlayerEvent evt) {
+    onLuaEvent(PlayerEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(PlayerInteractEvent evt) {
     if (evt.getWorld().isRemote) {
       return;
     }
-    onEvent(EventType.RIGHT_CLICK, evt);
+    onLuaEvent(PlayerInteractEventClass.class, evt);
   }
 
   @SubscribeEvent
-  public void onPlayerLoggedIn(PlayerLoggedInEvent evt) {
-    onEvent(EventType.PLAYER_JOINED, evt);
+  public void onEvent(PlayerLoggedInEvent evt) {
+    onLuaEvent(PlayerLoggedInEventClass.class, evt);
   }
 
   @SubscribeEvent
-  public void onPlayerLoggedOut(PlayerLoggedOutEvent evt) {
-    onEvent(EventType.PLAYER_LEFT, evt);
+  public void onEvent(PlayerLoggedOutEvent evt) {
+    onLuaEvent(PlayerLoggedOutEventClass.class, evt);
   }
 
   @SubscribeEvent
-  public void onPlayerRespawn(PlayerRespawnEvent evt) {
-    onEvent(EventType.PLAYER_SPAWNED, evt);
+  public void onEvent(PlayerRespawnEvent evt) {
+    onLuaEvent(PlayerRespawnEventClass.class, evt);
   }
 
-  /////
-
-  public void onWhisper(WhisperEvent evt) {
-    onEvent(EventType.WHISPER, evt);
+  @SubscribeEvent
+  public void onEvent(RightClickBlock evt) {
+    if (evt.getWorld().isRemote) {
+      return;
+    }
+    onLuaEvent(RightClickBlockEventClass.class, evt);
   }
 
-  ////
+  @SubscribeEvent
+  public void onEvent(ServerChatEvent evt) {
+    onLuaEvent(ServerChatEventClass.class, evt);
+  }
 
-  private void onEvent(EventType type, Object evt) {
+  public void onEvent(WhisperEvent evt) {
+    onLuaEvent(WhisperEventClass.class, evt);
+  }
+
+  private <E extends Event> void onLuaEvent(Class<? extends ImmutableLuaClass<E>> luaClass,
+      E event) {
+    onLuaEvent(getModuleNameOf(luaClass), event);
+  }
+
+  private void onLuaEvent(String eventType, Event event) {
     for (SpellEntity e : mod.getSpellRegistry().getAll()) {
-      e.getEvents().handle(type, evt);
+      Events events = e.getEvents();
+      if (events.getRegisteredEventTypes().contains(eventType)) {
+        PatchedImmutableTable luaEvent = events.getRepo().wrap(event);
+        events.handle(eventType, luaEvent);
+      }
     }
   }
-
 }

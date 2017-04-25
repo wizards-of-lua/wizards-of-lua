@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.classes.StringIterableClass;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.sandius.rembulan.Table;
@@ -16,7 +16,6 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 
 public class EntitiesWrapper {
-
   public static EntitiesWrapper installInto(LuaTypesRepo repo, Entities entities) {
     EntitiesWrapper result = new EntitiesWrapper(repo, entities);
     repo.getEnv().rawset("Entities", result.getLuaTable());
@@ -43,12 +42,11 @@ public class EntitiesWrapper {
    * Returns the IDs of all (loaded) entities.
    */
   private class IdsFunction extends AbstractFunction0 {
-
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = entities.list();
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, ids);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      PatchedImmutableTable result = repo.wrapStrings(ids);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override
@@ -62,7 +60,6 @@ public class EntitiesWrapper {
    * Returns the entity with the given ID.
    */
   private class GetFunction extends AbstractFunction1 {
-
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       if (arg1 == null) {
@@ -70,7 +67,7 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      DelegatingTable result = WrapperFactory.wrap(repo, entity);
+      DelegatingTable<? extends Entity> result = repo.wrap(entity);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -85,7 +82,6 @@ public class EntitiesWrapper {
    * Returns the IDs of all (loaded) entities matching the given selector.
    */
   private class FindFunction extends AbstractFunction1 {
-
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       if (arg1 == null) {
@@ -93,8 +89,8 @@ public class EntitiesWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> names = entities.find(target);
-      StringIterableInstance wrapper = StringIterableClass.get().newInstance(repo, names);
-      context.getReturnBuffer().setTo(wrapper.getLuaObject());
+      PatchedImmutableTable result = repo.wrapStrings(names);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override
@@ -103,5 +99,4 @@ public class EntitiesWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-
 }

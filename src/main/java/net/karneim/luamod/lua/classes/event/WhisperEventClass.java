@@ -1,18 +1,24 @@
 package net.karneim.luamod.lua.classes.event;
 
-import net.karneim.luamod.lua.classes.AbstractLuaType;
-import net.karneim.luamod.lua.classes.LuaClass;
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.event.WhisperEvent;
-import net.karneim.luamod.lua.event.WhisperEventWrapper;
-import net.karneim.luamod.lua.wrapper.Metatables;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.sandius.rembulan.Table;
 
-@LuaClass("WhisperEvent")
-public class WhisperEventClass extends AbstractLuaType {
-  public WhisperEventWrapper newInstance(WhisperEvent delegate) {
-    return new WhisperEventWrapper(getRepo(), delegate,
-        Metatables.get(getRepo().getEnv(), getTypeName()));
+@LuaModule("WhisperEvent")
+public class WhisperEventClass extends ImmutableLuaClass<WhisperEvent> {
+  public WhisperEventClass(LuaTypesRepo repo) {
+    super(repo);
   }
 
   @Override
-  protected void addFunctions() {}
+  protected void addProperties(PatchedImmutableTable.Builder b, WhisperEvent event) {
+    b.add("sender", repo.wrap(event.getSender()));
+    b.add("message", repo.wrap(event.getMessage()));
+  }
+
+  @Override
+  protected void addFunctions(Table luaClass) {}
 }

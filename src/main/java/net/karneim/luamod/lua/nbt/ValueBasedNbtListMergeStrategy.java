@@ -2,9 +2,10 @@ package net.karneim.luamod.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Map.Entry;
+
 import javax.annotation.Nullable;
 
-import net.karneim.luamod.lua.util.table.Entry;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +15,7 @@ import net.sandius.rembulan.Table;
 /**
  * Merges {@link NBTTagList}s of type Compound by matching the elements via the value of the
  * specified key.
- * 
+ *
  * @author Adrodoc55
  */
 public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
