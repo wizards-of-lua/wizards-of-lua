@@ -50,6 +50,8 @@ end
 function class(name, base)
   check.string(name, 1)
 
+  assert( _G[name] == nil, "bad argument #%d (a global variable with name '%s' is already defined)", 1, name)
+
   --  create class table
   local c = {}
   c.__index = c
