@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.util.wrapper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -12,7 +13,7 @@ import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 
 public abstract class CachingLuaClass<J, L> extends LuaClass implements LuaWrapper<J, L> {
-  private final Map<J, WeakReference<L>> luaObjects = new WeakHashMap<>();
+  private final Map<J, SoftReference<L>> luaObjects = new WeakHashMap<>();
   private final Map<L, WeakReference<J>> javaObjects = new WeakHashMap<>();
 
   public CachingLuaClass(LuaTypesRepo repo) {
@@ -28,11 +29,11 @@ public abstract class CachingLuaClass<J, L> extends LuaClass implements LuaWrapp
 
   public L getLuaObject(J javaObject) {
     checkNotNull(javaObject, "javaObject == null!");
-    WeakReference<L> ref = luaObjects.get(javaObject);
+    SoftReference<L> ref = luaObjects.get(javaObject);
     L result = ref == null ? null : ref.get();
     if (result == null) {
       result = createLuaObject(javaObject);
-      luaObjects.put(javaObject, new WeakReference<>(result));
+      luaObjects.put(javaObject, new SoftReference<>(result));
       javaObjects.put(result, new WeakReference<>(javaObject));
     }
     return result;
