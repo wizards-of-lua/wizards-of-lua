@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.sun.istack.internal.Nullable;
+import javax.annotation.Nullable;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
