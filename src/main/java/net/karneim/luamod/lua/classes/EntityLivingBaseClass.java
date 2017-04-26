@@ -17,7 +17,7 @@ public class EntityLivingBaseClass extends DelegatingLuaClass<EntityLivingBase> 
   protected void addProperties(DelegatingTable.Builder<? extends EntityLivingBase> b,
       EntityLivingBase delegate) {
     EntityLivingBaseWrapper d = new EntityLivingBaseWrapper(delegate);
-    b.addReadOnly("armor", () -> repo.wrap(delegate.getArmorInventoryList()));
+    b.addReadOnly("armor", () -> repo.wrapArmor(delegate.getArmorInventoryList()));
     b.addReadOnly("mainHand", () -> repo.wrap(delegate.getHeldItemMainhand()));
     b.addReadOnly("offHand", () -> repo.wrap(delegate.getHeldItemOffhand()));
     b.add("health", delegate::getHealth, d::setHealth);

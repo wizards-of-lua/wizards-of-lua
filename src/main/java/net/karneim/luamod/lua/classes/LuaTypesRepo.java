@@ -8,22 +8,22 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.cursor.Spell;
-import net.karneim.luamod.lua.classes.event.AnimationHandEventClass;
-import net.karneim.luamod.lua.classes.event.ClickWindowEventClass;
-import net.karneim.luamod.lua.classes.event.CustomLuaEventClass;
-import net.karneim.luamod.lua.classes.event.EntityEventClass;
 import net.karneim.luamod.lua.classes.event.EventClass;
-import net.karneim.luamod.lua.classes.event.LeftClickBlockEventClass;
-import net.karneim.luamod.lua.classes.event.LivingEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerGameEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerInteractEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerLoggedInEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerLoggedOutEventClass;
-import net.karneim.luamod.lua.classes.event.PlayerRespawnEventClass;
-import net.karneim.luamod.lua.classes.event.RightClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
-import net.karneim.luamod.lua.classes.event.WhisperEventClass;
+import net.karneim.luamod.lua.classes.event.entity.EntityEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.LeftClickBlockEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.PlayerEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.RightClickBlockEventClass;
+import net.karneim.luamod.lua.classes.event.game.PlayerGameEventClass;
+import net.karneim.luamod.lua.classes.event.game.PlayerLoggedInEventClass;
+import net.karneim.luamod.lua.classes.event.game.PlayerLoggedOutEventClass;
+import net.karneim.luamod.lua.classes.event.game.PlayerRespawnEventClass;
+import net.karneim.luamod.lua.classes.event.wol.AnimationHandEventClass;
+import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
+import net.karneim.luamod.lua.classes.event.wol.CustomLuaEventClass;
+import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
 import net.karneim.luamod.lua.event.AnimationHandEvent;
 import net.karneim.luamod.lua.event.ClickWindowEvent;
 import net.karneim.luamod.lua.event.CustomLuaEvent;
@@ -185,7 +185,7 @@ public class LuaTypesRepo {
     return get(ItemStackClass.class).getLuaObjectNullable(javaObject);
   }
 
-  public @Nullable DelegatingTable<? extends Iterable<ItemStack>> wrap(
+  public @Nullable DelegatingTable<? extends Iterable<ItemStack>> wrapArmor(
       @Nullable Iterable<ItemStack> javaObject) {
     return get(ArmorClass.class).getLuaObjectNullable(javaObject);
   }
