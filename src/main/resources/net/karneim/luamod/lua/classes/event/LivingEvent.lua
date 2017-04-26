@@ -1,4 +1,2 @@
-if EntityEvent == nil then
-  require 'net.karneim.luamod.lua.classes.event.EntityEvent'
-end
+require 'net.karneim.luamod.lua.classes.event.EntityEvent'
 class("LivingEvent", EntityEvent)

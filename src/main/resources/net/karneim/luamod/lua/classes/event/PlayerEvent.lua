@@ -1,4 +1,2 @@
-if LivingEvent == nil then
-  require 'net.karneim.luamod.lua.classes.event.LivingEvent'
-end
+require 'net.karneim.luamod.lua.classes.event.LivingEvent'
 class("PlayerEvent", LivingEvent)

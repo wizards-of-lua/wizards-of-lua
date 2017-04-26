@@ -1,4 +1,2 @@
-if PlayerInteractEvent == nil then
-  require 'net.karneim.luamod.lua.classes.event.PlayerInteractEvent'
-end
+require 'net.karneim.luamod.lua.classes.event.PlayerInteractEvent'
 class("RightClickBlockEvent", PlayerInteractEvent)

@@ -1,4 +1,2 @@
-if PlayerGameEvent == nil then
-  require 'net.karneim.luamod.lua.classes.event.PlayerGameEvent'
-end
+require 'net.karneim.luamod.lua.classes.event.PlayerGameEvent'
 class("PlayerRespawnEvent", PlayerGameEvent)
