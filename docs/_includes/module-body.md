@@ -44,7 +44,8 @@ and some examples about how to used them in your spells.
 {% for func in functions %}
 <a style="position:relative; top:-70px; display:block;" name="{{ func.name }}"></a>
 ### {{ func.name }} ({{ func.parameters }}) -> {{ func.results }}
-{{ func.description }}
+
+{{ func.description | replace: '!SITE_URL!', site.url}}
 {% for ex in func.examples %}
 {% include_relative {{ ex.url }} %}
 {% endfor %}
