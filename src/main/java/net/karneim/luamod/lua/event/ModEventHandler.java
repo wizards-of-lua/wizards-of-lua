@@ -30,7 +30,7 @@ import net.karneim.luamod.lua.classes.event.wol.AnimationHandEventClass;
 import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketAnimation;
@@ -102,7 +102,7 @@ public class ModEventHandler {
         return null;
       }
 
-      private <E extends Event> void onLuaEvent(Class<? extends ImmutableLuaClass<E>> luaClass,
+      private <E extends Event> void onLuaEvent(Class<? extends DelegatingLuaClass<E>> luaClass,
           E event) {
         mod.getServer().addScheduledTask(() -> ModEventHandler.this.onLuaEvent(luaClass, event));
       }
@@ -183,7 +183,7 @@ public class ModEventHandler {
     onLuaEvent(WhisperEventClass.class, evt);
   }
 
-  private <E extends Event> void onLuaEvent(Class<? extends ImmutableLuaClass<E>> luaClass,
+  private <E extends Event> void onLuaEvent(Class<? extends DelegatingLuaClass<E>> luaClass,
       E event) {
     onLuaEvent(getModuleNameOf(luaClass), event);
   }

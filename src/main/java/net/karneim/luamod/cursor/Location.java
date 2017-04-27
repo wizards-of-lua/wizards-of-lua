@@ -1,6 +1,5 @@
 package net.karneim.luamod.cursor;
 
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.Vec3d;
 
 public class Location {

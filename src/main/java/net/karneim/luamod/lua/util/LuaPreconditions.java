@@ -3,8 +3,13 @@ package net.karneim.luamod.lua.util;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.math.RoundingMode;
+
 import javax.annotation.Nullable;
 
+import com.google.common.math.DoubleMath;
+
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.sandius.rembulan.ByteString;
 
 public class LuaPreconditions {
@@ -39,6 +44,37 @@ public class LuaPreconditions {
     checkArgument(type.isInstance(arg), "Expected %s for argument %s but got %s",
         type.getSimpleName(), argIndex, arg.getClass().getSimpleName());
     return type.cast(arg);
+  }
+
+  public static <T> T checkTypeDelegatingTable(Object arg, Class<T> delegateType) {
+    checkNotNull(delegateType, "delegateType == null!");
+    Object delegate = checkType(arg, DelegatingTable.class).getDelegate();
+    return checkType(delegate, delegateType);
+  }
+
+  public static <T> T checkTypeDelegatingTableNullable(@Nullable Object arg,
+      Class<T> delegateType) {
+    checkNotNull(delegateType, "delegateType == null!");
+    if (arg == null) {
+      return null;
+    }
+    return checkTypeDelegatingTable(arg, delegateType);
+  }
+
+  public static int checkTypeInt(Object arg) {
+    checkArgument(arg != null, "Expected Integer but got nil");
+    return checkTypeIntNullable(arg);
+  }
+
+  public static @Nullable Integer checkTypeIntNullable(Object arg) {
+    if (arg == null) {
+      return null;
+    }
+    if (arg instanceof Number) {
+      DoubleMath.roundToInt(((Number) arg).doubleValue(), RoundingMode.UNNECESSARY);
+    }
+    throw new IllegalArgumentException(
+        String.format("Expected Integer but got %s", arg.getClass().getSimpleName()));
   }
 
   public static String checkTypeString(Object arg) {

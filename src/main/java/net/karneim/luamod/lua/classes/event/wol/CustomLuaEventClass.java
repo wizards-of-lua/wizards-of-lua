@@ -8,22 +8,22 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.event.CustomLuaEvent;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
+import net.karneim.luamod.lua.patched.DelegatingTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.TableIterable;
-import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
 @LuaModule("CustomLuaEvent")
-public class CustomLuaEventClass extends ImmutableLuaClass<CustomLuaEvent> {
+public class CustomLuaEventClass extends DelegatingLuaClass<CustomLuaEvent> {
   public CustomLuaEventClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, CustomLuaEvent event) {
+  protected void addProperties(DelegatingTable.Builder b, CustomLuaEvent event) {
     // overwite type defined in EventClass
     b.add("type", repo.wrap(event.getType()));
     b.add("data", copyData(event.getData()));

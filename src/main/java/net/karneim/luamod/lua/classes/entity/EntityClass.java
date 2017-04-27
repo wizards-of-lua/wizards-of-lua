@@ -1,12 +1,15 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeDelegatingTable;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeString;
 
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
@@ -195,8 +198,7 @@ public class EntityClass extends DelegatingLuaClass<Entity> {
   private class GetNbtFunction extends AbstractFunction1 {
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      DelegatingTable<?> self = checkType(arg1, DelegatingTable.class);
-      Entity delegate = checkType(self.getDelegate(), Entity.class);
+      Entity delegate = checkTypeDelegatingTable(arg1, Entity.class);
       NBTTagCompound tagCompound = delegate.writeToNBT(new NBTTagCompound());
       PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
       if (tagCompound != null) {

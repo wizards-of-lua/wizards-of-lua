@@ -1,18 +1,18 @@
 package net.karneim.luamod.lua.classes;
 
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.karneim.luamod.lua.patched.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
 
 @LuaModule("Material")
-public class MaterialClass extends ImmutableLuaClass<Material> {
+public class MaterialClass extends DelegatingLuaClass<Material> {
   public MaterialClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, Material delegate) {
+  protected void addProperties(DelegatingTable.Builder b, Material delegate) {
     b.add("blocksLight", repo.wrap(delegate.blocksLight()));
     b.add("blocksMovement", repo.wrap(delegate.blocksMovement()));
     b.add("canBurn", repo.wrap(delegate.getCanBurn()));

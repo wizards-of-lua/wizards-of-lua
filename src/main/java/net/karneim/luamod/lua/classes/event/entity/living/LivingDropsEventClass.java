@@ -2,19 +2,29 @@ package net.karneim.luamod.lua.classes.event.entity.living;
 
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
+import net.karneim.luamod.lua.wrapper.UnmodifiableIterableWrapper;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.sandius.rembulan.Table;
 
 @LuaModule("LivingDropsEvent")
-public class LivingDropsEventClass extends ImmutableLuaClass<LivingDropsEvent> {
+public class LivingDropsEventClass extends DelegatingLuaClass<LivingDropsEvent> {
   public LivingDropsEventClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, PlayerRespawnEvent event) {}
+  protected void addProperties(DelegatingTable.Builder<? extends LivingDropsEvent> b,
+      LivingDropsEvent delegate) {
+    b.addReadOnly("source", () -> repo.wrap(delegate.getSource()));
+    UnmodifiableIterableWrapper<EntityItem, ?> wrapper =
+        new UnmodifiableIterableWrapper<>(entityItem -> repo.wrap(entityItem));
+    b.addReadOnly("drops", () -> wrapper.createLuaObject(delegate.getDrops()));
+    b.addReadOnly("lootingLevel", () -> repo.wrap(delegate.getLootingLevel()));
+    b.addReadOnly("recentlyHit", () -> repo.wrap(delegate.isRecentlyHit()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}
