@@ -15,6 +15,7 @@ public class PlayerInteractEventClass extends ImmutableLuaClass<PlayerInteractEv
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, PlayerInteractEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("hand", repo.wrap(event.getHand()));
     b.add("item", repo.wrap(event.getItemStack()));
     b.add("pos", repo.wrap(event.getPos()));

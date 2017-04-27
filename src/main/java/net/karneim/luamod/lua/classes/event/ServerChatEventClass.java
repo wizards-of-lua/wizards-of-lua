@@ -15,6 +15,7 @@ public class ServerChatEventClass extends ImmutableLuaClass<ServerChatEvent> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, ServerChatEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("message", repo.wrap(event.getMessage()));
     b.add("username", repo.wrap(event.getUsername()));
     b.add("player", repo.wrap(event.getPlayer()));

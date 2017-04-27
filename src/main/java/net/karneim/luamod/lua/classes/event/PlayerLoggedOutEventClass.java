@@ -14,7 +14,9 @@ public class PlayerLoggedOutEventClass extends ImmutableLuaClass<PlayerLoggedOut
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, PlayerLoggedOutEvent event) {}
+  protected void addProperties(PatchedImmutableTable.Builder b, PlayerLoggedOutEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

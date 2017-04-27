@@ -14,7 +14,9 @@ public class PlayerLoggedInEventClass extends ImmutableLuaClass<PlayerLoggedInEv
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, PlayerLoggedInEvent event) {}
+  protected void addProperties(PatchedImmutableTable.Builder b, PlayerLoggedInEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

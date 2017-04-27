@@ -17,8 +17,8 @@ public class EventClass extends ImmutableLuaClass<Event> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, Event event) {
-    b.add("id", repo.wrap(id++));
     b.add("type", repo.wrap(getModuleName()));
+    b.add("id", repo.wrap(id++));
   }
 
   @Override

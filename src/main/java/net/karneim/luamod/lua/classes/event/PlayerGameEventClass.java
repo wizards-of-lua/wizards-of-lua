@@ -15,6 +15,7 @@ public class PlayerGameEventClass extends ImmutableLuaClass<PlayerEvent> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, PlayerEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("player", repo.wrap(event.player));
   }
 

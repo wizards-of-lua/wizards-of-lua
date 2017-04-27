@@ -173,7 +173,7 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
-  public @Nullable PatchedImmutableTable wrap(@Nullable IBlockState javaObject) {
+  public @Nullable DelegatingTable<IBlockState> wrap(@Nullable IBlockState javaObject) {
     return get(BlockStateClass.class).getLuaObjectNullable(javaObject);
   }
 

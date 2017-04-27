@@ -2,6 +2,7 @@ package net.karneim.luamod.lua;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.annotation.Nullable;
 
@@ -10,7 +11,7 @@ import com.google.common.collect.Lists;
 
 public class SpellRegistry {
 
-  private final List<SpellEntity> entities = new ArrayList<SpellEntity>();
+  private final List<SpellEntity> entities = new CopyOnWriteArrayList<>();
 
   private int spellCounter = 0;
 

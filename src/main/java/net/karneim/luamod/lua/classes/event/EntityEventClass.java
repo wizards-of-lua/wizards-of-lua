@@ -15,6 +15,7 @@ public class EntityEventClass extends ImmutableLuaClass<EntityEvent> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, EntityEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("entity", repo.wrap(event.getEntity()));
   }
 

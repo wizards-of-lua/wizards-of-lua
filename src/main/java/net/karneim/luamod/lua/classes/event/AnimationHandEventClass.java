@@ -15,6 +15,7 @@ public class AnimationHandEventClass extends ImmutableLuaClass<AnimationHandEven
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, AnimationHandEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("hand", repo.wrap(event.getHand()));
   }
 

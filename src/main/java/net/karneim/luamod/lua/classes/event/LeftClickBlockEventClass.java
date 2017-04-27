@@ -15,6 +15,7 @@ public class LeftClickBlockEventClass extends ImmutableLuaClass<LeftClickBlock> 
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, LeftClickBlock event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("hitVec", repo.wrap(event.getHitVec()));
   }
 

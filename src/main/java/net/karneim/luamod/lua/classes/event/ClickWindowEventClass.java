@@ -15,6 +15,7 @@ public class ClickWindowEventClass extends ImmutableLuaClass<ClickWindowEvent> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, ClickWindowEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     b.add("clickedItem", repo.wrap(event.getClickedItem()));
     b.add("clickType", repo.wrap(event.getClickType()));
     b.add("slotId", repo.wrap(event.getSlotId()));

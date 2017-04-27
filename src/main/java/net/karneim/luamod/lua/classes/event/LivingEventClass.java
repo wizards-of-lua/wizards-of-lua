@@ -15,6 +15,7 @@ public class LivingEventClass extends ImmutableLuaClass<LivingEvent> {
 
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, LivingEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
     // entityLiving is already mapped as entity by superclass EntityEventClass
     // b.add("entityLiving", repo.wrap(event.getEntityLiving());
   }

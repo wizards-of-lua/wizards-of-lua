@@ -14,7 +14,9 @@ public class PlayerRespawnEventClass extends ImmutableLuaClass<PlayerRespawnEven
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, PlayerRespawnEvent event) {}
+  protected void addProperties(PatchedImmutableTable.Builder b, PlayerRespawnEvent event) {
+    b.add("type", repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}
