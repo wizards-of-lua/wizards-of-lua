@@ -25,7 +25,8 @@ and some examples about how to used them in your spells.
 {% for prop in properties %}
 <a style="position:relative; top:-70px; display:block;" name="{{ prop.name }}"></a>
 ### {{ prop.name }} : {{ prop.type }}
-{{ prop.description }}
+
+{{ prop.description | replace: '!SITE_URL!', site.url}}
 {% for ex in prop.examples %}
 {% include_relative {{ ex.url }} %}
 {% endfor %}
