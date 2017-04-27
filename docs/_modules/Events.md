@@ -28,14 +28,21 @@ functions:
 The 'Events' module provides access to the world's event system.
 
 The following Minecraft event types are supported right now:
-* CHAT
-* WHISPER
-* LEFT_CLICK
-* RIGHT_CLICK
-* PLAYER_JOINED
-* PLAYER_LEFT
-* PLAYER_SPAWNED
-* ANIMATION_HAND
+* AnimationHandEvent
+* ClickWindowEvent
+* CustomEvent
+* EntityEvent
+* LeftClickBlockEvent
+* LivingEvent
+* PlayerEvent
+* PlayerGameEvent
+* PlayerInteractEvent
+* PlayerLoggedInEvent
+* PlayerLoggedOutEvent
+* PlayerRespawnEvent
+* RightClickBlockEvent
+* ChatEvent
+* WhisperEvent
 
 Aditionally you can create your own event types and use them with
 the event module.
