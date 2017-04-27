@@ -6,20 +6,21 @@ import java.util.Map;
 
 import net.karneim.luamod.lua.LuaTypeConverter;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.karneim.luamod.lua.util.table.DelegatingTable.Builder;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.sandius.rembulan.Table;
 
 @LuaModule("BlockState")
-public class BlockStateClass extends ImmutableLuaClass<IBlockState> {
+public class BlockStateClass extends DelegatingLuaClass<IBlockState> {
   public BlockStateClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, IBlockState delegate) {
-    b.add("name", repo.wrap(delegate.getBlock().getRegistryName().getResourcePath()));
+  protected void addProperties(Builder<? extends IBlockState> b, IBlockState delegate) {
+    b.addReadOnly("name", () -> repo.wrap(delegate.getBlock().getRegistryName().getResourcePath()));
     Map<Object, Object> props = new HashMap<>();
     Collection<IProperty<?>> names = delegate.getPropertyNames();
     for (IProperty<?> name : names) {
@@ -27,10 +28,12 @@ public class BlockStateClass extends ImmutableLuaClass<IBlockState> {
       Object luaValue = LuaTypeConverter.luaValueOf(value);
       props.put(name.getName(), luaValue);
     }
-    b.add("properties", PatchedImmutableTable.of(props));
-    b.add("material", repo.wrap(delegate.getMaterial()));
+    b.addReadOnly("properties", () -> PatchedImmutableTable.of(props));
+    b.addReadOnly("material", () -> repo.wrap(delegate.getMaterial()));
   }
 
   @Override
   protected void addFunctions(Table luaClass) {}
+
+
 }

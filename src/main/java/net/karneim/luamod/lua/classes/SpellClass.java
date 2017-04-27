@@ -105,15 +105,9 @@ public class SpellClass extends DelegatingLuaClass<Spell> {
         Block block = null;
         if (arg instanceof DelegatingTable) {
           DelegatingTable<IBlockState> table = (DelegatingTable<IBlockState>) arg;
-          String typename = String.valueOf(table.rawget("type"));
-          if ("Block".equals(typename)) {
-            IBlockState blockState = table.getDelegate();
-            delegate.setBlockState(blockState);
-            return;
-          } else {
-            throw new IllegalArgumentException(
-                String.format("Block value expected but got %s!", arg));
-          }
+          IBlockState blockState = checkType(0, table.getDelegate(), IBlockState.class);
+          delegate.setBlockState(blockState);
+          return;
         } else if (arg instanceof Table) {
           Table table = (Table) arg;
           String typename = String.valueOf(table.rawget("type"));
@@ -162,7 +156,10 @@ public class SpellClass extends DelegatingLuaClass<Spell> {
       DelegatingTable<?> self = checkType(0, arg0, DelegatingTable.class);
       Spell delegate = checkType(0, self.getDelegate(), Spell.class);
       String direction = checkTypeString(1, arg1);
-      int length = checkType(2, arg2, Number.class).intValue();
+      int length = 1;
+      if (arg2 != null) {
+        length = checkType(2, arg2, Number.class).intValue();
+      }
 
       EnumFacing x = EnumFacing.byName(direction);
       if (x != null) {
