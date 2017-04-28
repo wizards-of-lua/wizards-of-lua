@@ -9,7 +9,7 @@ However, if you are interested in it anyway you could of course build it yoursel
 More information about this mod is available at the [Wizards of Lua homepage](http://www.wizards-of-lua.net).
 
 ## How to Contribute
-This mod is based on Forge, which is a framework for creating and running Mindecraft mods based on the Java version of Minecraft.
+This mod is based on Forge, which is a framework for creating and running Minecraft mods based on the Java version of Minecraft.
 To contribute to this project you should be familiar with Java 8, Forge, Lua, and Gradle.
 
 Please be aware of the fact that is project is a spare time project. If you post an issue or create a pull request please give us some time to react.
