@@ -13,24 +13,24 @@ who belive that interactive programming opens a wide channel to transform
 the creativity of former plain consumers into a multitude of game contents
 and experiences.
 
-And finally 'The Wizards of Lua' is the name of a Minecraft modification that
-simply adds the `/lua` command to the game.
+And finally 'The Wizards of Lua' is the name of a [Minecraft](https://minecraft.net/de-de/)
+modification that simply adds the `/lua` command to the game.
 
 # The Lingua Magica
 By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/luamod)
 onto your Minecraft server, you are changing the very nature of your Minecraft
 game: it becomes magical in a wordly sense.
-This mod makes Lua, a programming language, available from the in-game chat
-window, so that players can use it online to cast powerful 'spells' to
-control almost any aspect of the world.
+This mod transforms [Lua, the programming language](https://www.lua.org),
+into a 'lingua magica', which is made available from the in-game chat window.
+Players can use it to create and cast powerful 'spells' to control almost any
+aspect of the world.
 
 By using existing function libraries (so called 'spell books') players can enjoy
-completely new variants of the Minecraft game, without any need to understand
-the underlying 'magic'.
-But by studying the spell books and Lua, the lingua magica, players can gain a
-deep knowledge about how the magic works and how anybody can use little
-'magic words' to craft their own unique spells that can do things that were
-not possible before.
+completely new variants of the Minecraft game without great effort.
+And by studying the examples found inside the spell books,
+players can gain a deep knowledge about how the linuga magica works
+and how anybody can use little 'magic words' to craft their own unique spells
+that can do things that were not possible before.
 
 # Casting a Spell
 As any other Minecraft command you can execute it directly from the chat
