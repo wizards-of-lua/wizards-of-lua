@@ -11,6 +11,8 @@ More information about this mod is available at the [Wizards of Lua homepage](ht
 ## How to Contribute Ideas
 If you have any nice idea that you think this mod could benefit from please feel free to tell us about it. You can post ideas, feature requests, questions, or bug reports using the [issue tracker](https://github.com/wizards-of-lua/wizards-of-lua/issues).
 
+Before you post anything, please make sure that you search not only open issues but also [close issues](https://github.com/wizards-of-lua/wizards-of-lua/pulls?q=is%3Aclosed%20) for simmilar posts to prevent duplicate posts. 
+
 ## How to Contribute Source Code
 This mod is based on Forge, which is a framework for creating and running Minecraft mods based on the Java version of Minecraft.
 To contribute source code to this project you should be familiar with Java 8, Forge, Lua, and Gradle.
