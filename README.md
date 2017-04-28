@@ -22,16 +22,16 @@ Please be aware of the fact that is project is a spare time project. If you post
 Right now there are no automated tests. We definitely what to add automated tests when we think the Lua Api and the in-game command API is stable. To do that, we expect to rewrite everything from scratch. So maybe you would like to help us with that?
 
 ## How to Setup a Local Development Environment for Eclipse
-Download the project sources:
-* Clone this repository
+Download the project sources using Git from the command line:
+* `git clone https://github.com/wizards-of-lua/wizards-of-lua.git`
 
-Then open a terminal, change into the directory and run:
+Then change into the `wizards-of-lua` directory and run:
 * `gradlew setupDecompWorkspace`
 * `gradlew eclipse`
 
 Now import the project into Eclipse:
 * Open Eclipse and execute "File > Import > Existing Projects into Workspace"
-* Choose the project directory
+* Choose the `wizards-of-lua` directory
 
 ## How to Run Minecraft from Eclipse
 * Add a runtime configuraton to the project
