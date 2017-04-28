@@ -34,7 +34,7 @@ Now import the project into Eclipse:
 * Choose the `wizards-of-lua` directory
 
 ## How to Run Minecraft from Eclipse
-* Add a runtime configuraton to the project
+* Add a runtime configuration to the project
 * Set `GradleStart` as main class
 * Add the following VM arguments: `-DFORGE_FORCE_FRAME_RECALC=true`
 * Set the working directory to: `${workspace_loc:wizards-of-lua}/run`
