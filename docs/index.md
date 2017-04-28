@@ -30,7 +30,7 @@ completely new variants of the Minecraft game without great effort.
 And by studying the examples found inside the spell books,
 players can gain a deep knowledge about how the linuga magica works
 and how anybody can use little 'magic words' to craft their own unique spells
-that can do things that were not possible before.
+in order to do things that were not possible before.
 
 # Casting a Spell
 As any other Minecraft command you can execute it directly from the chat
