@@ -39,6 +39,6 @@ Now import the project into Eclipse:
 
 ## How to Install the Mod into Minecraft 
 * Install Forge
-* Copy the mod JAR file into the `minecraft/mods` folder
+* Copy the mod JAR file found in `build/libs` into the `minecraft/mods` folder
 * Start Minecraft using the Forge profile
 
