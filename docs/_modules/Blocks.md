@@ -4,7 +4,7 @@ name: Blocks
 properties:
 functions:
   - name: getNbt
-    parameters: Vec3
+    parameters: "[Vec3](!SITE_URL!/modules/Vec3/)"
     results: NBT-Data
     description: "The 'getNbt' function returns the NBT-Data for the block
     at the given position.
@@ -12,7 +12,7 @@ functions:
     examples:
       - url: Blocks/getNbt.md
   - name: putNbt
-    parameters: Vec3, table
+    parameters: "[Vec3](!SITE_URL!/modules/Vec3/), table"
     results: nil
     description: "The 'putNbt' function merges the given table contents into
     the NBT-Data of the block at the given position.

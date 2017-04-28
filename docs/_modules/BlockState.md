@@ -14,7 +14,7 @@ properties:
     a furnace has a property called 'facing' which can be one of 'NORTH', 'EAST', 'SOUTH', and 'WEST'.
     "
   - name: material
-    type: Material
+    type: "[Material](!SITE_URL!/modules/Material/)"
     access: r
     description: "
     The 'material' give you some insights in how this block behaves.

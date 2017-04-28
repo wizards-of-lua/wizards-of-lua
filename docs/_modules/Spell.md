@@ -3,7 +3,7 @@ title: How to Controll the Aspects of an Active Spell
 name: Spell
 properties:
   - name: block
-    type: BlockState
+    type: "[BlockState](!SITE_URL!/modules/BlockState/)"
     access: r/w
     description: "The 'block' denotes the *block's state* at the spell's position. Use
     it to find out about what material the block is constructed of, or in which
@@ -20,19 +20,19 @@ properties:
     examples:
       - url: Spell/orientation.md
   - name: origin
-    type: Vec3
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r
     description: The spell's initial position where it was casted.
     examples:
       - url: Spell/origin.md
   - name: owner
-    type: Entity
+    type: "[Entity](!SITE_URL!/modules/Entity/)"
     access: r
     description: The entity that has casted this spell. Normally this is a Player, or nil if the spell has been casted by a command block.
     examples:
       - url: Spell/owner.md
   - name: pos
-    type: Vec3
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r/w
     description: The spell's current position.
     examples:
@@ -147,6 +147,6 @@ functions:
 "Spell" is one of the main magic types used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.
 For example, you can specify the exact location in the world where the spell will
-be acting apon by calling something like `spell.pos = vec3(100,64,200)`.
+be acting apon by calling something like `spell.pos = Vec3.from( 100, 64, 200)`.
 
 {% include module-body.md %}

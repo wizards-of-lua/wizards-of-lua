@@ -23,13 +23,13 @@ properties:
     -1 is the Nether, and 1 is the End.
     "
   - name: pos
-    type: Vec3
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r/w
     description: "The 'pos' is short for 'position'. It is a 3-dimensional vector
     containing the location of the entity inside the world it is living in.
     "
   - name: blockPos
-    type: Vec3
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r
     description: "The 'blockPos' is the position of the block
     where the entity is currently located. A block is a logical cube with
@@ -68,7 +68,7 @@ properties:
     90 (straight down).
     "
   - name: lookVec
-    type: Vec3
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r
     description: "The 'lookVec' is the vector that points into the same direction
     the entity is currently looking at, of course only if it has any eyes to
@@ -94,7 +94,7 @@ properties:
     it can vary, for example for the Boat and the Minecart.
     "
   - name: motion
-    type: Vec3
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r/w
     description: "The 'motion' is a vector that points into the direction this
     entity is currently moving to, controlled by an external force.

@@ -3,7 +3,7 @@ Here is a brief list of the {{ page.name }}'s *properties*:
 
 | Property             | Type          | read / write |
 | ---------------------|---------------| :-----------:|
-{% for prop in properties %}| [{{ prop.name }}](#{{ prop.name }}) | {{ prop.type }} | {{ prop.access }} |
+{% for prop in properties %}| [{{ prop.name }}](#{{ prop.name }}) | {{ prop.type | replace: '!SITE_URL!', site.url }} | {{ prop.access }} |
 {% endfor %}
 {% endif %}
 {% if page.functions %}
@@ -11,7 +11,7 @@ Here is a brief list of the {{ page.name }}'s *functions*:
 
 | Function             | Parameters    | Results      |
 | ---------------------|---------------| :-----------:|
-{% for func in functions %}| [{{ func.name }}](#{{ func.name }}) | {{ func.parameters }} | {{ func.results }} |
+{% for func in functions %}| [{{ func.name }}](#{{ func.name }}) | {{ func.parameters | replace: '!SITE_URL!', site.url }} | {{ func.results | replace: '!SITE_URL!', site.url }} |
 {% endfor %}
 {% endif %}
 
@@ -24,7 +24,7 @@ and some examples about how to used them in your spells.
 ---
 {% for prop in properties %}
 <a style="position:relative; top:-70px; display:block;" name="{{ prop.name }}"></a>
-### {{ prop.name }} : {{ prop.type }}
+### {{ prop.name }} : {{ prop.type | replace: '!SITE_URL!', site.url }}
 
 {{ prop.description | replace: '!SITE_URL!', site.url}}
 {% for ex in prop.examples %}
@@ -43,7 +43,7 @@ and some examples about how to used them in your spells.
 ---
 {% for func in functions %}
 <a style="position:relative; top:-70px; display:block;" name="{{ func.name }}"></a>
-### {{ func.name }} ({{ func.parameters }}) -> {{ func.results }}
+### {{ func.name }} ({{ func.parameters | replace: '!SITE_URL!', site.url }}) -> {{ func.results | replace: '!SITE_URL!', site.url }}
 
 {{ func.description | replace: '!SITE_URL!', site.url}}
 {% for ex in func.examples %}
