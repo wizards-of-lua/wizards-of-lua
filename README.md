@@ -1,10 +1,40 @@
 # "Wizards of Lua" Mod
 
-The Wizards of Lua Mod is a modification of Minecraft that adds the `/lua` command to the game.
+The Wizards of Lua Mod is a modification of Minecraft. It adds the `/lua` command to the game.
 
-Since this is an early access version of the mod there is no public download link for the binary available.
+Since this project still is in development there is no public download link for the binary available right now.
 We are still working hard to get some stable version.
-However, if you are interested you can of course build it yourself from the sources.
+However, if you are interested in it anyway you could of course build it yourself from the sources.
 
 More information about this mod is available at the [Wizards of Lua homepage](http://www.wizards-of-lua.net).
+
+## How to Contribute
+This mod is based on Forge, which is a framework for creating and running Mindecraft mods based on the Java version of Minecraft.
+To contribute to this project you should be familiar with Java 8, Forge, Lua, and Gradle.
+
+## How to Setup a Local Development Environment for Eclipse
+Download the project sources:
+* Clone this repository
+
+Then open a terminal, change into the directory and run:
+* `gradlew setupDecompWorkspace`
+* `gradlew eclipse`
+
+Now import the project into Eclipse:
+* Open Eclipse and execute "File > Import > Existing Projects into Workspace"
+* Choose the project directory
+
+## How to Run Minecraft from Eclipse
+* Add a runtime configuraton to the project
+* Set `GradleStart` as main class
+* Add the following VM arguments: `-DFORGE_FORCE_FRAME_RECALC=true`
+* Set the working directory to: `${workspace_loc:wizards-of-lua}/run`
+
+## How to Create a Mod Binary
+* Execute `gradlew build`
+
+## How to Install the Mod into Minecraft 
+* Install Forge
+* Copy the mod JAR file into the `minecraft/mods` folder
+* Start Minecraft using the Forge profile
 
