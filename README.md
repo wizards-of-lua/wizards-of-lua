@@ -14,10 +14,12 @@ If you have any nice idea that you think this mod could benefit from please feel
 Before you post anything, please make sure that you search not only open issues but also [close issues](https://github.com/wizards-of-lua/wizards-of-lua/pulls?q=is%3Aclosed%20) for simmilar posts to prevent duplicate posts. 
 
 ## How to Contribute Source Code
+We really welcome code contributions, but please be aware that we are a bit 'picky'. We won't include things that we think are not matching our vision of this project.
+
 This mod is based on Forge, which is a framework for creating and running Minecraft mods based on the Java version of Minecraft.
 To contribute source code to this project you should be familiar with Java 8, Forge, Lua, and Gradle.
 
-Please be aware of the fact that is project is a spare time project. If you post an issue or create a pull request please give us some time to react.
+Please not that is project is a spare time project. If you post an issue or create a pull request please give us some time to react.
 
 Right now there are no automated tests. We definitely what to add automated tests when we think the Lua Api and the in-game command API is stable. To do that, we expect to rewrite everything from scratch. So maybe you would like to help us with that?
 
