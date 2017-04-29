@@ -9,15 +9,29 @@ import java.util.WeakHashMap;
 
 import javax.annotation.Nullable;
 
+import com.google.common.reflect.TypeToken;
+
 import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 
 public abstract class CachingLuaClass<J, L> extends LuaClass implements LuaWrapper<J, L> {
   private final Map<J, SoftReference<L>> luaObjects = new WeakHashMap<>();
   private final Map<L, WeakReference<J>> javaObjects = new WeakHashMap<>();
+  private @Nullable Class<J> javaClass;
 
   public CachingLuaClass(LuaTypesRepo repo) {
     super(repo);
+  }
+
+  public Class<J> getJavaClass() {
+    if (javaClass == null) {
+      @SuppressWarnings("serial")
+      TypeToken<J> token = new TypeToken<J>() {};
+      @SuppressWarnings("unchecked")
+      Class<J> rawType = (Class<J>) token.getRawType();
+      javaClass = rawType;
+    }
+    return javaClass;
   }
 
   public @Nullable L getLuaObjectNullable(@Nullable J javaObject) {

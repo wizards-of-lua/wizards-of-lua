@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.classes.entity.EntityClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityItemClass;
@@ -45,6 +48,7 @@ import net.karneim.luamod.lua.event.ClickWindowEvent;
 import net.karneim.luamod.lua.event.CustomLuaEvent;
 import net.karneim.luamod.lua.event.WhisperEvent;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.karneim.luamod.lua.wrapper.ModifiableArrayWrapper;
 import net.karneim.luamod.lua.wrapper.UnmodifiableIterableWrapper;
 import net.minecraft.block.material.Material;
@@ -83,6 +87,7 @@ import net.sandius.rembulan.Table;
 public class LuaTypesRepo {
 
   private final Map<String, LuaClass> types = new HashMap<>();
+  private final Multimap<LuaClass, LuaClass> subClasses = HashMultimap.create();
   private final Table env;
 
   public LuaTypesRepo(Table env) {
@@ -113,11 +118,25 @@ public class LuaTypesRepo {
       throw new IllegalArgumentException(String.format("Type %s is already definded!", luaClass));
     }
     types.put(name, luaClass);
+    subClasses.put(luaClass.getSuperClass(), luaClass);
+  }
+
+  private <T> DelegatingTable<? extends T> wrap(T javaObject, DelegatingLuaClass<T> luaClass) {
+    for (LuaClass subClass : subClasses.get(luaClass)) {
+      if (subClass instanceof DelegatingLuaClass) {
+        @SuppressWarnings("unchecked")
+        DelegatingLuaClass<T> uncheckedSubClass = (DelegatingLuaClass<T>) subClass;
+        if (uncheckedSubClass.getJavaClass().isInstance(javaObject)) {
+          return wrap(javaObject, uncheckedSubClass);
+        }
+      }
+    }
+    return luaClass.getLuaObjectNullable(javaObject);
   }
 
   public @Nullable DelegatingTable<? extends AnimationHandEvent> wrap(
       @Nullable AnimationHandEvent javaObject) {
-    return get(AnimationHandEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(AnimationHandEventClass.class));
   }
 
   public boolean wrap(boolean javaObject) {
@@ -134,16 +153,16 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends ClickWindowEvent> wrap(
       @Nullable ClickWindowEvent javaObject) {
-    return get(ClickWindowEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ClickWindowEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends CustomLuaEvent> wrap(
       @Nullable CustomLuaEvent javaObject) {
-    return get(CustomLuaEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(CustomLuaEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends DamageSource> wrap(@Nullable DamageSource javaObject) {
-    return get(DamageSourceClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(DamageSourceClass.class));
   }
 
   public double wrap(double javaObject) {
@@ -151,46 +170,28 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends Entity> wrap(@Nullable Entity javaObject) {
-    if (javaObject instanceof EntityItem) {
-      return wrap((EntityItem) javaObject);
-    }
-    if (javaObject instanceof EntityLivingBase) {
-      return wrap((EntityLivingBase) javaObject);
-    }
-    return get(EntityClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EntityClass.class));
   }
 
   public @Nullable DelegatingTable<? extends EntityEvent> wrap(@Nullable EntityEvent javaObject) {
-    if (javaObject instanceof ItemEvent) {
-      return wrap((ItemEvent) javaObject);
-    }
-    if (javaObject instanceof LivingEvent) {
-      return wrap((LivingEvent) javaObject);
-    }
-    return get(EntityEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EntityEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends EntityItem> wrap(@Nullable EntityItem javaObject) {
-    return get(EntityItemClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EntityItemClass.class));
   }
 
   public @Nullable DelegatingTable<? extends EntityLiving> wrap(@Nullable EntityLiving javaObject) {
-    return get(EntityLivingClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EntityLivingClass.class));
   }
 
   public @Nullable DelegatingTable<? extends EntityLivingBase> wrap(
       @Nullable EntityLivingBase javaObject) {
-    if (javaObject instanceof EntityLiving) {
-      return wrap((EntityLiving) javaObject);
-    }
-    if (javaObject instanceof EntityPlayer) {
-      return wrap((EntityPlayer) javaObject);
-    }
-    return get(EntityLivingBaseClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EntityLivingBaseClass.class));
   }
 
   public @Nullable DelegatingTable<? extends EntityPlayer> wrap(@Nullable EntityPlayer javaObject) {
-    return get(EntityPlayerClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EntityPlayerClass.class));
   }
 
   public @Nullable ByteString wrap(@Nullable Enum<?> javaObject) {
@@ -198,22 +199,7 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends Event> wrap(@Nullable Event javaObject) {
-    if (javaObject instanceof CustomLuaEvent) {
-      return wrap((CustomLuaEvent) javaObject);
-    }
-    if (javaObject instanceof EntityEvent) {
-      return wrap((EntityEvent) javaObject);
-    }
-    if (javaObject instanceof PotionBrewEvent) {
-      return wrap((PotionBrewEvent) javaObject);
-    }
-    if (javaObject instanceof ServerChatEvent) {
-      return wrap((ServerChatEvent) javaObject);
-    }
-    if (javaObject instanceof WhisperEvent) {
-      return wrap((WhisperEvent) javaObject);
-    }
-    return get(EventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(EventClass.class));
   }
 
   public double wrap(float javaObject) {
@@ -221,7 +207,7 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends IBlockState> wrap(@Nullable IBlockState javaObject) {
-    return get(BlockStateClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(BlockStateClass.class));
   }
 
   public long wrap(int javaObject) {
@@ -229,103 +215,70 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends ItemEvent> wrap(@Nullable ItemEvent javaObject) {
-    if (javaObject instanceof ItemExpireEvent) {
-      return wrap((ItemExpireEvent) javaObject);
-    }
-    if (javaObject instanceof ItemTossEvent) {
-      return wrap((ItemTossEvent) javaObject);
-    }
-    return get(ItemEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ItemEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends ItemExpireEvent> wrap(
       @Nullable ItemExpireEvent javaObject) {
-    return get(ItemExpireEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ItemExpireEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends ItemStack> wrap(@Nullable ItemStack javaObject) {
-    return get(ItemStackClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ItemStackClass.class));
   }
 
   public @Nullable DelegatingTable<? extends ItemTossEvent> wrap(
       @Nullable ItemTossEvent javaObject) {
-    return get(ItemTossEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ItemTossEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LeftClickBlock> wrap(
       @Nullable LeftClickBlock javaObject) {
-    return get(LeftClickBlockEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LeftClickBlockEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingAttackEvent> wrap(
       @Nullable LivingAttackEvent javaObject) {
-    return get(LivingAttackEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingAttackEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingDeathEvent> wrap(
       @Nullable LivingDeathEvent javaObject) {
-    return get(LivingDeathEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingDeathEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingDropsEvent> wrap(
       @Nullable LivingDropsEvent javaObject) {
-    return get(LivingDropsEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingDropsEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingEntityUseItemEvent> wrap(
       @Nullable LivingEntityUseItemEvent javaObject) {
-    if (javaObject instanceof LivingEntityUseItemEvent.Finish) {
-      return wrap((LivingEntityUseItemEvent.Finish) javaObject);
-    }
-    if (javaObject instanceof LivingEntityUseItemEvent.Start) {
-      return wrap((LivingEntityUseItemEvent.Finish) javaObject);
-    }
-    if (javaObject instanceof LivingEntityUseItemEvent.Stop) {
-      return wrap((LivingEntityUseItemEvent.Finish) javaObject);
-    }
-    if (javaObject instanceof LivingEntityUseItemEvent.Tick) {
-      return wrap((LivingEntityUseItemEvent.Finish) javaObject);
-    }
-    return get(LivingEntityUseItemEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingEntityUseItemEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingEntityUseItemEvent.Finish> wrap(
       @Nullable LivingEntityUseItemEvent.Finish javaObject) {
-    return get(LivingEntityUseItemFinishEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingEntityUseItemFinishEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingEntityUseItemEvent.Start> wrap(
       @Nullable LivingEntityUseItemEvent.Start javaObject) {
-    return get(LivingEntityUseItemStartEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingEntityUseItemStartEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingEntityUseItemEvent.Stop> wrap(
       @Nullable LivingEntityUseItemEvent.Stop javaObject) {
-    return get(LivingEntityUseItemStopEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingEntityUseItemStopEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingEntityUseItemEvent.Tick> wrap(
       @Nullable LivingEntityUseItemEvent.Tick javaObject) {
-    return get(LivingEntityUseItemTickEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingEntityUseItemTickEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends LivingEvent> wrap(@Nullable LivingEvent javaObject) {
-    if (javaObject instanceof LivingAttackEvent) {
-      return wrap((LivingAttackEvent) javaObject);
-    }
-    if (javaObject instanceof LivingDeathEvent) {
-      return wrap((LivingDeathEvent) javaObject);
-    }
-    if (javaObject instanceof LivingDropsEvent) {
-      return wrap((LivingDropsEvent) javaObject);
-    }
-    if (javaObject instanceof LivingEntityUseItemEvent) {
-      return wrap((LivingEntityUseItemEvent) javaObject);
-    }
-    if (javaObject instanceof PlayerEvent) {
-      return wrap((PlayerEvent) javaObject);
-    }
-    return get(LivingEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(LivingEventClass.class));
   }
 
   public long wrap(long javaObject) {
@@ -333,91 +286,61 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends Material> wrap(@Nullable Material javaObject) {
-    return get(MaterialClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(MaterialClass.class));
   }
 
   public @Nullable DelegatingTable<? extends net.minecraftforge.fml.common.gameevent.PlayerEvent> wrap(
       @Nullable net.minecraftforge.fml.common.gameevent.PlayerEvent javaObject) {
-    if (javaObject instanceof PlayerLoggedInEvent) {
-      return wrap((PlayerLoggedInEvent) javaObject);
-    }
-    if (javaObject instanceof PlayerLoggedOutEvent) {
-      return wrap((PlayerLoggedOutEvent) javaObject);
-    }
-    if (javaObject instanceof PlayerRespawnEvent) {
-      return wrap((PlayerRespawnEvent) javaObject);
-    }
-    return get(PlayerGameEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PlayerGameEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PlayerEvent> wrap(@Nullable PlayerEvent javaObject) {
-    if (javaObject instanceof AnimationHandEvent) {
-      return wrap((AnimationHandEvent) javaObject);
-    }
-    if (javaObject instanceof ClickWindowEvent) {
-      return wrap((ClickWindowEvent) javaObject);
-    }
-    if (javaObject instanceof PlayerInteractEvent) {
-      return wrap((PlayerInteractEvent) javaObject);
-    }
-    return get(PlayerEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PlayerEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PlayerInteractEvent> wrap(
       @Nullable PlayerInteractEvent javaObject) {
-    if (javaObject instanceof LeftClickBlock) {
-      return wrap((LeftClickBlock) javaObject);
-    }
-    if (javaObject instanceof RightClickBlock) {
-      return wrap((RightClickBlock) javaObject);
-    }
-    return get(PlayerInteractEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PlayerInteractEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PlayerLoggedInEvent> wrap(
       @Nullable PlayerLoggedInEvent javaObject) {
-    return get(PlayerLoggedInEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PlayerLoggedInEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PlayerLoggedOutEvent> wrap(
       @Nullable PlayerLoggedOutEvent javaObject) {
-    return get(PlayerLoggedOutEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PlayerLoggedOutEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PlayerRespawnEvent> wrap(
       @Nullable PlayerRespawnEvent javaObject) {
-    return get(PlayerRespawnEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PlayerRespawnEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PotionBrewEvent> wrap(
       @Nullable PotionBrewEvent javaObject) {
-    if (javaObject instanceof PotionBrewEvent.Pre) {
-      return wrap((PotionBrewEvent.Pre) javaObject);
-    }
-    if (javaObject instanceof PotionBrewEvent.Post) {
-      return wrap((PotionBrewEvent.Post) javaObject);
-    }
-    return get(PotionBrewEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PotionBrewEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PotionBrewEvent.Post> wrap(
       @Nullable PotionBrewEvent.Post javaObject) {
-    return get(PotionBrewPostEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PotionBrewPostEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends PotionBrewEvent.Pre> wrap(
       @Nullable PotionBrewEvent.Pre javaObject) {
-    return get(PotionBrewPreEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(PotionBrewPreEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends RightClickBlock> wrap(
       @Nullable RightClickBlock javaObject) {
-    return get(RightClickBlockEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(RightClickBlockEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends ServerChatEvent> wrap(
       @Nullable ServerChatEvent javaObject) {
-    return get(ServerChatEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ServerChatEventClass.class));
   }
 
   public long wrap(short javaObject) {
@@ -425,7 +348,7 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends Spell> wrap(@Nullable Spell javaObject) {
-    return get(SpellClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(SpellClass.class));
   }
 
   public @Nullable ByteString wrap(@Nullable String javaObject) {
@@ -433,7 +356,7 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3d javaObject) {
-    return get(Vec3Class.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(Vec3Class.class));
   }
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3i javaObject) {
@@ -441,12 +364,12 @@ public class LuaTypesRepo {
   }
 
   public @Nullable DelegatingTable<? extends WhisperEvent> wrap(@Nullable WhisperEvent javaObject) {
-    return get(WhisperEventClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(WhisperEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends Iterable<ItemStack>> wrapArmor(
       @Nullable Iterable<ItemStack> javaObject) {
-    return get(ArmorClass.class).getLuaObjectNullable(javaObject);
+    return wrap(javaObject, get(ArmorClass.class));
   }
 
   public @Nullable DelegatingTable<? extends Iterable<String>> wrapStrings(
