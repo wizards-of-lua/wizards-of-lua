@@ -31,6 +31,8 @@ import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemSta
 import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemStopEventClass;
 import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemTickEventClass;
 import net.karneim.luamod.lua.classes.event.entity.living.LivingEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingSpawnEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.SpecialSpawnEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.LeftClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEventClass;
@@ -62,6 +64,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.brewing.PotionBrewEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -73,6 +76,8 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -268,6 +273,11 @@ public class LuaTypesRepo {
     return wrap(javaObject, get(LivingEventClass.class));
   }
 
+  public @Nullable DelegatingTable<? extends LivingSpawnEvent> wrap(
+      @Nullable LivingSpawnEvent javaObject) {
+    return wrap(javaObject, get(LivingSpawnEventClass.class));
+  }
+
   public long wrap(long javaObject) {
     return javaObject;
   }
@@ -334,6 +344,10 @@ public class LuaTypesRepo {
     return javaObject;
   }
 
+  public @Nullable DelegatingTable<? extends SpecialSpawn> wrap(@Nullable SpecialSpawn javaObject) {
+    return wrap(javaObject, get(SpecialSpawnEventClass.class));
+  }
+
   public @Nullable DelegatingTable<? extends Spell> wrap(@Nullable Spell javaObject) {
     return wrap(javaObject, get(SpellClass.class));
   }
@@ -365,6 +379,10 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends WhisperEvent> wrap(@Nullable WhisperEvent javaObject) {
     return wrap(javaObject, get(WhisperEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends World> wrap(@Nullable World javaObject) {
+    return wrap(javaObject, get(WorldClass.class));
   }
 
   public @Nullable DelegatingTable<? extends Iterable<ItemStack>> wrapArmor(
