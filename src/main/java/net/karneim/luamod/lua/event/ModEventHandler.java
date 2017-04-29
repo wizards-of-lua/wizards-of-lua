@@ -14,6 +14,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.SpellEntity;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.event.EventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
 import net.karneim.luamod.lua.classes.event.entity.EntityEventClass;
@@ -29,7 +30,6 @@ import net.karneim.luamod.lua.classes.event.game.PlayerRespawnEventClass;
 import net.karneim.luamod.lua.classes.event.wol.AnimationHandEventClass;
 import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
@@ -192,8 +192,8 @@ public class ModEventHandler {
     for (SpellEntity e : mod.getSpellRegistry().getAll()) {
       Events events = e.getEvents();
       if (events.getRegisteredEventTypes().contains(eventType)) {
-        PatchedImmutableTable luaEvent = events.getRepo().wrap(event);
-        events.handle(eventType, luaEvent);
+        LuaTypesRepo repo = events.getRepo();
+        events.handle(eventType, repo.wrap(event));
       }
     }
   }

@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.classes.event.game;
 
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.DelegatingTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.sandius.rembulan.Table;
@@ -14,7 +14,8 @@ public class PlayerLoggedInEventClass extends DelegatingLuaClass<PlayerLoggedInE
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder b, PlayerLoggedInEvent event) {}
+  protected void addProperties(DelegatingTable.Builder<? extends PlayerLoggedInEvent> b,
+      PlayerLoggedInEvent delegate) {}
 
   @Override
   protected void addFunctions(Table luaClass) {}

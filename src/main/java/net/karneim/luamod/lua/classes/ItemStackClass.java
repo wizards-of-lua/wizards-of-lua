@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
 
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
-import net.karneim.luamod.lua.patched.DelegatingTable;
+import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.item.Item;
@@ -82,11 +82,11 @@ public class ItemStackClass extends DelegatingLuaClass<ItemStack> {
       ItemStack delegate = checkType(self.getDelegate(), ItemStack.class);
 
       NBTTagCompound tagCompound = delegate.writeToNBT(new NBTTagCompound());
-      DelegatingTable.Builder builder = new DelegatingTable.Builder();
+      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
       if (tagCompound != null) {
         NBTTagUtil.insertValues(builder, tagCompound);
       }
-      DelegatingTable tbl = builder.build();
+      PatchedImmutableTable tbl = builder.build();
 
       context.getReturnBuffer().setTo(tbl);
     }

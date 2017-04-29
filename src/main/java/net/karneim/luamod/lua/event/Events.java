@@ -13,7 +13,6 @@ import com.google.common.collect.Multimap;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellRegistry;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 
 public class Events {
   private final LuaTypesRepo repo;
@@ -79,8 +78,9 @@ public class Events {
 
     for (SpellEntity spell : spellRegistry.getAll()) {
       Events events = spell.getEvents();
-      PatchedImmutableTable luaEvent = events.getRepo().wrap(new CustomLuaEvent(eventType, data));
-      events.handle(eventType, luaEvent);
+      LuaTypesRepo repo = events.getRepo();
+      CustomLuaEvent event = new CustomLuaEvent(eventType, data);
+      events.handle(eventType, repo.wrap(event));
     }
   }
 

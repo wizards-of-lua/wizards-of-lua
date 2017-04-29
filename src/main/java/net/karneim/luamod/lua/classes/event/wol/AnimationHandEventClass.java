@@ -3,7 +3,7 @@ package net.karneim.luamod.lua.classes.event.wol;
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.event.AnimationHandEvent;
-import net.karneim.luamod.lua.patched.DelegatingTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.sandius.rembulan.Table;
 
@@ -14,8 +14,9 @@ public class AnimationHandEventClass extends DelegatingLuaClass<AnimationHandEve
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder b, AnimationHandEvent event) {
-    b.add("hand", repo.wrap(event.getHand()));
+  protected void addProperties(DelegatingTable.Builder<? extends AnimationHandEvent> b,
+      AnimationHandEvent delegate) {
+    b.addReadOnly("hand", () -> repo.wrap(delegate.getHand()));
   }
 
   @Override

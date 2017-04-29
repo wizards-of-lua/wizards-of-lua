@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.event.CustomLuaEvent;
-import net.karneim.luamod.lua.patched.DelegatingTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
@@ -23,10 +22,12 @@ public class CustomLuaEventClass extends DelegatingLuaClass<CustomLuaEvent> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder b, CustomLuaEvent event) {
+  protected void addProperties(DelegatingTable.Builder<? extends CustomLuaEvent> b,
+      CustomLuaEvent delegate) {
     // overwite type defined in EventClass
-    b.add("type", repo.wrap(event.getType()));
-    b.add("data", copyData(event.getData()));
+    b.addReadOnly("type", () -> repo.wrap(delegate.getType()));
+    Object dataCopy = copyData(delegate.getData());
+    b.addReadOnly("data", () -> dataCopy);
   }
 
   private @Nullable Object copyData(@Nullable Object data) {

@@ -1,6 +1,6 @@
 package net.karneim.luamod.lua.classes;
 
-import net.karneim.luamod.lua.patched.DelegatingTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
@@ -13,10 +13,10 @@ public class Vec3Class extends DelegatingLuaClass<Vec3d> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder builder, Vec3d javaObject) {
-    builder.add("x", repo.wrap(javaObject.xCoord));
-    builder.add("y", repo.wrap(javaObject.yCoord));
-    builder.add("z", repo.wrap(javaObject.zCoord));
+  protected void addProperties(DelegatingTable.Builder<? extends Vec3d> b, Vec3d delegate) {
+    b.addReadOnly("x", () -> repo.wrap(delegate.xCoord));
+    b.addReadOnly("y", () -> repo.wrap(delegate.yCoord));
+    b.addReadOnly("z", () -> repo.wrap(delegate.zCoord));
   }
 
   @Override

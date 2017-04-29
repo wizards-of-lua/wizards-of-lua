@@ -121,19 +121,6 @@ public class LuaTypesRepo {
     subClasses.put(luaClass.getSuperClass(), luaClass);
   }
 
-  private <T> DelegatingTable<? extends T> wrap(T javaObject, DelegatingLuaClass<T> luaClass) {
-    for (LuaClass subClass : subClasses.get(luaClass)) {
-      if (subClass instanceof DelegatingLuaClass) {
-        @SuppressWarnings("unchecked")
-        DelegatingLuaClass<T> uncheckedSubClass = (DelegatingLuaClass<T>) subClass;
-        if (uncheckedSubClass.getJavaClass().isInstance(javaObject)) {
-          return wrap(javaObject, uncheckedSubClass);
-        }
-      }
-    }
-    return luaClass.getLuaObjectNullable(javaObject);
-  }
-
   public @Nullable DelegatingTable<? extends AnimationHandEvent> wrap(
       @Nullable AnimationHandEvent javaObject) {
     return wrap(javaObject, get(AnimationHandEventClass.class));
@@ -353,6 +340,19 @@ public class LuaTypesRepo {
 
   public @Nullable ByteString wrap(@Nullable String javaObject) {
     return javaObject == null ? null : ByteString.of(javaObject);
+  }
+
+  private <T> DelegatingTable<? extends T> wrap(T javaObject, DelegatingLuaClass<T> luaClass) {
+    for (LuaClass subClass : subClasses.get(luaClass)) {
+      if (subClass instanceof DelegatingLuaClass) {
+        @SuppressWarnings("unchecked")
+        DelegatingLuaClass<T> uncheckedSubClass = (DelegatingLuaClass<T>) subClass;
+        if (uncheckedSubClass.getJavaClass().isInstance(javaObject)) {
+          return wrap(javaObject, uncheckedSubClass);
+        }
+      }
+    }
+    return luaClass.getLuaObjectNullable(javaObject);
   }
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3d javaObject) {
