@@ -1,4 +1,4 @@
-package net.karneim.luamod.lua.classes.event.brewing;
+package net.karneim.luamod.lua.classes.inventory;
 
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeDelegatingTable;
 
@@ -6,55 +6,49 @@ import java.util.function.Function;
 
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable.Builder;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.karneim.luamod.lua.wrapper.FixedSizeCollection;
 import net.karneim.luamod.lua.wrapper.FixedSizeCollectionWrapper;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.brewing.PotionBrewEvent;
 import net.sandius.rembulan.Table;
 
-@LuaModule("PotionBrewEvent")
-public class PotionBrewEventClass extends DelegatingLuaClass<PotionBrewEvent> {
-  public PotionBrewEventClass(LuaTypesRepo repo) {
+@LuaModule("Inventory")
+public class InventoryClass extends DelegatingLuaClass<IInventory> {
+  public InventoryClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder<? extends PotionBrewEvent> b,
-      PotionBrewEvent delegate) {
-    DelegatingTable<PotionBrewEvent> wrappedItems = wrapItems(delegate);
-    b.addReadOnly("items", () -> wrappedItems);
-  }
-
-  private DelegatingTable<PotionBrewEvent> wrapItems(PotionBrewEvent delegate) {
+  protected void addProperties(Builder<? extends IInventory> b, IInventory delegate) {
     Function<ItemStack, Object> toLua = j -> repo.wrap(j);
     Function<Object, ItemStack> toJava = l -> checkTypeDelegatingTable(l, ItemStack.class);
-    FixedSizeCollectionWrapper<ItemStack, Object, PotionBrewEvent> itemsWrapper =
+    FixedSizeCollectionWrapper<ItemStack, Object, IInventory> wrapper =
         new FixedSizeCollectionWrapper<>(Object.class, toLua, toJava);
-    FixedSizeCollection<ItemStack, PotionBrewEvent> items =
-        new FixedSizeCollection<ItemStack, PotionBrewEvent>() {
+    FixedSizeCollection<ItemStack, IInventory> items =
+        new FixedSizeCollection<ItemStack, IInventory>() {
           @Override
           public void setAt(int i, ItemStack element) {
-            delegate.setItem(i, element);
+            delegate.setInventorySlotContents(i, element);
           }
 
           @Override
           public int getLength() {
-            return delegate.getLength();
+            return delegate.getSizeInventory();
           }
 
           @Override
-          public PotionBrewEvent getDelegate() {
+          public IInventory getDelegate() {
             return delegate;
           }
 
           @Override
           public ItemStack getAt(int i) {
-            return delegate.getItem(i);
+            return delegate.getStackInSlot(i);
           }
         };
-    return itemsWrapper.createLuaObject(items);
+    wrapper.addProperties(b, items);
   }
 
   @Override

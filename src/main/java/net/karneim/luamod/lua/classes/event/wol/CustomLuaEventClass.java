@@ -1,6 +1,5 @@
 package net.karneim.luamod.lua.classes.event.wol;
 
-
 import java.util.Map.Entry;
 
 import javax.annotation.Nullable;

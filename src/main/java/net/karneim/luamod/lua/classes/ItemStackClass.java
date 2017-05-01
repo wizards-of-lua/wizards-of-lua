@@ -2,6 +2,7 @@ package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeDelegatingTable;
 
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
@@ -75,11 +76,10 @@ public class ItemStackClass extends DelegatingLuaClass<ItemStack> {
     luaClass.rawset("putNbt", new PutNbtFunction());
   }
 
-  private class GetNbtFunction extends AbstractFunction1 {
+  private static class GetNbtFunction extends AbstractFunction1 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      DelegatingTable<?> self = checkType(arg1, DelegatingTable.class);
-      ItemStack delegate = checkType(self.getDelegate(), ItemStack.class);
+    public void invoke(ExecutionContext context, Object arg0) throws ResolvedControlThrowable {
+      ItemStack delegate = checkTypeDelegatingTable(arg0, ItemStack.class);
 
       NBTTagCompound tagCompound = delegate.writeToNBT(new NBTTagCompound());
       PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
@@ -98,14 +98,12 @@ public class ItemStackClass extends DelegatingLuaClass<ItemStack> {
     }
   }
 
-  private class PutNbtFunction extends AbstractFunction2 {
+  private static class PutNbtFunction extends AbstractFunction2 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+    public void invoke(ExecutionContext context, Object arg0, Object arg1)
         throws ResolvedControlThrowable {
-      DelegatingTable<?> self = checkType(0, arg1, DelegatingTable.class);
-      ItemStack delegate = checkType(0, self.getDelegate(), ItemStack.class);
-
-      Table data = checkType(1, arg2, Table.class);
+      ItemStack delegate = checkTypeDelegatingTable(0, arg0, ItemStack.class);
+      Table data = checkType(1, arg1, Table.class);
 
       NBTTagCompound origTag = delegate.writeToNBT(new NBTTagCompound());
       NBTTagCompound mergedTag = NBTTagUtil.merge(origTag, data);

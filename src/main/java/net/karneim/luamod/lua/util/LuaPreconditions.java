@@ -61,6 +61,21 @@ public class LuaPreconditions {
     return checkTypeDelegatingTable(arg, delegateType);
   }
 
+  public static <T> T checkTypeDelegatingTable(int argIndex, Object arg, Class<T> delegateType) {
+    checkNotNull(delegateType, "delegateType == null!");
+    Object delegate = checkType(argIndex, arg, DelegatingTable.class).getDelegate();
+    return checkType(argIndex, delegate, delegateType);
+  }
+
+  public static <T> T checkTypeDelegatingTableNullable(int argIndex, @Nullable Object arg,
+      Class<T> delegateType) {
+    checkNotNull(delegateType, "delegateType == null!");
+    if (arg == null) {
+      return null;
+    }
+    return checkTypeDelegatingTable(argIndex, arg, delegateType);
+  }
+
   public static int checkTypeInt(Object arg) {
     checkArgument(arg != null, "Expected Integer but got nil");
     return checkTypeIntNullable(arg);

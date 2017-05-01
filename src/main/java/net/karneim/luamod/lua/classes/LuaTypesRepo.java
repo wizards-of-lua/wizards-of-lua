@@ -13,6 +13,15 @@ import com.google.common.collect.Multimap;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.lua.classes.entity.EntityClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityItemClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartChestClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartCommandBlockClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartContainerClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartEmptyClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartFurnaceClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartHopperClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartMobSpawnerClass;
+import net.karneim.luamod.lua.classes.entity.item.EntityMinecartTntClass;
 import net.karneim.luamod.lua.classes.event.EventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
 import net.karneim.luamod.lua.classes.event.brewing.PotionBrewEventClass;
@@ -33,6 +42,9 @@ import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemTic
 import net.karneim.luamod.lua.classes.event.entity.living.LivingEventClass;
 import net.karneim.luamod.lua.classes.event.entity.living.LivingSpawnEventClass;
 import net.karneim.luamod.lua.classes.event.entity.living.SpecialSpawnEventClass;
+import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartCollisionEventClass;
+import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartEventClass;
+import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartInteractEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.LeftClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEventClass;
@@ -45,6 +57,8 @@ import net.karneim.luamod.lua.classes.event.wol.AnimationHandEventClass;
 import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.wol.CustomLuaEventClass;
 import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
+import net.karneim.luamod.lua.classes.inventory.InventoryClass;
+import net.karneim.luamod.lua.classes.tileentity.CommandBlockClass;
 import net.karneim.luamod.lua.event.AnimationHandEvent;
 import net.karneim.luamod.lua.event.ClickWindowEvent;
 import net.karneim.luamod.lua.event.CustomLuaEvent;
@@ -59,11 +73,23 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityMinecartChest;
+import net.minecraft.entity.item.EntityMinecartCommandBlock;
+import net.minecraft.entity.item.EntityMinecartContainer;
+import net.minecraft.entity.item.EntityMinecartEmpty;
+import net.minecraft.entity.item.EntityMinecartFurnace;
+import net.minecraft.entity.item.EntityMinecartHopper;
+import net.minecraft.entity.item.EntityMinecartMobSpawner;
+import net.minecraft.entity.item.EntityMinecartTNT;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.brewing.PotionBrewEvent;
@@ -78,6 +104,9 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn;
+import net.minecraftforge.event.entity.minecart.MinecartCollisionEvent;
+import net.minecraftforge.event.entity.minecart.MinecartEvent;
+import net.minecraftforge.event.entity.minecart.MinecartInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -148,6 +177,11 @@ public class LuaTypesRepo {
     return wrap(javaObject, get(ClickWindowEventClass.class));
   }
 
+  public @Nullable DelegatingTable<? extends CommandBlockBaseLogic> wrap(
+      @Nullable CommandBlockBaseLogic javaObject) {
+    return wrap(javaObject, get(CommandBlockClass.class));
+  }
+
   public @Nullable DelegatingTable<? extends CustomLuaEvent> wrap(
       @Nullable CustomLuaEvent javaObject) {
     return wrap(javaObject, get(CustomLuaEventClass.class));
@@ -182,6 +216,51 @@ public class LuaTypesRepo {
     return wrap(javaObject, get(EntityLivingBaseClass.class));
   }
 
+  public @Nullable DelegatingTable<? extends EntityMinecart> wrap(
+      @Nullable EntityMinecart javaObject) {
+    return wrap(javaObject, get(EntityMinecartClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartChest> wrap(
+      @Nullable EntityMinecartChest javaObject) {
+    return wrap(javaObject, get(EntityMinecartChestClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartCommandBlock> wrap(
+      @Nullable EntityMinecartCommandBlock javaObject) {
+    return wrap(javaObject, get(EntityMinecartCommandBlockClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartContainer> wrap(
+      @Nullable EntityMinecartContainer javaObject) {
+    return wrap(javaObject, get(EntityMinecartContainerClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartEmpty> wrap(
+      @Nullable EntityMinecartEmpty javaObject) {
+    return wrap(javaObject, get(EntityMinecartEmptyClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartFurnace> wrap(
+      @Nullable EntityMinecartFurnace javaObject) {
+    return wrap(javaObject, get(EntityMinecartFurnaceClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartHopper> wrap(
+      @Nullable EntityMinecartHopper javaObject) {
+    return wrap(javaObject, get(EntityMinecartHopperClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartMobSpawner> wrap(
+      @Nullable EntityMinecartMobSpawner javaObject) {
+    return wrap(javaObject, get(EntityMinecartMobSpawnerClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityMinecartTNT> wrap(
+      @Nullable EntityMinecartTNT javaObject) {
+    return wrap(javaObject, get(EntityMinecartTntClass.class));
+  }
+
   public @Nullable DelegatingTable<? extends EntityPlayer> wrap(@Nullable EntityPlayer javaObject) {
     return wrap(javaObject, get(EntityPlayerClass.class));
   }
@@ -200,6 +279,10 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends IBlockState> wrap(@Nullable IBlockState javaObject) {
     return wrap(javaObject, get(BlockStateClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends IInventory> wrap(@Nullable IInventory javaObject) {
+    return wrap(javaObject, get(InventoryClass.class));
   }
 
   public long wrap(int javaObject) {
@@ -222,6 +305,10 @@ public class LuaTypesRepo {
   public @Nullable DelegatingTable<? extends ItemTossEvent> wrap(
       @Nullable ItemTossEvent javaObject) {
     return wrap(javaObject, get(ItemTossEventClass.class));
+  }
+
+  public ByteString wrap(@Nullable ITextComponent javaObject) {
+    return javaObject == null ? null : wrap(javaObject.getFormattedText());
   }
 
   public @Nullable DelegatingTable<? extends LeftClickBlock> wrap(
@@ -284,6 +371,21 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends Material> wrap(@Nullable Material javaObject) {
     return wrap(javaObject, get(MaterialClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends MinecartCollisionEvent> wrap(
+      @Nullable MinecartCollisionEvent javaObject) {
+    return wrap(javaObject, get(MinecartCollisionEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends MinecartEvent> wrap(
+      @Nullable MinecartEvent javaObject) {
+    return wrap(javaObject, get(MinecartEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends MinecartInteractEvent> wrap(
+      @Nullable MinecartInteractEvent javaObject) {
+    return wrap(javaObject, get(MinecartInteractEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends net.minecraftforge.fml.common.gameevent.PlayerEvent> wrap(
