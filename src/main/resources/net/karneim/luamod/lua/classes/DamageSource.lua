@@ -1,1 +1,1 @@
-class("DamageSource")
+class('DamageSource')

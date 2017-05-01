@@ -1,4 +1,4 @@
-class("Entity")
+class('Entity')
 
 function Entity:hasTag( aTag)
   for _,tag in pairs(self.tags) do

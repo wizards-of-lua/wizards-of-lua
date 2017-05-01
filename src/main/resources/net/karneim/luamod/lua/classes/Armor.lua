@@ -1,1 +1,1 @@
-class("Armor")
+class('Armor')

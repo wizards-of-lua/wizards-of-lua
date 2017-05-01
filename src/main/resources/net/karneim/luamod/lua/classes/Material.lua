@@ -1,1 +1,1 @@
-class("Material")
+class('Material')

@@ -2,10 +2,9 @@ package net.karneim.luamod.lua.classes.event.entity.player;
 
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.DelegatingTable;
+import net.karneim.luamod.lua.util.table.DelegatingTable.Builder;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraftforge.event.entity.player.BonemealEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.sandius.rembulan.Table;
 
 @LuaModule("BonemealEvent")
@@ -15,7 +14,11 @@ public class BonemealEventClass extends DelegatingLuaClass<BonemealEvent> {
   }
 
   @Override
-  protected void addProperties(DelegatingTable.Builder b, PlayerRespawnEvent delegate) {}
+  protected void addProperties(Builder<? extends BonemealEvent> b, BonemealEvent d) {
+    b.addReadOnly("block", () -> repo.wrap(d.getBlock()));
+    b.addReadOnly("pos", () -> repo.wrap(d.getPos()));
+    b.addReadOnly("world", () -> repo.wrap(d.getWorld()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

@@ -45,7 +45,14 @@ import net.karneim.luamod.lua.classes.event.entity.living.SpecialSpawnEventClass
 import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartCollisionEventClass;
 import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartEventClass;
 import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartInteractEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.AchievementEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.AnvilRepairEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.AttackEntityEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.BonemealEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.EntityItemPickupEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.FillBucketEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.LeftClickBlockEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.PlayerContainerCloseEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.RightClickBlockEventClass;
@@ -58,6 +65,8 @@ import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.wol.CustomLuaEventClass;
 import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
 import net.karneim.luamod.lua.classes.inventory.InventoryClass;
+import net.karneim.luamod.lua.classes.stats.AchievementClass;
+import net.karneim.luamod.lua.classes.stats.StatBaseClass;
 import net.karneim.luamod.lua.classes.tileentity.CommandBlockClass;
 import net.karneim.luamod.lua.event.AnimationHandEvent;
 import net.karneim.luamod.lua.event.ClickWindowEvent;
@@ -85,8 +94,11 @@ import net.minecraft.entity.item.EntityMinecartTNT;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.Achievement;
+import net.minecraft.stats.StatBase;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.ITextComponent;
@@ -107,6 +119,13 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn;
 import net.minecraftforge.event.entity.minecart.MinecartCollisionEvent;
 import net.minecraftforge.event.entity.minecart.MinecartEvent;
 import net.minecraftforge.event.entity.minecart.MinecartInteractEvent;
+import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -155,9 +174,43 @@ public class LuaTypesRepo {
     subClasses.put(luaClass.getSuperClass(), luaClass);
   }
 
+  public @Nullable DelegatingTable<? extends Achievement> wrap(@Nullable Achievement javaObject) {
+    return wrap(javaObject, get(AchievementClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends AchievementEvent> wrap(
+      @Nullable AchievementEvent javaObject) {
+    return wrap(javaObject, get(AchievementEventClass.class));
+  }
+
   public @Nullable DelegatingTable<? extends AnimationHandEvent> wrap(
       @Nullable AnimationHandEvent javaObject) {
     return wrap(javaObject, get(AnimationHandEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends RayTraceResult> wrap(
+      @Nullable RayTraceResult javaObject) {
+    return wrap(javaObject, get(RayTraceResultClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends FillBucketEvent> wrap(
+      @Nullable FillBucketEvent javaObject) {
+    return wrap(javaObject, get(FillBucketEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends AnvilRepairEvent> wrap(
+      @Nullable AnvilRepairEvent javaObject) {
+    return wrap(javaObject, get(AnvilRepairEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends AttackEntityEvent> wrap(
+      @Nullable AttackEntityEvent javaObject) {
+    return wrap(javaObject, get(AttackEntityEventClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends BonemealEvent> wrap(
+      @Nullable BonemealEvent javaObject) {
+    return wrap(javaObject, get(BonemealEventClass.class));
   }
 
   public boolean wrap(boolean javaObject) {
@@ -205,6 +258,11 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends EntityItem> wrap(@Nullable EntityItem javaObject) {
     return wrap(javaObject, get(EntityItemClass.class));
+  }
+
+  public @Nullable DelegatingTable<? extends EntityItemPickupEvent> wrap(
+      @Nullable EntityItemPickupEvent javaObject) {
+    return wrap(javaObject, get(EntityItemPickupEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends EntityLiving> wrap(@Nullable EntityLiving javaObject) {
@@ -454,11 +512,17 @@ public class LuaTypesRepo {
     return wrap(javaObject, get(SpellClass.class));
   }
 
+  public @Nullable DelegatingTable<? extends StatBase> wrap(@Nullable StatBase javaObject) {
+    return wrap(javaObject, get(StatBaseClass.class));
+  }
+
   public @Nullable ByteString wrap(@Nullable String javaObject) {
     return javaObject == null ? null : ByteString.of(javaObject);
   }
 
-  private <T> DelegatingTable<? extends T> wrap(T javaObject, DelegatingLuaClass<T> luaClass) {
+  private @Nullable <T> DelegatingTable<? extends T> wrap(@Nullable T javaObject,
+      DelegatingLuaClass<T> luaClass) {
+    checkNotNull(luaClass, "luaClass == null!");
     for (LuaClass subClass : subClasses.get(luaClass)) {
       if (subClass instanceof DelegatingLuaClass) {
         @SuppressWarnings("unchecked")
@@ -473,6 +537,11 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3d javaObject) {
     return wrap(javaObject, get(Vec3Class.class));
+  }
+
+  public @Nullable DelegatingTable<? extends PlayerContainerEvent.Close> wrap(
+      @Nullable PlayerContainerEvent.Close javaObject) {
+    return wrap(javaObject, get(PlayerContainerCloseEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3i javaObject) {

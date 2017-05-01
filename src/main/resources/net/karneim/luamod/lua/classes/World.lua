@@ -1,1 +1,1 @@
-class("World")
+class('World')
