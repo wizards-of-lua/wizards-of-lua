@@ -14,13 +14,29 @@
     <link rel="stylesheet" href="{{ '/assets/css/ie.css' | relative_url }}">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
 
+      #coming_soon {
+        position: absolute;
+        top: 40px;
+        right: -50px;
+        width: 300px;
+        transform: rotate(30deg);
+        font-family: Arial Black;
+        font-size: 24px;
+        text-align: center;
+        color: yellow;
+        background: red;
+        border: 1px solid yellow;
+      }
+
+    </style>
   </head>
   <body>
       {% if site.show_header %}
       <div id="header">
         <nav>
-          <div STYLE="float:right; font-family: Arial Black; font-size: 24px; color: yellow">Coming Soon!</div>
+          <div id="comming_soon">Coming Soon!</div>
           <!-- <li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li> -->
           <li class="fork"><a href="{{ site.github.project_url }}">View On GitHub</a></li>
 
