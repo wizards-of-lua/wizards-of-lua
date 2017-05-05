@@ -30,6 +30,11 @@
         border: 1px solid yellow;
       }
 
+      #title img {
+        position: absolute;
+        top: -10px;
+      }
+
     </style>
   </head>
   <body>
@@ -52,13 +57,10 @@
 
       <section>
         <div id="title">
-          <img STYLE="float:left; position:absolute; top:-10px;" src="{{ site.url }}/images/steven-with-magic-wand-glowing.png" height="170" />
-
-
+          <img src="{{ site.url }}/images/steven-with-magic-wand-glowing.png" height="170" />
           <h1><a href="{% link index.md %}">{{ site.title | default: site.github.repository_name }}</a></h1>
           <p>{{ site.description | default: site.github.project_tagline }}</p>
           <hr>
-
           <!--
           <span class="credits left">Project maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></span>
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
