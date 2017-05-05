@@ -5,6 +5,8 @@ import net.karneim.luamod.lua.event.WhisperEvent;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.server.CommandMessage;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 
 public class CommandMessagePatched extends CommandMessage {
@@ -21,7 +23,18 @@ public class CommandMessagePatched extends CommandMessage {
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
     super.execute(server, sender, args);
-    modEventHandler.onEvent(new WhisperEvent(sender.getName(), concat(args, 1, args.length)));
+
+    EntityPlayerMP player = getPlayer(sender);
+    modEventHandler
+        .onEvent(new WhisperEvent(sender.getName(), player, concat(args, 1, args.length)));
+  }
+
+  private EntityPlayerMP getPlayer(ICommandSender sender) {
+    Entity entity = sender.getCommandSenderEntity();
+    if (entity instanceof EntityPlayerMP) {
+      return (EntityPlayerMP) entity;
+    }
+    return null;
   }
 
   private String concat(String[] text, int from, int to) {

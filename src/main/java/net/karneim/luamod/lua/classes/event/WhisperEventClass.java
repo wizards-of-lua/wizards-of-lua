@@ -16,8 +16,10 @@ public class WhisperEventClass extends ImmutableLuaClass<WhisperEvent> {
   @Override
   protected void addProperties(PatchedImmutableTable.Builder b, WhisperEvent event) {
     b.add("type", repo.wrap(getModuleName()));
-    b.add("sender", repo.wrap(event.getSender()));
+    
     b.add("message", repo.wrap(event.getMessage()));
+    b.add("username", repo.wrap(event.getSender()));
+    b.add("player", repo.wrap(event.getPlayer()));
   }
 
   @Override
