@@ -32,10 +32,10 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.ForgeHooks;
 
-public class CommandAdmin extends CommandBase {
+public class CommandWol extends CommandBase {
 
-  private static final String CMD_NAME = "admin";
-  private static final String MSG_USAGE = "commands.admin.usage";
+  private static final String CMD_NAME = "wol";
+  private static final String MSG_USAGE = "commands.wol.usage";
 
   private static final String UNPAUSE = "unpause";
   private static final String PAUSE = "pause";
@@ -63,7 +63,7 @@ public class CommandAdmin extends CommandBase {
   private final LuaMod mod;
   private final List<String> aliases = new ArrayList<String>();
 
-  public CommandAdmin() {
+  public CommandWol() {
     aliases.add(CMD_NAME);
     mod = LuaMod.instance;
   }
@@ -85,7 +85,7 @@ public class CommandAdmin extends CommandBase {
   }
 
   @Override
-  public List getCommandAliases() {
+  public List<String> getCommandAliases() {
     return aliases;
   }
 
@@ -479,7 +479,6 @@ public class CommandAdmin extends CommandBase {
   }
 
   private void printDefaultProfileRef(ICommandSender sender) {
-    Entity owner = sender.getCommandSenderEntity();
     String profile = mod.getProfiles().getDefaultProfile();
     if (profile == null) {
       profile = "<none>";
@@ -491,7 +490,6 @@ public class CommandAdmin extends CommandBase {
   private void setDefaultProfileUrl(ICommandSender sender, @Nullable String refStr)
       throws CommandException {
     try {
-      Entity owner = sender.getCommandSenderEntity();
       GistFileRef gistFileRef = toGistFileRef(refStr);
       if (gistFileRef != null) {
         // Check if profile url is accessible and can be loaded
@@ -510,7 +508,6 @@ public class CommandAdmin extends CommandBase {
   }
 
   private void printStartupProfileRef(ICommandSender sender) {
-    Entity owner = sender.getCommandSenderEntity();
     String profile = mod.getProfiles().getStartupProfile();
     if (profile == null) {
       profile = "<none>";
@@ -522,7 +519,6 @@ public class CommandAdmin extends CommandBase {
   private void setStartupProfileUrl(ICommandSender sender, @Nullable String refStr)
       throws CommandException {
     try {
-      Entity owner = sender.getCommandSenderEntity();
       GistFileRef gistFileRef = toGistFileRef(refStr);
       if (gistFileRef != null) {
         // Check if profile url is accessible and can be loaded
@@ -683,8 +679,5 @@ public class CommandAdmin extends CommandBase {
   private @Nullable String toString(@Nullable URL result) {
     return result == null ? "<none>" : result.toExternalForm();
   }
-
-  private String getProfileKey(Entity entity) {
-    return entity.getUniqueID().toString();
-  }
+  
 }

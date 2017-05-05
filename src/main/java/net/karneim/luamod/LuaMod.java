@@ -15,7 +15,7 @@ import net.karneim.luamod.config.ModConfiguration;
 import net.karneim.luamod.credentials.CredentialsStore;
 import net.karneim.luamod.cursor.ClipboardRegistry;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.CommandAdmin;
+import net.karneim.luamod.lua.CommandWol;
 import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
 import net.karneim.luamod.lua.Permissions;
@@ -97,7 +97,7 @@ public class LuaMod {
   public void serverLoad(FMLServerStartingEvent event) {
     logger.info("Registering LuaMod Commands");
     event.registerServerCommand(new CommandLua());
-    event.registerServerCommand(new CommandAdmin());
+    event.registerServerCommand(new CommandWol());
     event.registerServerCommand(new CommandMessagePatched(modEventHandler));
     server = checkNotNull(event.getServer());
 
