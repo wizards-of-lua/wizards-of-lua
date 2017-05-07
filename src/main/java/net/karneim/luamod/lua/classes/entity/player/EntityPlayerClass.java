@@ -84,8 +84,7 @@ public class EntityPlayerClass extends DelegatingLuaClass<EntityPlayer> {
       int index = checkType(1, arg2, Number.class).intValue();
 
       ItemStack itemStack = delegate.inventory.getStackInSlot(index);
-      DelegatingTable<? extends ItemStack> result = repo.wrap(itemStack);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrap(itemStack));
     }
 
     @Override

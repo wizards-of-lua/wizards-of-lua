@@ -81,8 +81,7 @@ public class PlayersWrapper {
       String id = String.valueOf(arg1);
       EntityPlayerMP player = players.get(id);
       if (player != null) {
-        DelegatingTable<? extends EntityPlayer> result = repo.wrap(player);
-        context.getReturnBuffer().setTo(result);
+        context.getReturnBuffer().setTo(repo.wrap(player));
       } else {
         context.getReturnBuffer().setTo();
       }
@@ -105,8 +104,7 @@ public class PlayersWrapper {
       String name = String.valueOf(arg1);
       EntityPlayerMP player = players.getByName(name);
       if (player != null) {
-        DelegatingTable<? extends EntityPlayer> result = repo.wrap(player);
-        context.getReturnBuffer().setTo(result);
+        context.getReturnBuffer().setTo(repo.wrap(player));
       } else {
         context.getReturnBuffer().setTo();
       }

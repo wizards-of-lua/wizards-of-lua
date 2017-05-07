@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -65,8 +64,7 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      DelegatingTable<? extends Entity> result = repo.wrap(entity);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrap(entity));
     }
 
     @Override
