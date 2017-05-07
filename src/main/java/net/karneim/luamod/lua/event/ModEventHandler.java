@@ -17,8 +17,33 @@ import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.classes.event.EventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
+import net.karneim.luamod.lua.classes.event.brewing.PotionBrewEventClass;
+import net.karneim.luamod.lua.classes.event.brewing.PotionBrewPostEventClass;
+import net.karneim.luamod.lua.classes.event.brewing.PotionBrewPreEventClass;
 import net.karneim.luamod.lua.classes.event.entity.EntityEventClass;
+import net.karneim.luamod.lua.classes.event.entity.item.ItemEventClass;
+import net.karneim.luamod.lua.classes.event.entity.item.ItemExpireEventClass;
+import net.karneim.luamod.lua.classes.event.entity.item.ItemTossEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingAttackEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingDeathEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingDropsEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemFinishEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemStartEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemStopEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingEntityUseItemTickEventClass;
 import net.karneim.luamod.lua.classes.event.entity.living.LivingEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.LivingSpawnEventClass;
+import net.karneim.luamod.lua.classes.event.entity.living.SpecialSpawnEventClass;
+import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartCollisionEventClass;
+import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartEventClass;
+import net.karneim.luamod.lua.classes.event.entity.minecart.MinecartInteractEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.AchievementEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.AnvilRepairEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.AttackEntityEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.BonemealEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.EntityItemPickupEventClass;
+import net.karneim.luamod.lua.classes.event.entity.player.FillBucketEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.LeftClickBlockEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEventClass;
@@ -36,8 +61,27 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketClickWindow;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.brewing.PotionBrewEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.item.ItemEvent;
+import net.minecraftforge.event.entity.item.ItemExpireEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn;
+import net.minecraftforge.event.entity.minecart.MinecartCollisionEvent;
+import net.minecraftforge.event.entity.minecart.MinecartEvent;
+import net.minecraftforge.event.entity.minecart.MinecartInteractEvent;
+import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.BonemealEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -111,13 +155,62 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
+  public void onEvent(AchievementEvent evt) {
+    onLuaEvent(AchievementEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(AnvilRepairEvent evt) {
+    onLuaEvent(AnvilRepairEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(AttackEntityEvent evt) {
+    onLuaEvent(AttackEntityEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(BonemealEvent evt) {
+    onLuaEvent(BonemealEventClass.class, evt);
+  }
+
+  public void onEvent(CustomLuaEvent evt) {
+    onLuaEvent(evt.getType(), evt);
+  }
+
+  @SubscribeEvent
   public void onEvent(EntityEvent evt) {
     onLuaEvent(EntityEventClass.class, evt);
   }
 
   @SubscribeEvent
+  public void onEvent(EntityItemPickupEvent evt) {
+    onLuaEvent(EntityItemPickupEventClass.class, evt);
+  }
+
+  @SubscribeEvent
   public void onEvent(Event evt) {
     onLuaEvent(EventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(FillBucketEvent evt) {
+    onLuaEvent(FillBucketEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(ItemEvent evt) {
+    onLuaEvent(ItemEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(ItemExpireEvent evt) {
+    onLuaEvent(ItemExpireEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(ItemTossEvent evt) {
+    onLuaEvent(ItemTossEventClass.class, evt);
   }
 
   @SubscribeEvent
@@ -129,8 +222,68 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
+  public void onEvent(LivingAttackEvent evt) {
+    onLuaEvent(LivingAttackEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingDeathEvent evt) {
+    onLuaEvent(LivingDeathEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingDropsEvent evt) {
+    onLuaEvent(LivingDropsEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingEntityUseItemEvent evt) {
+    onLuaEvent(LivingEntityUseItemEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingEntityUseItemEvent.Finish evt) {
+    onLuaEvent(LivingEntityUseItemFinishEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingEntityUseItemEvent.Start evt) {
+    onLuaEvent(LivingEntityUseItemStartEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingEntityUseItemEvent.Stop evt) {
+    onLuaEvent(LivingEntityUseItemStopEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingEntityUseItemEvent.Tick evt) {
+    onLuaEvent(LivingEntityUseItemTickEventClass.class, evt);
+  }
+
+  @SubscribeEvent
   public void onEvent(LivingEvent evt) {
     onLuaEvent(LivingEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LivingSpawnEvent evt) {
+    onLuaEvent(LivingSpawnEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(MinecartCollisionEvent evt) {
+    onLuaEvent(MinecartCollisionEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(MinecartEvent evt) {
+    onLuaEvent(MinecartEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(MinecartInteractEvent evt) {
+    onLuaEvent(MinecartInteractEventClass.class, evt);
   }
 
   @SubscribeEvent
@@ -167,6 +320,21 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
+  public void onEvent(PotionBrewEvent evt) {
+    onLuaEvent(PotionBrewEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(PotionBrewEvent.Post evt) {
+    onLuaEvent(PotionBrewPostEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(PotionBrewEvent.Pre evt) {
+    onLuaEvent(PotionBrewPreEventClass.class, evt);
+  }
+
+  @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
     if (evt.getWorld().isRemote) {
       return;
@@ -177,6 +345,11 @@ public class ModEventHandler {
   @SubscribeEvent
   public void onEvent(ServerChatEvent evt) {
     onLuaEvent(ServerChatEventClass.class, evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(SpecialSpawn evt) {
+    onLuaEvent(SpecialSpawnEventClass.class, evt);
   }
 
   public void onEvent(WhisperEvent evt) {
