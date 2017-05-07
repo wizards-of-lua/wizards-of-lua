@@ -164,7 +164,8 @@ public class LuaTypesRepo {
   }
 
   public LuaClass get(String name) {
-    return types.get(name);
+    LuaClass result = types.get(name);
+    return checkNotNull(result, "Type '%s' is not registered", name);
   }
 
   public Table getEnv() {
@@ -181,6 +182,9 @@ public class LuaTypesRepo {
       throw new IllegalArgumentException(String.format("Type %s is already definded!", luaClass));
     }
     types.put(name, luaClass);
+  }
+
+  public void registerAsSubClass(LuaClass luaClass) {
     subClasses.put(luaClass.getSuperClass(), luaClass);
   }
 

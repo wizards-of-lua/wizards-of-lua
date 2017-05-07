@@ -37,7 +37,7 @@ public abstract class LuaClass {
     executor.call(state, classFunc);
     Table luaClassTable = getLuaClassTable();
     addFunctions(luaClassTable);
-    repo.register(this);
+    repo.registerAsSubClass(this);
   }
 
   public Table getLuaClassTable() {

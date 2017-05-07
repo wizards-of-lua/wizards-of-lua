@@ -124,6 +124,16 @@ public class LuaUtil {
     entities = new Entities(LuaMod.instance.getServer(), entity);
 
     typesRepo = new LuaTypesRepo(env);
+    for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
+      try {
+        Constructor<? extends LuaClass> constructor = luaClass.getConstructor(LuaTypesRepo.class);
+        typesRepo.register(constructor.newInstance(typesRepo));
+      } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+          | SecurityException | InvocationTargetException ex) {
+        throw new UndeclaredThrowableException(ex);
+      }
+    }
+
     blocks = new Blocks(world);
 
     loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
@@ -261,16 +271,8 @@ public class LuaUtil {
       this.compile();
       executor.call(state, headerFunc);
 
-      for (Class<? extends LuaClass> luaClassClass : LUA_CLASSES) {
-        try {
-          Constructor<? extends LuaClass> constructor =
-              luaClassClass.getConstructor(LuaTypesRepo.class);
-          LuaClass luaClass = constructor.newInstance(typesRepo);
-          luaClass.installInto(loader, executor, state);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-            | SecurityException | InvocationTargetException ex) {
-          throw new UndeclaredThrowableException(ex);
-        }
+      for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
+        typesRepo.get(luaClass).installInto(loader, executor, state);
       }
 
       env.rawset("spell", typesRepo.wrap(this.spell));
