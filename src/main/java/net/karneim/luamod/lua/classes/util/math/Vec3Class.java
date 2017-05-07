@@ -1,5 +1,7 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.util.math;
 
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.util.math.Vec3d;

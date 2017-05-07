@@ -11,7 +11,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import net.karneim.luamod.cursor.Spell;
+import net.karneim.luamod.lua.classes.block.material.MaterialClass;
+import net.karneim.luamod.lua.classes.block.state.BlockStateClass;
+import net.karneim.luamod.lua.classes.entity.ArmorClass;
 import net.karneim.luamod.lua.classes.entity.EntityClass;
+import net.karneim.luamod.lua.classes.entity.EntityLivingBaseClass;
+import net.karneim.luamod.lua.classes.entity.EntityLivingClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityItemClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityMinecartChestClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityMinecartClass;
@@ -22,6 +27,7 @@ import net.karneim.luamod.lua.classes.entity.item.EntityMinecartFurnaceClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityMinecartHopperClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityMinecartMobSpawnerClass;
 import net.karneim.luamod.lua.classes.entity.item.EntityMinecartTntClass;
+import net.karneim.luamod.lua.classes.entity.player.EntityPlayerClass;
 import net.karneim.luamod.lua.classes.event.EventClass;
 import net.karneim.luamod.lua.classes.event.ServerChatEventClass;
 import net.karneim.luamod.lua.classes.event.brewing.PotionBrewEventClass;
@@ -52,7 +58,6 @@ import net.karneim.luamod.lua.classes.event.entity.player.BonemealEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.EntityItemPickupEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.FillBucketEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.LeftClickBlockEventClass;
-import net.karneim.luamod.lua.classes.event.entity.player.PlayerContainerCloseEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEventClass;
 import net.karneim.luamod.lua.classes.event.entity.player.RightClickBlockEventClass;
@@ -65,9 +70,15 @@ import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.wol.CustomLuaEventClass;
 import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
 import net.karneim.luamod.lua.classes.inventory.InventoryClass;
+import net.karneim.luamod.lua.classes.item.ItemStackClass;
 import net.karneim.luamod.lua.classes.stats.AchievementClass;
 import net.karneim.luamod.lua.classes.stats.StatBaseClass;
 import net.karneim.luamod.lua.classes.tileentity.CommandBlockClass;
+import net.karneim.luamod.lua.classes.util.DamageSourceClass;
+import net.karneim.luamod.lua.classes.util.math.RayTraceResultClass;
+import net.karneim.luamod.lua.classes.util.math.Vec3Class;
+import net.karneim.luamod.lua.classes.wol.SpellClass;
+import net.karneim.luamod.lua.classes.world.WorldClass;
 import net.karneim.luamod.lua.event.AnimationHandEvent;
 import net.karneim.luamod.lua.event.ClickWindowEvent;
 import net.karneim.luamod.lua.event.CustomLuaEvent;
@@ -125,7 +136,6 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -537,11 +547,6 @@ public class LuaTypesRepo {
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3d javaObject) {
     return wrap(javaObject, get(Vec3Class.class));
-  }
-
-  public @Nullable DelegatingTable<? extends PlayerContainerEvent.Close> wrap(
-      @Nullable PlayerContainerEvent.Close javaObject) {
-    return wrap(javaObject, get(PlayerContainerCloseEventClass.class));
   }
 
   public @Nullable DelegatingTable<? extends Vec3d> wrap(@Nullable Vec3i javaObject) {

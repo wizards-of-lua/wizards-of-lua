@@ -1,8 +1,10 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.entity.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
 
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.player.EntityPlayer;

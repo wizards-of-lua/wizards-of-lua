@@ -1,9 +1,11 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.util.math;
 
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeDelegatingTable;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeInt;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeString;
 
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable.Builder;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.Entity;

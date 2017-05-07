@@ -7,7 +7,7 @@ import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraftforge.event.ServerChatEvent;
 import net.sandius.rembulan.Table;
 
-@LuaModule("ServerChatEvent")
+@LuaModule("ChatEvent")
 public class ServerChatEventClass extends DelegatingLuaClass<ServerChatEvent> {
   public ServerChatEventClass(LuaTypesRepo repo) {
     super(repo);

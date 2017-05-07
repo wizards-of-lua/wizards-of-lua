@@ -1,9 +1,11 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.item;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeDelegatingTable;
 
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.nbt.NBTTagUtil;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;

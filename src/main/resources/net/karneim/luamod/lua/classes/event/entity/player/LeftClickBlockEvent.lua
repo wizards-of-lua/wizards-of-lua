@@ -1,2 +1,2 @@
-require 'net.karneim.luamod.lua.classes.event.player.PlayerInteractEvent'
+require 'net.karneim.luamod.lua.classes.event.entity.player.PlayerInteractEvent'
 class('LeftClickBlockEvent', PlayerInteractEvent)

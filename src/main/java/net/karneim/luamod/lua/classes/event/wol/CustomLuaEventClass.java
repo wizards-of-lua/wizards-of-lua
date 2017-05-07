@@ -14,7 +14,7 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 
-@LuaModule("CustomLuaEvent")
+@LuaModule("CustomEvent")
 public class CustomLuaEventClass extends DelegatingLuaClass<CustomLuaEvent> {
   public CustomLuaEventClass(LuaTypesRepo repo) {
     super(repo);

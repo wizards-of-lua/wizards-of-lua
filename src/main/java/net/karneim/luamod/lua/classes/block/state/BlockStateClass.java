@@ -1,10 +1,12 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.block.state;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.karneim.luamod.lua.LuaTypeConverter;
+import net.karneim.luamod.lua.classes.LuaModule;
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.block.properties.IProperty;

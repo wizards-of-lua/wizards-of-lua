@@ -1,5 +1,6 @@
-package net.karneim.luamod.lua.classes;
+package net.karneim.luamod.lua.classes.world;
 
+import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable.Builder;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.world.World;
