@@ -86,6 +86,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -93,6 +94,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerConnectionFromClientEvent;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ModEventHandler {
   private LuaMod mod;
@@ -215,9 +217,6 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onEvent(LeftClickBlock evt) {
-    if (evt.getWorld().isRemote) {
-      return;
-    }
     onLuaEvent(LeftClickBlockEventClass.class, evt);
   }
 
@@ -298,9 +297,6 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onEvent(PlayerInteractEvent evt) {
-    if (evt.getWorld().isRemote) {
-      return;
-    }
     onLuaEvent(PlayerInteractEventClass.class, evt);
   }
 
@@ -336,9 +332,6 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
-    if (evt.getWorld().isRemote) {
-      return;
-    }
     onLuaEvent(RightClickBlockEventClass.class, evt);
   }
 
@@ -362,6 +355,9 @@ public class ModEventHandler {
   }
 
   private void onLuaEvent(String eventType, Event event) {
+    if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
+      return;
+    }
     for (SpellEntity e : mod.getSpellRegistry().getAll()) {
       Events events = e.getEvents();
       if (events.getRegisteredEventTypes().contains(eventType)) {
