@@ -26,7 +26,7 @@ public abstract class CachingLuaClass<J, L> extends LuaClass implements LuaWrapp
   public Class<J> getJavaClass() {
     if (javaClass == null) {
       @SuppressWarnings("serial")
-      TypeToken<J> token = new TypeToken<J>() {};
+      TypeToken<J> token = new TypeToken<J>(getClass()) {};
       @SuppressWarnings("unchecked")
       Class<J> rawType = (Class<J>) token.getRawType();
       javaClass = rawType;
