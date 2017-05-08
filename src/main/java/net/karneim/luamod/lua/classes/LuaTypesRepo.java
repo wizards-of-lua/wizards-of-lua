@@ -38,9 +38,14 @@ public class LuaTypesRepo {
     return checkNotNull(result, "Type '%s' is not registered", name);
   }
 
-  private <T> CachingLuaClass<T, ?> getCachingLuaClass(Class<T> javaClass) {
-    @SuppressWarnings("unchecked")
-    CachingLuaClass<T, ?> result = (CachingLuaClass<T, ?>) cachingLuaClasses.get(javaClass);
+  @SuppressWarnings("unchecked")
+  private <T> CachingLuaClass<? super T, ?> getCachingLuaClass(Class<T> javaClass) {
+    CachingLuaClass<? super T, ?> result = null;
+    Class<? super T> cls = javaClass;
+    while (result == null && cls != null) {
+      result = (CachingLuaClass<T, ?>) cachingLuaClasses.get(cls);
+      cls = cls.getSuperclass();
+    }
     return result;
   }
 
@@ -66,6 +71,12 @@ public class LuaTypesRepo {
 
   private <T> void registerCachingLuaClass(CachingLuaClass<T, ?> cachingLuaClass) {
     Class<T> javaClass = cachingLuaClass.getJavaClass();
+    if (cachingLuaClasses.containsKey(javaClass)) {
+      CachingLuaClass<?, ?> prev = cachingLuaClasses.get(javaClass);
+      throw new IllegalArgumentException(
+          String.format("Cannot register %s, the CachingLuaClass %s is already registered for %s",
+              cachingLuaClass, prev.getClass().getName(), javaClass));
+    }
     cachingLuaClasses.put(javaClass, cachingLuaClass);
   }
 
@@ -124,7 +135,7 @@ public class LuaTypesRepo {
 
   private <T, A extends T> Object wrap(T javaObject, Class<A> javaClass) {
     A actualJavaObject = javaClass.cast(javaObject);
-    CachingLuaClass<A, ?> luaClass = getCachingLuaClass(javaClass);
+    CachingLuaClass<? super A, ?> luaClass = getCachingLuaClass(javaClass);
     checkArgument(luaClass != null, "No CachingLuaClass is registered for %s", javaClass);
     return luaClass.getLuaObject(actualJavaObject);
   }
