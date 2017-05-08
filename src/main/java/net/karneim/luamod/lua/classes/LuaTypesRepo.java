@@ -125,7 +125,7 @@ public class LuaTypesRepo {
   private <T, A extends T> Object wrap(T javaObject, Class<A> javaClass) {
     A actualJavaObject = javaClass.cast(javaObject);
     CachingLuaClass<A, ?> luaClass = getCachingLuaClass(javaClass);
-    checkArgument(luaClass != null, "No CachingLuaClass is registered for class %s", javaClass);
+    checkArgument(luaClass != null, "No CachingLuaClass is registered for %s", javaClass);
     return luaClass.getLuaObject(actualJavaObject);
   }
 

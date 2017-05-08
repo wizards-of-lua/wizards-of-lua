@@ -8,9 +8,7 @@ import net.karneim.luamod.lua.classes.LuaTypesRepo;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.GameType;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -32,10 +30,6 @@ public class EntityPlayerClass extends DelegatingLuaClass<EntityPlayer> {
     // delegate.getFoodStats().getSaturationLevel()
     // delegate.getInventoryEnderChest()
 
-    if (delegate instanceof EntityPlayerMP) {
-      EntityPlayerMP mp = (EntityPlayerMP) delegate;
-      b.add("gamemode", () -> repo.wrap(mp.interactionManager.getGameType()), d::setGameMode);
-    }
     // delegate.getAbsorptionAmount();
     // delegate.getBedLocation()
     // delegate.getInventoryEnderChest()
@@ -60,12 +54,6 @@ public class EntityPlayerClass extends DelegatingLuaClass<EntityPlayer> {
     private void setSaturationLevel(Object arg) {
       float value = ((Number) arg).floatValue();
       delegate.getFoodStats().setFoodSaturationLevel(value);
-    }
-
-    private void setGameMode(Object arg) {
-      GameType mode = GameType.valueOf(String.valueOf(arg));
-      EntityPlayerMP mp = (EntityPlayerMP) delegate;
-      mp.setGameType(mode);
     }
   }
 
