@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 
 public class NBTTagUtil {
@@ -56,7 +57,7 @@ public class NBTTagUtil {
     }
     Object tblKey = data.initialKey();
     while (tblKey != null) {
-      if (!usedKeys.contains(tblKey)) {
+      if (!usedKeys.contains(Conversions.javaRepresentationOf(tblKey))) {
         Object luaValue = data.rawget(tblKey);
         String key = String.valueOf(tblKey);
         NBTBase value = toTag(luaValue);
