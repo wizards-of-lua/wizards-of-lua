@@ -165,7 +165,7 @@ public class NBTTagUtil {
     return result;
   }
 
-  private static NBTBase toTag(Object value) {
+  public static NBTBase toTag(Object value) {
     if (value == null) {
       return null;
     }

@@ -16,12 +16,16 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
 
 public class DelegatingTable<O> extends Table {
-  private final TraversableHashMap<Object, Object> properties = new TraversableHashMap<>();
   private final O delegate;
+  private final TraversableHashMap<Object, Object> properties = new TraversableHashMap<>();
+  private final MissingPropertyHandler missingPropertyHandler;
 
-  protected DelegatingTable(O delegate, Map<?, ?> properties) {
+  protected DelegatingTable(O delegate, Map<?, ?> properties,
+      MissingPropertyHandler missingPropertyHandler) {
     this.delegate = checkNotNull(delegate, "delegate == null!");
     this.properties.putAll(properties);
+    this.missingPropertyHandler =
+        checkNotNull(missingPropertyHandler, "missingPropertyHandler == null!");
   }
 
   public O getDelegate() {
@@ -41,7 +45,9 @@ public class DelegatingTable<O> extends Table {
   public Object rawget(Object key) {
     key = Conversions.normaliseKey(key);
     Object result = properties.get(key);
-    if (result instanceof Property<?>) {
+    if (result == null) {
+      result = missingPropertyHandler.getMissingProperty(key);
+    } else if (result instanceof Property<?>) {
       result = ((Property<?>) result).get();
     }
     return result;
@@ -59,12 +65,12 @@ public class DelegatingTable<O> extends Table {
     }
 
     Object p = properties.get(key);
-    if (p == null)
-      throw new IllegalArgumentException("unknown table index");
-    if (p instanceof Property<?>) {
+    if (p == null) {
+      missingPropertyHandler.setMissingProperty(key, value);
+    } else if (p instanceof Property<?>) {
       ((Property<?>) p).set(value);
     } else {
-      throw new UnsupportedOperationException("property is readonly");
+      throw new UnsupportedOperationException("property '" + key + "' is readonly");
     }
   }
 
@@ -92,12 +98,23 @@ public class DelegatingTable<O> extends Table {
   }
 
   /**
-   * Builder class for constructing instances of {@link DelegatingTable2}.
+   * Builder class for constructing instances of {@link DelegatingTable}.
    */
   public static class Builder<O> {
-    private Table metatable;
     private final O delegate;
     private final Map<Object, Object> properties = new HashMap<>();
+    private Table metatable;
+    private MissingPropertyHandler missingPropertyHandler = new MissingPropertyHandler() {
+      @Override
+      public void setMissingProperty(Object key, Object value) {
+        throw new IllegalArgumentException("unknown table index '" + key + "'");
+      }
+
+      @Override
+      public Object getMissingProperty(Object key) {
+        return null;
+      }
+    };
 
     /**
      * Constructs a new empty builder.
@@ -138,13 +155,19 @@ public class DelegatingTable<O> extends Table {
       return this;
     }
 
+    public void setMissingPropertyHandler(MissingPropertyHandler missingPropertyHandler) {
+      this.missingPropertyHandler =
+          checkNotNull(missingPropertyHandler, "missingPropertyHandler == null!");
+    }
+
     /**
      * Constructs and returns a new immutable table based on the contents of this builder.
      *
      * @return a new immutable table
      */
     public DelegatingTable<O> build() {
-      DelegatingTable<O> result = new DelegatingTable<O>(delegate, properties);
+      DelegatingTable<O> result =
+          new DelegatingTable<O>(delegate, properties, missingPropertyHandler);
       result.setMetatable(metatable);
       return result;
     }

@@ -9,10 +9,13 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import net.karneim.luamod.lua.classes.entity.ArmorClass;
+import net.karneim.luamod.lua.classes.nbt.NbtCompoundClass;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.wrapper.CachingLuaClass;
 import net.karneim.luamod.lua.wrapper.ModifiableArrayWrapper;
 import net.karneim.luamod.lua.wrapper.UnmodifiableIterableWrapper;
+import net.karneim.luamod.lua.wrapper.nbt.EntityNbtAccessor;
+import net.karneim.luamod.lua.wrapper.nbt.NbtCompoundChildAccessor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.sandius.rembulan.ByteString;
@@ -151,5 +154,14 @@ public class LuaTypesRepo {
     ModifiableArrayWrapper<String, ByteString> wrapper =
         new ModifiableArrayWrapper<>(ByteString.class, j -> ByteString.of(j), l -> l.decode());
     return wrapper.createLuaObject(javaObject);
+  }
+
+  public Object wrapNbt(EntityNbtAccessor javaObject) {
+    return get(NbtCompoundClass.class).getLuaObject(javaObject);
+  }
+
+  public Object wrapNbt(NbtCompoundChildAccessor nbtChild) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

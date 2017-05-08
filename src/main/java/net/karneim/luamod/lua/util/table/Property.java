@@ -20,7 +20,6 @@ public class Property<T> {
   public T get() {
     if (get == null)
       throw new UnsupportedOperationException("property is writeonly");
-
     return get.get();
   }
 

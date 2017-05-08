@@ -15,6 +15,7 @@ import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.karneim.luamod.lua.util.table.TableIterable;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
+import net.karneim.luamod.lua.wrapper.nbt.EntityNbtAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -56,6 +57,9 @@ public class EntityClass extends DelegatingLuaClass<Entity> {
     b.add("motion",
         () -> repo.wrap(new Vec3d(delegate.motionX, delegate.motionY, delegate.motionZ)),
         d::setMotion);
+
+    EntityNbtAccessor nbt = new EntityNbtAccessor(delegate);
+    b.addReadOnly("nbt", () -> repo.wrapNbt(nbt));
   }
 
   private static class EntityWrapper {
