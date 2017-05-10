@@ -138,7 +138,7 @@ public class LuaUtil {
 
     loader = PatchedCompilerChunkLoader.of("LuaProgramAsJavaByteCode");
     ticks = new LuaTicks(LuaMod.instance.getTicksLimit());
-    events = new Events(typesRepo, LuaMod.instance.getSpellRegistry());
+    events = new Events(typesRepo);
     runtime = new Runtime(world, ticks);
 
     RuntimeEnvironment environment = getModRuntimeEnvironment();
@@ -184,7 +184,6 @@ public class LuaUtil {
       }
     };
     executor = DirectCallExecutor.newExecutor(schedulingContextFactory);
-
   }
 
   private void require(String name, String module) {

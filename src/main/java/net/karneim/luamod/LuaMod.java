@@ -15,9 +15,9 @@ import net.karneim.luamod.config.ModConfiguration;
 import net.karneim.luamod.credentials.CredentialsStore;
 import net.karneim.luamod.cursor.ClipboardRegistry;
 import net.karneim.luamod.gist.GistRepo;
-import net.karneim.luamod.lua.CommandWol;
 import net.karneim.luamod.lua.CommandLua;
 import net.karneim.luamod.lua.CommandMessagePatched;
+import net.karneim.luamod.lua.CommandWol;
 import net.karneim.luamod.lua.Permissions;
 import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellEntityFactory;
@@ -204,6 +204,10 @@ public class LuaMod {
     return clipboards;
   }
 
+  public ModEventHandler getModEventHandler() {
+    return modEventHandler;
+  }
+
   public Startup getStartup() {
     return startup;
   }
@@ -211,5 +215,4 @@ public class LuaMod {
   public Permissions getPermissions() {
     return permissions;
   }
-
 }

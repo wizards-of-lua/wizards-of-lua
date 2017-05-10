@@ -2,7 +2,7 @@ package net.karneim.luamod.lua.classes;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.karneim.luamod.lua.util.LuaPreconditions.checkType;
+import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeNullable;
 import static net.karneim.luamod.lua.util.LuaPreconditions.checkTypeString;
 
 import javax.annotation.Nullable;
@@ -36,13 +36,15 @@ public abstract class LuaClass {
     LuaFunction classFunc = loader.loadTextChunk(new Variable(getEnv()), typeName, chunk);
     executor.call(state, classFunc);
     Table luaClassTable = getLuaClassTable();
-    checkNotNull(luaClassTable, "LuaClass %s was not created in module '%s'", typeName, module);
     addFunctions(luaClassTable);
   }
 
   public Table getLuaClassTable() {
-    String typeName = getModuleName();
-    return checkType(getEnv().rawget(typeName), Table.class);
+    String module = getModule();
+    String className = getModuleName();
+    Table luaClassTable = checkTypeNullable(getEnv().rawget(className), Table.class);
+    checkNotNull(luaClassTable, "LuaClass %s was not created in module '%s'", className, module);
+    return luaClassTable;
   }
 
   public @Nullable Table getSuperClassTable() {

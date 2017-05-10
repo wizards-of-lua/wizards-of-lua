@@ -10,23 +10,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import net.karneim.luamod.lua.SpellEntity;
-import net.karneim.luamod.lua.SpellRegistry;
+import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 
 public class Events {
+  private final ModEventHandler eventHandler = LuaMod.instance.getModEventHandler();
   private final LuaTypesRepo repo;
-  private final SpellRegistry spellRegistry;
   private final Multimap<String, EventQueue> eventQueues = HashMultimap.create();
   private final Set<EventQueue> activeQueues = new HashSet<EventQueue>();
 
   private long currentTime;
   private long waitForEventUntil;
 
-  public Events(LuaTypesRepo repo, SpellRegistry spellRegistry) {
+  public Events(LuaTypesRepo repo) {
     this.repo = Preconditions.checkNotNull(repo);
-    this.spellRegistry = Preconditions.checkNotNull(spellRegistry);
   }
 
   public LuaTypesRepo getRepo() {
@@ -77,11 +74,8 @@ public class Events {
     // FIXME: Check that eventType is not a common event type like AnimationHandEvent or
     // RightClickBlockEvent
 
-    for (SpellEntity spell : spellRegistry.getAll()) {
-      Events events = spell.getEvents();
-      PatchedImmutableTable luaEvent = events.getRepo().wrap(new CustomLuaEvent(eventType, data));
-      events.handle(eventType, luaEvent);
-    }
+    CustomLuaEvent event = new CustomLuaEvent(eventType, data);
+    eventHandler.onEvent(event);
   }
 
   public void handle(String eventType, Object luaEvent) {

@@ -1,4 +1,4 @@
-class("Event")
+class('Event')
 
 -- Event.type
 -- Event.id

@@ -4,8 +4,6 @@ import com.google.common.base.Preconditions;
 
 import net.karneim.luamod.Entities;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.Entity;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -45,8 +43,7 @@ public class EntitiesWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = entities.list();
-      PatchedImmutableTable result = repo.wrapStrings(ids);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrapStrings(ids));
     }
 
     @Override
@@ -67,8 +64,7 @@ public class EntitiesWrapper {
       }
       String name = String.valueOf(arg1);
       Entity entity = entities.get(name);
-      DelegatingTable<? extends Entity> result = repo.wrap(entity);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrap(entity));
     }
 
     @Override
@@ -89,8 +85,7 @@ public class EntitiesWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> names = entities.find(target);
-      PatchedImmutableTable result = repo.wrapStrings(names);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrapStrings(names));
     }
 
     @Override

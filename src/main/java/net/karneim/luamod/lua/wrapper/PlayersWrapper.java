@@ -2,7 +2,6 @@ package net.karneim.luamod.lua.wrapper;
 
 import net.karneim.luamod.Players;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
 import net.karneim.luamod.lua.util.table.DelegatingTable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -47,8 +46,7 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       String[] names = players.names();
-      PatchedImmutableTable result = repo.wrapStrings(names);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrapStrings(names));
     }
 
     @Override
@@ -63,8 +61,7 @@ public class PlayersWrapper {
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
       Iterable<String> ids = players.list();
-      PatchedImmutableTable result = repo.wrapStrings(ids);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrapStrings(ids));
     }
 
     @Override
@@ -84,8 +81,7 @@ public class PlayersWrapper {
       String id = String.valueOf(arg1);
       EntityPlayerMP player = players.get(id);
       if (player != null) {
-        DelegatingTable<? extends EntityPlayer> result = repo.wrap(player);
-        context.getReturnBuffer().setTo(result);
+        context.getReturnBuffer().setTo(repo.wrap(player));
       } else {
         context.getReturnBuffer().setTo();
       }
@@ -108,8 +104,7 @@ public class PlayersWrapper {
       String name = String.valueOf(arg1);
       EntityPlayerMP player = players.getByName(name);
       if (player != null) {
-        DelegatingTable<? extends EntityPlayer> result = repo.wrap(player);
-        context.getReturnBuffer().setTo(result);
+        context.getReturnBuffer().setTo(repo.wrap(player));
       } else {
         context.getReturnBuffer().setTo();
       }
@@ -131,8 +126,7 @@ public class PlayersWrapper {
       }
       String target = String.valueOf(arg1);
       Iterable<String> ids = players.find(target);
-      PatchedImmutableTable result = repo.wrapStrings(ids);
-      context.getReturnBuffer().setTo(result);
+      context.getReturnBuffer().setTo(repo.wrapStrings(ids));
     }
 
     @Override

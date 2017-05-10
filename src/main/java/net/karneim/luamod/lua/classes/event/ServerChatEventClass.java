@@ -2,23 +2,23 @@ package net.karneim.luamod.lua.classes.event;
 
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
-import net.karneim.luamod.lua.patched.PatchedImmutableTable;
-import net.karneim.luamod.lua.util.wrapper.ImmutableLuaClass;
+import net.karneim.luamod.lua.util.table.DelegatingTable;
+import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraftforge.event.ServerChatEvent;
 import net.sandius.rembulan.Table;
 
 @LuaModule("ChatEvent")
-public class ServerChatEventClass extends ImmutableLuaClass<ServerChatEvent> {
+public class ServerChatEventClass extends DelegatingLuaClass<ServerChatEvent> {
   public ServerChatEventClass(LuaTypesRepo repo) {
     super(repo);
   }
 
   @Override
-  protected void addProperties(PatchedImmutableTable.Builder b, ServerChatEvent event) {
-    b.add("type", repo.wrap(getModuleName()));
-    b.add("message", repo.wrap(event.getMessage()));
-    b.add("username", repo.wrap(event.getUsername()));
-    b.add("player", repo.wrap(event.getPlayer()));
+  protected void addProperties(DelegatingTable.Builder<? extends ServerChatEvent> b,
+      ServerChatEvent delegate) {
+    b.addReadOnly("message", () -> repo.wrap(delegate.getMessage()));
+    b.addReadOnly("username", () -> repo.wrap(delegate.getUsername()));
+    b.addReadOnly("player", () -> repo.wrap(delegate.getPlayer()));
   }
 
   @Override
