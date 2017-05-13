@@ -5,18 +5,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.MapMaker;
 import com.google.common.reflect.TypeToken;
 
 import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
 
 public abstract class CachingLuaClass<J, L> extends LuaClass implements LuaWrapper<J, L> {
-  private final Map<J, SoftReference<L>> luaObjects = new WeakHashMap<>();
-  private final Map<L, WeakReference<J>> javaObjects = new WeakHashMap<>();
+  private final Map<J, SoftReference<L>> luaObjects = new MapMaker().weakKeys().makeMap();
+  private final Map<L, WeakReference<J>> javaObjects = new MapMaker().weakKeys().makeMap();
   private @Nullable Class<J> javaClass;
 
   public CachingLuaClass(LuaTypesRepo repo) {
