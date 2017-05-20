@@ -1,0 +1,21 @@
+{
+  "modListVersion": 2,
+  "modList": [{
+    "modid": "wol",
+    "name": "Wizards of Lua",
+    "description": "The Art of Spell Crafting",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "http://www.wizards-of-lua.net",
+    "updateUrl": "",
+    "authorList": ["Michael Karneim"],
+    "credits": "Miroslav Janíček, for creating Rembulan, an pure Java implementation of Lua",
+    "logoFile": "assets/luamod/logo.png",
+    "screenshots": [],
+    "parent": "",
+    "requiredMods": [],
+    "dependencies": [],
+    "dependants": [],
+    "useDependencyInformation": true
+  }]
+}

@@ -1,0 +1,19 @@
+.classpath
+.gradle
+.project
+.settings
+bin
+eclipse
+README.txt
+*-changelog.txt
+Paulscode IBXM Library License.txt
+Paulscode SoundSystem CodecIBXM License.txt
+build
+run
+*.launch
+CREDITS-fml.txt
+LICENSE-new.txt
+MinecraftForge-Credits.txt
+logs/
+.cache-main
+tmp/
