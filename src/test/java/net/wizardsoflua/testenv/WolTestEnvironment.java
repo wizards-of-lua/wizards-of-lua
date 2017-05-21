@@ -61,6 +61,8 @@ public class WolTestEnvironment {
 
   @EventHandler
   public void serverStarted(FMLServerStartedEvent event) throws Throwable {
+    // Make sure to inform the "right" MinecraftJUnitRunner, that has been loaded
+    // by the system classloader.
     Class<?> cls =
         ClassLoader.getSystemClassLoader().loadClass(MinecraftJUnitRunner.class.getName());
     Method m = cls.getMethod("serverStarted");

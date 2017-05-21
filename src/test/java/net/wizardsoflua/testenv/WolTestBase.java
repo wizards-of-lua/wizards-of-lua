@@ -6,12 +6,14 @@ import com.google.common.collect.Iterables;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 
-public class InGameTestBase extends TestDataFactory {
+public class WolTestBase extends TestDataFactory {
   private MinecraftServer server;
   private MinecraftServerBackdoor serverBackdoor;
 
@@ -31,6 +33,10 @@ public class InGameTestBase extends TestDataFactory {
 
   protected Iterable<String> messagesOf(Iterable<ServerChatEvent> events) {
     return Iterables.transform(events, ServerChatEvent::getMessage);
+  }
+  
+  protected Iterable<BlockPos> positionsOf(Iterable<RightClickBlock> events) {
+    return Iterables.transform(events, RightClickBlock::getPos);
   }
 
   protected EntityPlayerMP player() {
