@@ -12,7 +12,7 @@ public class MinecraftStarter extends GradleStartCommon {
   public static void start() throws Throwable {
     if (starter == null) {
       starter = new MinecraftStarter();
-      starter.launch(new String[] {"-DFORGE_FORCE_FRAME_RECALC=true"});
+      starter.launch(new String[] {"-DFORGE_FORCE_FRAME_RECALC=true", "nogui"});
     }
   }
 

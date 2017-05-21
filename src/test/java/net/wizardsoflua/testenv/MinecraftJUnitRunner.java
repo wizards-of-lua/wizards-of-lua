@@ -30,8 +30,9 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
       }
     }
     String userDir = System.getProperty("user.dir");
-    if ( !userDir.endsWith("run")) {
-      throw new IllegalStateException("user.dir must be 'run' directory but was '"+userDir+"'!");
+    if (!userDir.endsWith("run")) {
+      throw new IllegalStateException(
+          "user.dir must be 'run' directory but was '" + userDir + "'!");
     }
   }
 
