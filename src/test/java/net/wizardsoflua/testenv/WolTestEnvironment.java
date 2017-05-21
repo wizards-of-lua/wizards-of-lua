@@ -65,7 +65,7 @@ public class WolTestEnvironment {
     // by the system classloader.
     Class<?> cls =
         ClassLoader.getSystemClassLoader().loadClass(MinecraftJUnitRunner.class.getName());
-    Method m = cls.getMethod("serverStarted");
+    Method m = cls.getMethod("onGameStarted");
     m.invoke(null);
   }
 

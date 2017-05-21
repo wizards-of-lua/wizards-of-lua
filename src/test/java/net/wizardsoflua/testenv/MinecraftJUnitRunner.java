@@ -42,7 +42,7 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
     @Override
     public void evaluate() throws Throwable {
       startGame();
-      waitForServerIsStarted();
+      waitForGameHasBeenStarted();
       // Make sure to get the "right" WolTestEnvironment (that has been loaded by Minecraft's
       // classloader)
       Class<?> cls = Launch.classLoader.findClass(WolTestEnvironment.class.getName());
@@ -59,10 +59,6 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
     }
   }
 
-  private void waitForServerIsStarted() throws InterruptedException {
-    startSignal.await(30, TimeUnit.SECONDS);
-  }
-
   private static void startGame() {
     try {
       MinecraftStarter.start();
@@ -71,7 +67,11 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
     }
   }
 
-  public static void serverStarted() {
+  private static void waitForGameHasBeenStarted() throws InterruptedException {
+    startSignal.await(30, TimeUnit.SECONDS);
+  }
+
+  public static void onGameStarted() {
     startSignal.countDown();
   }
 
