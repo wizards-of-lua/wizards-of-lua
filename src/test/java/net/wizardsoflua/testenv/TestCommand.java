@@ -11,11 +11,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
-public class CommandTest extends CommandBase {
+public class TestCommand extends CommandBase {
   private static final String CMD_NAME = "test";
   private final List<String> aliases = new ArrayList<String>();
 
-  public CommandTest() {
+  public TestCommand() {
     aliases.add(CMD_NAME);
   }
 

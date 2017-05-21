@@ -71,6 +71,7 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
     startSignal.await(30, TimeUnit.SECONDS);
   }
 
+  @CalledByReflection("Called by WolTestEnvironment")
   public static void onGameStarted() {
     startSignal.countDown();
   }

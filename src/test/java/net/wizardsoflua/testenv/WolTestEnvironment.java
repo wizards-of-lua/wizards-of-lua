@@ -43,10 +43,9 @@ public class WolTestEnvironment {
   public static WolTestEnvironment instance;
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
+  private final List<Event> events = new ArrayList<>();
 
   private MinecraftServer server;
-  private List<Event> events = new ArrayList<>();
-
 
   @EventHandler
   public void init(FMLInitializationEvent event) {
@@ -56,7 +55,7 @@ public class WolTestEnvironment {
   @EventHandler
   public void serverLoad(FMLServerStartingEvent event) {
     server = checkNotNull(event.getServer());
-    event.registerServerCommand(new CommandTest());
+    event.registerServerCommand(new TestCommand());
   }
 
   @EventHandler
@@ -96,6 +95,7 @@ public class WolTestEnvironment {
     return Iterables.transform(Iterables.filter(events, filter), cast);
   }
 
+  @CalledByReflection("Called by MinecraftJUnitRunner")
   public static Throwable runTest(String classname, String methodName) {
     final TestMethodExecutor executor = new TestMethodExecutor();
     try {
