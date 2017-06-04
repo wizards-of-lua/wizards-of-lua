@@ -1,31 +1,32 @@
 package net.wizardsoflua.testenv;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
+import net.wizardsoflua.testenv.player.WolFakePlayer;
 
-public class MinecraftServerBackdoor {
+public class MinecraftBackdoor {
 
-  private final MinecraftServer server;
   private final WolTestEnvironment testEnv;
   private final EventBus eventBus;
 
-  public MinecraftServerBackdoor(MinecraftServer server, EventBus eventBus,
-      WolTestEnvironment testEnv) {
-    this.server = server;
-    this.eventBus = eventBus;
+  public MinecraftBackdoor(WolTestEnvironment testEnv, EventBus eventBus) {
     this.testEnv = testEnv;
+    this.eventBus = eventBus;
   }
 
   public String getName() {
-    return server.getName();
+    return testEnv.getServer().getName();
   }
 
   public void post(Event event) {
     eventBus.post(event);
+  }
+
+  public WolFakePlayer player() {
+    return testEnv.getFakePlayer();
   }
 
   public Iterable<ServerChatEvent> chatEvents() {
@@ -40,12 +41,16 @@ public class MinecraftServerBackdoor {
     if (args != null && args.length > 0) {
       cmd = String.format(cmd, args);
     }
-    return server.getCommandManager().executeCommand(player, cmd);
+    return testEnv.getServer().getCommandManager().executeCommand(player, cmd);
   }
 
   public Iterable<String> getChatOutputOf(EntityPlayerMP player) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO remove this. callers should call this directly on fake player
+    if (player == testEnv.getFakePlayer()) {
+      return testEnv.getFakePlayer().getChatOutput();
+    } else {
+      throw new IllegalArgumentException();
+    }
   }
 
 }

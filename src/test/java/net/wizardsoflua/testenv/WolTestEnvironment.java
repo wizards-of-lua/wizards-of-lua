@@ -19,9 +19,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -29,9 +31,12 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.testenv.TestMethodExecutor.Result;
+import net.wizardsoflua.testenv.player.WolFakePlayer;
+import net.wizardsoflua.testenv.player.WolFakePlayerFactory;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
     acceptableRemoteVersions = "*")
@@ -43,7 +48,9 @@ public class WolTestEnvironment {
   public static WolTestEnvironment instance;
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
+
   private final List<Event> events = new ArrayList<>();
+  private final WolFakePlayerFactory fakePlayerFactory = new WolFakePlayerFactory();
 
   private MinecraftServer server;
 
@@ -81,12 +88,27 @@ public class WolTestEnvironment {
     events.add(evt);
   }
 
+  @SubscribeEvent(priority = EventPriority.HIGHEST)
+  public void onDimensionLoad(WorldEvent.Load event) {
+    if (event.getWorld() instanceof WorldServer) {
+      fakePlayerFactory.onLoadWorld((WorldServer) event.getWorld());
+    }
+  }
+
+  @SubscribeEvent(priority = EventPriority.HIGHEST)
+  public void onDimensionUnload(WorldEvent.Unload event) {
+    if (event.getWorld() instanceof WorldServer) {
+      fakePlayerFactory.onUnloadWorld((WorldServer) event.getWorld());
+    }
+  }
+
   public MinecraftServer getServer() {
     return server;
   }
 
-  public void clearEvents() {
+  public void reset() {
     events.clear();
+    // TODO other stuff to reset?
   }
 
   public <E extends Event> Iterable<E> getEvents(Class<E> type) {
@@ -137,6 +159,11 @@ public class WolTestEnvironment {
     } else {
       return result.getFailure().getMessage();
     }
+  }
+
+  public WolFakePlayer getFakePlayer() {
+    // TODO expose factory instead of delegating this method
+    return fakePlayerFactory.getFakePlayer();
   }
 
 }
