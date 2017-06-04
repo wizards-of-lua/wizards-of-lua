@@ -13,6 +13,7 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 @RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
 
+  // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_ServerChatEvent
   @Test
   public void test_can_receive_ServerChatEvent() {
     // Given:
@@ -26,11 +27,12 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(messagesOf(act)).containsExactly(message);
   }
 
+  // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_RightClickBlock_Event
   @Test
   public void test_can_receive_RightClickBlock_Event() {
     // Given:
     BlockPos pos = BlockPos.ORIGIN;
-    
+
     // When:
     mc().post(newRightClickBlockEvent(mc().player(), pos));
 
@@ -38,7 +40,8 @@ public class TestEnvironmentTest extends WolTestBase {
     Iterable<RightClickBlock> act = mc().rightClickBlockEvents();
     assertThat(positionsOf(act)).containsExactly(pos);
   }
-  
+
+  // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_console_output
   @Test
   public void test_can_receive_console_output() {
     // Given:
@@ -50,6 +53,20 @@ public class TestEnvironmentTest extends WolTestBase {
     // Then:
     Iterable<String> act = mc().getChatOutputOf(mc().player());
     assertThat(act).containsOnly(message);
+  }
+
+  // /test net.wizardsoflua.TestEnvironmentTest test_can_move_player_around
+  @Test
+  public void test_can_move_player_around() {
+    // Given:
+    BlockPos pos = new BlockPos(1, 4, 1);
+
+    // When:
+    mc().player().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+
+    // Then
+    BlockPos act = mc().player().getPosition();
+    assertThat(act).isEqualTo(pos);
   }
 
 }

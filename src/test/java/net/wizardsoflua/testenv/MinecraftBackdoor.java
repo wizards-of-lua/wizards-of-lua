@@ -1,11 +1,14 @@
 package net.wizardsoflua.testenv;
 
+import java.util.Collections;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.testenv.player.WolFakePlayer;
+import oshi.PlatformEnum;
 
 public class MinecraftBackdoor {
 
@@ -25,8 +28,8 @@ public class MinecraftBackdoor {
     eventBus.post(event);
   }
 
-  public WolFakePlayer player() {
-    return testEnv.getFakePlayer();
+  public EntityPlayerMP player() {
+    return testEnv.getTestPlayer();
   }
 
   public Iterable<ServerChatEvent> chatEvents() {
@@ -45,9 +48,8 @@ public class MinecraftBackdoor {
   }
 
   public Iterable<String> getChatOutputOf(EntityPlayerMP player) {
-    // TODO remove this. callers should call this directly on fake player
-    if (player == testEnv.getFakePlayer()) {
-      return testEnv.getFakePlayer().getReceivedMessages();
+    if (player == testEnv.getTestPlayer()) {
+      return Collections.emptyList();
     } else {
       throw new IllegalArgumentException();
     }

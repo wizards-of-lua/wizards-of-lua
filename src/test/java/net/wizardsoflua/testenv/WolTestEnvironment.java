@@ -10,6 +10,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.InitializationError;
@@ -17,9 +19,10 @@ import org.junit.runners.model.InitializationError;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.mojang.authlib.GameProfile;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -33,10 +36,10 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.testenv.TestMethodExecutor.Result;
-import net.wizardsoflua.testenv.player.WolFakePlayer;
-import net.wizardsoflua.testenv.player.WolFakePlayerFactory;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
     acceptableRemoteVersions = "*")
@@ -50,7 +53,7 @@ public class WolTestEnvironment {
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
 
   private final List<Event> events = new ArrayList<>();
-  private final WolFakePlayerFactory fakePlayerFactory = new WolFakePlayerFactory();
+  private @Nullable EntityPlayerMP testPlayer;
 
   private MinecraftServer server;
 
@@ -88,18 +91,36 @@ public class WolTestEnvironment {
     events.add(evt);
   }
 
-  @SubscribeEvent(priority = EventPriority.HIGHEST)
-  public void onDimensionLoad(WorldEvent.Load event) {
-    if (event.getWorld() instanceof WorldServer) {
-      fakePlayerFactory.onLoadWorld((WorldServer) event.getWorld());
+  @SubscribeEvent
+  public void onEvent(PlayerLoggedInEvent evt) {
+    System.out.println("PlayerLoggedInEvent");
+    if (testPlayer == null) {
+      testPlayer = (EntityPlayerMP) evt.player;
+      setOperator(testPlayer);
+    }
+  }
+
+  private void setOperator(EntityPlayerMP player) {
+    GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(player.getName());
+    server.getPlayerList().addOp(gameprofile);
+  }
+
+  @SubscribeEvent
+  public void onEvent(PlayerLoggedOutEvent evt) {
+    System.out.println("PlayerLoggedOutEvent");
+    if (testPlayer != null && testPlayer == evt.player) {
+      testPlayer = null;
     }
   }
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
+  public void onDimensionLoad(WorldEvent.Load event) {
+
+  }
+
+  @SubscribeEvent(priority = EventPriority.HIGHEST)
   public void onDimensionUnload(WorldEvent.Unload event) {
-    if (event.getWorld() instanceof WorldServer) {
-      fakePlayerFactory.onUnloadWorld((WorldServer) event.getWorld());
-    }
+
   }
 
   public MinecraftServer getServer() {
@@ -161,9 +182,8 @@ public class WolTestEnvironment {
     }
   }
 
-  public WolFakePlayer getFakePlayer() {
-    // TODO expose factory instead of delegating this method
-    return fakePlayerFactory.getFakePlayer();
+  public EntityPlayerMP getTestPlayer() {
+    return testPlayer;
   }
 
 }
