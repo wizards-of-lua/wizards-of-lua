@@ -40,7 +40,7 @@ public class TestEnvironmentTest extends WolTestBase {
   }
   
   @Test
-  public void test_can_receive_colsole_output() {
+  public void test_can_receive_console_output() {
     // Given:
     String message = "hello";
 

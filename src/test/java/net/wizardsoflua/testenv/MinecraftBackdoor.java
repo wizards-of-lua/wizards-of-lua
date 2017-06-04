@@ -47,7 +47,7 @@ public class MinecraftBackdoor {
   public Iterable<String> getChatOutputOf(EntityPlayerMP player) {
     // TODO remove this. callers should call this directly on fake player
     if (player == testEnv.getFakePlayer()) {
-      return testEnv.getFakePlayer().getChatOutput();
+      return testEnv.getFakePlayer().getReceivedMessages();
     } else {
       throw new IllegalArgumentException();
     }

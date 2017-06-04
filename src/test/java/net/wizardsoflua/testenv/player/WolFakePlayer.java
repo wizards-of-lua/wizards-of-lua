@@ -18,7 +18,7 @@ public class WolFakePlayer extends FakePlayer {
     super(world, name);
   }
 
-  public Iterable<String> getChatOutput() {
+  public Iterable<String> getReceivedMessages() {
     return Iterables.transform(receivedMessages, ITextComponent::getUnformattedText);
   }
 
