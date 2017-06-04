@@ -2,6 +2,8 @@ package net.wizardsoflua.testenv.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -17,8 +19,9 @@ public class WolFakePlayerFactory {
   private final GameProfile fakeProfile =
       new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13D2C99CAE77"), fakePlayerName);
 
+  private List<WolFakePlayer> fakePlayers = new ArrayList<>();
+
   private @Nullable WorldServer currentWorld;
-  private @Nullable WolFakePlayer fakePlayer;
 
   public void onLoadWorld(WorldServer world) {
     this.currentWorld = world;
@@ -27,18 +30,19 @@ public class WolFakePlayerFactory {
 
   public void onUnloadWorld(WorldServer world) {
     System.out.println("onUnloadWorld");
-    if (fakePlayer != null) {
+    if (!fakePlayers.isEmpty()) {
       // TODO other things to do?
-      fakePlayer = null;
+      fakePlayers.clear();
     }
   }
 
   public WolFakePlayer getFakePlayer() {
     checkNotNull(currentWorld, "currentWorld==null!");
-    if (fakePlayer == null) {
-      fakePlayer = new WolFakePlayer(currentWorld, fakeProfile);
+    if (fakePlayers.isEmpty()) {
+      WolFakePlayer fakePlayer = new WolFakePlayer(currentWorld, fakeProfile);
+      fakePlayers.add(fakePlayer);
     }
-    return fakePlayer;
+    return fakePlayers.get(0);
   }
 
 }
