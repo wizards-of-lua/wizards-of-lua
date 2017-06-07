@@ -1,18 +1,16 @@
-package net.wizardsoflua.testenv;
+package net.wizardsoflua.testenv.junit;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
 public class TestMethodExecutor {
 
-  public Result runTest(final Class<?> testClazz, final String methodName)
+  public TestResult runTest(final Class<?> testClazz, final String methodName)
       throws InitializationError {
     BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz) {
       @Override
@@ -26,25 +24,9 @@ public class TestMethodExecutor {
         }
       }
     };
-    Result res = new Result();
+    TestResult res = new TestResult();
     runner.run(res);
     return res;
   }
 
-  class Result extends RunNotifier {
-    Failure failure;
-
-    @Override
-    public void fireTestFailure(Failure failure) {
-      this.failure = failure;
-    };
-
-    boolean isOK() {
-      return failure == null;
-    }
-
-    public Failure getFailure() {
-      return failure;
-    }
-  }
 }

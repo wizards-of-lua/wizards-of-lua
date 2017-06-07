@@ -2,6 +2,7 @@ package net.wizardsoflua.testenv;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
@@ -18,7 +19,10 @@ import org.junit.runners.model.InitializationError;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -39,7 +43,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.testenv.TestMethodExecutor.Result;
+import net.wizardsoflua.testenv.junit.TestClassExecutor;
+import net.wizardsoflua.testenv.junit.TestMethodExecutor;
+import net.wizardsoflua.testenv.junit.TestResult;
+import net.wizardsoflua.testenv.junit.TestResults;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
     acceptableRemoteVersions = "*")
@@ -101,7 +108,8 @@ public class WolTestEnvironment {
   }
 
   private void setOperator(EntityPlayerMP player) {
-    GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(player.getName());
+    GameProfile gameprofile =
+        server.getPlayerProfileCache().getGameProfileForUsername(player.getName());
     server.getPlayerList().addOp(gameprofile);
   }
 
@@ -132,6 +140,10 @@ public class WolTestEnvironment {
     // TODO other stuff to reset?
   }
 
+  public EntityPlayerMP getTestPlayer() {
+    return testPlayer;
+  }
+
   public <E extends Event> Iterable<E> getEvents(Class<E> type) {
     Predicate<Event> filter = type::isInstance;
     Function<Event, E> cast = type::cast;
@@ -146,14 +158,13 @@ public class WolTestEnvironment {
       Class<?> testClass = cl.loadClass(classname);
 
       final CountDownLatch testFinished = new CountDownLatch(1);
-      final AtomicReference<TestMethodExecutor.Result> resultRef =
-          new AtomicReference<TestMethodExecutor.Result>();
+      final AtomicReference<TestResult> resultRef = new AtomicReference<TestResult>();
       instance.getServer().addScheduledTask(new Runnable() {
 
         @Override
         public void run() {
           try {
-            Result testResult = executor.runTest(testClass, methodName);
+            TestResult testResult = executor.runTest(testClass, methodName);
             resultRef.set(testResult);
           } catch (InitializationError e) {
             throw new UndeclaredThrowableException(e);
@@ -162,7 +173,7 @@ public class WolTestEnvironment {
         }
       });
       testFinished.await(30, TimeUnit.SECONDS);
-      Result testResult = resultRef.get();
+      TestResult testResult = resultRef.get();
       if (!testResult.isOK()) {
         return testResult.getFailure().getException();
       }
@@ -172,18 +183,51 @@ public class WolTestEnvironment {
     }
   }
 
-  public String runTest2(Class<?> testClass, String methodName) throws InitializationError {
+  public TestResult runTestMethod(Class<?> testClass, String methodName)
+      throws InitializationError {
     TestMethodExecutor executor = new TestMethodExecutor();
-    TestMethodExecutor.Result result = executor.runTest(testClass, methodName);
-    if (result.isOK()) {
-      return "OK";
-    } else {
-      return result.getFailure().getMessage();
+    TestResult result = executor.runTest(testClass, methodName);
+    return result;
+  }
+
+  public Iterable<TestResults> runAllTests() throws InitializationError {
+    List<TestResults> result = new ArrayList<>();
+    Iterable<Class<?>> testClasses = findTestClasses();
+    TestClassExecutor executor = new TestClassExecutor();
+    for (Class<?> testClass : testClasses) {
+      result.add(executor.runTests(testClass));
+    }
+    return result;
+  }
+
+  public TestResults runTests(Class<?> testClass) throws InitializationError {
+    TestClassExecutor executor = new TestClassExecutor();
+    return executor.runTests(testClass);
+  }
+
+  private Iterable<Class<?>> findTestClasses() {
+    try {
+      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+      ClassPath classpath = ClassPath.from(classloader);
+      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua");
+      Iterable<ClassInfo> yy = Iterables.filter(xx, input -> hasTestMethod(input));
+      return Iterables.transform(yy, ClassInfo::load);
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
     }
   }
 
-  public EntityPlayerMP getTestPlayer() {
-    return testPlayer;
+  private boolean hasTestMethod(ClassInfo input) {
+    Class<?> cls = input.load();
+    Method[] mm = cls.getDeclaredMethods();
+    for (Method method : mm) {
+      if (method.getAnnotation(org.junit.Test.class) != null) {
+        return true;
+      }
+    }
+    return false;
   }
+
+
 
 }

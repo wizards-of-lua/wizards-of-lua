@@ -7,8 +7,6 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
-import net.wizardsoflua.testenv.player.WolFakePlayer;
-import oshi.PlatformEnum;
 
 public class MinecraftBackdoor {
 

@@ -18,12 +18,12 @@ public class TestDataFactory extends Assertions {
     ITextComponent component = new TextComponentString(message);
     return new ServerChatEvent(player, message, component);
   }
-  
+
   protected RightClickBlock newRightClickBlockEvent(EntityPlayerMP player, BlockPos pos) {
     EnumHand hand = EnumHand.MAIN_HAND;
     EnumFacing face = EnumFacing.SOUTH;
     Vec3d hitVec = Vec3d.ZERO;
     return new RightClickBlock(player, hand, pos, face, hitVec);
   }
-  
+
 }

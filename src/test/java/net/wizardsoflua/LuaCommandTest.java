@@ -9,6 +9,7 @@ import net.wizardsoflua.testenv.WolTestBase;
 @RunWith(MinecraftJUnitRunner.class)
 public class LuaCommandTest extends WolTestBase {
 
+  // /test net.wizardsoflua.LuaCommandTest test_print_some_text
   @Test
   public void test_print_some_text() throws Exception {
     // Given:

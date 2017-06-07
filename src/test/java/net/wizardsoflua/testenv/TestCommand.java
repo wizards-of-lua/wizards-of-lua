@@ -3,13 +3,18 @@ package net.wizardsoflua.testenv;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.wizardsoflua.testenv.junit.TestResult;
+import net.wizardsoflua.testenv.junit.TestResults;
 
 public class TestCommand extends CommandBase {
   private static final String CMD_NAME = "test";
@@ -33,13 +38,65 @@ public class TestCommand extends CommandBase {
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
     try {
-      Class<?> testClass = parseTestClass(args);
-      String methodName = parseMethodName(args);
-      String result = WolTestEnvironment.instance.runTest2(testClass, methodName);
-      sender.sendMessage(new TextComponentString(result));
+      if (hasArgs(args)) {
+        Class<?> testClass = parseTestClass(args);
+        String methodName = parseMethodName(args);
+        if (methodName != null) {
+          TestResult result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
+          sender.sendMessage(new TextComponentString(toMessage(result)));
+        } else {
+          TestResults result = WolTestEnvironment.instance.runTests(testClass);
+          sender.sendMessage(new TextComponentString(toMessage(result)));
+        }
+      } else {
+        Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
+        sender.sendMessage(new TextComponentString(toMessage(result)));
+      }
     } catch (InitializationError | ClassNotFoundException e) {
       sender.sendMessage(new TextComponentString(e.getMessage()));
     }
+  }
+
+  private String toMessage(TestResults result) {
+    return toMessage(Lists.newArrayList(result));
+  }
+
+  private String toMessage(TestResult result) {
+    if (result.isOK()) {
+      return "OK";
+    } else {
+      return result.getFailure().getMessage();
+    }
+  }
+
+  private String toMessage(Iterable<TestResults> results) {
+    StringBuilder result = new StringBuilder();
+    int testCount = 0;
+    int failureCount = 0;
+    for (TestResults r : results) {
+      testCount += r.getTestsFinished();
+      if (!r.isOK()) {
+        Iterable<Failure> f = r.getFailures();
+        for (Failure failure : f) {
+          failureCount++;
+          if (result.length() > 0) {
+            result.append("\n");
+          }
+          result.append(failure.getTestHeader());
+          result.append(":\n");
+          result.append(failure.getMessage());
+
+        }
+      }
+    }
+    if (failureCount > 0) {
+      return failureCount + " of " + testCount + " tests failed." + "\n" + result.toString();
+    }
+    return testCount + " tests OK";
+  }
+
+  private boolean hasArgs(String[] args) {
+    return args != null && args.length > 0;
   }
 
   private String parseMethodName(String[] args) {

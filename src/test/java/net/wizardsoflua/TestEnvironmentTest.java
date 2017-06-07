@@ -7,8 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import net.wizardsoflua.testenv.WolTestBase;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
