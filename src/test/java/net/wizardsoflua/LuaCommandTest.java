@@ -16,10 +16,10 @@ public class LuaCommandTest extends WolTestBase {
     String text = "some text";
 
     // When:
-    mc().executeCommand(mc().player(), "/lua print(%s)", text);
+    mc().executeCommand(mc().player().getDelegate(), "/lua print(%s)", text);
 
     // Then:
-    Iterable<String> act = mc().getChatOutputOf(mc().player());
+    Iterable<String> act = mc().getChatOutputOf(mc().player().getDelegate());
     assertThat(act).containsOnly(text);
   }
 
@@ -29,10 +29,10 @@ public class LuaCommandTest extends WolTestBase {
     String text = "13 * 7";
 
     // When:
-    mc().executeCommand(mc().player(), "/lua print(%s)", text);
+    mc().executeCommand(mc().player().getDelegate(), "/lua print(%s)", text);
 
     // Then:
-    Iterable<String> act = mc().getChatOutputOf(mc().player());
+    Iterable<String> act = mc().getChatOutputOf(mc().player().getDelegate());
     assertThat(act).containsOnly("101");
   }
 }

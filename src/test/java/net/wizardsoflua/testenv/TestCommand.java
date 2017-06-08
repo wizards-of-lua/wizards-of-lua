@@ -37,24 +37,31 @@ public class TestCommand extends CommandBase {
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
-    try {
-      if (hasArgs(args)) {
-        Class<?> testClass = parseTestClass(args);
-        String methodName = parseMethodName(args);
-        if (methodName != null) {
-          TestResult result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
-          sender.sendMessage(new TextComponentString(toMessage(result)));
-        } else {
-          TestResults result = WolTestEnvironment.instance.runTests(testClass);
-          sender.sendMessage(new TextComponentString(toMessage(result)));
+    // TODO reuse threads
+    Thread t = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          if (hasArgs(args)) {
+            Class<?> testClass = parseTestClass(args);
+            String methodName = parseMethodName(args);
+            if (methodName != null) {
+              TestResult result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
+              sender.sendMessage(new TextComponentString(toMessage(result)));
+            } else {
+              TestResults result = WolTestEnvironment.instance.runTests(testClass);
+              sender.sendMessage(new TextComponentString(toMessage(result)));
+            }
+          } else {
+            Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
+            sender.sendMessage(new TextComponentString(toMessage(result)));
+          }
+        } catch (InitializationError | ClassNotFoundException e) {
+          sender.sendMessage(new TextComponentString(e.getMessage()));
         }
-      } else {
-        Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
-        sender.sendMessage(new TextComponentString(toMessage(result)));
       }
-    } catch (InitializationError | ClassNotFoundException e) {
-      sender.sendMessage(new TextComponentString(e.getMessage()));
-    }
+    });
+    t.start();
   }
 
   private String toMessage(TestResults result) {

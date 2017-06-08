@@ -35,6 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -47,26 +48,56 @@ import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
 import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
+import net.wizardsoflua.testenv.net.ChatAction;
+import net.wizardsoflua.testenv.net.ConfigMessage;
+import net.wizardsoflua.testenv.net.PacketPipeline;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
     acceptableRemoteVersions = "*")
 public class WolTestEnvironment {
   public static final String MODID = "wol-test";
   public static final String VERSION = WizardsOfLua.VERSION;
+  private static final String CHANNEL_NAME = MODID;
 
   @Instance(MODID)
   public static WolTestEnvironment instance;
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
+  public final PacketPipeline packetPipeline = new PacketPipeline(logger, CHANNEL_NAME);
 
   private final List<Event> events = new ArrayList<>();
   private @Nullable EntityPlayerMP testPlayer;
 
   private MinecraftServer server;
 
+  public WolTestEnvironment() {
+
+  }
+
+  public MinecraftServer getServer() {
+    return server;
+  }
+
+  public PacketPipeline getPacketPipeline() {
+    return packetPipeline;
+  }
+
+  public EntityPlayerMP getTestPlayer() {
+    return testPlayer;
+  }
+
   @EventHandler
   public void init(FMLInitializationEvent event) {
+    packetPipeline.initialize();
+    packetPipeline.registerPacket(ConfigMessage.class);
+    packetPipeline.registerPacket(ChatAction.class);
+    // FIXME only do this on server side (or single player?)!
     MinecraftForge.EVENT_BUS.register(this);
+  }
+
+  @EventHandler
+  public void postInit(FMLPostInitializationEvent event) throws IOException {
+    packetPipeline.postInitialize();
   }
 
   @EventHandler
@@ -87,11 +118,13 @@ public class WolTestEnvironment {
 
   @SubscribeEvent
   public void onEvent(ServerChatEvent evt) {
+    System.out.println("ServerChatEvent "+evt);
     events.add(evt);
   }
 
   @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
+    System.out.println("RightClickBlock "+evt);
     if (evt.getWorld().isRemote) {
       return;
     }
@@ -100,10 +133,15 @@ public class WolTestEnvironment {
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedInEvent evt) {
+    System.out.println("PlayerLoggedInEvent "+evt);
     System.out.println("PlayerLoggedInEvent");
     if (testPlayer == null) {
       testPlayer = (EntityPlayerMP) evt.player;
       setOperator(testPlayer);
+      EntityPlayerMP player = (EntityPlayerMP) evt.player;
+      ConfigMessage message = new ConfigMessage();
+      message.wolVersionOnServer = VERSION;
+      getPacketPipeline().sendTo(message, player);
     }
   }
 
@@ -115,7 +153,7 @@ public class WolTestEnvironment {
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedOutEvent evt) {
-    System.out.println("PlayerLoggedOutEvent");
+    System.out.println("PlayerLoggedOutEvent evt");
     if (testPlayer != null && testPlayer == evt.player) {
       testPlayer = null;
     }
@@ -131,17 +169,9 @@ public class WolTestEnvironment {
 
   }
 
-  public MinecraftServer getServer() {
-    return server;
-  }
-
   public void reset() {
     events.clear();
     // TODO other stuff to reset?
-  }
-
-  public EntityPlayerMP getTestPlayer() {
-    return testPlayer;
   }
 
   public <E extends Event> Iterable<E> getEvents(Class<E> type) {

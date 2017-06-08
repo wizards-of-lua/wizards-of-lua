@@ -20,7 +20,7 @@ public class TestEnvironmentTest extends WolTestBase {
     String message = "hello";
 
     // When:
-    mc().post(newServerChatEvent(mc().player(), message));
+    mc().post(newServerChatEvent(mc().player().getDelegate(), message));
 
     // Then:
     Iterable<ServerChatEvent> act = mc().chatEvents();
@@ -34,7 +34,7 @@ public class TestEnvironmentTest extends WolTestBase {
     BlockPos pos = BlockPos.ORIGIN;
 
     // When:
-    mc().post(newRightClickBlockEvent(mc().player(), pos));
+    mc().post(newRightClickBlockEvent(mc().player().getDelegate(), pos));
 
     // Then:
     Iterable<RightClickBlock> act = mc().rightClickBlockEvents();
@@ -48,10 +48,10 @@ public class TestEnvironmentTest extends WolTestBase {
     String message = "hello";
 
     // When:
-    mc().player().sendMessage(new TextComponentString(message));
+    mc().player().getDelegate().sendMessage(new TextComponentString(message));
 
     // Then:
-    Iterable<String> act = mc().getChatOutputOf(mc().player());
+    Iterable<String> act = mc().getChatOutputOf(mc().player().getDelegate());
     assertThat(act).containsOnly(message);
   }
 
@@ -62,11 +62,26 @@ public class TestEnvironmentTest extends WolTestBase {
     BlockPos pos = new BlockPos(1, 4, 1);
 
     // When:
-    mc().player().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+    mc().player().getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
 
     // Then
-    BlockPos act = mc().player().getPosition();
+    BlockPos act = mc().player().getDelegate().getPosition();
     assertThat(act).isEqualTo(pos);
+  }
+  
+  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_post_chat_Message
+  @Test
+  public void test_player_can_post_chat_Message() {
+    // Given:
+    String message = "hello";
+
+    // When:
+    mc().player().sendChatMessage(message);
+
+    // Then:
+    // FIXME wait for events
+    ServerChatEvent act = mc().waitForChatEvent();
+    assertThat(act.getMessage()).isEqualTo(message);
   }
 
 }
