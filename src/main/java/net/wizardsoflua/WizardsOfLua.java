@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.wizardsoflua.command.LuaCommand;
-import net.wizardsoflua.lua.SpellEntity;
+import net.wizardsoflua.spell.SpellEntity;
 
 @Mod(modid = WizardsOfLua.MODID, version = WizardsOfLua.VERSION, acceptableRemoteVersions = "*")
 public class WizardsOfLua {
