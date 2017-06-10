@@ -41,8 +41,7 @@ import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
 import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
-import net.wizardsoflua.testenv.net.ChatAction;
-import net.wizardsoflua.testenv.net.ClickAction;
+import net.wizardsoflua.testenv.net.AbstractPacket;
 import net.wizardsoflua.testenv.net.ConfigMessage;
 import net.wizardsoflua.testenv.net.PacketPipeline;
 
@@ -80,7 +79,7 @@ public class WolTestEnvironment {
   public EntityPlayerMP getTestPlayer() {
     return testPlayer;
   }
-  
+
   public EventRecorder getEventRecorder() {
     return eventRecorder;
   }
@@ -88,10 +87,10 @@ public class WolTestEnvironment {
   @EventHandler
   public void init(FMLInitializationEvent event) {
     packetPipeline.initialize();
-    // TODO register packets automatically by scanning classes
-    packetPipeline.registerPacket(ConfigMessage.class);
-    packetPipeline.registerPacket(ChatAction.class);
-    packetPipeline.registerPacket(ClickAction.class);
+    Iterable<Class<? extends AbstractPacket>> packetClasses = findPacketClasses();
+    for (Class<? extends AbstractPacket> cls : packetClasses) {
+      packetPipeline.registerPacket(cls);
+    }
     // FIXME only do this on server side (or single player?)!
     MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(eventRecorder);
@@ -207,6 +206,25 @@ public class WolTestEnvironment {
     return executor.runTests(testClass);
   }
 
+  @SuppressWarnings("unchecked")
+  private Iterable<Class<? extends AbstractPacket>> findPacketClasses() {
+    try {
+      List<Class<? extends AbstractPacket>> result = new ArrayList<>();
+      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+      ClassPath classpath = ClassPath.from(classloader);
+      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua");
+      Iterable<ClassInfo> yy = Iterables.filter(xx, input -> {
+        return AbstractPacket.class.isAssignableFrom(input.load());
+      });
+      for (ClassInfo classInfo : yy) {
+        result.add((Class<? extends AbstractPacket>) classInfo.load());
+      }
+      return result;
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
   private Iterable<Class<?>> findTestClasses() {
     try {
       ClassLoader classloader = Thread.currentThread().getContextClassLoader();
@@ -229,7 +247,5 @@ public class WolTestEnvironment {
     }
     return false;
   }
-
-
 
 }

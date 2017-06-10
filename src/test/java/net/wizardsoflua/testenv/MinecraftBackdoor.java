@@ -4,8 +4,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.testenv.player.PlayerBackdoor;
@@ -33,15 +31,6 @@ public class MinecraftBackdoor {
   public PlayerBackdoor player() {
     return player;
   }
-  
-
-//  public Iterable<ServerChatEvent> chatEvents() {
-//    return testEnv.getEvents(ServerChatEvent.class);
-//  }
-//
-//  public Iterable<RightClickBlock> rightClickBlockEvents() {
-//    return testEnv.getEvents(RightClickBlock.class);
-//  }
 
   public int executeCommand(EntityPlayerMP player, String cmd, Object... args) {
     if (args != null && args.length > 0) {
