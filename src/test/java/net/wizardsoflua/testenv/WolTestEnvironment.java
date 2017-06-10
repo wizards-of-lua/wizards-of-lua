@@ -18,8 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.InitializationError;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.ClassPath;
@@ -30,6 +28,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -50,6 +49,7 @@ import net.wizardsoflua.testenv.junit.TestMethodExecutor;
 import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
 import net.wizardsoflua.testenv.net.ChatAction;
+import net.wizardsoflua.testenv.net.ClickAction;
 import net.wizardsoflua.testenv.net.ConfigMessage;
 import net.wizardsoflua.testenv.net.PacketPipeline;
 
@@ -91,8 +91,10 @@ public class WolTestEnvironment {
   @EventHandler
   public void init(FMLInitializationEvent event) {
     packetPipeline.initialize();
+    // TODO register packets automatically by scanning classes 
     packetPipeline.registerPacket(ConfigMessage.class);
     packetPipeline.registerPacket(ChatAction.class);
+    packetPipeline.registerPacket(ClickAction.class);
     // FIXME only do this on server side (or single player?)!
     MinecraftForge.EVENT_BUS.register(this);
   }
@@ -130,24 +132,26 @@ public class WolTestEnvironment {
     // TODO other stuff to reset?
   }
 
-//  // TODO remove this
-//  public <E extends Event> Iterable<E> getEvents(Class<E> type) {
-//    Predicate<Event> filter = type::isInstance;
-//    Function<Event, E> cast = type::cast;
-//    return Iterables.transform(Iterables.filter(events, filter), cast);
-//  }
+  // // TODO remove this
+  // public <E extends Event> Iterable<E> getEvents(Class<E> type) {
+  // Predicate<Event> filter = type::isInstance;
+  // Function<Event, E> cast = type::cast;
+  // return Iterables.transform(Iterables.filter(events, filter), cast);
+  // }
 
   /**
-   * Blocks until an event of the specified type is received, and returns it.
-   * Removes the returned event and any event that has occured before it.
+   * Blocks until an event of the specified type is received, and returns it. Removes the returned
+   * event and any event that has occured before it.
+   * 
    * @param eventType
    * @return the first event of the specified type
    * @throws InterruptedException
    */
+  // TODO move this and other "event" methods into a new class
   public <E extends Event> E waitFor(Class<E> eventType) throws InterruptedException {
     while (true) {
       synchronized (eventsSync) {
-        while ( events.isEmpty()) {
+        while (events.isEmpty()) {
           eventsSync.wait();
         }
         Iterator<Event> it = events.iterator();
@@ -171,6 +175,15 @@ public class WolTestEnvironment {
   @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
     System.out.println("RightClickBlock " + evt);
+    if (evt.getWorld().isRemote) {
+      return;
+    }
+    addEvent(evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(LeftClickBlock evt) {
+    System.out.println("LeftClickBlock " + evt);
     if (evt.getWorld().isRemote) {
       return;
     }

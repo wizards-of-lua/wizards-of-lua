@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.wizardsoflua.testenv.WolTestEnvironment;
-import net.wizardsoflua.testenv.net.ChatAction;
+import net.wizardsoflua.testenv.net.ClientAction;
 
 public class PlayerBackdoor {
   private WolTestEnvironment testEnv;
@@ -19,11 +19,11 @@ public class PlayerBackdoor {
     return testPlayer;
   }
 
-  public void sendChatMessage(String message) {
+  public void perform(ClientAction action) {
     testEnv.getServer().addScheduledTask(new Runnable() {
       @Override
       public void run() {
-        testEnv.getPacketPipeline().sendTo(new ChatAction(message), getDelegate());
+        testEnv.getPacketPipeline().sendTo(action, getDelegate());
       }
     });
   }
