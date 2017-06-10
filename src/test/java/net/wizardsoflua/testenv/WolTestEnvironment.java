@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +26,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -38,8 +33,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
@@ -64,12 +57,12 @@ public class WolTestEnvironment {
   public static WolTestEnvironment instance;
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
-  public final PacketPipeline packetPipeline = new PacketPipeline(logger, CHANNEL_NAME);
+  private final PacketPipeline packetPipeline = new PacketPipeline(logger, CHANNEL_NAME);
+  private final EventRecorder eventRecorder = new EventRecorder();
 
-  private final List<Event> events = new ArrayList<>();
   private @Nullable EntityPlayerMP testPlayer;
 
-  private Object eventsSync = new Object();
+
   private MinecraftServer server;
 
   public WolTestEnvironment() {
@@ -87,16 +80,21 @@ public class WolTestEnvironment {
   public EntityPlayerMP getTestPlayer() {
     return testPlayer;
   }
+  
+  public EventRecorder getEventRecorder() {
+    return eventRecorder;
+  }
 
   @EventHandler
   public void init(FMLInitializationEvent event) {
     packetPipeline.initialize();
-    // TODO register packets automatically by scanning classes 
+    // TODO register packets automatically by scanning classes
     packetPipeline.registerPacket(ConfigMessage.class);
     packetPipeline.registerPacket(ChatAction.class);
     packetPipeline.registerPacket(ClickAction.class);
     // FIXME only do this on server side (or single player?)!
     MinecraftForge.EVENT_BUS.register(this);
+    MinecraftForge.EVENT_BUS.register(eventRecorder);
   }
 
   @EventHandler
@@ -120,75 +118,11 @@ public class WolTestEnvironment {
     m.invoke(null);
   }
 
-  private void addEvent(Event evt) {
-    synchronized (eventsSync) {
-      events.add(evt);
-      eventsSync.notify();
-    }
-  }
-
   public void reset() {
-    events.clear();
+    eventRecorder.clear();
     // TODO other stuff to reset?
   }
 
-  // // TODO remove this
-  // public <E extends Event> Iterable<E> getEvents(Class<E> type) {
-  // Predicate<Event> filter = type::isInstance;
-  // Function<Event, E> cast = type::cast;
-  // return Iterables.transform(Iterables.filter(events, filter), cast);
-  // }
-
-  /**
-   * Blocks until an event of the specified type is received, and returns it. Removes the returned
-   * event and any event that has occured before it.
-   * 
-   * @param eventType
-   * @return the first event of the specified type
-   * @throws InterruptedException
-   */
-  // TODO move this and other "event" methods into a new class
-  public <E extends Event> E waitFor(Class<E> eventType) throws InterruptedException {
-    while (true) {
-      synchronized (eventsSync) {
-        while (events.isEmpty()) {
-          eventsSync.wait();
-        }
-        Iterator<Event> it = events.iterator();
-        while (it.hasNext()) {
-          Event event = it.next();
-          it.remove();
-          if (eventType.isInstance(event)) {
-            return eventType.cast(event);
-          }
-        }
-      }
-    }
-  }
-
-  @SubscribeEvent
-  public void onEvent(ServerChatEvent evt) {
-    System.out.println("ServerChatEvent " + evt);
-    addEvent(evt);
-  }
-
-  @SubscribeEvent
-  public void onEvent(RightClickBlock evt) {
-    System.out.println("RightClickBlock " + evt);
-    if (evt.getWorld().isRemote) {
-      return;
-    }
-    addEvent(evt);
-  }
-
-  @SubscribeEvent
-  public void onEvent(LeftClickBlock evt) {
-    System.out.println("LeftClickBlock " + evt);
-    if (evt.getWorld().isRemote) {
-      return;
-    }
-    addEvent(evt);
-  }
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedInEvent evt) {
@@ -202,7 +136,6 @@ public class WolTestEnvironment {
       message.wolVersionOnServer = VERSION;
       getPacketPipeline().sendTo(message, player);
     }
-    addEvent(evt);
   }
 
   private void setOperator(EntityPlayerMP player) {
@@ -217,17 +150,6 @@ public class WolTestEnvironment {
     if (testPlayer != null && testPlayer == evt.player) {
       testPlayer = null;
     }
-    addEvent(evt);
-  }
-
-  @SubscribeEvent(priority = EventPriority.HIGHEST)
-  public void onDimensionLoad(WorldEvent.Load evt) {
-    addEvent(evt);
-  }
-
-  @SubscribeEvent(priority = EventPriority.HIGHEST)
-  public void onDimensionUnload(WorldEvent.Unload evt) {
-    addEvent(evt);
   }
 
   @CalledByReflection("Called by MinecraftJUnitRunner")

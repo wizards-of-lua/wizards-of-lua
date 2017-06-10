@@ -33,6 +33,7 @@ public class MinecraftBackdoor {
   public PlayerBackdoor player() {
     return player;
   }
+  
 
 //  public Iterable<ServerChatEvent> chatEvents() {
 //    return testEnv.getEvents(ServerChatEvent.class);
@@ -59,7 +60,7 @@ public class MinecraftBackdoor {
 
   public <E extends Event> E waitFor(Class<E> eventType) {
     try {
-      return testEnv.waitFor(eventType);
+      return testEnv.getEventRecorder().waitFor(eventType);
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }
