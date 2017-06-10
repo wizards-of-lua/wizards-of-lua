@@ -1,4 +1,4 @@
-package net.wizardsoflua;
+package net.wizardsoflua.tests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,13 +11,14 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.net.ChatAction;
 import net.wizardsoflua.testenv.net.ClickAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_ServerChatEvent
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_receive_ServerChatEvent
   @Test
   public void test_can_receive_ServerChatEvent() {
     // Given:
@@ -31,7 +32,7 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(message);
   }
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_RightClickBlock_Event
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_receive_RightClickBlock_Event
   @Test
   public void test_can_receive_RightClickBlock_Event() {
     // Given:
@@ -45,7 +46,7 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act.getPos()).isEqualTo(pos);
   }
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_console_output
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_receive_console_output
   @Test
   public void test_can_receive_console_output() {
     // Given:
@@ -55,11 +56,11 @@ public class TestEnvironmentTest extends WolTestBase {
     mc().player().getDelegate().sendMessage(new TextComponentString(message));
 
     // Then:
-    Iterable<String> act = mc().getChatOutputOf(mc().player().getDelegate());
-    assertThat(act).containsOnly(message);
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(message);
   }
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_can_move_player_around
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_move_player_around
   @Test
   public void test_can_move_player_around() {
     // Given:
@@ -67,13 +68,13 @@ public class TestEnvironmentTest extends WolTestBase {
 
     // When:
     mc().player().setPosition(pos);
-    
+
     // Then
     BlockPos act = mc().player().getDelegate().getPosition();
     assertThat(act).isEqualTo(pos);
   }
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_post_chat_message
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_player_can_post_chat_message
   @Test
   public void test_player_can_post_chat_message() {
     // Given:
@@ -87,7 +88,7 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(message);
   }
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_post_several_chat_messages
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_player_can_post_several_chat_messages
   @Test
   public void test_player_can_post_several_chat_messages() {
     // Given:
@@ -105,7 +106,7 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act2.getMessage()).isEqualTo(message2);
   }
 
-  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_click_on_blockpos
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_player_can_click_on_blockpos
   @Test
   public void test_player_can_click_on_blockpos() {
     // Given:
@@ -123,4 +124,20 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act.getFace()).isEqualTo(facing);
   }
 
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_timeout
+  @Test
+  public void test_timeout() {
+    // Given:
+
+    // When:
+    Exception act = null;
+    try {
+      mc().waitFor(LeftClickBlock.class);
+    } catch (Exception e) {
+      act = e;
+    }
+
+    // Then:
+    assertThat(act).isExactlyInstanceOf(RuntimeException.class);
+  }
 }

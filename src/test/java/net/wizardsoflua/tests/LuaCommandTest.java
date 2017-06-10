@@ -1,16 +1,17 @@
-package net.wizardsoflua;
+package net.wizardsoflua.tests;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class LuaCommandTest extends WolTestBase {
 
-  // /test net.wizardsoflua.LuaCommandTest test_print_some_text
+  // /test net.wizardsoflua.tests.LuaCommandTest test_print_some_text
   @Test
   public void test_print_some_text() throws Exception {
     // Given:
@@ -20,11 +21,11 @@ public class LuaCommandTest extends WolTestBase {
     mc().player().perform(new ChatAction("/lua print(%s)", text));
 
     // Then:
-    Iterable<String> act = mc().getChatOutputOf(mc().player().getDelegate());
-    assertThat(act).containsOnly(text);
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(text);
   }
 
-  // /test net.wizardsoflua.LuaCommandTest test_print_some_calculation
+  // /test net.wizardsoflua.tests.LuaCommandTest test_print_some_calculation
   @Test
   public void test_print_some_calculation() throws Exception {
     // Given:
@@ -34,7 +35,7 @@ public class LuaCommandTest extends WolTestBase {
     mc().player().perform(new ChatAction("/lua print(%s)", text));
 
     // Then:
-    Iterable<String> act = mc().getChatOutputOf(mc().player().getDelegate());
-    assertThat(act).containsOnly("91");
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("91");
   }
 }

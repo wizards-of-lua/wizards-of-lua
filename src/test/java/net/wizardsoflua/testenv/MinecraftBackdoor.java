@@ -2,6 +2,7 @@ package net.wizardsoflua.testenv;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -42,7 +43,7 @@ public class MinecraftBackdoor {
 
   public <E extends Event> E waitFor(Class<E> eventType) {
     try {
-      return testEnv.getEventRecorder().waitFor(eventType);
+      return testEnv.getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }

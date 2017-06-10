@@ -21,28 +21,23 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
 import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
 import net.wizardsoflua.testenv.net.AbstractPacket;
-import net.wizardsoflua.testenv.net.ConfigMessage;
 import net.wizardsoflua.testenv.net.PacketPipeline;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
@@ -54,6 +49,9 @@ public class WolTestEnvironment {
 
   @Instance(MODID)
   public static WolTestEnvironment instance;
+  @SidedProxy(clientSide = "net.wizardsoflua.testenv.client.ClientProxy",
+      serverSide = "net.wizardsoflua.testenv.server.ServerProxy")
+  public static CommonProxy proxy;
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
   private final PacketPipeline packetPipeline = new PacketPipeline(logger, CHANNEL_NAME);
@@ -80,6 +78,10 @@ public class WolTestEnvironment {
     return testPlayer;
   }
 
+  public void setTestPlayer(EntityPlayerMP player) {
+    testPlayer = player;
+  }
+
   public EventRecorder getEventRecorder() {
     return eventRecorder;
   }
@@ -92,8 +94,7 @@ public class WolTestEnvironment {
       packetPipeline.registerPacket(cls);
     }
     // FIXME only do this on server side (or single player?)!
-    MinecraftForge.EVENT_BUS.register(this);
-    MinecraftForge.EVENT_BUS.register(eventRecorder);
+    proxy.onInit(event);
   }
 
   @EventHandler
@@ -120,35 +121,6 @@ public class WolTestEnvironment {
   public void reset() {
     eventRecorder.clear();
     // TODO other stuff to reset?
-  }
-
-
-  @SubscribeEvent
-  public void onEvent(PlayerLoggedInEvent evt) {
-    System.out.println("PlayerLoggedInEvent " + evt);
-    System.out.println("PlayerLoggedInEvent");
-    if (testPlayer == null) {
-      testPlayer = (EntityPlayerMP) evt.player;
-      setOperator(testPlayer);
-      EntityPlayerMP player = (EntityPlayerMP) evt.player;
-      ConfigMessage message = new ConfigMessage();
-      message.wolVersionOnServer = VERSION;
-      getPacketPipeline().sendTo(message, player);
-    }
-  }
-
-  private void setOperator(EntityPlayerMP player) {
-    GameProfile gameprofile =
-        server.getPlayerProfileCache().getGameProfileForUsername(player.getName());
-    server.getPlayerList().addOp(gameprofile);
-  }
-
-  @SubscribeEvent
-  public void onEvent(PlayerLoggedOutEvent evt) {
-    System.out.println("PlayerLoggedOutEvent evt");
-    if (testPlayer != null && testPlayer == evt.player) {
-      testPlayer = null;
-    }
   }
 
   @CalledByReflection("Called by MinecraftJUnitRunner")
@@ -212,7 +184,7 @@ public class WolTestEnvironment {
       List<Class<? extends AbstractPacket>> result = new ArrayList<>();
       ClassLoader classloader = Thread.currentThread().getContextClassLoader();
       ClassPath classpath = ClassPath.from(classloader);
-      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua");
+      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua.testenv.net");
       Iterable<ClassInfo> yy = Iterables.filter(xx, input -> {
         return AbstractPacket.class.isAssignableFrom(input.load());
       });
@@ -229,7 +201,7 @@ public class WolTestEnvironment {
     try {
       ClassLoader classloader = Thread.currentThread().getContextClassLoader();
       ClassPath classpath = ClassPath.from(classloader);
-      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua");
+      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua.tests");
       Iterable<ClassInfo> yy = Iterables.filter(xx, input -> hasTestMethod(input));
       return Iterables.transform(yy, ClassInfo::load);
     } catch (IOException e) {
