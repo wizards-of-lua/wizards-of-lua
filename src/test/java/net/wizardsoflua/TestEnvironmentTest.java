@@ -66,8 +66,8 @@ public class TestEnvironmentTest extends WolTestBase {
     BlockPos pos = new BlockPos(1, 4, 1);
 
     // When:
-    mc().player().getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
-
+    mc().player().setPosition(pos);
+    
     // Then
     BlockPos act = mc().player().getDelegate().getPosition();
     assertThat(act).isEqualTo(pos);
@@ -110,16 +110,16 @@ public class TestEnvironmentTest extends WolTestBase {
   public void test_player_can_click_on_blockpos() {
     // Given:
     BlockPos playerPos = new BlockPos(0, 4, 0);
-    mc().player().getDelegate().setPositionAndUpdate(playerPos.getX(), playerPos.getY(), playerPos.getZ());
-    BlockPos pos = new BlockPos(0, 3, 0);
+    mc().player().setPosition(playerPos);
+    BlockPos clickPos = new BlockPos(0, 3, 0);
     EnumFacing facing = EnumFacing.UP;
 
     // When:
-    mc().player().perform(new ClickAction(pos, facing));
+    mc().player().perform(new ClickAction(clickPos, facing));
 
     // Then:
     LeftClickBlock act = mc().waitFor(LeftClickBlock.class);
-    assertThat(act.getPos()).isEqualTo(pos);
+    assertThat(act.getPos()).isEqualTo(clickPos);
     assertThat(act.getFace()).isEqualTo(facing);
   }
 

@@ -3,6 +3,7 @@ package net.wizardsoflua.testenv.player;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestEnvironment;
 import net.wizardsoflua.testenv.net.ClientAction;
 
@@ -26,6 +27,10 @@ public class PlayerBackdoor {
         testEnv.getPacketPipeline().sendTo(action, getDelegate());
       }
     });
+  }
+
+  public void setPosition(BlockPos pos) {
+    getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
   }
 
 }
