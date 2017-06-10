@@ -27,7 +27,7 @@ public class EventRecorder {
 
   /**
    * Blocks until an event of the specified type is received, and returns it. Removes the returned
-   * event and any event that has occured before it.
+   * event and any event that did occur before.
    * 
    * @param eventType
    * @return the first event of the specified type
@@ -53,13 +53,11 @@ public class EventRecorder {
 
   @SubscribeEvent
   public void onEvent(ServerChatEvent evt) {
-    System.out.println("ServerChatEvent " + evt);
     addEvent(evt);
   }
 
   @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
-    System.out.println("RightClickBlock " + evt);
     if (evt.getWorld().isRemote) {
       return;
     }
@@ -68,13 +66,11 @@ public class EventRecorder {
 
   @SubscribeEvent
   public void onEvent(LeftClickBlock evt) {
-    System.out.println("LeftClickBlock " + evt);
     if (evt.getWorld().isRemote) {
       return;
     }
     addEvent(evt);
   }
-
 
   private void addEvent(Event evt) {
     synchronized (eventsSync) {

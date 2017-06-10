@@ -12,7 +12,15 @@ public class ChatAction extends ClientAction {
   public ChatAction() {}
 
   public ChatAction(String text) {
-    this.text = text;
+    this(text, (Object[]) null);
+  }
+
+  public ChatAction(String format, Object... args) {
+    if (args != null && args.length > 0) {
+      this.text = String.format(format, args);
+    } else {
+      this.text = format;
+    }
   }
 
   @Override

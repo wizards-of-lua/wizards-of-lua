@@ -31,14 +31,7 @@ public class MinecraftBackdoor {
   public PlayerBackdoor player() {
     return player;
   }
-
-  public int executeCommand(EntityPlayerMP player, String cmd, Object... args) {
-    if (args != null && args.length > 0) {
-      cmd = String.format(cmd, args);
-    }
-    return testEnv.getServer().getCommandManager().executeCommand(player, cmd);
-  }
-
+  
   public Iterable<String> getChatOutputOf(EntityPlayerMP player) {
     if (player == testEnv.getTestPlayer()) {
       return Collections.emptyList();
