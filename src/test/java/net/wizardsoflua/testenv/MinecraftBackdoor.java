@@ -1,10 +1,8 @@
 package net.wizardsoflua.testenv;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.testenv.player.PlayerBackdoor;
@@ -31,14 +29,6 @@ public class MinecraftBackdoor {
 
   public PlayerBackdoor player() {
     return player;
-  }
-  
-  public Iterable<String> getChatOutputOf(EntityPlayerMP player) {
-    if (player == testEnv.getTestPlayer()) {
-      return Collections.emptyList();
-    } else {
-      throw new IllegalArgumentException();
-    }
   }
 
   public <E extends Event> E waitFor(Class<E> eventType) {
