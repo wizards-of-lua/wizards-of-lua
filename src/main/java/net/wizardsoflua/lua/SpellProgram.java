@@ -69,4 +69,8 @@ public class SpellProgram {
     executor.call(stateContext, commandLineFunc);
   }
 
+  public boolean isTerminated() {
+    return state == State.FINISHED;
+  }
+
 }

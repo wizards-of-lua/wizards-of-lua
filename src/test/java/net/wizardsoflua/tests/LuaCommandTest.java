@@ -18,7 +18,7 @@ public class LuaCommandTest extends WolTestBase {
     String text = "some text";
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(%s)", text));
+    mc().player().perform(new ChatAction("/lua print('%s')", text));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

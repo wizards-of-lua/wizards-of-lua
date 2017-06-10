@@ -41,7 +41,7 @@ public class SpellEntity extends Entity {
     this(world);
     this.owner = checkNotNull(owner, "owner==null!");
     this.text = checkNotNull(text, "text==null!");
-    //this.program = new SpellProgram(owner, text);
+    this.program = new SpellProgram(owner, text);
   }
 
   @Override
@@ -56,14 +56,21 @@ public class SpellEntity extends Entity {
   @Override
   public void onUpdate() {
     super.onUpdate();
-//    try {
-//      program.resume();
-//    } catch (SpellException e) {
-//      e.printStackTrace();
-//      String message = String.format("Error during command execution: %s", e.getMessage());
-//      TextComponentString txt = new TextComponentString(message);
-//      txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-//      owner.sendMessage(txt);
-//    }
+    if (program == null) {
+      setDead();
+      return;
+    }
+    try {
+      program.resume();
+    } catch (SpellException e) {
+      e.printStackTrace();
+      String message = String.format("Error during command execution: %s", e.getMessage());
+      TextComponentString txt = new TextComponentString(message);
+      txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+      owner.sendMessage(txt);
+    }
+    if (program.isTerminated()) {
+      setDead();
+    }
   }
 }
