@@ -1,9 +1,7 @@
 package net.wizardsoflua.testenv;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collections;
-import java.util.Iterator;
-
-import org.assertj.core.internal.cglib.proxy.UndeclaredThrowableException;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ServerChatEvent;
@@ -36,13 +34,13 @@ public class MinecraftBackdoor {
     return player;
   }
 
-  public Iterable<ServerChatEvent> chatEvents() {
-    return testEnv.getEvents(ServerChatEvent.class);
-  }
-
-  public Iterable<RightClickBlock> rightClickBlockEvents() {
-    return testEnv.getEvents(RightClickBlock.class);
-  }
+//  public Iterable<ServerChatEvent> chatEvents() {
+//    return testEnv.getEvents(ServerChatEvent.class);
+//  }
+//
+//  public Iterable<RightClickBlock> rightClickBlockEvents() {
+//    return testEnv.getEvents(RightClickBlock.class);
+//  }
 
   public int executeCommand(EntityPlayerMP player, String cmd, Object... args) {
     if (args != null && args.length > 0) {
@@ -59,20 +57,11 @@ public class MinecraftBackdoor {
     }
   }
 
-  public ServerChatEvent waitForChatEvent() {
-    // TODO replace busy wait with semaphore
-    while (true) {
-      Iterable<ServerChatEvent> events = testEnv.getEvents(ServerChatEvent.class);
-      Iterator<ServerChatEvent> iterator = events.iterator();
-      if (iterator.hasNext()) {
-        ServerChatEvent evt = iterator.next();
-        return evt;
-      }
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        throw new UndeclaredThrowableException(e);
-      }
+  public <E extends Event> E waitFor(Class<E> eventType) {
+    try {
+      return testEnv.waitFor(eventType);
+    } catch (InterruptedException e) {
+      throw new UndeclaredThrowableException(e);
     }
   }
 

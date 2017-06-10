@@ -23,8 +23,8 @@ public class TestEnvironmentTest extends WolTestBase {
     mc().post(newServerChatEvent(mc().player().getDelegate(), message));
 
     // Then:
-    Iterable<ServerChatEvent> act = mc().chatEvents();
-    assertThat(messagesOf(act)).containsExactly(message);
+    ServerChatEvent act = mc().waitFor(ServerChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(message);
   }
 
   // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_RightClickBlock_Event
@@ -37,8 +37,8 @@ public class TestEnvironmentTest extends WolTestBase {
     mc().post(newRightClickBlockEvent(mc().player().getDelegate(), pos));
 
     // Then:
-    Iterable<RightClickBlock> act = mc().rightClickBlockEvents();
-    assertThat(positionsOf(act)).containsExactly(pos);
+    RightClickBlock act = mc().waitFor(RightClickBlock.class);
+    assertThat(act.getPos()).isEqualTo(pos);
   }
 
   // /test net.wizardsoflua.TestEnvironmentTest test_can_receive_console_output
@@ -68,10 +68,10 @@ public class TestEnvironmentTest extends WolTestBase {
     BlockPos act = mc().player().getDelegate().getPosition();
     assertThat(act).isEqualTo(pos);
   }
-  
-  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_post_chat_Message
+
+  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_post_chat_message
   @Test
-  public void test_player_can_post_chat_Message() {
+  public void test_player_can_post_chat_message() {
     // Given:
     String message = "hello";
 
@@ -79,9 +79,26 @@ public class TestEnvironmentTest extends WolTestBase {
     mc().player().sendChatMessage(message);
 
     // Then:
-    // FIXME wait for events
-    ServerChatEvent act = mc().waitForChatEvent();
+    ServerChatEvent act = mc().waitFor(ServerChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(message);
+  }
+
+  // /test net.wizardsoflua.TestEnvironmentTest test_player_can_post_several_chat_messages
+  @Test
+  public void test_player_can_post_several_chat_messages() {
+    // Given:
+    String message1 = "hello";
+    String message2 = "dude";
+
+    // When:
+    mc().player().sendChatMessage(message1);
+    mc().player().sendChatMessage(message2);
+
+    // Then:
+    ServerChatEvent act1 = mc().waitFor(ServerChatEvent.class);
+    assertThat(act1.getMessage()).isEqualTo(message1);
+    ServerChatEvent act2 = mc().waitFor(ServerChatEvent.class);
+    assertThat(act2.getMessage()).isEqualTo(message2);
   }
 
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -68,6 +69,7 @@ public class WolTestEnvironment {
   private final List<Event> events = new ArrayList<>();
   private @Nullable EntityPlayerMP testPlayer;
 
+  private Object eventsSync = new Object();
   private MinecraftServer server;
 
   public WolTestEnvironment() {
@@ -116,24 +118,68 @@ public class WolTestEnvironment {
     m.invoke(null);
   }
 
+  private void addEvent(Event evt) {
+    synchronized (eventsSync) {
+      events.add(evt);
+      eventsSync.notify();
+    }
+  }
+
+  public void reset() {
+    events.clear();
+    // TODO other stuff to reset?
+  }
+
+//  // TODO remove this
+//  public <E extends Event> Iterable<E> getEvents(Class<E> type) {
+//    Predicate<Event> filter = type::isInstance;
+//    Function<Event, E> cast = type::cast;
+//    return Iterables.transform(Iterables.filter(events, filter), cast);
+//  }
+
+  /**
+   * Blocks until an event of the specified type is received, and returns it.
+   * Removes the returned event and any event that has occured before it.
+   * @param eventType
+   * @return the first event of the specified type
+   * @throws InterruptedException
+   */
+  public <E extends Event> E waitFor(Class<E> eventType) throws InterruptedException {
+    while (true) {
+      synchronized (eventsSync) {
+        while ( events.isEmpty()) {
+          eventsSync.wait();
+        }
+        Iterator<Event> it = events.iterator();
+        while (it.hasNext()) {
+          Event event = it.next();
+          it.remove();
+          if (eventType.isInstance(event)) {
+            return eventType.cast(event);
+          }
+        }
+      }
+    }
+  }
+
   @SubscribeEvent
   public void onEvent(ServerChatEvent evt) {
-    System.out.println("ServerChatEvent "+evt);
-    events.add(evt);
+    System.out.println("ServerChatEvent " + evt);
+    addEvent(evt);
   }
 
   @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
-    System.out.println("RightClickBlock "+evt);
+    System.out.println("RightClickBlock " + evt);
     if (evt.getWorld().isRemote) {
       return;
     }
-    events.add(evt);
+    addEvent(evt);
   }
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedInEvent evt) {
-    System.out.println("PlayerLoggedInEvent "+evt);
+    System.out.println("PlayerLoggedInEvent " + evt);
     System.out.println("PlayerLoggedInEvent");
     if (testPlayer == null) {
       testPlayer = (EntityPlayerMP) evt.player;
@@ -143,6 +189,7 @@ public class WolTestEnvironment {
       message.wolVersionOnServer = VERSION;
       getPacketPipeline().sendTo(message, player);
     }
+    addEvent(evt);
   }
 
   private void setOperator(EntityPlayerMP player) {
@@ -157,27 +204,17 @@ public class WolTestEnvironment {
     if (testPlayer != null && testPlayer == evt.player) {
       testPlayer = null;
     }
+    addEvent(evt);
   }
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
-  public void onDimensionLoad(WorldEvent.Load event) {
-
+  public void onDimensionLoad(WorldEvent.Load evt) {
+    addEvent(evt);
   }
 
   @SubscribeEvent(priority = EventPriority.HIGHEST)
-  public void onDimensionUnload(WorldEvent.Unload event) {
-
-  }
-
-  public void reset() {
-    events.clear();
-    // TODO other stuff to reset?
-  }
-
-  public <E extends Event> Iterable<E> getEvents(Class<E> type) {
-    Predicate<Event> filter = type::isInstance;
-    Function<Event, E> cast = type::cast;
-    return Iterables.transform(Iterables.filter(events, filter), cast);
+  public void onDimensionUnload(WorldEvent.Unload evt) {
+    addEvent(evt);
   }
 
   @CalledByReflection("Called by MinecraftJUnitRunner")
