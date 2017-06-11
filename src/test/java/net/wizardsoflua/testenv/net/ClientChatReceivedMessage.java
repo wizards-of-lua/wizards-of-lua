@@ -1,4 +1,4 @@
-package net.wizardsoflua.testenv.server;
+package net.wizardsoflua.testenv.net;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -6,9 +6,9 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.AbstractServerMessage;
 
-public class ClientChatReceivedMessage extends AbstractServerMessage<ClientChatReceivedMessage> {
+@MessageHandling(Side.SERVER)
+public class ClientChatReceivedMessage extends AbstractMessage {
   private String text;
 
   // The basic, no-argument constructor MUST be included to use the new automated handling

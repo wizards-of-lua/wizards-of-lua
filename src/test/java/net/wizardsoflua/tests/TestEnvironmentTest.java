@@ -14,10 +14,10 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.client.ChatAction;
-import net.wizardsoflua.testenv.client.ClickAction;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+import net.wizardsoflua.testenv.net.ChatAction;
+import net.wizardsoflua.testenv.net.ClickAction;
 import net.wizardsoflua.testenv.server.ServerProxy;
 
 @RunWith(MinecraftJUnitRunner.class)
@@ -130,21 +130,21 @@ public class TestEnvironmentTest extends WolTestBase {
   }
 
   // /test net.wizardsoflua.tests.TestEnvironmentTest test_waitFor_has_timeout
-//  @Test
-//  public void test_waitFor_has_timeout() {
-//    // Given:
-//
-//    // When:
-//    Exception act = null;
-//    try {
-//      mc().waitFor(LeftClickBlock.class);
-//    } catch (Exception e) {
-//      act = e;
-//    }
-//
-//    // Then:
-//    assertThat(act).isExactlyInstanceOf(RuntimeException.class);
-//  }
+  // @Test
+  // public void test_waitFor_has_timeout() {
+  // // Given:
+  //
+  // // When:
+  // Exception act = null;
+  // try {
+  // mc().waitFor(LeftClickBlock.class);
+  // } catch (Exception e) {
+  // act = e;
+  // }
+  //
+  // // Then:
+  // assertThat(act).isExactlyInstanceOf(RuntimeException.class);
+  // }
 
   // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_receive_log4j_event
   @Test

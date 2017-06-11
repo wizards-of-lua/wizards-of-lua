@@ -31,9 +31,9 @@ public class ClientProxy extends CommonProxy {
     // Solution is to double-check side before returning the player:
     return (ctx.side.isClient() ? mc.player : super.getPlayerEntity(ctx));
   }
-  
+
   @Override
   public IThreadListener getThreadFromContext(MessageContext ctx) {
-      return (ctx.side.isClient() ? mc : super.getThreadFromContext(ctx));
+    return (ctx.side.isClient() ? mc : super.getThreadFromContext(ctx));
   }
 }

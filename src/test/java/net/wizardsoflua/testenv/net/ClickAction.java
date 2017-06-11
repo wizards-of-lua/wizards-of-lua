@@ -1,4 +1,4 @@
-package net.wizardsoflua.testenv.client;
+package net.wizardsoflua.testenv.net;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class ClickAction extends ClientAction<ClickAction> {
+public class ClickAction extends ClientAction {
 
   private BlockPos pos;
   private EnumFacing face;

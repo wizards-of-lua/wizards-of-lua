@@ -19,7 +19,7 @@ public class WolTestBase extends TestDataFactory {
     testEnv.beforeTest();
     mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
   }
-  
+
   @After
   public void after() {
     WolTestEnvironment testEnv = WolTestEnvironment.instance;

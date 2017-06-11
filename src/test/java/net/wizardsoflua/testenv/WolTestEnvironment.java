@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
 import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
+import net.wizardsoflua.testenv.net.AbstractMessage;
 import net.wizardsoflua.testenv.net.PacketDispatcher;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
@@ -52,7 +54,7 @@ public class WolTestEnvironment {
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
   private final EventRecorder eventRecorder = new EventRecorder();
-  private final PacketDispatcher packetDispatcher = new PacketDispatcher(MODID);
+  private PacketDispatcher packetDispatcher;
   private @Nullable EntityPlayerMP testPlayer;
 
   private MinecraftServer server;
@@ -82,12 +84,11 @@ public class WolTestEnvironment {
 
   @EventHandler
   public void init(FMLInitializationEvent event) {
-    packetDispatcher.registerPackets();
-    // packetPipeline.initialize();
-    // Iterable<Class<? extends AbstractPacket>> packetClasses = findPacketClasses();
-    // for (Class<? extends AbstractPacket> cls : packetClasses) {
-    // packetPipeline.registerPacket(cls);
-    // }
+    packetDispatcher = new PacketDispatcher(MODID, proxy);
+    Iterable<Class<? extends AbstractMessage>> messageClasses = findMessageClasses();
+    for (Class<? extends AbstractMessage> cls : messageClasses) {
+      packetDispatcher.registerMessage(cls);
+    }
     proxy.onInit(event);
   }
 
@@ -173,25 +174,27 @@ public class WolTestEnvironment {
     return executor.runTests(testClass);
   }
 
-  // @SuppressWarnings("unchecked")
-  // private Iterable<Class<? extends AbstractPacket>> findPacketClasses() {
-  // try {
-  // List<Class<? extends AbstractPacket>> result = new ArrayList<>();
-  // ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-  // ClassPath classpath = ClassPath.from(classloader);
-  // ImmutableSet<ClassInfo> xx =
-  // classpath.getTopLevelClassesRecursive("net.wizardsoflua.testenv.net");
-  // Iterable<ClassInfo> yy = Iterables.filter(xx, input -> {
-  // return AbstractPacket.class.isAssignableFrom(input.load());
-  // });
-  // for (ClassInfo classInfo : yy) {
-  // result.add((Class<? extends AbstractPacket>) classInfo.load());
-  // }
-  // return result;
-  // } catch (IOException e) {
-  // throw new UndeclaredThrowableException(e);
-  // }
-  // }
+  @SuppressWarnings("unchecked")
+  private Iterable<Class<? extends AbstractMessage>> findMessageClasses() {
+    try {
+      List<Class<? extends AbstractMessage>> result = new ArrayList<>();
+      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+      ClassPath classpath = ClassPath.from(classloader);
+      ImmutableSet<ClassInfo> xx =
+          classpath.getTopLevelClassesRecursive("net.wizardsoflua.testenv.net");
+      Iterable<ClassInfo> yy = Iterables.filter(xx, input -> {
+        Class<?> cls = input.load();
+        return AbstractMessage.class.isAssignableFrom(cls)
+            && !Modifier.isAbstract(cls.getModifiers());
+      });
+      for (ClassInfo classInfo : yy) {
+        result.add((Class<? extends AbstractMessage>) classInfo.load());
+      }
+      return result;
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
 
   private Iterable<Class<?>> findTestClasses() {
     try {

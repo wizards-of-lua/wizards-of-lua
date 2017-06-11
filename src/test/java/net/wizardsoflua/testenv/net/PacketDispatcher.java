@@ -1,20 +1,19 @@
 package net.wizardsoflua.testenv.net;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
-import net.wizardsoflua.testenv.client.ChatAction;
-import net.wizardsoflua.testenv.client.ClickAction;
-import net.wizardsoflua.testenv.client.ConfigMessage;
-import net.wizardsoflua.testenv.server.ClientChatReceivedMessage;
 
 public class PacketDispatcher {
-  // a simple counter will allow us to get rid of 'magic' numbers used during packet registration
-  private static byte packetId = 0;
 
   /**
    * The SimpleNetworkWrapper instance is used both to register and send packets. Since I will be
@@ -22,46 +21,68 @@ public class PacketDispatcher {
    * using it directly.
    */
   private final SimpleNetworkWrapper dispatcher;
+  private final PacketDispatcherContext packetDispatcherContext;
+  private byte packetIdCount = 0;
 
-  public PacketDispatcher(String channelNam) {
-    dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel(channelNam);
-  }
-
-  /**
-   * Call this during pre-init or loading and register all of your packets (messages) here
-   */
-  public void registerPackets() {
-    // Packets handled on CLIENT
-    registerMessage(ChatAction.class);
-    registerMessage(ClickAction.class);
-    registerMessage(ConfigMessage.class);
-
-    // Packets handled on SERVER
-    registerMessage(ClientChatReceivedMessage.class);
-
-    // Bidirectional packets:
-    // - none so far -
-  }
-  
-  public <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerPackets(Iterable<Class<T>> packetClasses) {
-    for (Class<T> class1 : packetClasses) {
-      registerMessage(class1);
-    }
+  public PacketDispatcher(String channelName, PacketDispatcherContext packetDispatcherContext) {
+    this.packetDispatcherContext = packetDispatcherContext;
+    dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
   }
 
   /**
    * Registers an {@link AbstractMessage} to the appropriate side(s)
    */
-  private final <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage(
-      Class<T> clazz) {
-    if (AbstractClientMessage.class.isAssignableFrom(clazz)) {
-      dispatcher.registerMessage(clazz, clazz, packetId++, Side.CLIENT);
-    } else if (AbstractServerMessage.class.isAssignableFrom(clazz)) {
-      dispatcher.registerMessage(clazz, clazz, packetId++, Side.SERVER);
-    } else {
-      dispatcher.registerMessage(clazz, clazz, packetId, Side.CLIENT);
-      dispatcher.registerMessage(clazz, clazz, packetId++, Side.SERVER);
+  public final <T extends AbstractMessage> void registerMessage(Class<T> clazz) {
+    final EnumSet<Side> sides = getMessageHandlingSides(clazz);
+    IMessageHandler<AbstractMessage, AbstractMessage> handler =
+        new IMessageHandler<AbstractMessage, AbstractMessage>() {
+          @Override
+          public AbstractMessage onMessage(AbstractMessage message, MessageContext ctx) {
+            if (sides.contains(ctx.side)) {
+              PacketDispatcher.this.onMessage(message, ctx);
+              return null;
+            } else {
+              throw new RuntimeException(
+                  "Invalid side " + ctx.side.name() + " for " + getClass().getSimpleName());
+            }
+          }
+        };
+    int packetId = packetIdCount++;
+    for (Side side : sides) {
+      dispatcher.registerMessage(handler, clazz, packetId, side);
     }
+  }
+
+  private void onMessage(AbstractMessage message, MessageContext ctx) {
+    if (message.requiresMainThread()) {
+      checkThreadAndEnqueue(message, ctx);
+    } else {
+      message.process(packetDispatcherContext.getPlayerEntity(ctx), ctx.side);
+    }
+  }
+
+  private EnumSet<Side> getMessageHandlingSides(Class<?> clazz) {
+    Class<?> current = clazz;
+    while (current != null) {
+      MessageHandling a = current.getAnnotation(MessageHandling.class);
+      if (a != null) {
+        return EnumSet.copyOf(Arrays.asList(a.value()));
+      }
+      current = current.getSuperclass();
+    }
+    throw new IllegalArgumentException("Missing " + MessageHandling.class.getSimpleName()
+        + " annotation on class " + clazz.getName());
+  }
+
+  private final void checkThreadAndEnqueue(final AbstractMessage msg, final MessageContext ctx) {
+    IThreadListener thread = packetDispatcherContext.getThreadFromContext(ctx);
+    // pretty much copied straight from vanilla code, see {@link
+    // PacketThreadUtil#checkThreadAndEnqueue}
+    thread.addScheduledTask(new Runnable() {
+      public void run() {
+        msg.process(packetDispatcherContext.getPlayerEntity(ctx), ctx.side);
+      }
+    });
   }
 
   public void sendTo(IMessage message, EntityPlayerMP player) {

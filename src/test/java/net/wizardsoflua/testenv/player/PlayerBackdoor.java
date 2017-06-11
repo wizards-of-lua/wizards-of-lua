@@ -5,8 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestEnvironment;
-import net.wizardsoflua.testenv.client.ClientAction;
-import net.wizardsoflua.testenv.net.PacketDispatcher;
+import net.wizardsoflua.testenv.net.ClientAction;
 
 public class PlayerBackdoor {
   private WolTestEnvironment testEnv;
@@ -21,7 +20,7 @@ public class PlayerBackdoor {
     return testPlayer;
   }
 
-  public void perform(ClientAction<?> action) {
+  public void perform(ClientAction action) {
     testEnv.getServer().addScheduledTask(new Runnable() {
       @Override
       public void run() {

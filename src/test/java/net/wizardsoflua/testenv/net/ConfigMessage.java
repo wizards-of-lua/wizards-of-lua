@@ -1,4 +1,4 @@
-package net.wizardsoflua.testenv.client;
+package net.wizardsoflua.testenv.net;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class ConfigMessage extends ClientAction<ConfigMessage> {
+public class ConfigMessage extends ClientAction {
 
   public String wolVersionOnServer;
 
