@@ -20,13 +20,15 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 public class EventRecorder {
   private final List<Event> events = new ArrayList<>();
   private final Object eventsSync = new Object();
-  private boolean enabled = false;
+  private volatile boolean enabled = false;
 
   /**
    * Clears all recorded events.
    */
   public void clear() {
-    events.clear();
+    synchronized (eventsSync) {
+      events.clear();
+    }
   }
 
   public void setEnabled(boolean enabled) {
@@ -36,7 +38,9 @@ public class EventRecorder {
   }
 
   public boolean isEnabled() {
-    return enabled;
+    synchronized (eventsSync) {
+      return enabled;
+    }
   }
 
   /**
@@ -52,8 +56,8 @@ public class EventRecorder {
     long startTimeMs = System.currentTimeMillis();
     while (true) {
       synchronized (eventsSync) {
-        if ( !isEnabled()) {
-          throw new IllegalStateException(EventRecorder.class.getSimpleName()+" is not enabled!");
+        if (!isEnabled()) {
+          throw new IllegalStateException(EventRecorder.class.getSimpleName() + " is not enabled!");
         }
         while (true) {
           long now = System.currentTimeMillis();

@@ -29,7 +29,6 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.wizardsoflua.WizardsOfLua;
@@ -37,15 +36,13 @@ import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
 import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
-import net.wizardsoflua.testenv.net.AbstractPacket;
-import net.wizardsoflua.testenv.net.PacketPipeline;
+import net.wizardsoflua.testenv.net.PacketDispatcher;
 
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
     acceptableRemoteVersions = "*")
 public class WolTestEnvironment {
   public static final String MODID = "wol-testenv";
   public static final String VERSION = WizardsOfLua.VERSION;
-  private static final String CHANNEL_NAME = MODID;
 
   @Instance(MODID)
   public static WolTestEnvironment instance;
@@ -54,25 +51,22 @@ public class WolTestEnvironment {
   public static CommonProxy proxy;
 
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
-  private final PacketPipeline packetPipeline = new PacketPipeline(logger, CHANNEL_NAME);
   private final EventRecorder eventRecorder = new EventRecorder();
-
+  private final PacketDispatcher packetDispatcher = new PacketDispatcher(MODID);
   private @Nullable EntityPlayerMP testPlayer;
-
 
   private MinecraftServer server;
 
-  public WolTestEnvironment() {
+  public WolTestEnvironment() {}
 
+  public PacketDispatcher getPacketDispatcher() {
+    return packetDispatcher;
   }
 
   public MinecraftServer getServer() {
     return server;
   }
 
-  public PacketPipeline getPacketPipeline() {
-    return packetPipeline;
-  }
 
   public EntityPlayerMP getTestPlayer() {
     return testPlayer;
@@ -88,17 +82,13 @@ public class WolTestEnvironment {
 
   @EventHandler
   public void init(FMLInitializationEvent event) {
-    packetPipeline.initialize();
-    Iterable<Class<? extends AbstractPacket>> packetClasses = findPacketClasses();
-    for (Class<? extends AbstractPacket> cls : packetClasses) {
-      packetPipeline.registerPacket(cls);
-    }
+    packetDispatcher.registerPackets();
+    // packetPipeline.initialize();
+    // Iterable<Class<? extends AbstractPacket>> packetClasses = findPacketClasses();
+    // for (Class<? extends AbstractPacket> cls : packetClasses) {
+    // packetPipeline.registerPacket(cls);
+    // }
     proxy.onInit(event);
-  }
-
-  @EventHandler
-  public void postInit(FMLPostInitializationEvent event) throws IOException {
-    packetPipeline.postInitialize();
   }
 
   @EventHandler
@@ -122,7 +112,7 @@ public class WolTestEnvironment {
     eventRecorder.setEnabled(true);
     // TODO other stuff to reset?
   }
-  
+
   public void afterTest() {
     eventRecorder.setEnabled(false);
     eventRecorder.clear();
@@ -183,24 +173,25 @@ public class WolTestEnvironment {
     return executor.runTests(testClass);
   }
 
-  @SuppressWarnings("unchecked")
-  private Iterable<Class<? extends AbstractPacket>> findPacketClasses() {
-    try {
-      List<Class<? extends AbstractPacket>> result = new ArrayList<>();
-      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-      ClassPath classpath = ClassPath.from(classloader);
-      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua.testenv.net");
-      Iterable<ClassInfo> yy = Iterables.filter(xx, input -> {
-        return AbstractPacket.class.isAssignableFrom(input.load());
-      });
-      for (ClassInfo classInfo : yy) {
-        result.add((Class<? extends AbstractPacket>) classInfo.load());
-      }
-      return result;
-    } catch (IOException e) {
-      throw new UndeclaredThrowableException(e);
-    }
-  }
+  // @SuppressWarnings("unchecked")
+  // private Iterable<Class<? extends AbstractPacket>> findPacketClasses() {
+  // try {
+  // List<Class<? extends AbstractPacket>> result = new ArrayList<>();
+  // ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+  // ClassPath classpath = ClassPath.from(classloader);
+  // ImmutableSet<ClassInfo> xx =
+  // classpath.getTopLevelClassesRecursive("net.wizardsoflua.testenv.net");
+  // Iterable<ClassInfo> yy = Iterables.filter(xx, input -> {
+  // return AbstractPacket.class.isAssignableFrom(input.load());
+  // });
+  // for (ClassInfo classInfo : yy) {
+  // result.add((Class<? extends AbstractPacket>) classInfo.load());
+  // }
+  // return result;
+  // } catch (IOException e) {
+  // throw new UndeclaredThrowableException(e);
+  // }
+  // }
 
   private Iterable<Class<?>> findTestClasses() {
     try {
@@ -225,5 +216,6 @@ public class WolTestEnvironment {
     return false;
   }
 
-  
+
+
 }

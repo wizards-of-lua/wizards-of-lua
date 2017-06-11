@@ -13,14 +13,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.wizardsoflua.testenv.CommonProxy;
 import net.wizardsoflua.testenv.WolTestEnvironment;
+import net.wizardsoflua.testenv.client.ConfigMessage;
 import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
-import net.wizardsoflua.testenv.net.ConfigMessage;
 
 @SideOnly(Side.SERVER)
 public class ServerProxy extends CommonProxy {
 
   public static final String NET_MINECRAFT_LOGGER = "net.minecraft";
-  private final Log4j2ForgeEventBridge log4jEventBridge = new Log4j2ForgeEventBridge(NET_MINECRAFT_LOGGER);
+  private final Log4j2ForgeEventBridge log4jEventBridge =
+      new Log4j2ForgeEventBridge(NET_MINECRAFT_LOGGER);
 
   @Override
   public void onInit(FMLInitializationEvent event) {
@@ -31,21 +32,17 @@ public class ServerProxy extends CommonProxy {
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedInEvent evt) {
-    System.out.println("PlayerLoggedInEvent " + evt);
-    System.out.println("PlayerLoggedInEvent");
     if (WolTestEnvironment.instance.getTestPlayer() == null) {
       EntityPlayerMP player = (EntityPlayerMP) evt.player;
       WolTestEnvironment.instance.setTestPlayer(player);
       makeOperator(player);
-      ConfigMessage message = new ConfigMessage();
-      message.wolVersionOnServer = WolTestEnvironment.VERSION;
-      WolTestEnvironment.instance.getPacketPipeline().sendTo(message, player);
+      ConfigMessage message = new ConfigMessage(WolTestEnvironment.VERSION);
+      WolTestEnvironment.instance.getPacketDispatcher().sendTo(message, player);
     }
   }
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedOutEvent evt) {
-    System.out.println("PlayerLoggedOutEvent evt");
     EntityPlayerMP testPlayer = WolTestEnvironment.instance.getTestPlayer();
     if (testPlayer != null && testPlayer == evt.player) {
       WolTestEnvironment.instance.setTestPlayer(null);

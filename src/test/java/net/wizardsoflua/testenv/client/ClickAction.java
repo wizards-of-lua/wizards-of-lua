@@ -1,13 +1,15 @@
-package net.wizardsoflua.testenv.net;
+package net.wizardsoflua.testenv.client;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
 
-public class ClickAction extends ClientAction {
+public class ClickAction extends ClientAction<ClickAction> {
 
   private BlockPos pos;
   private EnumFacing face;
@@ -20,15 +22,7 @@ public class ClickAction extends ClientAction {
   }
 
   @Override
-  public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
-    buffer.writeInt(pos.getX());
-    buffer.writeInt(pos.getY());
-    buffer.writeInt(pos.getZ());
-    buffer.writeInt(face.ordinal());
-  }
-
-  @Override
-  public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
+  protected void read(PacketBuffer buffer) throws IOException {
     int x = buffer.readInt();
     int y = buffer.readInt();
     int z = buffer.readInt();
@@ -38,7 +32,15 @@ public class ClickAction extends ClientAction {
   }
 
   @Override
-  public void handleClientSide(EntityPlayer player) {
+  protected void write(PacketBuffer buffer) throws IOException {
+    buffer.writeInt(pos.getX());
+    buffer.writeInt(pos.getY());
+    buffer.writeInt(pos.getZ());
+    buffer.writeInt(face.ordinal());
+  }
+
+  @Override
+  public void process(EntityPlayer player, Side side) {
     System.out.println("pos: " + pos + ", " + face);
     Minecraft.getMinecraft().playerController.clickBlock(pos, face);
   }

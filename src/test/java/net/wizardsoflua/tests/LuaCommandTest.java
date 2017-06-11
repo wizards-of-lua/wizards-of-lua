@@ -5,8 +5,8 @@ import org.junit.runner.RunWith;
 
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
+import net.wizardsoflua.testenv.client.ChatAction;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class LuaCommandTest extends WolTestBase {
