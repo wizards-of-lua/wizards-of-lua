@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 /**
@@ -67,13 +68,11 @@ public class EventRecorder {
 
   @SubscribeEvent
   public void onEvent(ServerChatEvent evt) {
-    System.out.println("ServerChatEvent");
     addEvent(evt);
   }
 
   @SubscribeEvent
   public void onEvent(RightClickBlock evt) {
-    System.out.println("RightClickBlock");
     // TODO can we remove this check?
     if (evt.getWorld().isRemote) {
       return;
@@ -83,7 +82,6 @@ public class EventRecorder {
 
   @SubscribeEvent
   public void onEvent(LeftClickBlock evt) {
-    System.out.println("LeftClickBlock");
     // TODO can we remove this check?
     if (evt.getWorld().isRemote) {
       return;
@@ -93,7 +91,11 @@ public class EventRecorder {
 
   @SubscribeEvent
   public void onEvent(TestPlayerReceivedChatEvent evt) {
-    System.out.println("TestPlayerReceivedChatEvent");
+    addEvent(evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(ServerLog4jEvent evt) {
     addEvent(evt);
   }
 

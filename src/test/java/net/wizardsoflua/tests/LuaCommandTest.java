@@ -11,9 +11,9 @@ import net.wizardsoflua.testenv.net.ChatAction;
 @RunWith(MinecraftJUnitRunner.class)
 public class LuaCommandTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.LuaCommandTest test_print_some_text
+  // /test net.wizardsoflua.tests.LuaCommandTest test_player_can_print_some_text
   @Test
-  public void test_print_some_text() throws Exception {
+  public void test_player_can_print_some_text() throws Exception {
     // Given:
     String text = "some text";
 
@@ -25,9 +25,9 @@ public class LuaCommandTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(text);
   }
 
-  // /test net.wizardsoflua.tests.LuaCommandTest test_print_some_calculation
+  // /test net.wizardsoflua.tests.LuaCommandTest test_player_can_print_some_calculation
   @Test
-  public void test_print_some_calculation() throws Exception {
+  public void test_player_can_print_some_calculation() throws Exception {
     // Given:
     String text = "13 * 7";
 
@@ -38,4 +38,20 @@ public class LuaCommandTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("91");
   }
+  
+ // /test net.wizardsoflua.tests.LuaCommandTest test_server_can_print_some_calculation
+// @Test
+// public void test_server_can_print_some_calculation() throws Exception {
+//   // Given:
+//   String text = "13 * 7";
+//
+//   // When:
+//   mc().executeCommand("/lua print(%s)", text);
+//
+//   // Then:
+//   TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+//   assertThat(act.getMessage()).isEqualTo("91");
+// }
+  
+  
 }

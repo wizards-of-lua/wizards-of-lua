@@ -1,5 +1,8 @@
 package net.wizardsoflua.tests;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -11,9 +14,11 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
+import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.net.ChatAction;
 import net.wizardsoflua.testenv.net.ClickAction;
+import net.wizardsoflua.testenv.server.ServerProxy;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
@@ -124,9 +129,9 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act.getFace()).isEqualTo(facing);
   }
 
-  // /test net.wizardsoflua.tests.TestEnvironmentTest test_timeout
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_waitFor_has_timeout
   @Test
-  public void test_timeout() {
+  public void test_waitFor_has_timeout() {
     // Given:
 
     // When:
@@ -139,5 +144,20 @@ public class TestEnvironmentTest extends WolTestBase {
 
     // Then:
     assertThat(act).isExactlyInstanceOf(RuntimeException.class);
+  }
+
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_receive_log4j_event
+  @Test
+  public void test_can_receive_log4j_event() {
+    // Given:
+    Logger logger = LogManager.getLogger(ServerProxy.NET_MINECRAFT_LOGGER);
+    String message = "hello";
+
+    // When:
+    logger.info(message);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getLogEvent().getMessage().getFormattedMessage()).isEqualTo(message);
   }
 }

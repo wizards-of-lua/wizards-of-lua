@@ -40,4 +40,6 @@ public class WizardsOfLua {
     server = checkNotNull(event.getServer());
     event.registerServerCommand(new LuaCommand());
   }
+
+
 }

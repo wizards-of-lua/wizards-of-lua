@@ -93,7 +93,6 @@ public class WolTestEnvironment {
     for (Class<? extends AbstractPacket> cls : packetClasses) {
       packetPipeline.registerPacket(cls);
     }
-    // FIXME only do this on server side (or single player?)!
     proxy.onInit(event);
   }
 

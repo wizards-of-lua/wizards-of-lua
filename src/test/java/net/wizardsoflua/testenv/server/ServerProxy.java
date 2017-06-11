@@ -13,15 +13,20 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.wizardsoflua.testenv.CommonProxy;
 import net.wizardsoflua.testenv.WolTestEnvironment;
+import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
 import net.wizardsoflua.testenv.net.ConfigMessage;
 
 @SideOnly(Side.SERVER)
 public class ServerProxy extends CommonProxy {
 
+  public static final String NET_MINECRAFT_LOGGER = "net.minecraft";
+  private final Log4j2ForgeEventBridge log4jEventBridge = new Log4j2ForgeEventBridge(NET_MINECRAFT_LOGGER);
+
   @Override
   public void onInit(FMLInitializationEvent event) {
     MinecraftForge.EVENT_BUS.register(this);
     MinecraftForge.EVENT_BUS.register(WolTestEnvironment.instance.getEventRecorder());
+    log4jEventBridge.activate();
   }
 
   @SubscribeEvent

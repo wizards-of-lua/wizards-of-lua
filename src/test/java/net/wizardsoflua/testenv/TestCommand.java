@@ -60,7 +60,7 @@ public class TestCommand extends CommandBase {
           sender.sendMessage(new TextComponentString(e.getMessage()));
         }
       }
-    });
+    }, "test-command-thread");
     t.start();
   }
 
