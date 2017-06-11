@@ -43,7 +43,7 @@ import net.wizardsoflua.testenv.net.PacketPipeline;
 @Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
     acceptableRemoteVersions = "*")
 public class WolTestEnvironment {
-  public static final String MODID = "wol-test";
+  public static final String MODID = "wol-testenv";
   public static final String VERSION = WizardsOfLua.VERSION;
   private static final String CHANNEL_NAME = MODID;
 
@@ -117,9 +117,15 @@ public class WolTestEnvironment {
     m.invoke(null);
   }
 
-  public void reset() {
+  public void beforeTest() {
     eventRecorder.clear();
+    eventRecorder.setEnabled(true);
     // TODO other stuff to reset?
+  }
+  
+  public void afterTest() {
+    eventRecorder.setEnabled(false);
+    eventRecorder.clear();
   }
 
   @CalledByReflection("Called by MinecraftJUnitRunner")
@@ -219,4 +225,5 @@ public class WolTestEnvironment {
     return false;
   }
 
+  
 }

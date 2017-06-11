@@ -1,5 +1,6 @@
 package net.wizardsoflua.testenv;
 
+import org.junit.After;
 import org.junit.Before;
 
 import com.google.common.collect.Iterables;
@@ -15,8 +16,14 @@ public class WolTestBase extends TestDataFactory {
   @Before
   public void before() {
     WolTestEnvironment testEnv = WolTestEnvironment.instance;
-    testEnv.reset();
+    testEnv.beforeTest();
     mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
+  }
+  
+  @After
+  public void after() {
+    WolTestEnvironment testEnv = WolTestEnvironment.instance;
+    testEnv.afterTest();
   }
 
   protected MinecraftBackdoor mc() {

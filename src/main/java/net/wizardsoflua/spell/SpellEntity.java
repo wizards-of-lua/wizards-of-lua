@@ -32,6 +32,7 @@ public class SpellEntity extends Entity {
   private ICommandSender owner;
   private String text;
   private SpellProgram program;
+  private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
 
   public SpellEntity(World world) {
     super(checkNotNull(world, "world==null!"));
@@ -42,6 +43,7 @@ public class SpellEntity extends Entity {
     this.owner = checkNotNull(owner, "owner==null!");
     this.text = checkNotNull(text, "text==null!");
     this.program = new SpellProgram(owner, text);
+    this.chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
   }
 
   @Override
@@ -51,7 +53,11 @@ public class SpellEntity extends Entity {
   protected void writeEntityToNBT(NBTTagCompound compound) {}
 
   @Override
-  protected void entityInit() {}
+  protected void entityInit() {
+    if (chunkLoaderTicketSupport != null) {
+      chunkLoaderTicketSupport.request();
+    }
+  }
 
   @Override
   public void onUpdate() {
@@ -71,6 +77,17 @@ public class SpellEntity extends Entity {
     }
     if (program.isTerminated()) {
       setDead();
+    }
+    if (chunkLoaderTicketSupport != null) {
+      chunkLoaderTicketSupport.updatePosition();
+    }
+  }
+
+  @Override
+  public void setDead() {
+    super.setDead();
+    if (chunkLoaderTicketSupport != null) {
+      chunkLoaderTicketSupport.release();
     }
   }
 }

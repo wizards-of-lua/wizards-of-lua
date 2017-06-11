@@ -158,6 +158,6 @@ public class TestEnvironmentTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getLogEvent().getMessage().getFormattedMessage()).isEqualTo(message);
+    assertThat(act.getMessage()).isEqualTo(message);
   }
 }
