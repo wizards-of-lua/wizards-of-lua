@@ -29,8 +29,7 @@ public class SpellEntity extends Entity {
         updateFrequency, sendsVelocityUpdates);
   }
 
-  private ICommandSender owner;
-  private String text;
+  private ICommandSender source;
   private SpellProgram program;
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
 
@@ -38,12 +37,15 @@ public class SpellEntity extends Entity {
     super(checkNotNull(world, "world==null!"));
   }
 
-  public SpellEntity(World world, ICommandSender owner, String text) {
+  public SpellEntity(World world, ICommandSender source, SpellProgram program) {
     this(world);
-    this.owner = checkNotNull(owner, "owner==null!");
-    this.text = checkNotNull(text, "text==null!");
-    this.program = new SpellProgram(owner, text);
+    this.source = checkNotNull(source, "source==null!");
+    this.program = checkNotNull(program, "program==null!");;
     this.chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
+  }
+
+  public ICommandSender getSource() {
+    return source;
   }
 
   @Override
@@ -69,11 +71,7 @@ public class SpellEntity extends Entity {
     try {
       program.resume();
     } catch (SpellException e) {
-      e.printStackTrace();
-      String message = String.format("Error during command execution: %s", e.getMessage());
-      TextComponentString txt = new TextComponentString(message);
-      txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-      owner.sendMessage(txt);
+      handleException(e);
     }
     if (program.isTerminated()) {
       setDead();
@@ -89,5 +87,13 @@ public class SpellEntity extends Entity {
     if (chunkLoaderTicketSupport != null) {
       chunkLoaderTicketSupport.release();
     }
+  }
+
+  private void handleException(SpellException e) {
+    e.printStackTrace();
+    String message = String.format("Error during command execution: %s", e.getMessage());
+    TextComponentString txt = new TextComponentString(message);
+    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    source.sendMessage(txt);
   }
 }
