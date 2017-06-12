@@ -6,6 +6,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.message.Message;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -22,8 +23,10 @@ public class Log4j2ForgeEventBridge {
           PatternLayout.createLayout("%msg", null, null, null, null)) {
         @Override
         public void append(LogEvent event) {
+          Message message = event.getMessage();
+          String text = message.getFormattedMessage();
           MinecraftForge.EVENT_BUS
-              .post(new ServerLog4jEvent(event.getMessage().getFormattedMessage()));
+              .post(new ServerLog4jEvent(text));
         }
       };
 

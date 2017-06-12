@@ -3,6 +3,8 @@ package net.wizardsoflua.testenv;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.TimeUnit;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.testenv.player.PlayerBackdoor;
@@ -37,6 +39,23 @@ public class MinecraftBackdoor {
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }
+  }
+
+  public void executeCommand(String format, Object... args) {
+    String command;
+    if (args != null && args.length > 0) {
+      command = String.format(format, args);
+    } else {
+      command = format;
+    }
+    ICommandSender sender = testEnv.getServer();
+    MinecraftServer server = testEnv.getServer();
+    server.addScheduledTask(new Runnable() {
+      @Override
+      public void run() {
+        server.getCommandManager().executeCommand(sender, command);
+      }
+    });
   }
 
 }

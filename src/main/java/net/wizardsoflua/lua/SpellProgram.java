@@ -6,18 +6,22 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
+import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
 
 public class SpellProgram {
-  private static final String ROOT_CLASS_PREFIX = "LuaProgramAsJavaByteCode";
+  private enum State {
+    NEW, PAUSED, FINISHED
+  }
+
+  private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
   private final String code;
   private final DirectCallExecutor executor;
   private final StateContext stateContext;
@@ -26,16 +30,12 @@ public class SpellProgram {
   private final SpellRuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
 
-  private enum State {
-    NEW, FINISHED
-  }
-
   private State state;
+  private Continuation continuation;
 
-  public SpellProgram(ICommandSender source, String code,
-      DirectCallExecutor executor) {
+  public SpellProgram(ICommandSender source, String code, DirectCallExecutor executor) {
     this.code = code;
-    this.executor = executor; 
+    this.executor = executor;
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     runtimeEnv = new SpellRuntimeEnvironment();
@@ -53,7 +53,22 @@ public class SpellProgram {
         case NEW:
           try {
             compileAndRun();
-          } finally {
+            state = State.FINISHED;
+          } catch (CallPausedException e) {
+            continuation = e.getContinuation();
+            state = State.PAUSED;
+          } catch (Exception e) {
+            state = State.FINISHED;
+          }
+          break;
+        case PAUSED:
+          try {
+            executor.resume(continuation);
+            state = State.FINISHED;
+          } catch (CallPausedException e) {
+            continuation = e.getContinuation();
+            state = State.PAUSED;
+          } catch (Exception e) {
             state = State.FINISHED;
           }
           break;

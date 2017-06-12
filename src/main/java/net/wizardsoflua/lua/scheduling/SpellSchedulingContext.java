@@ -22,6 +22,10 @@ public class SpellSchedulingContext implements SchedulingContext {
     if (config.isAutoSleep()) {
       return allowance <= 0;
     }
+    if (allowance < 0) {
+      throw new IllegalStateException(
+          "Spell has been broken automatically since it has exceeded its tick allowance!");
+    }
     return false;
   }
 }
