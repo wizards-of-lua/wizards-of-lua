@@ -5,25 +5,14 @@ import java.io.IOException;
 import com.google.common.base.Throwables;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.Side;
 
+@RequiresMainThread
 public abstract class AbstractMessage implements IMessage {
   protected abstract void read(PacketBuffer buffer) throws IOException;
 
   protected abstract void write(PacketBuffer buffer) throws IOException;
-
-  public abstract void process(EntityPlayer player, Side side);
-
-  /**
-   * Whether this message requires the main thread to be processed (i.e. it requires that the world,
-   * player, and other objects are in a valid state).
-   */
-  protected boolean requiresMainThread() {
-    return true;
-  }
 
   protected void writeString(ByteBuf buffer, String string) {
     if (string == null) {

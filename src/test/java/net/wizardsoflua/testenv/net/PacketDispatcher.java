@@ -1,8 +1,5 @@
 package net.wizardsoflua.testenv.net;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
@@ -33,56 +30,71 @@ public class PacketDispatcher {
    * Registers an {@link AbstractMessage} to the appropriate side(s)
    */
   public final <T extends AbstractMessage> void registerMessage(Class<T> clazz) {
-    final EnumSet<Side> sides = getMessageHandlingSides(clazz);
-    IMessageHandler<AbstractMessage, AbstractMessage> handler =
-        new IMessageHandler<AbstractMessage, AbstractMessage>() {
-          @Override
-          public AbstractMessage onMessage(AbstractMessage message, MessageContext ctx) {
-            if (sides.contains(ctx.side)) {
-              PacketDispatcher.this.onMessage(message, ctx);
-              return null;
-            } else {
-              throw new RuntimeException(
-                  "Invalid side " + ctx.side.name() + " for " + getClass().getSimpleName());
-            }
-          }
-        };
     int packetId = packetIdCount++;
-    for (Side side : sides) {
-      dispatcher.registerMessage(handler, clazz, packetId, side);
+    boolean requiresMainThread = requiresMainThread(clazz);
+    if (ClientHandledMessage.class.isAssignableFrom(clazz)) {
+      IMessageHandler<AbstractMessage, AbstractMessage> handler =
+          new IMessageHandler<AbstractMessage, AbstractMessage>() {
+            @Override
+            public AbstractMessage onMessage(AbstractMessage message, MessageContext ctx) {
+              PacketDispatcher.this.onMessage((ClientHandledMessage) message, ctx,
+                  requiresMainThread);
+              return null;
+            }
+          };
+      dispatcher.registerMessage(handler, clazz, packetId, Side.CLIENT);
+    }
+    if (ServerHandledMessage.class.isAssignableFrom(clazz)) {
+      IMessageHandler<AbstractMessage, AbstractMessage> handler =
+          new IMessageHandler<AbstractMessage, AbstractMessage>() {
+            @Override
+            public AbstractMessage onMessage(AbstractMessage message, MessageContext ctx) {
+              PacketDispatcher.this.onMessage((ServerHandledMessage) message, ctx,
+                  requiresMainThread);
+              return null;
+            }
+          };
+      dispatcher.registerMessage(handler, clazz, packetId, Side.SERVER);
     }
   }
 
-  private void onMessage(AbstractMessage message, MessageContext ctx) {
-    if (message.requiresMainThread()) {
-      checkThreadAndEnqueue(message, ctx);
+  private void onMessage(ClientHandledMessage message, MessageContext ctx,
+      boolean requiresMainThread) {
+    execute(requiresMainThread, ctx, new Runnable() {
+      public void run() {
+        message.handleClientSide(packetDispatcherContext.getPlayerEntity(ctx));
+      }
+    });
+  }
+
+  private void onMessage(ServerHandledMessage message, MessageContext ctx,
+      boolean requiresMainThread) {
+    execute(requiresMainThread, ctx, new Runnable() {
+      public void run() {
+        message.handleServerSide(packetDispatcherContext.getPlayerEntity(ctx));
+      }
+    });
+  }
+
+  private void execute(boolean runInMainThread, MessageContext ctx, Runnable r) {
+    if (runInMainThread) {
+      IThreadListener thread = packetDispatcherContext.getThreadFromContext(ctx);
+      thread.addScheduledTask(r);
     } else {
-      message.process(packetDispatcherContext.getPlayerEntity(ctx), ctx.side);
+      r.run();
     }
   }
 
-  private EnumSet<Side> getMessageHandlingSides(Class<?> clazz) {
+  private boolean requiresMainThread(Class<?> clazz) {
     Class<?> current = clazz;
     while (current != null) {
-      MessageHandling a = current.getAnnotation(MessageHandling.class);
+      RequiresMainThread a = current.getAnnotation(RequiresMainThread.class);
       if (a != null) {
-        return EnumSet.copyOf(Arrays.asList(a.value()));
+        return a.value();
       }
       current = current.getSuperclass();
     }
-    throw new IllegalArgumentException("Missing " + MessageHandling.class.getSimpleName()
-        + " annotation on class " + clazz.getName());
-  }
-
-  private final void checkThreadAndEnqueue(final AbstractMessage msg, final MessageContext ctx) {
-    IThreadListener thread = packetDispatcherContext.getThreadFromContext(ctx);
-    // pretty much copied straight from vanilla code, see {@link
-    // PacketThreadUtil#checkThreadAndEnqueue}
-    thread.addScheduledTask(new Runnable() {
-      public void run() {
-        msg.process(packetDispatcherContext.getPlayerEntity(ctx), ctx.side);
-      }
-    });
+    return false;
   }
 
   public void sendTo(IMessage message, EntityPlayerMP player) {

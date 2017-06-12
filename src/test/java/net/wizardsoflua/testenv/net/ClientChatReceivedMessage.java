@@ -4,11 +4,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@MessageHandling(Side.SERVER)
-public class ClientChatReceivedMessage extends AbstractMessage {
+public class ClientChatReceivedMessage extends AbstractMessage implements ServerHandledMessage {
   private String text;
 
   // The basic, no-argument constructor MUST be included to use the new automated handling
@@ -31,8 +29,7 @@ public class ClientChatReceivedMessage extends AbstractMessage {
   }
 
   @Override
-  public void process(EntityPlayer player, Side side) {
-
+  public void handleServerSide(EntityPlayer player) {
     EntityPlayerMP mpPlayer = (EntityPlayerMP) player;
     MinecraftForge.EVENT_BUS.post(new TestPlayerReceivedChatEvent(mpPlayer, text));
   }

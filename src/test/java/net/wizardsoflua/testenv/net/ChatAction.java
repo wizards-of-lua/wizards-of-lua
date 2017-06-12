@@ -36,7 +36,7 @@ public class ChatAction extends ClientAction {
   }
 
   @Override
-  public void process(EntityPlayer player, Side side) {
+  public void handleClientSide(EntityPlayer player) {
     System.out.println("text: " + text);
     ((EntityPlayerSP) player).sendChatMessage(text);
   }

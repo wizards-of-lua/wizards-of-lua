@@ -40,7 +40,7 @@ public class ClickAction extends ClientAction {
   }
 
   @Override
-  public void process(EntityPlayer player, Side side) {
+  public void handleClientSide(EntityPlayer player) {
     System.out.println("pos: " + pos + ", " + face);
     Minecraft.getMinecraft().playerController.clickBlock(pos, face);
   }

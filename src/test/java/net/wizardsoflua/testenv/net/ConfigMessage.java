@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class ConfigMessage extends ClientAction {
 
@@ -27,7 +26,7 @@ public class ConfigMessage extends ClientAction {
   }
 
   @Override
-  public void process(EntityPlayer player, Side side) {
+  public void handleClientSide(EntityPlayer player) {
     System.out.println("wolVersionOnServer: " + wolVersionOnServer);
   }
 
