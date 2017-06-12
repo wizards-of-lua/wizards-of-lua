@@ -9,21 +9,28 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.wizardsoflua.testenv.event.TestPlayerPreparedForTestEvent;
+import net.wizardsoflua.testenv.net.PrepareForTestAction;
 
 public class WolTestBase extends TestDataFactory {
-  private MinecraftBackdoor mcBackdoor;
+  private static int testIdCount = 0;
+  private WolTestEnvironment testEnv = WolTestEnvironment.instance;
+  private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);;
 
   @Before
-  public void before() {
-    WolTestEnvironment testEnv = WolTestEnvironment.instance;
-    testEnv.beforeTest();
-    mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
+  public void beforeTest() {
+    testEnv.getEventRecorder().setEnabled(true);
+    int testId = testIdCount++;
+    mc().player().perform(new PrepareForTestAction(testId));
+    TestPlayerPreparedForTestEvent evt = mc().waitFor(TestPlayerPreparedForTestEvent.class);
+    assertThat(evt.getId()).isEqualTo(testId);
+    testEnv.getEventRecorder().clear();
   }
 
   @After
-  public void after() {
-    WolTestEnvironment testEnv = WolTestEnvironment.instance;
-    testEnv.afterTest();
+  public void afterTest() {
+    testEnv.getEventRecorder().setEnabled(false);
+    testEnv.getEventRecorder().clear();
   }
 
   protected MinecraftBackdoor mc() {

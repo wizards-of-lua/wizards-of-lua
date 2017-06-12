@@ -11,7 +11,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellUtil;
@@ -44,7 +43,7 @@ public class LuaCommand extends CommandBase {
     SpellEntity spell = new SpellEntity(world, owner, concat(args));
     spell.setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
     world.spawnEntity(spell);
-    //sender.sendMessage(new TextComponentString("haha"));
+    // sender.sendMessage(new TextComponentString("haha"));
   }
 
   private String concat(String[] args) {
@@ -55,10 +54,10 @@ public class LuaCommand extends CommandBase {
     // TODO if sender is a spell, return the spell's owner
     return sender;
   }
-  
+
   private Vec3d getPos(ICommandSender sender) {
-    if ( sender instanceof MinecraftServer) {
-      return new Vec3d(((MinecraftServer)sender).getEntityWorld().getSpawnPoint());
+    if (sender instanceof MinecraftServer) {
+      return new Vec3d(((MinecraftServer) sender).getEntityWorld().getSpawnPoint());
     }
     Entity entity = sender.getCommandSenderEntity();
     if (entity == null) {

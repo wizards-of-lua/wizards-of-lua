@@ -108,17 +108,6 @@ public class WolTestEnvironment {
     m.invoke(null);
   }
 
-  public void beforeTest() {
-    eventRecorder.clear();
-    eventRecorder.setEnabled(true);
-    // TODO other stuff to reset?
-  }
-
-  public void afterTest() {
-    eventRecorder.setEnabled(false);
-    eventRecorder.clear();
-  }
-
   @CalledByReflection("Called by MinecraftJUnitRunner")
   public static Throwable runTest(String classname, String methodName) {
     final TestMethodExecutor executor = new TestMethodExecutor();

@@ -4,31 +4,31 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
-import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+import net.wizardsoflua.testenv.event.TestPlayerPreparedForTestEvent;
 
-public class ClientChatReceivedMessage extends AbstractMessage implements ServerHandledMessage {
-  private String text;
+public class PreparedForTestMessage extends AbstractMessage implements ServerHandledMessage {
+  private int id;
 
-  public ClientChatReceivedMessage() {}
+  public PreparedForTestMessage() {}
 
-  public ClientChatReceivedMessage(String text) {
-    this.text = text;
+  public PreparedForTestMessage(int id) {
+    this.id = id;
   }
 
   @Override
   protected void read(PacketBuffer buffer) {
-    text = readString(buffer);
+    id = buffer.readInt();
   }
 
   @Override
   protected void write(PacketBuffer buffer) {
-    writeString(buffer, text);
+    buffer.writeInt(id);
   }
 
   @Override
   public void handleServerSide(EntityPlayer player) {
     EntityPlayerMP mpPlayer = (EntityPlayerMP) player;
-    MinecraftForge.EVENT_BUS.post(new TestPlayerReceivedChatEvent(mpPlayer, text));
+    MinecraftForge.EVENT_BUS.post(new TestPlayerPreparedForTestEvent(mpPlayer, id));
   }
 
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class ChatAction extends ClientAction {
 

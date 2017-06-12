@@ -6,15 +6,15 @@ public class TabEncoder {
     StringBuilder result = new StringBuilder();
     char[] chars = text.toCharArray();
     int length = 0;
-    for (int i=0; i<chars.length; ++i) {
+    for (int i = 0; i < chars.length; ++i) {
       char c = chars[i];
-      if ( c == '\n') {
+      if (c == '\n') {
         result.append(c);
         length = 0;
-      } else if ( c == '\t') {
+      } else if (c == '\t') {
         int pos = (length / TABSIZE) * TABSIZE + TABSIZE;
         int dif = pos - length;
-        for (int k=0; k<dif; ++k) {
+        for (int k = 0; k < dif; ++k) {
           result.append(' ');
           length++;
         }
