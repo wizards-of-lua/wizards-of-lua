@@ -11,6 +11,7 @@ import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -18,11 +19,11 @@ import net.wizardsoflua.spell.SpellExceptionFactory;
 public class SpellProgram {
   private static final String ROOT_CLASS_PREFIX = "LuaProgramAsJavaByteCode";
   private final String code;
+  private final DirectCallExecutor executor;
   private final StateContext stateContext;
   private final Table env;
   private final PatchedCompilerChunkLoader loader;
   private final SpellRuntimeEnvironment runtimeEnv;
-  private final DirectCallExecutor executor;
   private final SpellExceptionFactory exceptionFactory;
 
   private enum State {
@@ -31,17 +32,18 @@ public class SpellProgram {
 
   private State state;
 
-  public SpellProgram(ICommandSender owner, String code) {
+  public SpellProgram(ICommandSender source, String code,
+      DirectCallExecutor executor) {
     this.code = code;
+    this.executor = executor; 
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     runtimeEnv = new SpellRuntimeEnvironment();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
-    executor = DirectCallExecutor.newExecutor(new SpellSchedulingContextFactory());
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
 
     BasicLib.installInto(stateContext, env, runtimeEnv, loader);
-    PrintRedirector.installInto(env, owner);
+    PrintRedirector.installInto(env, source);
     state = State.NEW;
   }
 

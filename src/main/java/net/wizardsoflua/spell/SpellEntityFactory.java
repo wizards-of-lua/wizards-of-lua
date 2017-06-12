@@ -13,8 +13,12 @@ import net.wizardsoflua.lua.SpellProgramFactory;
  */
 public class SpellEntityFactory {
 
-  private final SpellProgramFactory programFactory = new SpellProgramFactory();
+  private final SpellProgramFactory programFactory;
 
+  public SpellEntityFactory(SpellProgramFactory programFactory) {
+    this.programFactory = programFactory;
+  }
+  
   public SpellEntity create(World world, ICommandSender sender, String code) {
     ICommandSender source = getSource(sender);
     SpellProgram program = programFactory.create(source, code);
