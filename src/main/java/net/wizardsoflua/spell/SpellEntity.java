@@ -41,7 +41,8 @@ public class SpellEntity extends Entity {
     this(world);
     this.source = checkNotNull(source, "source==null!");
     this.program = checkNotNull(program, "program==null!");;
-    this.chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
+    chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
+    chunkLoaderTicketSupport.request();
   }
 
   public ICommandSender getSource() {
@@ -56,9 +57,7 @@ public class SpellEntity extends Entity {
 
   @Override
   protected void entityInit() {
-    if (chunkLoaderTicketSupport != null) {
-      chunkLoaderTicketSupport.request();
-    }
+    
   }
 
   @Override
