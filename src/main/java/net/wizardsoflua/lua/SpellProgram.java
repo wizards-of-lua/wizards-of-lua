@@ -13,6 +13,8 @@ import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
+import net.wizardsoflua.lua.runtime.Runtime;
+import net.wizardsoflua.lua.runtime.RuntimeModule;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
 
@@ -22,7 +24,9 @@ public class SpellProgram {
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
+  private final ICommandSender source;
   private final String code;
+  private final SpellProgramContext context;
   private final DirectCallExecutor executor;
   private final StateContext stateContext;
   private final Table env;
@@ -33,18 +37,26 @@ public class SpellProgram {
   private State state;
   private Continuation continuation;
 
-  public SpellProgram(ICommandSender source, String code, DirectCallExecutor executor) {
+  public SpellProgram(ICommandSender source, String code, SpellProgramContext context) {
+    this.source = source;
     this.code = code;
-    this.executor = executor;
+    this.context = context;
+    this.executor = DirectCallExecutor.newExecutor(context.getSchedulingContextFactory());
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     runtimeEnv = new SpellRuntimeEnvironment();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
 
+    installModules();
+    
+    state = State.NEW;
+  }
+
+  private void installModules() {
     BasicLib.installInto(stateContext, env, runtimeEnv, loader);
     PrintRedirector.installInto(env, source);
-    state = State.NEW;
+    RuntimeModule.installInto(env, context.getRuntime());
   }
 
   public void resume() throws SpellException {
@@ -59,6 +71,7 @@ public class SpellProgram {
             state = State.PAUSED;
           } catch (Exception e) {
             state = State.FINISHED;
+            throw e;
           }
           break;
         case PAUSED:
@@ -70,6 +83,7 @@ public class SpellProgram {
             state = State.PAUSED;
           } catch (Exception e) {
             state = State.FINISHED;
+            throw e;
           }
           break;
         default:

@@ -14,8 +14,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
-import net.wizardsoflua.lua.scheduling.SpellSchedulingConfig;
-import net.wizardsoflua.lua.scheduling.SpellSchedulingContextFactory;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellEntityFactory;
@@ -34,14 +32,11 @@ public class WizardsOfLua {
   public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
   private final SpellEntityFactory spellEntityFactory;
   private final SpellProgramFactory spellProgramFactory;
-  private final SpellSchedulingContextFactory spellSchedulingContextFactory;
 
   private MinecraftServer server;
 
   public WizardsOfLua() {
-    spellSchedulingContextFactory = new SpellSchedulingContextFactory(
-        new SpellSchedulingConfig(DEFAULT_ALLOWANCE, DEFAULT_AUTO_SLEEP));
-    spellProgramFactory = new SpellProgramFactory(spellSchedulingContextFactory);
+    spellProgramFactory = new SpellProgramFactory();
     spellEntityFactory = new SpellEntityFactory(spellProgramFactory);
   }
 

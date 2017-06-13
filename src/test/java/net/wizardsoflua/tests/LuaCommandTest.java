@@ -56,18 +56,22 @@ public class LuaCommandTest extends WolTestBase {
   }
 
   // /test net.wizardsoflua.tests.LuaCommandTest test_spell_will_be_broken_when_autosleep_is_off
-  // @Test
-  // public void test_spell_will_be_broken_when_autosleep_is_off() throws Exception {
-  // // Given:
-  //
-  // // When:
-  // mc().player().perform(new ChatAction("/lua Runtime.autosleep = false; for i=1,2000 do print(i);
-  // end"));
-  //
-  // // Then:
-  // TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-  // assertThat(act.getMessage()).isEqualTo("91");
-  // }
+  @Test
+  public void test_spell_will_be_broken_when_autosleep_is_off() throws Exception {
+    // Given:
+    int repetitions = 2000;
+    // When:
+    mc().player().perform(new ChatAction(
+        "/lua Runtime.setAutoSleep(false); for i=1,%s do print(i); end", repetitions));
+
+    // Then:
+    for (int i = 0; i < 1998; ++i) {
+      TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+      assertThat(act.getMessage()).isEqualTo(String.valueOf(i+1));
+    }
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).contains("Spell has been broken automatically");
+  }
 
   // /test net.wizardsoflua.tests.LuaCommandTest test_server_can_print_some_text
   @Test

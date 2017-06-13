@@ -21,7 +21,7 @@ public class SpellEntityFactory {
   
   public SpellEntity create(World world, ICommandSender sender, String code) {
     ICommandSender source = getSource(sender);
-    SpellProgram program = programFactory.create(source, code);
+    SpellProgram program = programFactory.create(world, source, code);
     SpellEntity result = new SpellEntity(world, source, program);
     Vec3d pos = getPos(sender);
     result.setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
