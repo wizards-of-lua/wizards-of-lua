@@ -18,14 +18,12 @@ public class SpellEntityFactory {
   public SpellEntityFactory(SpellProgramFactory programFactory) {
     this.programFactory = programFactory;
   }
-  
+
   public SpellEntity create(World world, ICommandSender sender, String code) {
     ICommandSender source = getSource(sender);
     SpellProgram program = programFactory.create(world, source, code);
-    SpellEntity result = new SpellEntity(world, source, program);
     Vec3d pos = getPos(sender);
-    result.setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
-    return result;
+    return new SpellEntity(world, source, program, pos);
   }
 
   private ICommandSender getSource(ICommandSender sender) {

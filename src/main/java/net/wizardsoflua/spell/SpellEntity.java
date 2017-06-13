@@ -6,6 +6,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -37,10 +38,11 @@ public class SpellEntity extends Entity {
     super(checkNotNull(world, "world==null!"));
   }
 
-  public SpellEntity(World world, ICommandSender source, SpellProgram program) {
+  public SpellEntity(World world, ICommandSender source, SpellProgram program, Vec3d pos) {
     this(world);
     this.source = checkNotNull(source, "source==null!");
-    this.program = checkNotNull(program, "program==null!");;
+    this.program = checkNotNull(program, "program==null!");
+    setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
     chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
   }
@@ -57,7 +59,7 @@ public class SpellEntity extends Entity {
 
   @Override
   protected void entityInit() {
-    
+
   }
 
   @Override
