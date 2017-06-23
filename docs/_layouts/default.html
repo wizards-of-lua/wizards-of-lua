@@ -16,6 +16,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <style>
 
+      @media print, screen and (max-width: 480px) {
+        nav {
+          display: block;
+        }
+        #header nav li {
+          display: none;
+        }
+        #coming_soon {
+          top: 60px;
+        }
+      }
+
       #coming_soon {
         position: absolute;
         top: 40px;
