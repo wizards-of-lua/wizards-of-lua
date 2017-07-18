@@ -57,6 +57,8 @@ import net.karneim.luamod.lua.classes.event.wol.ClickWindowEventClass;
 import net.karneim.luamod.lua.classes.event.wol.WhisperEventClass;
 import net.karneim.luamod.lua.util.wrapper.DelegatingLuaClass;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.INetHandler;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketClickWindow;
@@ -129,13 +131,20 @@ public class ModEventHandler {
       }
 
       private EntityPlayer getEntityPlayer(NetworkDispatcher nx) {
-        try {
-          Field f = NetworkDispatcher.class.getDeclaredField("player");
-          f.setAccessible(true);
-          EntityPlayer result = (EntityPlayer) f.get(nx);
-          return result;
-        } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
-          throw new UndeclaredThrowableException(e);
+//        try {
+//          Field f = NetworkDispatcher.class.getDeclaredField("player");
+//          f.setAccessible(true);
+//          EntityPlayer result = (EntityPlayer) f.get(nx);
+//          return result;
+//        } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
+//          throw new UndeclaredThrowableException(e);
+//        }
+        INetHandler netHandler = nx.getNetHandler();
+        if ( netHandler instanceof NetHandlerPlayServer) {
+          NetHandlerPlayServer serverHandler = (NetHandlerPlayServer)netHandler;
+          return serverHandler.playerEntity;
+        } else {
+          throw new IllegalStateException("Expected NetHandlerPlayServer, but got "+netHandler.getClass().getName());
         }
       }
 
