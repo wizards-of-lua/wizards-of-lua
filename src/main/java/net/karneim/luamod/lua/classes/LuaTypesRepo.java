@@ -39,14 +39,26 @@ public class LuaTypesRepo {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> CachingLuaClass<? super T, ?> getCachingLuaClass(Class<T> javaClass) {
-    CachingLuaClass<? super T, ?> result = null;
-    Class<? super T> cls = javaClass;
-    while (result == null && cls != null) {
-      result = (CachingLuaClass<T, ?>) cachingLuaClasses.get(cls);
+  private <T> CachingLuaClass<? super T, ?> getCachingLuaClass(Class<?> javaClass) {
+    if ( javaClass==null) {
+      return null;
+    }
+    Class<? super T> cls = (Class<? super T>)javaClass;
+    while (cls != null) {
+      CachingLuaClass<? super T, ?> result = (CachingLuaClass<T, ?>) cachingLuaClasses.get(cls);
+      if ( result != null) {
+        return result;
+      }
+      Class<?>[] interfaces = cls.getInterfaces();
+      for (Class<?> interfaceCls : interfaces) {
+        result = getCachingLuaClass(interfaceCls);
+        if (result != null) {
+          return result;
+        }
+      }
       cls = cls.getSuperclass();
     }
-    return result;
+    return null;
   }
 
   public Table getEnv() {
