@@ -18,7 +18,8 @@ import net.sandius.rembulan.load.LoaderException;
 public class SpellEntityFactory {
 
   private final LuaMod mod;
-
+  private int spellCounter = 0;
+  
   public SpellEntityFactory(LuaMod mod) {
     this.mod = mod;
   }
@@ -29,8 +30,9 @@ public class SpellEntityFactory {
     Vec3d pos = getPos(sender);
     Rotation rot = getRotation(sender);
     EnumFacing surface = getSurface(sender);
+    String name = "Spell-" + spellCounter++;
     SpellEntity spell = new SpellEntity(sender.getEntityWorld(), LuaMod.instance, owner, clipboard,
-        pos, rot, surface, profiles, command);
+        pos, rot, surface, name, profiles, command);    
     return spell;
   }
 

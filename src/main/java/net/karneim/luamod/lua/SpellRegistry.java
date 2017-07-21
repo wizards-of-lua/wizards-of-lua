@@ -13,10 +13,7 @@ public class SpellRegistry {
 
   private final List<SpellEntity> entities = new CopyOnWriteArrayList<>();
 
-  private int spellCounter = 0;
-
   public void register(SpellEntity entity) {
-    entity.setCustomNameTag("Spell-" + spellCounter++);
     entities.add(entity);
   }
 
