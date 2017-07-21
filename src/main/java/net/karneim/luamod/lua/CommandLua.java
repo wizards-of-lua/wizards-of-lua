@@ -2,6 +2,7 @@ package net.karneim.luamod.lua;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,13 +75,12 @@ public class CommandLua extends CommandBase {
       throws CommandException {
     try {
       ICommandSender owner = getOwner(sender);
+      Collection<String> profiles = getProfiles(owner);
+      String command = getArgString(args);
       SpellEntity spell =
-          mod.getSpellEntityFactory().create(sender.getEntityWorld(), sender, owner);
+          mod.getSpellEntityFactory().create(sender.getEntityWorld(), sender, owner, profiles, command);
 
       server.getEntityWorld().spawnEntityInWorld(spell);
-      addDefaultProfile(spell);
-      addUserProfile(owner, spell);
-      spell.setCommand(getArgString(args));
 
       if (sender.sendCommandFeedback()) {
         // this is true if "gamerule commandBlockOutput" is true
@@ -93,20 +93,19 @@ public class CommandLua extends CommandBase {
     }
   }
 
-  private void addUserProfile(ICommandSender owner, SpellEntity spell) throws IOException {
-    String userProfile = mod.getProfiles().getUserProfile(owner.getCommandSenderEntity());
-    if (userProfile != null) {
-      spell.addProfile(userProfile);
-    }
-  }
-
-  private void addDefaultProfile(SpellEntity spell) throws IOException {
+  private Collection<String> getProfiles(ICommandSender owner) throws IOException {
+    List<String> result = new ArrayList<>();
     String defaultProfile = mod.getProfiles().getDefaultProfile();
-    if (defaultProfile != null) {
-      spell.addProfile(defaultProfile);
+    if ( defaultProfile != null) {
+      result.add(defaultProfile);
     }
+    String userProfile = mod.getProfiles().getUserProfile(owner.getCommandSenderEntity());
+    if ( userProfile != null) {
+      result.add(userProfile);
+    }
+    return result;
   }
-
+  
   private ICommandSender getOwner(ICommandSender sender) {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof SpellEntity) {

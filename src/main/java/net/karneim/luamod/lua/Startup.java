@@ -3,6 +3,9 @@ package net.karneim.luamod.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.config.ModConfiguration;
@@ -59,11 +62,9 @@ public class Startup {
             ICommandSender owner = sender;
 
             World entityWorld = checkNotNull(server.getEntityWorld());
+            Collection<String> profiles = getProfiles();
             SpellEntity spellEntity =
-                luaMod.getSpellEntityFactory().create(entityWorld, sender, owner);
-            addDefaultProfile(spellEntity);
-            addStartupProfile(spellEntity);
-            spellEntity.setCommand(theSpell);
+                luaMod.getSpellEntityFactory().create(entityWorld, sender, owner, profiles, theSpell);
             server.getEntityWorld().spawnEntityInWorld(spellEntity);
 
           } catch (Exception e) {
@@ -77,20 +78,19 @@ public class Startup {
     }
   }
 
-  private void addStartupProfile(SpellEntity spellEntity) throws IOException {
-    String profile = luaMod.getProfiles().getStartupProfile();
-    if (profile != null) {
-      spellEntity.addProfile(profile);
+  private Collection<String> getProfiles() throws IOException {
+    List<String> result = new ArrayList<>();
+    String defaultProfile = luaMod.getProfiles().getDefaultProfile();
+    if ( defaultProfile != null) {
+      result.add(defaultProfile);
     }
-  }
-
-  private void addDefaultProfile(SpellEntity spellEntity) throws IOException {
-    String profile = luaMod.getProfiles().getDefaultProfile();
-    if (profile != null) {
-      spellEntity.addProfile(profile);
+    String startupProfile = luaMod.getProfiles().getStartupProfile();
+    if ( startupProfile != null) {
+      result.add(startupProfile);
     }
+    return result;
   }
-
+  
   private ICommandSender sender() {
     return new ICommandSender() {
       public String getName() {
