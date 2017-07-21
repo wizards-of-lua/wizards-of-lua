@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import net.karneim.luamod.LuaMod;
 import net.karneim.luamod.cursor.Clipboard;
@@ -22,14 +23,14 @@ public class SpellEntityFactory {
     this.mod = mod;
   }
 
-  public SpellEntity create(World world, ICommandSender sender, ICommandSender owner)
+  public SpellEntity create(World world, ICommandSender sender, ICommandSender owner, Collection<String> profiles, String command)
       throws IOException, LoaderException {
     Clipboard clipboard = getClipboard(sender);
     Vec3d pos = getPos(sender);
     Rotation rot = getRotation(sender);
     EnumFacing surface = getSurface(sender);
     SpellEntity spell = new SpellEntity(sender.getEntityWorld(), LuaMod.instance, owner, clipboard,
-        pos, rot, surface);
+        pos, rot, surface, profiles, command);
     return spell;
   }
 

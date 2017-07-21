@@ -1,5 +1,7 @@
 package net.karneim.luamod.lua;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,10 +12,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.FileSystem;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -103,7 +107,7 @@ public class LuaUtil {
   private Events events;
   private Runtime runtime;
   private List<Requirement> standardRequirements = new ArrayList<>();
-  private List<String> profiles;
+  private Collection<String> profiles;
   private Spell spell;
   private String commandLine;
   private Entities entities;
@@ -195,8 +199,8 @@ public class LuaUtil {
     standardRequirements.add(new Requirement(module));
   }
 
-  public void setProfiles(List<String> profiles) {
-    this.profiles = profiles;
+  public void setProfiles(Collection<String> profiles) {
+    this.profiles = checkNotNull(profiles);
   }
 
   private RuntimeEnvironment getModRuntimeEnvironment() {

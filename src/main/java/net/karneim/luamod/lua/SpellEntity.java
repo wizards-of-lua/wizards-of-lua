@@ -1,6 +1,7 @@
 package net.karneim.luamod.lua;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -28,7 +29,6 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
-import net.sandius.rembulan.load.LoaderException;
 
 public class SpellEntity extends Entity {
 
@@ -47,14 +47,13 @@ public class SpellEntity extends Entity {
   private LuaUtil luaUtil;
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
-  private List<String> profiles = new ArrayList<>();
 
   public SpellEntity(World worldIn) {
     super(worldIn);
   }
 
   public SpellEntity(World worldIn, LuaMod mod, ICommandSender aOwner, Clipboard clipboard,
-      Vec3d pos, Rotation rotation, EnumFacing surface) {
+      Vec3d pos, Rotation rotation, EnumFacing surface, Collection<String> profiles, String command) {
     this(worldIn);
     this.mod = mod;
     this.owner = aOwner;
@@ -70,11 +69,15 @@ public class SpellEntity extends Entity {
     this.spell = new Spell(owner, this, this.getEntityWorld(), pos, rotation, surface, snapshots);
     Credentials credentials = mod.getCredentialsStore().retrieveCredentials(Realm.GitHub, userId);
     luaUtil = new LuaUtil(this.getEntityWorld(), this, owner, spell, clipboard, credentials, snapshots);
+    this.command = command;
+    // TODO pass profile & command into constructor
+    luaUtil.setProfiles(profiles);
+    luaUtil.setCommand(command);
+
     if (surface != null) {
       pos = pos.add(new Vec3d(surface.getDirectionVec()));
     }
     updatePosition();
-    mod.getSpellRegistry().register(this);
   }
 
   public ICommandSender getOwner() {
@@ -84,21 +87,9 @@ public class SpellEntity extends Entity {
   public Clipboard getClipboard() {
     return clipboard;
   }
-
-  public void addProfile(String profile) {
-    this.profiles.add(profile);
-  }
   
   public @Nullable String getCommand() {
     return command;
-  }
-
-  public void setCommand(String command) throws LoaderException {
-    this.command = command;
-    luaUtil.setProfiles(profiles);
-    luaUtil.setCommand(command);
-    //luaUtil.compile(command);
-    //onUpdate();
   }
 
   @Override
@@ -190,6 +181,7 @@ public class SpellEntity extends Entity {
       switch (state) {
         case START:
           try {
+            mod.getSpellRegistry().register(this);
             luaUtil.run();
             state = State.STOP;
           } catch (CallPausedException e) {
