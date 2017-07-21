@@ -53,7 +53,7 @@ public class SpellEntity extends Entity {
   }
 
   public SpellEntity(World worldIn, LuaMod mod, ICommandSender aOwner, Clipboard clipboard,
-      Vec3d pos, Rotation rotation, EnumFacing surface, Collection<String> profiles, String command) {
+      Vec3d pos, Rotation rotation, EnumFacing surface, String name, Collection<String> profiles, String command) {
     this(worldIn);
     this.mod = mod;
     this.owner = aOwner;
@@ -73,7 +73,7 @@ public class SpellEntity extends Entity {
     // TODO pass profile & command into constructor
     luaUtil.setProfiles(profiles);
     luaUtil.setCommand(command);
-
+    setCustomNameTag(name);
     if (surface != null) {
       pos = pos.add(new Vec3d(surface.getDirectionVec()));
     }
