@@ -166,6 +166,9 @@ public class LuaTypesRepo {
     if (javaObject instanceof WhisperEvent) {
       return wrap((WhisperEvent) javaObject);
     }
+    if (javaObject instanceof net.minecraftforge.fml.common.gameevent.PlayerEvent) {
+      return wrap((net.minecraftforge.fml.common.gameevent.PlayerEvent) javaObject);
+    }
     return get(EventClass.class).getLuaObjectNullable(javaObject);
   }
 
