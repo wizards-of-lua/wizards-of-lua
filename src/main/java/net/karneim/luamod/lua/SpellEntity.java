@@ -78,6 +78,7 @@ public class SpellEntity extends Entity {
       pos = pos.add(new Vec3d(surface.getDirectionVec()));
     }
     updatePosition();
+    initializeChunkLoader();
   }
 
   public ICommandSender getOwner() {
@@ -94,6 +95,10 @@ public class SpellEntity extends Entity {
 
   @Override
   protected void entityInit() {
+    
+  }
+  
+  protected void initializeChunkLoader() {
     requestChunkLoaderTicket();
     chunkLoaderTicket.bindEntity(this);
     chunkPos = new ChunkPos(getPosition());
