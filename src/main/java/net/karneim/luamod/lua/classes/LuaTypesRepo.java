@@ -14,6 +14,8 @@ import net.karneim.luamod.lua.util.wrapper.CachingLuaClass;
 import net.karneim.luamod.lua.wrapper.ModifiableArrayWrapper;
 import net.karneim.luamod.lua.wrapper.UnmodifiableIterableWrapper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.ITextComponent;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
@@ -40,13 +42,13 @@ public class LuaTypesRepo {
 
   @SuppressWarnings("unchecked")
   private <T> CachingLuaClass<? super T, ?> getCachingLuaClass(Class<?> javaClass) {
-    if ( javaClass==null) {
+    if (javaClass == null) {
       return null;
     }
-    Class<? super T> cls = (Class<? super T>)javaClass;
+    Class<? super T> cls = (Class<? super T>) javaClass;
     while (cls != null) {
       CachingLuaClass<? super T, ?> result = (CachingLuaClass<T, ?>) cachingLuaClasses.get(cls);
-      if ( result != null) {
+      if (result != null) {
         return result;
       }
       Class<?>[] interfaces = cls.getInterfaces();
@@ -143,6 +145,11 @@ public class LuaTypesRepo {
     @SuppressWarnings("unchecked")
     Class<? extends T> javaClass = (Class<? extends T>) javaObject.getClass();
     return wrap(javaObject, javaClass);
+  }
+
+  public @Nullable Object wrap(@Nullable Vec3i javaObject) {
+    return javaObject == null ? null
+        : wrap(new Vec3d(javaObject.getX(), javaObject.getY(), javaObject.getZ()));
   }
 
   private <T, A extends T> Object wrap(T javaObject, Class<A> javaClass) {
