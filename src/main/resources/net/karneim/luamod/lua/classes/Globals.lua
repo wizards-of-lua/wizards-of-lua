@@ -47,6 +47,14 @@ function check.class( obj, cls, i)
   end
 end
 
+local types = {}
+local type_ = type
+function type(obj)
+  local mt = getmetatable(obj)
+  local result = types[mt]
+  return result or type_(obj)
+end
+
 function class(name, base)
   check.string(name, 1)
 
@@ -58,11 +66,8 @@ function class(name, base)
   c.__classname = name
   setmetatable(c, base)
 
-  -- extend type function
-  local type_ = type
-  type = function(x)
-    return getmetatable(x)==c and name or type_(x)
-  end
+  -- add to types
+  types[c] = name
 
   _G[name] = c
   return c
