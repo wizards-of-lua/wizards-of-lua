@@ -245,11 +245,6 @@ public class ModEventHandler {
   }
 
   @SubscribeEvent
-  public void onEvent(LivingEntityUseItemEvent evt) {
-    onLuaEvent(LivingEntityUseItemEventClass.class, evt);
-  }
-
-  @SubscribeEvent
   public void onEvent(LivingEntityUseItemEvent.Finish evt) {
     onLuaEvent(LivingEntityUseItemFinishEventClass.class, evt);
   }
