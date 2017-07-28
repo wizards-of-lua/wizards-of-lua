@@ -75,7 +75,7 @@ public class Events {
     // RightClickBlockEvent
 
     CustomLuaEvent event = new CustomLuaEvent(eventType, data);
-    eventHandler.onEvent(event);
+    eventHandler.onLuaEvent(eventType, event);
   }
 
   public void handle(String eventType, Object luaEvent) {

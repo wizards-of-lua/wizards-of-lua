@@ -317,7 +317,7 @@ public class ModEventHandler {
     onLuaEvent(getModuleNameOf(luaClass), event);
   }
 
-  private void onLuaEvent(String eventType, Event event) {
+  public void onLuaEvent(String eventType, Event event) {
     if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
       return;
     }
