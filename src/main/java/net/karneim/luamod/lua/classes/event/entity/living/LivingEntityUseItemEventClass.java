@@ -16,6 +16,7 @@ public class LivingEntityUseItemEventClass extends DelegatingLuaClass<LivingEnti
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingEntityUseItemEvent> b,
       LivingEntityUseItemEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("duration", () -> repo.wrap(delegate.getDuration()));
     b.addReadOnly("item", () -> repo.wrap(delegate.getItem()));
   }

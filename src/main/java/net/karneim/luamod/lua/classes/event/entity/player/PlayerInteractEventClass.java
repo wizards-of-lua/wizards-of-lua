@@ -16,6 +16,7 @@ public class PlayerInteractEventClass extends DelegatingLuaClass<PlayerInteractE
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends PlayerInteractEvent> b,
       PlayerInteractEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("hand", () -> repo.wrap(delegate.getHand()));
     b.addReadOnly("item", () -> repo.wrap(delegate.getItemStack()));
     b.addReadOnly("pos", () -> repo.wrap(delegate.getPos()));

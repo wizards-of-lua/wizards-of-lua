@@ -15,6 +15,7 @@ public class AchievementEventClass extends DelegatingLuaClass<AchievementEvent> 
 
   @Override
   protected void addProperties(Builder<? extends AchievementEvent> b, AchievementEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("achievement", () -> repo.wrap(delegate.getAchievement()));
   }
 

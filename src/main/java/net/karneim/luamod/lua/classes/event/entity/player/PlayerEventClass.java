@@ -16,6 +16,7 @@ public class PlayerEventClass extends DelegatingLuaClass<PlayerEvent> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends PlayerEvent> b,
       PlayerEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("player", () -> repo.wrap(delegate.getEntityPlayer()));
   }
 

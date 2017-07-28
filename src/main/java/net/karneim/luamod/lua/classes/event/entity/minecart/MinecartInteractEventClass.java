@@ -16,6 +16,7 @@ public class MinecartInteractEventClass extends DelegatingLuaClass<MinecartInter
   @Override
   protected void addProperties(Builder<? extends MinecartInteractEvent> b,
       MinecartInteractEvent d) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("hand", () -> repo.wrap(d.getHand()));
     b.addReadOnly("item", () -> repo.wrap(d.getItem()));
     b.addReadOnly("player", () -> repo.wrap(d.getPlayer()));

@@ -15,7 +15,9 @@ public class SpecialSpawnEventClass extends DelegatingLuaClass<SpecialSpawn> {
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends SpecialSpawn> b,
-      SpecialSpawn delegate) {}
+      SpecialSpawn delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

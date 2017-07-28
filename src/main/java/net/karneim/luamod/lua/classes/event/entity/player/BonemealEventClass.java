@@ -15,6 +15,7 @@ public class BonemealEventClass extends DelegatingLuaClass<BonemealEvent> {
 
   @Override
   protected void addProperties(Builder<? extends BonemealEvent> b, BonemealEvent d) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("block", () -> repo.wrap(d.getBlock()));
     b.addReadOnly("pos", () -> repo.wrap(d.getPos()));
     b.addReadOnly("world", () -> repo.wrap(d.getWorld()));

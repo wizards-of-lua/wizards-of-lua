@@ -16,6 +16,7 @@ public class EntityEventClass extends DelegatingLuaClass<EntityEvent> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends EntityEvent> b,
       EntityEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("entity", () -> repo.wrap(delegate.getEntity()));
   }
 

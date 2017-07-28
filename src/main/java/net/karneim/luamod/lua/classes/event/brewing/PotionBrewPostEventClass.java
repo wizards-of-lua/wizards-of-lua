@@ -15,7 +15,9 @@ public class PotionBrewPostEventClass extends DelegatingLuaClass<PotionBrewEvent
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends PotionBrewEvent.Post> b,
-      PotionBrewEvent.Post delegate) {}
+      PotionBrewEvent.Post delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

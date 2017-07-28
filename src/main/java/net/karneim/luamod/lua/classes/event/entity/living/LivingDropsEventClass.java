@@ -18,6 +18,7 @@ public class LivingDropsEventClass extends DelegatingLuaClass<LivingDropsEvent> 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingDropsEvent> b,
       LivingDropsEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("source", () -> repo.wrap(delegate.getSource()));
     UnmodifiableIterableWrapper<EntityItem, ?> wrapper =
         new UnmodifiableIterableWrapper<>(entityItem -> repo.wrap(entityItem));

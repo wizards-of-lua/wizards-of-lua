@@ -16,6 +16,7 @@ public class LivingDeathEventClass extends DelegatingLuaClass<LivingDeathEvent> 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingDeathEvent> b,
       LivingDeathEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("source", () -> repo.wrap(delegate.getSource()));
   }
 

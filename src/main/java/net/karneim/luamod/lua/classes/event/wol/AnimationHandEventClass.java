@@ -16,6 +16,7 @@ public class AnimationHandEventClass extends DelegatingLuaClass<AnimationHandEve
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends AnimationHandEvent> b,
       AnimationHandEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("hand", () -> repo.wrap(delegate.getHand()));
   }
 

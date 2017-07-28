@@ -16,6 +16,7 @@ public class LivingSpawnEventClass extends DelegatingLuaClass<LivingSpawnEvent> 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingSpawnEvent> b,
       LivingSpawnEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("world", () -> repo.wrap(delegate.getWorld()));
     b.addReadOnly("x", () -> repo.wrap(delegate.getX()));
     b.addReadOnly("y", () -> repo.wrap(delegate.getY()));

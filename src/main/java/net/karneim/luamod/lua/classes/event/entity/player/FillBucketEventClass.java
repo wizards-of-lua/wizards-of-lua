@@ -18,6 +18,7 @@ public class FillBucketEventClass extends DelegatingLuaClass<FillBucketEvent> {
 
   @Override
   protected void addProperties(Builder<? extends FillBucketEvent> b, FillBucketEvent d) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("emptyBucket", () -> repo.wrap(d.getEmptyBucket()));
     b.add("filledBucket", () -> repo.wrap(d.getFilledBucket()),
         o -> d.setFilledBucket(checkTypeDelegatingTable(o, ItemStack.class)));

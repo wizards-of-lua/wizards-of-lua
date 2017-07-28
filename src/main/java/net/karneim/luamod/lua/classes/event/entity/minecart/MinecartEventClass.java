@@ -16,6 +16,7 @@ public class MinecartEventClass extends DelegatingLuaClass<MinecartEvent> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends MinecartEvent> b,
       MinecartEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("minecart", () -> repo.wrap(delegate.getMinecart()));
   }
 

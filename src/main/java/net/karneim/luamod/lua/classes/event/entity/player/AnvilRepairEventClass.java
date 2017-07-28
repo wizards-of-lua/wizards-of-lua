@@ -17,6 +17,7 @@ public class AnvilRepairEventClass extends DelegatingLuaClass<AnvilRepairEvent> 
 
   @Override
   protected void addProperties(Builder<? extends AnvilRepairEvent> b, AnvilRepairEvent d) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.add("breakChance", () -> repo.wrap(d.getBreakChance()),
         o -> d.setBreakChance(checkType(o, Number.class).floatValue()));
     b.addReadOnly("left", () -> repo.wrap(d.getLeft()));

@@ -16,6 +16,7 @@ public class ItemTossEventClass extends DelegatingLuaClass<ItemTossEvent> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends ItemTossEvent> b,
       ItemTossEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("player", () -> repo.wrap(delegate.getPlayer()));
   }
 

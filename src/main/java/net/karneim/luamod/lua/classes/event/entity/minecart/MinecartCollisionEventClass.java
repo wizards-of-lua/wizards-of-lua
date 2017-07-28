@@ -16,6 +16,7 @@ public class MinecartCollisionEventClass extends DelegatingLuaClass<MinecartColl
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends MinecartCollisionEvent> b,
       MinecartCollisionEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("collider", () -> repo.wrap(delegate.getCollider()));
   }
 

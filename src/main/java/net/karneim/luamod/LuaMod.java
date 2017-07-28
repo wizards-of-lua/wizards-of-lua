@@ -23,6 +23,7 @@ import net.karneim.luamod.lua.SpellEntity;
 import net.karneim.luamod.lua.SpellEntityFactory;
 import net.karneim.luamod.lua.SpellRegistry;
 import net.karneim.luamod.lua.Startup;
+import net.karneim.luamod.lua.classes.GlobalLuaTypesRepo;
 import net.karneim.luamod.lua.event.ModEventHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -51,12 +52,12 @@ public class LuaMod {
 
   public final Logger logger = LogManager.getLogger(LuaMod.class.getName());
 
-  private MinecraftServer server;
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final ClipboardRegistry clipboards = new ClipboardRegistry();
-  private final ModEventHandler modEventHandler = new ModEventHandler(this);
   private final SpellEntityFactory spellEntityFactory = new SpellEntityFactory(this);
+  private final GlobalLuaTypesRepo globalLuaTypesRepo = new GlobalLuaTypesRepo();
+  private final ModEventHandler modEventHandler = new ModEventHandler(globalLuaTypesRepo, spellRegistry);;
 
   private ModConfiguration configuration;
   private File luaDir;
@@ -66,6 +67,7 @@ public class LuaMod {
   private GistRepo gistRepo;
   private CredentialsStore credentialsStore;
   private Startup startup;
+  private MinecraftServer server;
 
   private Long ticksLimit;
   private long DEFAULT_TICKS_LIMIT = 10000;
@@ -100,7 +102,8 @@ public class LuaMod {
     event.registerServerCommand(new CommandWol());
     event.registerServerCommand(new CommandMessagePatched(modEventHandler));
     server = checkNotNull(event.getServer());
-
+    
+    
     ForgeChunkManager.setForcedChunkLoadingCallback(instance,
         new net.minecraftforge.common.ForgeChunkManager.LoadingCallback() {
           @Override
@@ -214,5 +217,9 @@ public class LuaMod {
 
   public Permissions getPermissions() {
     return permissions;
+  }
+  
+  public GlobalLuaTypesRepo getGlobalLuaTypesRepo() {
+    return globalLuaTypesRepo;
   }
 }

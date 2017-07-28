@@ -16,6 +16,7 @@ public class RightClickBlockEventClass extends DelegatingLuaClass<RightClickBloc
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends RightClickBlock> b,
       RightClickBlock event) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("hitVec", () -> repo.wrap(event.getHitVec()));
   }
 

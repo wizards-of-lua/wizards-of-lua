@@ -16,7 +16,9 @@ public class LivingEntityUseItemStopEventClass
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingEntityUseItemEvent.Stop> b,
-      LivingEntityUseItemEvent.Stop delegate) {}
+      LivingEntityUseItemEvent.Stop delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

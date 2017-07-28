@@ -15,7 +15,9 @@ public class PlayerRespawnEventClass extends DelegatingLuaClass<PlayerRespawnEve
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends PlayerRespawnEvent> b,
-      PlayerRespawnEvent delegate) {}
+      PlayerRespawnEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

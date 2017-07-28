@@ -18,6 +18,7 @@ public class LivingEventClass extends DelegatingLuaClass<LivingEvent> {
       LivingEvent delegate) {
     // entityLiving is already mapped as entity by superclass EntityEventClass
     // b.addReadOnly("entityLiving", () -> repo.wrap(delegate.getEntityLiving());
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
   }
 
   @Override

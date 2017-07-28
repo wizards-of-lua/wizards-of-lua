@@ -16,7 +16,9 @@ public class LivingEntityUseItemTickEventClass
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingEntityUseItemEvent.Tick> b,
-      LivingEntityUseItemEvent.Tick delegate) {}
+      LivingEntityUseItemEvent.Tick delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

@@ -16,7 +16,9 @@ public class LivingEntityUseItemFinishEventClass
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingEntityUseItemEvent.Finish> b,
-      LivingEntityUseItemEvent.Finish delegate) {}
+      LivingEntityUseItemEvent.Finish delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

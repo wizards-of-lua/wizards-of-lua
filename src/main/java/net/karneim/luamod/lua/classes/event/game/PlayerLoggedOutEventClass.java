@@ -15,7 +15,9 @@ public class PlayerLoggedOutEventClass extends DelegatingLuaClass<PlayerLoggedOu
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends PlayerLoggedOutEvent> b,
-      PlayerLoggedOutEvent delegate) {}
+      PlayerLoggedOutEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

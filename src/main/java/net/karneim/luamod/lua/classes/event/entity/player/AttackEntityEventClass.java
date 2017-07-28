@@ -15,6 +15,7 @@ public class AttackEntityEventClass extends DelegatingLuaClass<AttackEntityEvent
 
   @Override
   protected void addProperties(Builder<? extends AttackEntityEvent> b, AttackEntityEvent d) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("target", () -> repo.wrap(d.getTarget()));
   }
 

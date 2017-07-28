@@ -15,7 +15,9 @@ public class PlayerLoggedInEventClass extends DelegatingLuaClass<PlayerLoggedInE
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends PlayerLoggedInEvent> b,
-      PlayerLoggedInEvent delegate) {}
+      PlayerLoggedInEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

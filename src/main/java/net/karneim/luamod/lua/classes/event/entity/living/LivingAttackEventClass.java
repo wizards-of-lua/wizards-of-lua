@@ -16,6 +16,7 @@ public class LivingAttackEventClass extends DelegatingLuaClass<LivingAttackEvent
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingAttackEvent> b,
       LivingAttackEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("amount", () -> repo.wrap(delegate.getAmount()));
     b.addReadOnly("source", () -> repo.wrap(delegate.getSource()));
   }

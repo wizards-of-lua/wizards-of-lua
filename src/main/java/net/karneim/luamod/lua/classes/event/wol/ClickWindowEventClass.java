@@ -16,6 +16,7 @@ public class ClickWindowEventClass extends DelegatingLuaClass<ClickWindowEvent> 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends ClickWindowEvent> b,
       ClickWindowEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("clickedItem", () -> repo.wrap(delegate.getClickedItem()));
     b.addReadOnly("clickType", () -> repo.wrap(delegate.getClickType()));
     b.addReadOnly("slotId", () -> repo.wrap(delegate.getSlotId()));

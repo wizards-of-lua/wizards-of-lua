@@ -15,6 +15,7 @@ public class ItemEventClass extends DelegatingLuaClass<ItemEvent> {
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends ItemEvent> b, ItemEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("entityItem", () -> repo.wrap(delegate.getEntityItem()));
   }
 

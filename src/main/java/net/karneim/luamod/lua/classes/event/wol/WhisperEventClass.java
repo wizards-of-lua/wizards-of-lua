@@ -16,6 +16,7 @@ public class WhisperEventClass extends DelegatingLuaClass<WhisperEvent> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends WhisperEvent> b,
       WhisperEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("sender", () -> repo.wrap(delegate.getSender()));
     b.addReadOnly("message", () -> repo.wrap(delegate.getMessage()));
     b.addReadOnly("username", () -> repo.wrap(delegate.getSender()));

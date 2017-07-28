@@ -15,7 +15,9 @@ public class ItemExpireEventClass extends DelegatingLuaClass<ItemExpireEvent> {
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends ItemExpireEvent> b,
-      ItemExpireEvent delegate) {}
+      ItemExpireEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}

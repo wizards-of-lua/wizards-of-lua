@@ -25,6 +25,7 @@ public class PotionBrewEventClass extends DelegatingLuaClass<PotionBrewEvent> {
       PotionBrewEvent delegate) {
     DelegatingTable<PotionBrewEvent> wrappedItems = wrapItems(delegate);
     b.addReadOnly("items", () -> wrappedItems);
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
   }
 
   private DelegatingTable<PotionBrewEvent> wrapItems(PotionBrewEvent delegate) {

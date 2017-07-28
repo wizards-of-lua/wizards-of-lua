@@ -32,6 +32,7 @@ import net.karneim.luamod.cursor.Clipboard;
 import net.karneim.luamod.cursor.Snapshots;
 import net.karneim.luamod.cursor.Spell;
 import net.karneim.luamod.gist.GistRepo;
+import net.karneim.luamod.lua.classes.GlobalLuaTypesRepo;
 import net.karneim.luamod.lua.classes.LuaClass;
 import net.karneim.luamod.lua.classes.LuaModule;
 import net.karneim.luamod.lua.classes.LuaTypesRepo;
@@ -71,25 +72,6 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
 
 public class LuaUtil {
-  private static final List<Class<? extends LuaClass>> LUA_CLASSES = new ArrayList<>();
-  static {
-    ClassPath cp;
-    try {
-      cp = ClassPath.from(LuaUtil.class.getClassLoader());
-    } catch (IOException ex) {
-      throw new UndeclaredThrowableException(ex);
-    }
-    ImmutableSet<ClassInfo> classes =
-        cp.getTopLevelClassesRecursive("net.karneim.luamod.lua.classes");
-    for (ClassInfo classInfo : classes) {
-      Class<?> cls = classInfo.load();
-      if (LuaClass.class.isAssignableFrom(cls) && cls.isAnnotationPresent(LuaModule.class)) {
-        @SuppressWarnings("unchecked")
-        Class<? extends LuaClass> luaClass = (Class<? extends LuaClass>) cls;
-        LUA_CLASSES.add(luaClass);
-      }
-    }
-  }
 
   private final World world;
   private final Credentials credentials;
@@ -113,6 +95,7 @@ public class LuaUtil {
   private Entities entities;
   private SpellEntity entity;
   private Blocks blocks;
+  private GlobalLuaTypesRepo globalLuaTypesRepo;
 
   public LuaUtil(World world, SpellEntity entity, ICommandSender owner, Spell spell,
       Clipboard clipboard, Credentials credentials, Snapshots snapshots) {
@@ -128,7 +111,10 @@ public class LuaUtil {
     entities = new Entities(LuaMod.instance.getServer(), entity);
 
     typesRepo = new LuaTypesRepo(env);
-    for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
+    
+    globalLuaTypesRepo = LuaMod.instance.getGlobalLuaTypesRepo();
+    
+    for (Class<? extends LuaClass> luaClass : globalLuaTypesRepo.getLuaClasses()) {
       try {
         Constructor<? extends LuaClass> constructor = luaClass.getConstructor(LuaTypesRepo.class);
         typesRepo.register(constructor.newInstance(typesRepo));
@@ -275,7 +261,7 @@ public class LuaUtil {
       this.compile();
       executor.call(state, headerFunc);
 
-      for (Class<? extends LuaClass> luaClass : LUA_CLASSES) {
+      for (Class<? extends LuaClass> luaClass : globalLuaTypesRepo.getLuaClasses()) {
         typesRepo.get(luaClass).installInto(loader, executor, state);
       }
 

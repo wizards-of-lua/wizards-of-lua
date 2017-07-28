@@ -16,6 +16,7 @@ public class ServerChatEventClass extends DelegatingLuaClass<ServerChatEvent> {
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends ServerChatEvent> b,
       ServerChatEvent delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("message", () -> repo.wrap(delegate.getMessage()));
     b.addReadOnly("username", () -> repo.wrap(delegate.getUsername()));
     b.addReadOnly("player", () -> repo.wrap(delegate.getPlayer()));

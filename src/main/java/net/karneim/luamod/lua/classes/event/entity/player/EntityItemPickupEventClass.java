@@ -16,6 +16,7 @@ public class EntityItemPickupEventClass extends DelegatingLuaClass<EntityItemPic
   @Override
   protected void addProperties(Builder<? extends EntityItemPickupEvent> b,
       EntityItemPickupEvent d) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
     b.addReadOnly("item", () -> repo.wrap(d.getItem()));
   }
 

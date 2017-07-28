@@ -16,7 +16,9 @@ public class LivingEntityUseItemStartEventClass
 
   @Override
   protected void addProperties(DelegatingTable.Builder<? extends LivingEntityUseItemEvent.Start> b,
-      LivingEntityUseItemEvent.Start delegate) {}
+      LivingEntityUseItemEvent.Start delegate) {
+    b.addReadOnly("type", () -> repo.wrap(getModuleName()));
+  }
 
   @Override
   protected void addFunctions(Table luaClass) {}
