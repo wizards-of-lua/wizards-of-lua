@@ -1,5 +1,8 @@
 package net.karneim.luamod.lua.wrapper;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import net.karneim.luamod.lua.Runtime;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -28,6 +31,7 @@ public class RuntimeWrapper {
     luaTable.rawset("getRealtime", new GetRealtimeFunction());
     luaTable.rawset("getGametime", new GetGametimeFunction());
     luaTable.rawset("getLuatime", new GetLuatimeFunction());
+    luaTable.rawset("getRealDateTime", new GetRealDateTimeFunction());
   }
 
   public Table getLuaTable() {
@@ -48,7 +52,7 @@ public class RuntimeWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class GetGametimeFunction extends AbstractFunction0 {
 
     @Override
@@ -63,7 +67,7 @@ public class RuntimeWrapper {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class GetAllowanceFunction extends AbstractFunction0 {
 
     @Override
@@ -94,12 +98,32 @@ public class RuntimeWrapper {
     }
   }
 
+  private class GetRealDateTimeFunction extends AbstractFunction1 {
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      String pattern = arg1 == null ? null : String.valueOf(arg1);
+      DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+      if (pattern != null) {
+        formatter = DateTimeFormatter.ofPattern(pattern);
+      }
+      String result = LocalDateTime.now().format(formatter);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
   private class SleepFunction extends AbstractFunction1 {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       // System.out.println("sleep: " + arg1);
-      if ( arg1 == null) {
+      if (arg1 == null) {
         // ignore call
         return;
       }
