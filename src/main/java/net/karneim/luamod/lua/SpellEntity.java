@@ -88,20 +88,21 @@ public class SpellEntity extends Entity {
   public Clipboard getClipboard() {
     return clipboard;
   }
-  
+
   public @Nullable String getCommand() {
     return command;
   }
 
   @Override
   protected void entityInit() {
-    
+
   }
-  
+
   protected void initializeChunkLoader() {
-    requestChunkLoaderTicket();
-    chunkLoaderTicket.bindEntity(this);
     chunkPos = new ChunkPos(getPosition());
+    chunkLoaderTicket = ForgeChunkManager.requestTicket(LuaMod.instance, getEntityWorld(),
+        ForgeChunkManager.Type.ENTITY);
+    chunkLoaderTicket.bindEntity(this);
     ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
   }
 
@@ -120,23 +121,6 @@ public class SpellEntity extends Entity {
   protected void writeEntityToNBT(NBTTagCompound compound) {
     // TODO Auto-generated method stub
 
-  }
-
-  // @Override
-  // public void addChatMessage(ITextComponent component) {
-  // // whispers to you
-  // String unformattedComponentText = component.getUnformattedComponentText();
-  // System.out.println("unformattedComponentText "+unformattedComponentText);
-  // // Player695 whispers to you: hi
-  // String unformattedText = component.getUnformattedText();
-  // System.out.println("unformattedText "+unformattedText);
-  //
-  // luaUtil.handleEvent(new Event(EventType.MESSAGE_EVENT, unformattedText));
-  // }
-
-  private void requestChunkLoaderTicket() {
-    chunkLoaderTicket = ForgeChunkManager.requestTicket(LuaMod.instance, getEntityWorld(),
-        ForgeChunkManager.Type.ENTITY);
   }
 
   private void releaseChunkLoaderTicket() {
@@ -160,7 +144,7 @@ public class SpellEntity extends Entity {
     float pitch = 0;
     setRotation(yaw, pitch);
   }
-  
+
   /**
    * Updates the ChunkManager by pasing in the entity's current position
    */
@@ -172,7 +156,7 @@ public class SpellEntity extends Entity {
         chunkPos = new ChunkPos(new BlockPos(pos));
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
       }
-    }    
+    }
   }
 
   public void onUpdate() {
