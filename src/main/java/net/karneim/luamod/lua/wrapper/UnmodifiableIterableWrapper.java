@@ -21,8 +21,8 @@ public class UnmodifiableIterableWrapper<J, L>
     Builder<Iterable<J>> b = DelegatingTable.builder(iterable);
     int i = 0;
     for (J javaObject : iterable) {
-      final int luaIndex = i + 1;
-      b.addReadOnly(luaIndex, () -> toLua.apply(javaObject));
+      i++;
+      b.addReadOnly(i, () -> toLua.apply(javaObject));
     }
     return b.build();
   }
