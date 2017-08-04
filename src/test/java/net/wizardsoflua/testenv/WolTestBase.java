@@ -20,6 +20,7 @@ public class WolTestBase extends TestDataFactory {
   @Before
   public void beforeTest() {
     testEnv.getEventRecorder().setEnabled(true);
+    mcBackdoor.resetClock();
     int testId = testIdCount++;
     mc().player().perform(new PrepareForTestAction(testId));
     TestPlayerPreparedForTestEvent evt = mc().waitFor(TestPlayerPreparedForTestEvent.class);
@@ -31,6 +32,7 @@ public class WolTestBase extends TestDataFactory {
   public void afterTest() {
     testEnv.getEventRecorder().setEnabled(false);
     testEnv.getEventRecorder().clear();
+    mcBackdoor.resetClock();
   }
 
   protected MinecraftBackdoor mc() {

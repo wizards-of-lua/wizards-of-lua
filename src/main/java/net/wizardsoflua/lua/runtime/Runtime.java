@@ -1,8 +1,17 @@
 package net.wizardsoflua.lua.runtime;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import net.minecraft.world.World;
 
 public class Runtime {
+  public interface Context {
+    Clock getClock();
+  }
+  private final Context context;
+  
   private final World world;
   private final int luaTicksLimit;
   private final int sleepTrigger;
@@ -15,9 +24,10 @@ public class Runtime {
 
   private boolean autoSleep = true;
 
-  public Runtime(World world, int luaTicksLimit) {
+  public Runtime(World world, int luaTicksLimit, Context context) {
     this.world = world;
     this.luaTicksLimit = luaTicksLimit;
+    this.context = context;
     this.sleepTrigger = luaTicksLimit / 2;
     this.allowance = luaTicksLimit;
     this.spellCreatedGameTime = world.getTotalWorldTime();
@@ -83,6 +93,19 @@ public class Runtime {
           "Spell has been broken automatically since it has exceeded its tick allowance!");
     }
     return false;
+  }
+  
+  public String getRealDateTime(String pattern) {
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    if (pattern != null) {
+      formatter = DateTimeFormatter.ofPattern(pattern);
+    }
+    String result = LocalDateTime.now(context.getClock()).format(formatter);
+    return result;
+  }
+
+  public long getRealtime() {
+    return context.getClock().millis();
   }
 
 }

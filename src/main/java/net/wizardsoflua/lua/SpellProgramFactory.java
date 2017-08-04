@@ -1,5 +1,9 @@
 package net.wizardsoflua.lua;
 
+import java.time.Clock;
+
+import com.google.common.base.Preconditions;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.runtime.SchedulingContext;
@@ -7,10 +11,16 @@ import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.runtime.Runtime;
 
 public class SpellProgramFactory {
+  public interface Context {
+    Clock getClock();
+  }
 
+  private final Context context;
   private int luaTicksLimit = 10000;
 
-  public SpellProgramFactory() {}
+  public SpellProgramFactory(Context context) {
+    this.context = Preconditions.checkNotNull(context, "context==null!");
+  }
 
   public int getLuaTicksLimit() {
     return luaTicksLimit;
@@ -21,13 +31,19 @@ public class SpellProgramFactory {
   }
 
   public SpellProgram create(World world, ICommandSender owner, String code) {
-    SpellProgramContext spellProgramContext = createSpellProgramContext(world);
+    SpellProgram.Context spellProgramContext = createSpellProgramContext(world);
     return new SpellProgram(owner, code, spellProgramContext);
   }
 
-  private SpellProgramContext createSpellProgramContext(World world) {
-    Runtime runtime = new Runtime(world, luaTicksLimit);
-    return new SpellProgramContext() {
+  private SpellProgram.Context createSpellProgramContext(World world) {
+    Runtime.Context runtimeContext = new Runtime.Context() {
+      @Override
+      public Clock getClock() {
+        return context.getClock();
+      }
+    };
+    Runtime runtime = new Runtime(world, luaTicksLimit, runtimeContext);
+    return new SpellProgram.Context() {
 
       @Override
       public SchedulingContextFactory getSchedulingContextFactory() {

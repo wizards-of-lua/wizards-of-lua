@@ -2,6 +2,8 @@ package net.wizardsoflua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.time.Clock;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,14 +36,35 @@ public class WizardsOfLua {
   private final SpellProgramFactory spellProgramFactory;
 
   private MinecraftServer server;
+  /**
+   * Clock used for RuntimeModule
+   */
+  private Clock clock = getDefaultClock();
 
   public WizardsOfLua() {
-    spellProgramFactory = new SpellProgramFactory();
+    spellProgramFactory = new SpellProgramFactory(new SpellProgramFactory.Context() {
+      @Override
+      public Clock getClock() {
+        return clock;
+      }
+    });
     spellEntityFactory = new SpellEntityFactory(spellProgramFactory);
   }
 
   public SpellEntityFactory getSpellEntityFactory() {
     return spellEntityFactory;
+  }
+
+  public Clock getClock() {
+    return clock;
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
+  }
+  
+  public Clock getDefaultClock() {
+    return Clock.systemDefaultZone();
   }
 
   @EventHandler

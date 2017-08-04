@@ -12,6 +12,7 @@ import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.runtime.Runtime;
 import net.wizardsoflua.lua.runtime.RuntimeModule;
@@ -22,11 +23,18 @@ public class SpellProgram {
   private enum State {
     NEW, PAUSED, FINISHED
   }
+  public interface Context {
+
+    SchedulingContextFactory getSchedulingContextFactory();
+
+    Runtime getRuntime();
+
+  }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
   private final ICommandSender source;
   private final String code;
-  private final SpellProgramContext context;
+  private final Context context;
   private final DirectCallExecutor executor;
   private final StateContext stateContext;
   private final Table env;
@@ -37,7 +45,7 @@ public class SpellProgram {
   private State state;
   private Continuation continuation;
 
-  public SpellProgram(ICommandSender source, String code, SpellProgramContext context) {
+  public SpellProgram(ICommandSender source, String code, Context context) {
     this.source = source;
     this.code = code;
     this.context = context;

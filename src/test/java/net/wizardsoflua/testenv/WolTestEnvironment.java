@@ -68,7 +68,10 @@ public class WolTestEnvironment {
   public MinecraftServer getServer() {
     return server;
   }
-
+  
+  public WizardsOfLua getWol() {
+    return WizardsOfLua.instance;
+  }
 
   public EntityPlayerMP getTestPlayer() {
     return testPlayer;

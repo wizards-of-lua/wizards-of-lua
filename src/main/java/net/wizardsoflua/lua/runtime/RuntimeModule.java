@@ -1,5 +1,8 @@
 package net.wizardsoflua.lua.runtime;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -27,6 +30,7 @@ public class RuntimeModule {
     luaTable.rawset("getRealtime", new GetRealtimeFunction());
     luaTable.rawset("getGametime", new GetGametimeFunction());
     luaTable.rawset("getLuatime", new GetLuatimeFunction());
+    luaTable.rawset("getRealDateTime", new GetRealDateTimeFunction());
     luaTable.rawset("setAutoSleep", new SetAutoSleepFunction());
   }
 
@@ -83,7 +87,23 @@ public class RuntimeModule {
 
     @Override
     public void invoke(ExecutionContext context) throws ResolvedControlThrowable {
-      long result = System.currentTimeMillis();
+      long result = runtime.getRealtime();
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+  
+  private class GetRealDateTimeFunction extends AbstractFunction1 {
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      String pattern = arg1 == null ? null : String.valueOf(arg1);
+      String result = runtime.getRealDateTime(pattern);
       context.getReturnBuffer().setTo(result);
     }
 
