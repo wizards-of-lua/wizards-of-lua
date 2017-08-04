@@ -1,8 +1,5 @@
 package net.wizardsoflua.lua.runtime;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -97,7 +94,7 @@ public class RuntimeModule {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class GetRealDateTimeFunction extends AbstractFunction1 {
 
     @Override

@@ -2,6 +2,7 @@ package net.wizardsoflua.testenv;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +62,12 @@ public class MinecraftBackdoor {
     });
   }
 
+  public void freezeClock(long millis) {
+    ZoneId zoneId = ZoneId.systemDefault();
+    Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), zoneId);
+    testEnv.getWol().setClock(clock);
+  }
+  
   public void freezeClock(LocalDateTime date) {
     ZoneId zoneId = ZoneId.systemDefault();
     Clock clock = Clock.fixed(date.atZone(zoneId).toInstant(), zoneId);
