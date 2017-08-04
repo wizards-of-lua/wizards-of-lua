@@ -79,4 +79,21 @@ public class RuntimeModuleTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.RuntimeModuleTest test_sleep
+  @Test
+  public void test_sleep() throws Exception {
+    // Given:
+    long sleepTime = 10;
+    // When:
+    mc().executeCommand(
+        "/lua print(Runtime.getGametime()); Runtime.sleep(%s); print(Runtime.getGametime())",
+        sleepTime);
+
+    // Then:
+    ServerLog4jEvent message1 = mc().waitFor(ServerLog4jEvent.class);
+    ServerLog4jEvent message2 = mc().waitFor(ServerLog4jEvent.class);
+    long actual = Long.parseLong(message2.getMessage()) - Long.parseLong(message1.getMessage());
+    assertThat(actual).isEqualTo(sleepTime);
+  }
+
 }

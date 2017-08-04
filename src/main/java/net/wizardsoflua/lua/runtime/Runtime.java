@@ -16,7 +16,7 @@ public class Runtime {
   private final int luaTicksLimit;
   private final int sleepTrigger;
   private int allowance;
-  private int luaTotalTicks = 0;
+  private long luaTotalTicks = 0;
 
   // Time measured in Game-Ticks:
   private long spellCreatedGameTime;
