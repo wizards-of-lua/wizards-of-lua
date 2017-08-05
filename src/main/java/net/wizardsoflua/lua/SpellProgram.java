@@ -63,6 +63,7 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
 
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Vec3"));
 
     state = State.NEW;
   }
