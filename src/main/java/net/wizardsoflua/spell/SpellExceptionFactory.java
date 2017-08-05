@@ -2,6 +2,7 @@ package net.wizardsoflua.spell;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,9 @@ public class SpellExceptionFactory {
   public SpellException create(Throwable throwable) {
     if (throwable.getCause() instanceof ParseException) {
       throwable = throwable.getCause();
+    }
+    if (throwable.getCause() instanceof UndeclaredThrowableException) {
+      throwable = ((UndeclaredThrowableException)throwable.getCause()).getUndeclaredThrowable();
     }
 
     String exMessage = getExceptionMessage(throwable);

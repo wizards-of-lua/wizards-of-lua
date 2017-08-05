@@ -10,12 +10,16 @@ import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
+import net.sandius.rembulan.lib.ModuleLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
+import net.wizardsoflua.lua.dependency.ModuleDependencies;
+import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.runtime.Runtime;
 import net.wizardsoflua.lua.runtime.RuntimeModule;
+import net.wizardsoflua.lua.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
 
@@ -41,6 +45,7 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final SpellRuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
+  private final ModuleDependencies dependencies = new ModuleDependencies();
 
   private State state;
   private Continuation continuation;
@@ -56,15 +61,13 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
 
-    installModules();
-    
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
+
     state = State.NEW;
   }
 
-  private void installModules() {
-    BasicLib.installInto(stateContext, env, runtimeEnv, loader);
-    PrintRedirector.installInto(env, source);
-    RuntimeModule.installInto(env, context.getRuntime());
+  public boolean isTerminated() {
+    return state == State.FINISHED;
   }
 
   public void resume() throws SpellException {
@@ -104,12 +107,19 @@ public class SpellProgram {
 
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
+    installSystemLibraries();
+    dependencies.installModules(env, executor, stateContext);
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
     executor.call(stateContext, commandLineFunc);
   }
-
-  public boolean isTerminated() {
-    return state == State.FINISHED;
+  
+  private void installSystemLibraries() {
+    BasicLib.installInto(stateContext, env, runtimeEnv, loader);
+    ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+    ModuleLib.installInto(stateContext, env, runtimeEnv, /* modulesLoader */ loader, classLoader);
+    ClasspathResourceSearcher.installInto(env, loader, /* luaFunctionCache, */
+        classLoader);
+    PrintRedirector.installInto(env, source);
+    RuntimeModule.installInto(env, context.getRuntime());
   }
-
 }

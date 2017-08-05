@@ -96,4 +96,21 @@ public class RuntimeModuleTest extends WolTestBase {
     assertThat(actual).isEqualTo(sleepTime);
   }
 
+  // /test net.wizardsoflua.tests.RuntimeModuleTest test_sleep_is_also_available_as_global_function
+  @Test
+  public void test_sleep_is_also_available_as_global_function() throws Exception {
+    // Given:
+    long sleepTime = 10;
+    // When:
+    mc().executeCommand(
+        "/lua print(Runtime.getGametime()); sleep(%s); print(Runtime.getGametime())",
+        sleepTime);
+
+    // Then:
+    ServerLog4jEvent message1 = mc().waitFor(ServerLog4jEvent.class);
+    ServerLog4jEvent message2 = mc().waitFor(ServerLog4jEvent.class);
+    long actual = Long.parseLong(message2.getMessage()) - Long.parseLong(message1.getMessage());
+    assertThat(actual).isEqualTo(sleepTime);
+  }
+
 }
