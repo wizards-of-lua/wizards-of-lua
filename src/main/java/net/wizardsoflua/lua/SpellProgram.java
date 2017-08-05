@@ -11,6 +11,7 @@ import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.lib.ModuleLib;
+import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
@@ -114,9 +115,11 @@ public class SpellProgram {
   }
   
   private void installSystemLibraries() {
-    BasicLib.installInto(stateContext, env, runtimeEnv, loader);
     ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
+    BasicLib.installInto(stateContext, env, runtimeEnv, loader);
     ModuleLib.installInto(stateContext, env, runtimeEnv, /* modulesLoader */ loader, classLoader);
+    StringLib.installInto(stateContext, env);
     ClasspathResourceSearcher.installInto(env, loader, /* luaFunctionCache, */
         classLoader);
     PrintRedirector.installInto(env, source);
