@@ -1,6 +1,8 @@
 -- Global Utility Functions
 -- net.wizardsoflua.lua.modules.Globals.lua
 
+require "net.wizardsoflua.lua.modules.Check"
+
 function sleep(ticks)
   Runtime.sleep(ticks)
 end
@@ -24,40 +26,6 @@ function assert(b, fmt, ...)
 end
 
 local type__=type
-
-check={}
-
--- Checks if obj is an instance of string. If not, a error is thrown.
-function check.string(obj,i)
-  local ok=instanceOf(string,obj)
-  if i==nil then
-    assert(ok, "bad argument (string expected, got %s)", type(obj))
-  elseif tonumber(i) then
-    assert(ok, "bad argument #%d (string expected, got %s)",i,type(obj))
-  elseif type(i) == "string" then
-    assert(ok, "bad argument '%s' (string expected, got %s)",i,type(obj))
-  else
-    error("Illegal position argument for check call: %s",i)
-  end
-end
-
--- Checks if obj is an instance of number. If not, a error is thrown.
-function check.number(obj,i)
-  local ok=tonumber(obj)
-  if i==nil then
-    assert(ok, "bad argument (number expected, got %s)", type(obj))
-  elseif tonumber(i) then
-    assert(ok,"bad argument #%d (number expected, got %s)",i,type(obj))
-  elseif type(i) == "string" then
-    assert(ok,"bad argument '%s' (number expected, got %s)",i,type(obj))
-  else
-    error("Illegal position argument for check call: %s",i)
-  end
-end
-
--- TODO add generic check function that can check an agrument for any specific class
-
-
 
 -- List of all registered classes
 local classes = {}
@@ -84,7 +52,7 @@ end
 
 -- Register a new class with given name and optional superclass
 function class(name, base)
-  check.string(name, 1)
+  Check.isString(name, 1)
 
   assert( _G[name] == nil, "bad argument #%d (a global variable with name '%s' is already defined)", 1, name)
 
