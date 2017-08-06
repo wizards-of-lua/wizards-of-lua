@@ -13,9 +13,9 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
-public class RuntimeModuleTest extends WolTestBase {
+public class RuntimeTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.RuntimeModuleTest test_getRealDateTime_executed_by_player
+  // /test net.wizardsoflua.tests.RuntimeTest test_getRealDateTime_executed_by_player
   @Test
   public void test_getRealDateTime_executed_by_player() throws Exception {
     // Given:
@@ -31,7 +31,7 @@ public class RuntimeModuleTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.RuntimeModuleTest test_getRealDateTime_executed_by_server
+  // /test net.wizardsoflua.tests.RuntimeTest test_getRealDateTime_executed_by_server
   @Test
   public void test_getRealDateTime_executed_by_server() throws Exception {
     // Given:
@@ -47,7 +47,7 @@ public class RuntimeModuleTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  /// test net.wizardsoflua.tests.RuntimeModuleTest test_getRealtime_executed_by_player
+  /// test net.wizardsoflua.tests.RuntimeTest test_getRealtime_executed_by_player
   @Test
   public void test_getRealtime_executed_by_player() throws Exception {
     // Given:
@@ -63,7 +63,7 @@ public class RuntimeModuleTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.RuntimeModuleTest test_getRealtime_executed_by_server
+  // /test net.wizardsoflua.tests.RuntimeTest test_getRealtime_executed_by_server
   @Test
   public void test_getRealtime_executed_by_server() throws Exception {
     // Given:
@@ -79,7 +79,7 @@ public class RuntimeModuleTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.RuntimeModuleTest test_sleep
+  // /test net.wizardsoflua.tests.RuntimeTest test_sleep
   @Test
   public void test_sleep() throws Exception {
     // Given:

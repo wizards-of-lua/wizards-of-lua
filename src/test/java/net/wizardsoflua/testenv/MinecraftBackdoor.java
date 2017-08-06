@@ -1,6 +1,7 @@
 package net.wizardsoflua.testenv;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
+import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.player.PlayerBackdoor;
 
 public class MinecraftBackdoor {
@@ -78,5 +80,12 @@ public class MinecraftBackdoor {
     Clock clock = testEnv.getWol().getDefaultClock();
     testEnv.getWol().setClock(clock);
   }
+  
+  public void breakAllSpells() {
+    testEnv.getWol().getSpellRegistry().breakAll();
+  }
 
+  public Iterable<SpellEntity> spells() {
+    return testEnv.getWol().getSpellRegistry().getAll();
+  }
 }

@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -54,9 +56,9 @@ public class SpellProgram {
   private Continuation continuation;
 
   public SpellProgram(ICommandSender source, String code, Context context) {
-    this.source = source;
-    this.code = code;
-    this.context = context;
+    this.source = checkNotNull(source, "source==null!");;
+    this.code = checkNotNull(code, "code==null!");
+    this.context = checkNotNull(context, "context==null!");
     this.executor = DirectCallExecutor.newExecutor(context.getSchedulingContextFactory());
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
@@ -72,8 +74,16 @@ public class SpellProgram {
     state = State.NEW;
   }
 
+  public String getCode() {
+    return code;
+  }
+
   public boolean isTerminated() {
     return state == State.FINISHED;
+  }
+  
+  public void terminate() {
+    state = State.FINISHED;
   }
 
   public void resume() throws SpellException {
@@ -132,4 +142,5 @@ public class SpellProgram {
     PrintRedirector.installInto(env, source);
     RuntimeModule.installInto(env, context.getRuntime());
   }
+
 }

@@ -1,5 +1,7 @@
 package net.wizardsoflua.spell;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
@@ -9,21 +11,28 @@ import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.SpellProgramFactory;
 
 /**
- * Factory for crating {@link SpellEntity} objects.
+ * Factory for creating {@link SpellEntity} objects.
  */
 public class SpellEntityFactory {
-
+  private final SpellRegistry spellRegistry;
   private final SpellProgramFactory programFactory;
+  
+  private long nextId = 1;
 
-  public SpellEntityFactory(SpellProgramFactory programFactory) {
-    this.programFactory = programFactory;
+  public SpellEntityFactory(SpellRegistry spellRegistry, SpellProgramFactory programFactory) {
+    this.spellRegistry = checkNotNull(spellRegistry, "spellRegistry==null!");
+    this.programFactory = checkNotNull(programFactory, "programFactory==null!");
   }
 
   public SpellEntity create(World world, ICommandSender sender, String code) {
     ICommandSender source = getSource(sender);
     SpellProgram program = programFactory.create(world, source, code);
     Vec3d pos = getPos(sender);
-    return new SpellEntity(world, source, program, pos);
+    String name = SpellEntity.NAME+"-"+nextId;
+    nextId++;
+    SpellEntity result = new SpellEntity(world, source, program, pos, name);
+    spellRegistry.add(result);
+    return result;
   }
 
   private ICommandSender getSource(ICommandSender sender) {

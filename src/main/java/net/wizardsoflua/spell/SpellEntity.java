@@ -11,6 +11,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
@@ -35,20 +36,27 @@ public class SpellEntity extends Entity {
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
 
   public SpellEntity(World world) {
+    // Used by MC when loading this entity from persistent data
     super(checkNotNull(world, "world==null!"));
   }
 
-  public SpellEntity(World world, ICommandSender source, SpellProgram program, Vec3d pos) {
+  public SpellEntity(World world, ICommandSender source, SpellProgram program, Vec3d pos,
+      String name) {
     this(world);
     this.source = checkNotNull(source, "source==null!");
     this.program = checkNotNull(program, "program==null!");
     setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
+    setCustomNameTag(name);
     chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
   }
 
   public ICommandSender getSource() {
     return source;
+  }
+
+  public SpellProgram getProgram() {
+    return program;
   }
 
   @Override
@@ -84,10 +92,14 @@ public class SpellEntity extends Entity {
 
   @Override
   public void setDead() {
+    if (program != null) {
+      program.terminate();
+    }
     super.setDead();
     if (chunkLoaderTicketSupport != null) {
       chunkLoaderTicketSupport.release();
     }
+    MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
 
   private void handleException(SpellException e) {

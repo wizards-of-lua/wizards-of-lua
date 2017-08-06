@@ -1,8 +1,8 @@
 package net.wizardsoflua.lua;
 
-import java.time.Clock;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.base.Preconditions;
+import java.time.Clock;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
@@ -13,21 +13,14 @@ import net.wizardsoflua.lua.runtime.Runtime;
 public class SpellProgramFactory {
   public interface Context {
     Clock getClock();
+
+    int getLuaTicksLimit();
   }
 
   private final Context context;
-  private int luaTicksLimit = 10000;
 
   public SpellProgramFactory(Context context) {
-    this.context = Preconditions.checkNotNull(context, "context==null!");
-  }
-
-  public int getLuaTicksLimit() {
-    return luaTicksLimit;
-  }
-
-  public void setLuaTicksLimit(int luaTicksLimit) {
-    this.luaTicksLimit = luaTicksLimit;
+    this.context = checkNotNull(context, "context==null!");
   }
 
   public SpellProgram create(World world, ICommandSender owner, String code) {
@@ -42,6 +35,7 @@ public class SpellProgramFactory {
         return context.getClock();
       }
     };
+    int luaTicksLimit = context.getLuaTicksLimit();
     Runtime runtime = new Runtime(world, luaTicksLimit, runtimeContext);
     return new SpellProgram.Context() {
 
