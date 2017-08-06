@@ -13,6 +13,7 @@ import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.lib.MathLib;
 import net.sandius.rembulan.lib.ModuleLib;
 import net.sandius.rembulan.lib.StringLib;
+import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
@@ -64,6 +65,7 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
 
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Vec3"));
 
@@ -124,6 +126,7 @@ public class SpellProgram {
     ModuleLib.installInto(stateContext, env, runtimeEnv, /* modulesLoader */ loader, classLoader);
     StringLib.installInto(stateContext, env);
     MathLib.installInto(stateContext, env);
+    TableLib.installInto(stateContext, env);
     ClasspathResourceSearcher.installInto(env, loader, /* luaFunctionCache, */
         classLoader);
     PrintRedirector.installInto(env, source);

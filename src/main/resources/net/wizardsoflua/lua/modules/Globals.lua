@@ -2,6 +2,7 @@
 -- net.wizardsoflua.lua.modules.Globals.lua
 
 require "net.wizardsoflua.lua.modules.Check"
+inspect = require "net.wizardsoflua.lua.modules.inspect"
 
 function sleep(ticks)
   Runtime.sleep(ticks)
