@@ -19,7 +19,7 @@ compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
 
-version = "0.0.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
 
