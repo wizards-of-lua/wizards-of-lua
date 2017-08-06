@@ -23,7 +23,7 @@ import net.wizardsoflua.spell.SpellEntityFactory;
 @Mod(modid = WizardsOfLua.MODID, version = WizardsOfLua.VERSION, acceptableRemoteVersions = "*")
 public class WizardsOfLua {
   public static final String MODID = "wol";
-  public static final String VERSION = "0.0.0";
+  public static final String VERSION = "1.0.0";
 
   private static final int DEFAULT_ALLOWANCE = 10000;
   private static final boolean DEFAULT_AUTO_SLEEP = true;
