@@ -120,7 +120,7 @@ public class SpellProgram {
   }
 
   private void installSystemLibraries() {
-    ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
     BasicLib.installInto(stateContext, env, runtimeEnv, loader);
     ModuleLib.installInto(stateContext, env, runtimeEnv, /* modulesLoader */ loader, classLoader);

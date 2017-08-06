@@ -61,7 +61,10 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
 
   private static void startGame() {
     try {
-      MinecraftStarter.start();
+      // MinecraftStarter.start();
+      Class<?> cls = Class.forName("net.wizardsoflua.testenv.MinecraftStarter");
+      Method start = cls.getMethod("start", null);
+      start.invoke(null, null);
     } catch (Throwable e) {
       throw new UndeclaredThrowableException(e);
     }
