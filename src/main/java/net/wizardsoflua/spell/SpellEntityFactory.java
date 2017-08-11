@@ -32,6 +32,7 @@ public class SpellEntityFactory {
     nextId++;
     SpellEntity result = new SpellEntity(world, source, program, pos, name);
     spellRegistry.add(result);
+    program.setSpellEntity(result);
     return result;
   }
 

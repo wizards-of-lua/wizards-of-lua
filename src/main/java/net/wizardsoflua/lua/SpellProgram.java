@@ -25,6 +25,8 @@ import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.runtime.Runtime;
 import net.wizardsoflua.lua.runtime.RuntimeModule;
 import net.wizardsoflua.lua.searcher.ClasspathResourceSearcher;
+import net.wizardsoflua.lua.spell.SpellModule;
+import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
 
@@ -78,10 +80,14 @@ public class SpellProgram {
     return code;
   }
 
+  public void setSpellEntity(SpellEntity spellEntity) {
+    SpellModule.installInto(env, spellEntity);
+  }
+
   public boolean isTerminated() {
     return state == State.FINISHED;
   }
-  
+
   public void terminate() {
     state = State.FINISHED;
   }

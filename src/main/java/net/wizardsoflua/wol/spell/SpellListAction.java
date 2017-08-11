@@ -37,11 +37,11 @@ public class SpellListAction implements WolCommandAction {
     for (SpellEntity spell : spells) {
       TextComponentString name = new TextComponentString(spell.getName() + ": ");
       name.setStyle((new Style()).setColor(TextFormatting.DARK_GREEN));
-      String code = spell.getProgram().getCode();
-      if (code.length() > 40) {
-        code = code.substring(0, 40) + "...";
+      String description = spell.getProgram().getCode();
+      if (description.length() > 40) {
+        description = description.substring(0, 40) + "...";
       }
-      TextComponentString codeMsg = new TextComponentString(code + "\n");
+      TextComponentString codeMsg = new TextComponentString(description + "\n");
       codeMsg.setStyle((new Style()).setColor(TextFormatting.WHITE));
       result.appendSibling(name);
       result.appendSibling(codeMsg);
