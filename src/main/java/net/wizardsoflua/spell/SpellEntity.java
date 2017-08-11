@@ -99,10 +99,10 @@ public class SpellEntity extends Entity {
     if (program != null) {
       program.terminate();
     }
-    super.setDead();
     if (chunkLoaderTicketSupport != null) {
       chunkLoaderTicketSupport.release();
     }
+    super.setDead();
     MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
 

@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.Clock;
 
+import com.google.common.base.Preconditions;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.runtime.SchedulingContext;
@@ -29,6 +31,7 @@ public class SpellProgramFactory {
   }
 
   private SpellProgram.Context createSpellProgramContext(World world) {
+    checkNotNull(world, "world==null!");
     Runtime.Context runtimeContext = new Runtime.Context() {
       @Override
       public Clock getClock() {

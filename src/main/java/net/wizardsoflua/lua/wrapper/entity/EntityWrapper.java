@@ -14,6 +14,8 @@ public class EntityWrapper extends DelegatingWrapper {
     this.delegate = delegate;
     addReadOnly("pos", this::getPos);
     addReadOnly("name", this::getName);
+    addReadOnly("dimension", () -> delegate.dimension);
+
     setMetatable((Table) wrappers.getEnv().rawget("Entity"));
   }
 

@@ -17,6 +17,9 @@ public class SpellRegistry {
     for (SpellEntity spellEntity : spells) {
       spellEntity.setDead();
     }
+    if ( spells.size()>0) {
+      throw new IllegalStateException("Couldn't break all spells!");
+    }
   }
 
   public Iterable<SpellEntity> getAll() {
