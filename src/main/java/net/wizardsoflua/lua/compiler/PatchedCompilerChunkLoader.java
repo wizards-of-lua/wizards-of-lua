@@ -12,7 +12,7 @@
  * the License.
  */
 
-package net.wizardsoflua.lua.patched;
+package net.wizardsoflua.lua.compiler;
 
 import java.util.Objects;
 

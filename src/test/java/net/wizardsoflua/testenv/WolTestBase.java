@@ -50,7 +50,7 @@ public class WolTestBase extends TestDataFactory {
   }
 
   protected String format(BlockPos pos) {
-    return formatPos(pos.getX(), pos.getY(), pos.getZ());
+    return formatPos((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
   }
 
   protected String formatPos(int x, int y, int z) {

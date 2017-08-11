@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.searcher;
+package net.wizardsoflua.lua.module.searcher;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
@@ -12,8 +12,8 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.patched.ExtendedChunkLoader;
-import net.wizardsoflua.lua.patched.LuaFunctionBinary;
+import net.wizardsoflua.lua.compiler.ExtendedChunkLoader;
+import net.wizardsoflua.lua.compiler.LuaFunctionBinary;
 
 /**
  * The {@link ClasspathResourceSearcher} searches the Java classpath for Lua modules.

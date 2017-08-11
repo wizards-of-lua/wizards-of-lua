@@ -55,6 +55,10 @@ public class SpellEntity extends Entity {
     return source;
   }
 
+  public Entity getOwner() {
+    return source.getCommandSenderEntity();
+  }
+
   public SpellProgram getProgram() {
     return program;
   }

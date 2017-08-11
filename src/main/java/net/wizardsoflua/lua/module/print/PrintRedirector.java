@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua;
+package net.wizardsoflua.lua.module.print;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,7 +8,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.util.TabEncoder;
 
 public class PrintRedirector {
 

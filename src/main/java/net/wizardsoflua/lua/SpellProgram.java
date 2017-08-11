@@ -19,13 +19,15 @@ import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
+import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
-import net.wizardsoflua.lua.patched.PatchedCompilerChunkLoader;
-import net.wizardsoflua.lua.runtime.Runtime;
-import net.wizardsoflua.lua.runtime.RuntimeModule;
-import net.wizardsoflua.lua.searcher.ClasspathResourceSearcher;
-import net.wizardsoflua.lua.spell.SpellModule;
+import net.wizardsoflua.lua.module.print.PrintRedirector;
+import net.wizardsoflua.lua.module.runtime.Runtime;
+import net.wizardsoflua.lua.module.runtime.RuntimeModule;
+import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
+import net.wizardsoflua.lua.module.spell.SpellModule;
+import net.wizardsoflua.lua.wrapper.WrapperFactory;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -39,7 +41,7 @@ public class SpellProgram {
     SchedulingContextFactory getSchedulingContextFactory();
 
     Runtime getRuntime();
-
+    
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -52,12 +54,14 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final SpellRuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
+  private final WrapperFactory wrappers;
   private final ModuleDependencies dependencies = new ModuleDependencies();
-
+  
   private State state;
   private Continuation continuation;
+  private SpellEntity spellEntity;
 
-  public SpellProgram(ICommandSender source, String code, Context context) {
+  SpellProgram(ICommandSender source, String code, Context context) {
     this.source = checkNotNull(source, "source==null!");;
     this.code = checkNotNull(code, "code==null!");
     this.context = checkNotNull(context, "context==null!");
@@ -67,21 +71,24 @@ public class SpellProgram {
     runtimeEnv = new SpellRuntimeEnvironment();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
-
+    wrappers = new WrapperFactory(env);
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Vec3"));
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Entity"));
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Spell"));
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Player"));
 
     state = State.NEW;
   }
 
+  public void setSpellEntity(SpellEntity spellEntity) {
+    this.spellEntity = spellEntity;
+  }
+  
   public String getCode() {
     return code;
-  }
-
-  public void setSpellEntity(SpellEntity spellEntity) {
-    SpellModule.installInto(env, spellEntity);
   }
 
   public boolean isTerminated() {
@@ -131,6 +138,8 @@ public class SpellProgram {
       throws LoaderException, CallException, CallPausedException, InterruptedException {
     installSystemLibraries();
     dependencies.installModules(env, executor, stateContext);
+    SpellModule.installInto(env, wrappers, spellEntity);
+    
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
     executor.call(stateContext, commandLineFunc);
   }

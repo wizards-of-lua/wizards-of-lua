@@ -19,9 +19,9 @@ public class SpellTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
   }
 
-  // /test net.wizardsoflua.tests.SpellTest test_spell_casted_by_server_is_not_nil
+  // /test net.wizardsoflua.tests.SpellTest test_spell_is_not_nil
   @Test
-  public void test_spell_casted_by_server_is_not_nil() throws Exception {
+  public void test_spell_is_not_nil() throws Exception {
     // Given:
 
     // When:
@@ -32,9 +32,9 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("true");
   }
 
-  // /test net.wizardsoflua.tests.SpellTest test_spell_pos_casted_by_server_is_world_spawn_point
+  // /test net.wizardsoflua.tests.SpellTest test_spell_pos_is_world_spawn_point_casted_by_server
   @Test
-  public void test_spell_pos_casted_by_server_is_world_spawn_point() throws Exception {
+  public void test_spell_pos_is_world_spawn_point_casted_by_server() throws Exception {
     // Given:
     BlockPos spawnPoint = mc().getWorldSpawnPoint();
     String expected = format(spawnPoint);

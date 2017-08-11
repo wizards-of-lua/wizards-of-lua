@@ -1,4 +1,4 @@
-package net.wizardsoflua.util;
+package net.wizardsoflua.lua.module.print;
 
 public class TabEncoder {
   public static String encode(String text) {

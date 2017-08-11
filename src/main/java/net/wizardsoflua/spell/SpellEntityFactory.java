@@ -31,8 +31,8 @@ public class SpellEntityFactory {
     String name = SpellEntity.NAME+"-"+nextId;
     nextId++;
     SpellEntity result = new SpellEntity(world, source, program, pos, name);
-    spellRegistry.add(result);
     program.setSpellEntity(result);
+    spellRegistry.add(result);
     return result;
   }
 

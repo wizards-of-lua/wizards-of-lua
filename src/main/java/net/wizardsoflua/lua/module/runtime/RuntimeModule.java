@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.runtime;
+package net.wizardsoflua.lua.module.runtime;
 
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;

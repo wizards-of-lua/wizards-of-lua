@@ -8,7 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
-import net.wizardsoflua.lua.runtime.Runtime;
+import net.wizardsoflua.lua.module.runtime.Runtime;
 
 public class SpellProgramFactory {
   public interface Context {

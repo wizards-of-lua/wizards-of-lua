@@ -1,3 +1,5 @@
+-- Lua Module for the Vec3 class
+
 class("Vec3")
 
 -- Checks if obj is an instance of Vec3. If not, a error is thrown.

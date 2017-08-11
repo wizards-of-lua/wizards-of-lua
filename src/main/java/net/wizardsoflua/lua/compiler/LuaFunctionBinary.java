@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.patched;
+package net.wizardsoflua.lua.compiler;
 
 import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.load.LoaderException;
