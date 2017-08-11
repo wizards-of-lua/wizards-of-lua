@@ -19,7 +19,7 @@ public class SpellBreakAction implements WolCommandAction {
     if ("all".equals(selector)) {
       WizardsOfLua.instance.getSpellRegistry().breakAll();
       sender.getEntityWorld().getMinecraftServer().getPlayerList()
-          .sendMessage(new WolAnnouncementMessage("Broke all spells."));
+          .sendMessage(new WolAnnouncementMessage("Broke all spells"));
     } else {
       throw new CommandException("Illegal spell selector: %s!", selector);
     }

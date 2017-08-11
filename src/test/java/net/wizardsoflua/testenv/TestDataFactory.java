@@ -1,7 +1,5 @@
 package net.wizardsoflua.testenv;
 
-import org.assertj.core.api.Assertions;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -11,8 +9,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.wizardsoflua.testenv.assertion.AssertionsFactory;
 
-public class TestDataFactory extends Assertions {
+public class TestDataFactory extends AssertionsFactory {
 
   protected ServerChatEvent newServerChatEvent(EntityPlayerMP player, String message) {
     ITextComponent component = new TextComponentString(message);

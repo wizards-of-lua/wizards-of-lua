@@ -3,9 +3,11 @@ package net.wizardsoflua.tests;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -159,5 +161,25 @@ public class TestEnvironmentTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo(message);
+  }
+
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_set_block
+  @Test
+  public void test_can_set_block() {
+    // Given:
+    BlockPos pos = new BlockPos(1, 4, 1);
+    mc().setBlock(pos, Blocks.AIR);
+    
+    // When:
+    mc().setBlock(pos, Blocks.DIAMOND_BLOCK);
+
+    // Then:
+    assertThat(mc().getBlock(pos)).isA(Blocks.DIAMOND_BLOCK);
+  }
+  
+  @After
+  public void clearBlock() {
+    BlockPos pos = new BlockPos(1, 4, 1);
+    mc().setBlock(pos, Blocks.AIR);
   }
 }

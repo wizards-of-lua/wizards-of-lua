@@ -25,7 +25,7 @@ public class WolSpellBreakTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).startsWith("[WoL] Broke all spells.");
+    assertThat(act.getMessage()).startsWith("[WoL] Broke all spells");
     assertThat(mc().spells()).isEmpty();
   }
 

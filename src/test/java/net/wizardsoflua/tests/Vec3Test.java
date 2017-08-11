@@ -14,7 +14,7 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 @RunWith(MinecraftJUnitRunner.class)
 public class Vec3Test extends WolTestBase {
 
-  // / test net.wizardsoflua.tests.Vec3Test test_check_with_Vec3
+  // /test net.wizardsoflua.tests.Vec3Test test_check_with_Vec3
   @Test
   public void test_check_with_Vec3() throws Exception {
     // Given:
@@ -34,13 +34,14 @@ public class Vec3Test extends WolTestBase {
     int x = 1;
     int y = 2;
     int z = 3;
+    String expected = formatPos(x, y, z);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v)", x, y, z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{1, 2, 3}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_new_creates_new_Vec3
@@ -50,13 +51,14 @@ public class Vec3Test extends WolTestBase {
     int x = 1;
     int y = 2;
     int z = 3;
+    String expected = formatPos(x, y, z);
 
     // When:
     mc().executeCommand("/lua v=Vec3.new({x=%s,y=%s,z=%s}); print(v)", x, y, z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{1, 2, 3}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_tostring
@@ -66,13 +68,14 @@ public class Vec3Test extends WolTestBase {
     int x = 1;
     int y = 2;
     int z = 3;
+    String expected = formatPos(x, y, z);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:tostring())", x, y, z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{1, 2, 3}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_add
@@ -85,6 +88,7 @@ public class Vec3Test extends WolTestBase {
     int bx = 4;
     int by = 6;
     int bz = 8;
+    String expected = formatPos(5, 8, 11);
 
     // When:
     mc().executeCommand("/lua a=Vec3.from(%s,%s,%s); b=Vec3.from(%s,%s,%s); print(a:add(b))", ax,
@@ -92,7 +96,7 @@ public class Vec3Test extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{5, 8, 11}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_add_meta
@@ -105,6 +109,7 @@ public class Vec3Test extends WolTestBase {
     int bx = 4;
     int by = 6;
     int bz = 8;
+    String expected = formatPos(5, 8, 11);
 
     // When:
     mc().executeCommand("/lua a=Vec3.from(%s,%s,%s); b=Vec3.from(%s,%s,%s); print(a+b)", ax, ay, az,
@@ -112,7 +117,7 @@ public class Vec3Test extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{5, 8, 11}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_substract
@@ -125,6 +130,7 @@ public class Vec3Test extends WolTestBase {
     int bx = 2;
     int by = 4;
     int bz = 6;
+    String expected = formatPos(3, 0, -3);
 
     // When:
     mc().executeCommand("/lua a=Vec3.from(%s,%s,%s); b=Vec3.from(%s,%s,%s); print(a:substract(b))",
@@ -132,7 +138,7 @@ public class Vec3Test extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{3, 0, -3}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_substract_meta
@@ -145,6 +151,7 @@ public class Vec3Test extends WolTestBase {
     int bx = 2;
     int by = 4;
     int bz = 6;
+    String expected = formatPos(3, 0, -3);
 
     // When:
     mc().executeCommand("/lua a=Vec3.from(%s,%s,%s); b=Vec3.from(%s,%s,%s); print(a-b)", ax, ay, az,
@@ -152,7 +159,7 @@ public class Vec3Test extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{3, 0, -3}");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_sqrMagnitude
@@ -240,7 +247,7 @@ public class Vec3Test extends WolTestBase {
     int y = 4;
     int z = 3;
     double f = 2.5d;
-    String expected = "{" + x * f + ", " + y * f + ", " + z * f + "}";
+    String expected = formatPos(x * f, y * f, z * f);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:scale(%s))", x, y, z, f);
@@ -258,7 +265,7 @@ public class Vec3Test extends WolTestBase {
     int y = 4;
     int z = 3;
     double f = 2.5d;
-    String expected = "{" + x * f + ", " + y * f + ", " + z * f + "}";
+    String expected = formatPos(x * f, y * f, z * f);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); f=%s; print(v*f)", x, y, z, f);
@@ -276,7 +283,7 @@ public class Vec3Test extends WolTestBase {
     int y = 4;
     int z = 3;
     double f = 2.5d;
-    String expected = "{" + x * f + ", " + y * f + ", " + z * f + "}";
+    String expected = formatPos(x * f, y * f, z * f);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); f=%s; print(f*v)", x, y, z, f);
@@ -293,7 +300,7 @@ public class Vec3Test extends WolTestBase {
     int x = 5;
     int y = 4;
     int z = 3;
-    String expected = "{" + -x + ", " + -y + ", " + -z + "}";
+    String expected = formatPos(-x, -y, -z);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:invert())", x, y, z);
@@ -310,7 +317,7 @@ public class Vec3Test extends WolTestBase {
     int x = 5;
     int y = 4;
     int z = 3;
-    String expected = "{" + -x + ", " + -y + ", " + -z + "}";
+    String expected = formatPos(-x, -y, -z);
 
     // When:
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(-v)", x, y, z);
@@ -330,8 +337,7 @@ public class Vec3Test extends WolTestBase {
     int bx = 5;
     int by = 6;
     int bz = 7;
-    String expected =
-        "{" + ax + ", " + ay + ", " + az + "}" + "{" + bx + ", " + by + ", " + bz + "}";
+    String expected = formatPos(ax, ay, az) + formatPos(bx, by, bz);
 
     // When:
     mc().executeCommand("/lua a=Vec3.from(%s,%s,%s); b=Vec3.from(%s,%s,%s); print(a..b)", ax, ay,

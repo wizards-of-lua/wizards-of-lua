@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
 
 import com.google.common.collect.ImmutableSet;
@@ -35,7 +36,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
-import net.wizardsoflua.testenv.junit.TestResult;
 import net.wizardsoflua.testenv.junit.TestResults;
 import net.wizardsoflua.testenv.net.AbstractMessage;
 import net.wizardsoflua.testenv.net.PacketDispatcher;
@@ -68,7 +68,7 @@ public class WolTestEnvironment {
   public MinecraftServer getServer() {
     return server;
   }
-  
+
   public WizardsOfLua getWol() {
     return WizardsOfLua.instance;
   }
@@ -119,13 +119,13 @@ public class WolTestEnvironment {
       Class<?> testClass = cl.loadClass(classname);
 
       final CountDownLatch testFinished = new CountDownLatch(1);
-      final AtomicReference<TestResult> resultRef = new AtomicReference<TestResult>();
+      final AtomicReference<TestResults> resultRef = new AtomicReference<TestResults>();
       instance.getServer().addScheduledTask(new Runnable() {
 
         @Override
         public void run() {
           try {
-            TestResult testResult = executor.runTest(testClass, methodName);
+            TestResults testResult = executor.runTest(testClass, methodName);
             resultRef.set(testResult);
           } catch (InitializationError e) {
             throw new UndeclaredThrowableException(e);
@@ -134,9 +134,10 @@ public class WolTestEnvironment {
         }
       });
       testFinished.await(30, TimeUnit.SECONDS);
-      TestResult testResult = resultRef.get();
+      TestResults testResult = resultRef.get();
       if (!testResult.isOK()) {
-        return testResult.getFailure().getException();
+        Failure failure = testResult.getFailures().iterator().next();
+        return failure.getException();
       }
       return null;
     } catch (InterruptedException | ClassNotFoundException e) {
@@ -144,10 +145,10 @@ public class WolTestEnvironment {
     }
   }
 
-  public TestResult runTestMethod(Class<?> testClass, String methodName)
+  public TestResults runTestMethod(Class<?> testClass, String methodName)
       throws InitializationError {
     TestMethodExecutor executor = new TestMethodExecutor();
-    TestResult result = executor.runTest(testClass, methodName);
+    TestResults result = executor.runTest(testClass, methodName);
     return result;
   }
 

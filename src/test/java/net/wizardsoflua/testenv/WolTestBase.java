@@ -49,4 +49,16 @@ public class WolTestBase extends TestDataFactory {
     return Iterables.transform(events, RightClickBlock::getPos);
   }
 
+  protected String format(BlockPos pos) {
+    return formatPos(pos.getX(), pos.getY(), pos.getZ());
+  }
+
+  protected String formatPos(int x, int y, int z) {
+    return "{" + x + ", " + y + ", " + z + "}";
+  }
+  
+  protected String formatPos(double x, double y, double z) {
+    return "{" + x + ", " + y + ", " + z + "}";
+  }
+
 }

@@ -12,13 +12,20 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
-import net.wizardsoflua.testenv.junit.TestResult;
+import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.testenv.junit.TestResults;
 
 public class TestCommand extends CommandBase {
   private static final String CMD_NAME = "test";
+  private static final String TRIANGLE = "\u25B6";
+  private static final String NO_BREAK_SPACE = "\u00A0";
+
   private final List<String> aliases = new ArrayList<String>();
+
+
 
   public TestCommand() {
     aliases.add(CMD_NAME);
@@ -46,15 +53,15 @@ public class TestCommand extends CommandBase {
             Class<?> testClass = parseTestClass(args);
             String methodName = parseMethodName(args);
             if (methodName != null) {
-              TestResult result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
-              sender.sendMessage(new TextComponentString(toMessage(result)));
+              TestResults result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
+              sender.sendMessage(toTestEnvMessage(result));
             } else {
               TestResults result = WolTestEnvironment.instance.runTests(testClass);
-              sender.sendMessage(new TextComponentString(toMessage(result)));
+              sender.sendMessage(toTestEnvMessage(result));
             }
           } else {
             Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
-            sender.sendMessage(new TextComponentString(toMessage(result)));
+            sender.sendMessage(toTestEnvMessage(result));
           }
         } catch (InitializationError | ClassNotFoundException e) {
           sender.sendMessage(new TextComponentString(e.getMessage()));
@@ -64,20 +71,12 @@ public class TestCommand extends CommandBase {
     t.start();
   }
 
-  private String toMessage(TestResults result) {
-    return toMessage(Lists.newArrayList(result));
+  private ITextComponent toTestEnvMessage(TestResults result) {
+    return toTestEnvMessage(Lists.newArrayList(result));
   }
 
-  private String toMessage(TestResult result) {
-    if (result.isOK()) {
-      return "OK";
-    } else {
-      return result.getFailure().getMessage();
-    }
-  }
-
-  private String toMessage(Iterable<TestResults> results) {
-    StringBuilder result = new StringBuilder();
+  private ITextComponent toTestEnvMessage(Iterable<TestResults> results) {
+    List<ITextComponent> details = new ArrayList<>();
     int testCount = 0;
     int failureCount = 0;
     for (TestResults r : results) {
@@ -86,20 +85,35 @@ public class TestCommand extends CommandBase {
         Iterable<Failure> f = r.getFailures();
         for (Failure failure : f) {
           failureCount++;
-          if (result.length() > 0) {
-            result.append("\n");
+          if (details.size() > 0) {
+            details.add(new TextComponentString("\n"));
           }
-          result.append(failure.getTestHeader());
-          result.append(":\n");
-          result.append(failure.getMessage());
-
+          ITextComponent header =
+              new TextComponentString(TRIANGLE + NO_BREAK_SPACE + failure.getTestHeader() + ":\n");
+          header.setStyle(new Style().setColor(TextFormatting.DARK_AQUA));
+          details.add(header);
+          ITextComponent failureMessage = new TextComponentString(failure.getMessage());
+          failureMessage.setStyle(new Style().setColor(TextFormatting.RED));
+          details.add(failureMessage);
         }
       }
     }
+    ITextComponent result;
     if (failureCount > 0) {
-      return failureCount + " of " + testCount + " tests failed." + "\n" + result.toString();
+      result = new TestEnvMessage(failureCount + " of " + testCount + " tests");
+      ITextComponent status = new TextComponentString(" failed\n");
+      status.setStyle(new Style().setColor(TextFormatting.RED));
+      result.appendSibling(status);
+      for (ITextComponent iTextComponent : details) {
+        result.appendSibling(iTextComponent);
+      }
+    } else {
+      result = new TestEnvMessage(testCount + " tests");
+      ITextComponent status = new TextComponentString(" OK");
+      status.setStyle(new Style().setColor(TextFormatting.GREEN));
+      result.appendSibling(status);
     }
-    return testCount + " tests OK";
+    return result;
   }
 
   private boolean hasArgs(String[] args) {

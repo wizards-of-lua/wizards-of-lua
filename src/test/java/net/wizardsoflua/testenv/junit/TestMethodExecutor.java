@@ -10,7 +10,7 @@ import org.junit.runners.model.InitializationError;
 
 public class TestMethodExecutor {
 
-  public TestResult runTest(final Class<?> testClazz, final String methodName)
+  public TestResults runTest(final Class<?> testClazz, final String methodName)
       throws InitializationError {
     BlockJUnit4ClassRunner runner = new BlockJUnit4ClassRunner(testClazz) {
       @Override
@@ -24,7 +24,7 @@ public class TestMethodExecutor {
         }
       }
     };
-    TestResult res = new TestResult();
+    TestResults res = new TestResults();
     runner.run(res);
     return res;
   }

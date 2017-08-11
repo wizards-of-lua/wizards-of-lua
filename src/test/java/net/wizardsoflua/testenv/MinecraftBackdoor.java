@@ -8,8 +8,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.spell.SpellEntity;
@@ -87,5 +91,19 @@ public class MinecraftBackdoor {
 
   public Iterable<SpellEntity> spells() {
     return testEnv.getWol().getSpellRegistry().getAll();
+  }
+
+  public void setBlock(BlockPos pos, Block blockType) {
+    World world = testEnv.getTestPlayer().getEntityWorld();
+    world.setBlockState(pos,  blockType.getDefaultState());
+  }
+
+  public IBlockState getBlock(BlockPos pos) {
+    World world = testEnv.getTestPlayer().getEntityWorld();
+    return world.getBlockState(pos);
+  }
+
+  public BlockPos getWorldSpawnPoint() {
+    return testEnv.getServer().getEntityWorld().getSpawnPoint();
   }
 }
