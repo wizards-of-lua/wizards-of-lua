@@ -9,6 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class SpellTest extends WolTestBase {
@@ -60,5 +62,59 @@ public class SpellTest extends WolTestBase {
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("minecraft:diamond_ore");
   }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_owner_is_not_nil_for_player
+  @Test
+  public void test_spell_owner_is_not_nil_for_player() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().perform(new ChatAction("/lua print(spell.owner~=nil)"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_owner_is_nil_for_server
+  @Test
+  public void test_spell_owner_is_nil_for_server() throws Exception {
+    // Given:
+
+    // When:
+    mc().executeCommand("/lua print(spell.owner==nil)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_owner_name_is_current_player_name
+  @Test
+  public void test_spell_owner_name_is_current_player_name() throws Exception {
+    // Given:
+    String expected = mc().player().getDelegate().getName();
+
+    // When:
+    mc().player().perform(new ChatAction("/lua print(spell.owner.name)"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_owner_is_readonly
+  @Test
+  public void test_spell_owner_is_readonly() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().perform(new ChatAction("/lua spell.owner = nil"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).contains("Error").contains("property is readonly");
+  }
+
 
 }
