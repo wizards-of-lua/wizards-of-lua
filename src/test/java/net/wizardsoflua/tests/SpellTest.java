@@ -78,8 +78,9 @@ public class SpellTest extends WolTestBase {
     mc().setBlock(posP1, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-        posP1.getX(), posP1.getY(), posP1.getZ()));
+    mc().player().perform(
+        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+            posP1.getX(), posP1.getY(), posP1.getZ()));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -93,8 +94,9 @@ public class SpellTest extends WolTestBase {
     mc().setBlock(posP2, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-        posP2.getX(), posP2.getY(), posP2.getZ()));
+    mc().player().perform(
+        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+            posP2.getX(), posP2.getY(), posP2.getZ()));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -108,8 +110,9 @@ public class SpellTest extends WolTestBase {
     mc().setBlock(posP3, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-        posP3.getX(), posP3.getY(), posP3.getZ()));
+    mc().player().perform(
+        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+            posP3.getX(), posP3.getY(), posP3.getZ()));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -123,8 +126,9 @@ public class SpellTest extends WolTestBase {
     mc().setBlock(posP4, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-        posP4.getX(), posP4.getY(), posP4.getZ()));
+    mc().player().perform(
+        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+            posP4.getX(), posP4.getY(), posP4.getZ()));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -198,5 +202,17 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).contains("Error").contains("property is readonly");
   }
 
+  // /test net.wizardsoflua.tests.SpellTest test_spell_can_be_found_with_selector
+  @Test
+  public void test_spell_can_be_found_with_selector() throws Exception {
+    // Given:
+    mc().executeCommand("/lua for i=1,10 do sleep(20); end");
 
+    // When:
+    mc().executeCommand("/execute @e[type=wol:Spell] 0 0 0 say hi");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).matches("\\[Spell-\\d+\\] hi");
+  }
 }
