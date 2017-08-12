@@ -10,6 +10,9 @@ import net.wizardsoflua.lua.wrapper.entity.EntityWrapper;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellWrapper extends EntityWrapper {
+
+  public static final String METATABLE_NAME = "Spell";
+
   private final SpellEntity delegate;
 
   public SpellWrapper(WrapperFactory wrappers, SpellEntity delegate) {
@@ -18,7 +21,7 @@ public class SpellWrapper extends EntityWrapper {
     addReadOnly("owner", this::getOwner);
     addReadOnly("block", this::getBlock);
     add("visible", this::isVisible, this::setVisible);
-    setMetatable((Table) wrappers.getEnv().rawget("Spell"));
+    setMetatable((Table) wrappers.getEnv().rawget(METATABLE_NAME));
   }
 
   public Table getOwner() {

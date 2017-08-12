@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.wrapper.block.BlockStateWrapper;
+import net.wizardsoflua.lua.wrapper.block.BlockWrapper;
 import net.wizardsoflua.lua.wrapper.entity.PlayerWrapper;
 import net.wizardsoflua.lua.wrapper.spell.SpellWrapper;
 import net.wizardsoflua.lua.wrapper.vec3.Vec3Wrapper;
@@ -85,7 +85,7 @@ public class WrapperFactory {
     if (blockState == null) {
       return null;
     }
-    return new BlockStateWrapper(this, blockState).getLuaTable();
+    return new BlockWrapper(this, blockState).getLuaTable();
   }
 
   public @Nullable Table wrap(@Nullable Entity entity) {

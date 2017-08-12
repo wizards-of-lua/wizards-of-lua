@@ -1,6 +1,5 @@
 package net.wizardsoflua.lua.wrapper.entity;
 
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
@@ -9,6 +8,9 @@ import net.wizardsoflua.lua.wrapper.WrapperFactory;
 import net.wizardsoflua.lua.wrapper.common.DelegatingWrapper;
 
 public class EntityWrapper extends DelegatingWrapper {
+
+  public static final String METATABLE_NAME = "Entity";
+
   private final Entity delegate;
 
   public EntityWrapper(WrapperFactory wrappers, Entity delegate) {
@@ -19,13 +21,13 @@ public class EntityWrapper extends DelegatingWrapper {
     add("name", this::getName, this::setName);
     add("pos", this::getPos, this::setPos);
 
-    setMetatable((Table) wrappers.getEnv().rawget("Entity"));
+    setMetatable((Table) wrappers.getEnv().rawget(METATABLE_NAME));
   }
 
   public Table getPos() {
     return getWrappers().wrap(delegate.getPositionVector());
   }
-  
+
   public void setPos(Object luaObj) {
     Vec3d pos = getWrappers().unwrapVec3(luaObj);
     delegate.setPositionAndUpdate(pos.xCoord, pos.yCoord, pos.zCoord);
@@ -34,11 +36,11 @@ public class EntityWrapper extends DelegatingWrapper {
   public ByteString getUuid() {
     return getWrappers().wrap(delegate.getUniqueID().toString());
   }
-  
+
   public ByteString getName() {
     return getWrappers().wrap(delegate.getName());
   }
-  
+
   public void setName(Object luaObj) {
     String name = getWrappers().unwrapString(luaObj);
     delegate.setCustomNameTag(name);
