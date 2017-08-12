@@ -76,6 +76,7 @@ public class SpellProgram {
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Vec3"));
+    dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Material"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Block"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Entity"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Spell"));

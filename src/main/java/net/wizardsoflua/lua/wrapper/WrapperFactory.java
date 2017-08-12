@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.MapMaker;
 
+import net.minecraft.block.material.EnumPushReaction;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +17,9 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.wrapper.block.BlockWrapper;
+import net.wizardsoflua.lua.wrapper.block.MaterialWrapper;
 import net.wizardsoflua.lua.wrapper.entity.PlayerWrapper;
 import net.wizardsoflua.lua.wrapper.spell.SpellWrapper;
 import net.wizardsoflua.lua.wrapper.vec3.Vec3Wrapper;
@@ -27,6 +31,7 @@ public class WrapperFactory {
   private static final String NUMBER_META = "number";
   private static final String STRING_META = "string";
   private static final String TABLE_META = "table";
+  private static final String FUNCTION_META = "function";
   
   private static final String CLASSNAME_META_KEY = "__classname";
   private final Cache cache = new Cache();
@@ -104,6 +109,21 @@ public class WrapperFactory {
     }
     return null;
   }
+  
+  public @Nullable Table wrap(@Nullable Material material) {
+    if ( material == null) {
+      return null;
+    }
+    return new MaterialWrapper(this, material).getLuaTable();
+  }
+  
+  public @Nullable ByteString wrap(@Nullable EnumPushReaction mobilityFlag) {
+    if ( mobilityFlag == null) {
+      return null;
+    }
+    return ByteString.of(mobilityFlag.name());
+  }
+
 
   private void checkAssignable(String expectedMetatableName, Object luaObj) {
     if (!isAssignable(expectedMetatableName, luaObj)) {
@@ -124,6 +144,9 @@ public class WrapperFactory {
     }
     if (STRING_META.equals(expectedMetatableName)) {
       return Conversions.stringValueOf(luaObj) != null;
+    }
+    if (FUNCTION_META.equals(expectedMetatableName)) {
+      return luaObj instanceof LuaFunction;
     }
     if (TABLE_META.equals(expectedMetatableName)) {
       return !(luaObj instanceof Table);
@@ -163,6 +186,9 @@ public class WrapperFactory {
         return TABLE_META;
       }
       return actualTypeName;
+    }
+    if (luaObj instanceof LuaFunction) {
+      return FUNCTION_META;
     }
     if (luaObj instanceof Number) {
       return NUMBER_META;

@@ -276,8 +276,8 @@ function Inspector:putTable(t)
         self:putValue(t[k])
         count = count + 1
       end
-
-      if mt then
+      
+      if mt and self.metatables then
         if count > 0 then self:puts(',') end
         self:tabify()
         self:puts('<metatable> = ')
@@ -318,6 +318,12 @@ function inspect.inspect(root, options)
   local newline = options.newline or '\n'
   local indent  = options.indent  or '  '
   local process = options.process
+  local metatables -- PATCHED BY m.karneim
+  if options.metatables ~= nil then
+    metatables = options.metatables
+  else
+    metatables = true 
+  end
 
   if process then
     root = processRecursive(process, root, {}, {})
@@ -331,7 +337,8 @@ function inspect.inspect(root, options)
     maxIds           = {},
     newline          = newline,
     indent           = indent,
-    tableAppearances = countTableAppearances(root)
+    tableAppearances = countTableAppearances(root),
+    metatables       = metatables
   }, Inspector_mt)
 
   inspector:putValue(root)

@@ -16,10 +16,11 @@ public class Vec3Wrapper {
     double z = Conversions.floatValueOf(luaTable.rawget("z"));
     return new Vec3d(x, y, z);
   }
-  
+
   private final WrapperFactory wrappers;
   private final Table luaTable;
 
+  // TODO no need for creating a class here. this can be done just by a function
   public Vec3Wrapper(WrapperFactory wrappers, Vec3d delegate) {
     this.wrappers = wrappers;
     DefaultTableBuilder builder = new DefaultTableBuilder();
