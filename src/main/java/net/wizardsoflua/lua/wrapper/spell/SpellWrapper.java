@@ -26,7 +26,7 @@ public class SpellWrapper extends EntityWrapper {
   }
 
   public Table getBlock() {
-    BlockPos pos = delegate.getPosition();
+    BlockPos pos = new BlockPos(delegate.getPositionVector());
     IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
     return getWrappers().wrap(blockState);
   }
