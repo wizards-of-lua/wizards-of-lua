@@ -1,12 +1,13 @@
 package net.wizardsoflua.testenv;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -60,12 +61,13 @@ public class MinecraftBackdoor {
     }
     ICommandSender sender = testEnv.getServer();
     MinecraftServer server = testEnv.getServer();
-    server.addScheduledTask(new Runnable() {
-      @Override
-      public void run() {
-        server.getCommandManager().executeCommand(sender, command);
-      }
-    });
+    // server.addScheduledTask(new Runnable() {
+    // @Override
+    // public void run() {
+    // server.getCommandManager().executeCommand(sender, command);
+    // }
+    // });
+    testEnv.runAndWait(() -> server.getCommandManager().executeCommand(sender, command));
   }
 
   public void freezeClock(long millis) {
@@ -73,20 +75,20 @@ public class MinecraftBackdoor {
     Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), zoneId);
     testEnv.getWol().setClock(clock);
   }
-  
+
   public void freezeClock(LocalDateTime date) {
     ZoneId zoneId = ZoneId.systemDefault();
     Clock clock = Clock.fixed(date.atZone(zoneId).toInstant(), zoneId);
     testEnv.getWol().setClock(clock);
   }
-  
+
   public void resetClock() {
     Clock clock = testEnv.getWol().getDefaultClock();
     testEnv.getWol().setClock(clock);
   }
-  
+
   public void breakAllSpells() {
-    testEnv.getWol().getSpellRegistry().breakAll();
+    testEnv.runAndWait(() -> testEnv.getWol().getSpellRegistry().breakAll());
   }
 
   public Iterable<SpellEntity> spells() {
@@ -95,7 +97,7 @@ public class MinecraftBackdoor {
 
   public void setBlock(BlockPos pos, Block blockType) {
     World world = testEnv.getTestPlayer().getEntityWorld();
-    world.setBlockState(pos,  blockType.getDefaultState());
+    world.setBlockState(pos, blockType.getDefaultState());
   }
 
   public IBlockState getBlock(BlockPos pos) {
@@ -106,4 +108,6 @@ public class MinecraftBackdoor {
   public BlockPos getWorldSpawnPoint() {
     return testEnv.getServer().getEntityWorld().getSpawnPoint();
   }
+
+  
 }

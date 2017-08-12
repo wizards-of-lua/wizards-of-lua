@@ -90,9 +90,6 @@ public class WizardsOfLua {
   }
 
   @EventHandler
-  public void serverStarted(FMLServerStartedEvent event) {}
-
-  @EventHandler
   public void serverLoad(FMLServerStartingEvent event) {
     server = checkNotNull(event.getServer());
     event.registerServerCommand(new WolCommand());
@@ -100,6 +97,7 @@ public class WizardsOfLua {
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
   }
 
-
+  @EventHandler
+  public void serverStarted(FMLServerStartedEvent event) {}
 
 }

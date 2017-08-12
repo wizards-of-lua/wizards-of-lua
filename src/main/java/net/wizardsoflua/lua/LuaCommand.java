@@ -39,6 +39,14 @@ public class LuaCommand extends CommandBase {
     return "";
   }
 
+  /**
+   * Return the required permission level for this command.
+   */
+  public int getRequiredPermissionLevel() {
+    // TODO add real permission checking somewhere
+    return 0;
+  }
+
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
@@ -48,7 +56,6 @@ public class LuaCommand extends CommandBase {
       world.spawnEntity(spell);
     } catch (Exception ex) {
       handleException(ex, sender);
-      throw ex;
     }
   }
 
@@ -57,9 +64,9 @@ public class LuaCommand extends CommandBase {
   }
 
   private void handleException(Exception ex, ICommandSender sender) {
-    ex.printStackTrace();
     String message = String.format("An unexpected error occured during lua command execution: %s",
         ex.getMessage());
+    wol.logger.error(message, ex);
     String stackTrace = getStackTrace(ex);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);

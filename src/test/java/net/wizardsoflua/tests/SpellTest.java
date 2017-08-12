@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -49,6 +50,21 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.SpellTest test_spell_pos_when_casted_by_player
+  @Test
+  public void test_spell_pos_when_casted_by_player() throws Exception {
+    // Given:
+    Vec3d lookPoint = mc().player().getPositionLookingAt();
+    String expected = format(lookPoint);
+
+    // When:
+    mc().player().perform(new ChatAction("/lua p=spell.pos; print(p)"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.SpellTest test_spell_block
   @Test
   public void test_spell_block() throws Exception {
@@ -56,11 +72,12 @@ public class SpellTest extends WolTestBase {
     mc().setBlock(posP, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().executeCommand("/lua b=spell.block; print(b.name)");
+    mc().executeCommand("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("minecraft:diamond_ore");
+    assertThat(act.getMessage()).isEqualTo("diamond_ore");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_owner_is_not_nil_for_player
@@ -87,6 +104,20 @@ public class SpellTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_owner_uuid_is_current_player_uuid
+  @Test
+  public void test_spell_owner_uuid_is_current_player_uuid() throws Exception {
+    // Given:
+    String expected = mc().player().getDelegate().getUniqueID().toString();
+
+    // When:
+    mc().player().perform(new ChatAction("/lua print(spell.owner.uuid)"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_owner_name_is_current_player_name

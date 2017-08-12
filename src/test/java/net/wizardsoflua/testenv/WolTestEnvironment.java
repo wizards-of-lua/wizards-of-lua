@@ -113,7 +113,7 @@ public class WolTestEnvironment {
 
   @CalledByReflection("Called by MinecraftJUnitRunner")
   public static Throwable runTest(String classname, String methodName) {
-    final TestMethodExecutor executor = new TestMethodExecutor();
+    final TestMethodExecutor executor = new TestMethodExecutor(instance.logger);
     try {
       ClassLoader cl = WolTestEnvironment.class.getClassLoader();
       Class<?> testClass = cl.loadClass(classname);
@@ -147,7 +147,7 @@ public class WolTestEnvironment {
 
   public TestResults runTestMethod(Class<?> testClass, String methodName)
       throws InitializationError {
-    TestMethodExecutor executor = new TestMethodExecutor();
+    TestMethodExecutor executor = new TestMethodExecutor(logger);
     TestResults result = executor.runTest(testClass, methodName);
     return result;
   }
@@ -155,7 +155,7 @@ public class WolTestEnvironment {
   public Iterable<TestResults> runAllTests() throws InitializationError {
     List<TestResults> result = new ArrayList<>();
     Iterable<Class<?>> testClasses = findTestClasses();
-    TestClassExecutor executor = new TestClassExecutor();
+    TestClassExecutor executor = new TestClassExecutor(logger);
     for (Class<?> testClass : testClasses) {
       result.add(executor.runTests(testClass));
     }
@@ -163,7 +163,7 @@ public class WolTestEnvironment {
   }
 
   public TestResults runTests(Class<?> testClass) throws InitializationError {
-    TestClassExecutor executor = new TestClassExecutor();
+    TestClassExecutor executor = new TestClassExecutor(logger);
     return executor.runTests(testClass);
   }
 
@@ -212,6 +212,31 @@ public class WolTestEnvironment {
     return false;
   }
 
+  public void runAndWait(Task task) {
+    MinecraftServer server = getServer();
+    final CountDownLatch taskFinished = new CountDownLatch(1);
+    final AtomicReference<Throwable> exceptionRef = new AtomicReference<Throwable>();
+    server.addScheduledTask(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          task.run();
+        } catch (Throwable t) {
+          exceptionRef.set(t);
+        } finally {
+          taskFinished.countDown();
+        }
+      }
+    });
+    try {
+      taskFinished.await(30, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+    if (exceptionRef.get() != null) {
+      throw new UndeclaredThrowableException(exceptionRef.get());
+    }
+  }
 
 
 }

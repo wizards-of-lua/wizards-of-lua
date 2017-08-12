@@ -41,10 +41,13 @@ public class ChunkLoaderTicketSupport {
   }
 
   public void request() {
+    chunkPos = new ChunkPos(entity.getPosition());
     chunkLoaderTicket = ForgeChunkManager.requestTicket(mod, entity.getEntityWorld(),
         ForgeChunkManager.Type.ENTITY);
+    if (chunkLoaderTicket == null) {
+      throw new IllegalStateException("Could not get a ChunkLoading ticket for Wizards of Lua!");
+    }
     chunkLoaderTicket.bindEntity(entity);
-    chunkPos = new ChunkPos(entity.getPosition());
     ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
   }
 

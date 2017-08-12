@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.WolTestEnvironment;
 import net.wizardsoflua.testenv.net.ClientAction;
 
@@ -21,16 +23,25 @@ public class PlayerBackdoor {
   }
 
   public void perform(ClientAction action) {
-    testEnv.getServer().addScheduledTask(new Runnable() {
-      @Override
-      public void run() {
-        testEnv.getPacketDispatcher().sendTo(action, getDelegate());
-      }
-    });
+    testEnv.runAndWait(() -> testEnv.getPacketDispatcher().sendTo(action, getDelegate()));
   }
 
   public void setPosition(BlockPos pos) {
-    getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
+    testEnv
+        .runAndWait(() -> getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ()));
+  }
+
+  public BlockPos getBlockPos() {
+    return getDelegate().getPosition();
+  }
+
+  public Vec3d getPositionLookingAt() {
+    Vec3d result = SpellUtil.getPositionLookingAt(getDelegate());
+    return result;
+  }
+  
+  public BlockPos getBlockPosLookingAt() {
+    return new BlockPos(SpellUtil.getPositionLookingAt(getDelegate()));
   }
 
 }

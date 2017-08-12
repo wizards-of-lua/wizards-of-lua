@@ -6,6 +6,7 @@ import org.junit.Before;
 import com.google.common.collect.Iterables;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -19,20 +20,22 @@ public class WolTestBase extends TestDataFactory {
 
   @Before
   public void beforeTest() {
-    testEnv.getEventRecorder().setEnabled(true);
+    testEnv.runAndWait(()->testEnv.getEventRecorder().setEnabled(true));
+    
     mc().resetClock();
     mc().breakAllSpells();
     int testId = testIdCount++;
     mc().player().perform(new PrepareForTestAction(testId));
     TestPlayerPreparedForTestEvent evt = mc().waitFor(TestPlayerPreparedForTestEvent.class);
     assertThat(evt.getId()).isEqualTo(testId);
-    testEnv.getEventRecorder().clear();
+    
+    testEnv.runAndWait(()->testEnv.getEventRecorder().clear());
   }
 
   @After
   public void afterTest() {
-    testEnv.getEventRecorder().setEnabled(false);
-    testEnv.getEventRecorder().clear();
+    testEnv.runAndWait(()->testEnv.getEventRecorder().setEnabled(false));
+    testEnv.runAndWait(()->testEnv.getEventRecorder().clear());
     mc().breakAllSpells();
     mc().resetClock();
   }
@@ -51,6 +54,10 @@ public class WolTestBase extends TestDataFactory {
 
   protected String format(BlockPos pos) {
     return formatPos((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+  }
+  
+  protected String format(Vec3d pos) {
+    return formatPos(pos.xCoord, pos.yCoord, pos.zCoord);
   }
 
   protected String formatPos(int x, int y, int z) {

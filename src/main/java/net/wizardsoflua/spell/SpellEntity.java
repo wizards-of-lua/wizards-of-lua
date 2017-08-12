@@ -33,7 +33,9 @@ public class SpellEntity extends Entity {
 
   private ICommandSender source;
   private SpellProgram program;
+  private String sid; // immutable spell id
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
+  private boolean visible = false;
 
   public SpellEntity(World world) {
     // Used by MC when loading this entity from persistent data
@@ -41,12 +43,13 @@ public class SpellEntity extends Entity {
   }
 
   public SpellEntity(World world, ICommandSender source, SpellProgram program, Vec3d pos,
-      String name) {
+      String sid) {
     this(world);
     this.source = checkNotNull(source, "source==null!");
     this.program = checkNotNull(program, "program==null!");
+    this.sid = sid;
     setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
-    setCustomNameTag(name);
+    setCustomNameTag(sid);
     chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
   }
@@ -55,6 +58,10 @@ public class SpellEntity extends Entity {
     return source;
   }
 
+  public String getSid() {
+    return sid;
+  }
+  
   public Entity getOwner() {
     return source.getCommandSenderEntity();
   }
@@ -63,6 +70,14 @@ public class SpellEntity extends Entity {
     return program;
   }
 
+  public boolean isVisible() {
+    return visible;
+  }
+  
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
+  
   @Override
   protected void readEntityFromNBT(NBTTagCompound compound) {}
 
@@ -91,6 +106,9 @@ public class SpellEntity extends Entity {
     }
     if (chunkLoaderTicketSupport != null) {
       chunkLoaderTicketSupport.updatePosition();
+    }
+    if (visible) {
+      SpellAuraFX.spawnParticle(this);
     }
   }
 

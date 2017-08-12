@@ -7,11 +7,13 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldServer;
 
 public class SpellUtil {
   private static final double LOOK_DISTANCE = 5;
@@ -121,6 +123,14 @@ public class SpellUtil {
       return result;
     }
     return null;
+  }
+
+  public static void spawnParticle(WorldServer world, EnumParticleTypes particleType,
+      boolean longDistance, double x, double y, double z, int numberOfParticles, double xOffset,
+      double yOffset, double zOffset, double particleSpeed, int... particleArguments) {
+
+    world.spawnParticle(particleType, longDistance, x, y, z, numberOfParticles, xOffset, yOffset,
+        zOffset, particleSpeed, particleArguments);
   }
 
 }

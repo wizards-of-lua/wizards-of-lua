@@ -35,7 +35,7 @@ public class SpellListAction implements WolCommandAction {
   private ITextComponent format(Iterable<SpellEntity> spells) {
     WolAnnouncementMessage result = new WolAnnouncementMessage("Active spells:\n");
     for (SpellEntity spell : spells) {
-      TextComponentString name = new TextComponentString(spell.getName() + ": ");
+      TextComponentString name = new TextComponentString(spell.getSid() + ": ");
       name.setStyle((new Style()).setColor(TextFormatting.DARK_GREEN));
       String description = spell.getProgram().getCode();
       if (description.length() > 40) {

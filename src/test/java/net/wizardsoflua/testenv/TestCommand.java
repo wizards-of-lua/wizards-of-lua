@@ -53,13 +53,16 @@ public class TestCommand extends CommandBase {
             Class<?> testClass = parseTestClass(args);
             String methodName = parseMethodName(args);
             if (methodName != null) {
+              sender.sendMessage(new TestEnvMessage("Running test"));
               TestResults result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
               sender.sendMessage(toTestEnvMessage(result));
             } else {
+              sender.sendMessage(new TestEnvMessage("Running tests"));
               TestResults result = WolTestEnvironment.instance.runTests(testClass);
               sender.sendMessage(toTestEnvMessage(result));
             }
           } else {
+            sender.sendMessage(new TestEnvMessage("Running all tests"));
             Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
             sender.sendMessage(toTestEnvMessage(result));
           }
