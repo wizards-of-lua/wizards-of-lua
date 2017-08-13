@@ -18,8 +18,8 @@ import net.minecraft.world.WorldServer;
 public class SpellUtil {
   private static final double LOOK_DISTANCE = 5;
 
-  public static Vec3d getPositionLookingAt(Entity entity) {
-    RayTraceResult git = rayTraceEyes((EntityLivingBase) entity, LOOK_DISTANCE);
+  public static Vec3d getPositionLookingAt(EntityLivingBase entity) {
+    RayTraceResult git = rayTraceEyes(entity, LOOK_DISTANCE);
     if (git == null) {
       return getPositionAtLookDistance(entity);
     }
@@ -33,8 +33,8 @@ public class SpellUtil {
     return newHit;
   }
 
-  public static @Nullable EnumFacing getSideLookingAt(Entity entity) {
-    RayTraceResult git = rayTraceEyes((EntityLivingBase) entity, LOOK_DISTANCE);
+  public static @Nullable EnumFacing getSideLookingAt(EntityLivingBase entity) {
+    RayTraceResult git = rayTraceEyes(entity, LOOK_DISTANCE);
     return git == null ? null : git.sideHit;
   }
 

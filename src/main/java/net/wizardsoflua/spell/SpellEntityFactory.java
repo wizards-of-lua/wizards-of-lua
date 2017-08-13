@@ -1,9 +1,11 @@
 package net.wizardsoflua.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -16,7 +18,7 @@ import net.wizardsoflua.lua.SpellProgramFactory;
 public class SpellEntityFactory {
   private final SpellRegistry spellRegistry;
   private final SpellProgramFactory programFactory;
-  
+
   private long nextId = 1;
 
   public SpellEntityFactory(SpellRegistry spellRegistry, SpellProgramFactory programFactory) {
@@ -29,7 +31,7 @@ public class SpellEntityFactory {
     ICommandSender source = getSource(sender);
     SpellProgram program = programFactory.create(world, source, code);
     Vec3d pos = getPos(sender);
-    String name = SpellEntity.NAME+"-"+nextId;
+    String name = SpellEntity.NAME + "-" + nextId;
     nextId++;
     SpellEntity result = new SpellEntity(world, source, program, pos, name);
     program.setSpellEntity(result);
@@ -52,8 +54,13 @@ public class SpellEntityFactory {
     Entity entity = sender.getCommandSenderEntity();
     if (entity == null) {
       return sender.getPositionVector();
+    } else if (entity instanceof EntityLivingBase) {
+      return SpellUtil.getPositionLookingAt((EntityLivingBase) entity);
+    } else if (entity instanceof SpellEntity) {
+      return ((SpellEntity) entity).getPositionVector();
     } else {
-      return SpellUtil.getPositionLookingAt(entity);
+      throw new IllegalArgumentException(
+          format("Unexpected command sender entity: %s", entity.getClass().getName()));
     }
   }
 }
