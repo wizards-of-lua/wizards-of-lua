@@ -12,32 +12,32 @@ import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
-import net.wizardsoflua.lua.wrapper.entity.LuaEntity;
+import net.wizardsoflua.lua.wrapper.Wrappers;
+import net.wizardsoflua.lua.wrapper.entity.EntityWrapper;
 import net.wizardsoflua.spell.SpellEntity;
 
-public class LuaSpell {
+public class SpellWrapper {
   public static final String METATABLE_NAME = "Spell";
 
-  private final WrapperFactory wrappers;
+  private final Wrappers wrappers;
   private final Table metatable;
 
-  public LuaSpell(WrapperFactory wrappers) {
+  public SpellWrapper(Wrappers wrappers) {
     this.wrappers = wrappers;
     // TODO do declaration outside this class
-    this.metatable = wrappers.getTypes().declare(METATABLE_NAME, LuaEntity.METATABLE_NAME);
+    this.metatable = wrappers.getTypes().declare(METATABLE_NAME, EntityWrapper.METATABLE_NAME);
     metatable.rawset("execute", new ExecuteFunction());
   }
 
   public Table wrap(SpellEntity delegate) {
-    return new Wrapper(wrappers, metatable, delegate);
+    return new Proxy(wrappers, metatable, delegate);
   }
 
-  public static class Wrapper extends LuaEntity.Wrapper {
+  public static class Proxy extends EntityWrapper.Proxy {
 
     private final SpellEntity delegate;
 
-    public Wrapper(WrapperFactory wrappers, Table metatable, SpellEntity delegate) {
+    public Proxy(Wrappers wrappers, Table metatable, SpellEntity delegate) {
       super(wrappers, metatable, delegate);
       this.delegate = delegate;
       addReadOnly("owner", this::getOwner);
@@ -78,7 +78,7 @@ public class LuaSpell {
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
       wrappers.getTypes().checkAssignable(METATABLE_NAME, arg0);
-      Wrapper wrapper = (Wrapper) arg0;
+      Proxy wrapper = (Proxy) arg0;
 
 
       LuaFunction formatFunc = StringLib.format();

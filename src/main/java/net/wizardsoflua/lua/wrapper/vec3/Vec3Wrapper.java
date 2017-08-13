@@ -4,14 +4,14 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
+import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class LuaVec3 {
+public class Vec3Wrapper {
   public static final String METATABLE_NAME = "Vec3";
 
   private final Table metatable;
 
-  public LuaVec3(WrapperFactory wrappers) {
+  public Vec3Wrapper(Wrappers wrappers) {
     // TODO do declaration outside this class
     this.metatable = wrappers.getTypes().declare(METATABLE_NAME);
   }

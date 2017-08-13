@@ -2,29 +2,29 @@ package net.wizardsoflua.lua.wrapper.entity;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
+import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class LuaPlayer {
+public class PlayerWrapper {
   public static final String METATABLE_NAME = "Player";
 
-  private final WrapperFactory wrappers;
+  private final Wrappers wrappers;
   private final Table metatable;
 
-  public LuaPlayer(WrapperFactory wrappers) {
+  public PlayerWrapper(Wrappers wrappers) {
     this.wrappers = wrappers;
     // TODO do declaration outside this class
-    this.metatable = wrappers.getTypes().declare(METATABLE_NAME, LuaEntity.METATABLE_NAME);
+    this.metatable = wrappers.getTypes().declare(METATABLE_NAME, EntityWrapper.METATABLE_NAME);
   }
 
   public Table wrap(EntityPlayer delegate) {
-    return new Wrapper(wrappers, metatable, delegate);
+    return new Proxy(wrappers, metatable, delegate);
   }
 
-  public class Wrapper extends LuaEntity.Wrapper {
+  public class Proxy extends EntityWrapper.Proxy {
 
     private final EntityPlayer delegate;
 
-    public Wrapper(WrapperFactory wrappers, Table metatable, EntityPlayer delegate) {
+    public Proxy(Wrappers wrappers, Table metatable, EntityPlayer delegate) {
       super(wrappers, metatable, delegate);
       this.delegate = delegate;
 

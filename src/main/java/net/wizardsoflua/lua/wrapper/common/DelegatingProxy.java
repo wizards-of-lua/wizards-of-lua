@@ -15,21 +15,21 @@ import net.sandius.rembulan.Metatables;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.lua.table.Property;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
+import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class DelegatingWrapper extends Table {
+public class DelegatingProxy extends Table {
 
   private final TraversableHashMap<Object, Object> properties = new TraversableHashMap<>();
-  private final WrapperFactory wrappers;
+  private final Wrappers wrappers;
   private final Object delegate;
 
-  public DelegatingWrapper(WrapperFactory wrappers, Table metatable, Object delegate) {
-    this.wrappers = Preconditions.checkNotNull(wrappers, "wrappers==null!");
-    this.delegate = Preconditions.checkNotNull(delegate, "delegate==null!");
+  public DelegatingProxy(Wrappers wrappers, Table metatable, Object delegate) {
+    this.wrappers = checkNotNull(wrappers, "wrappers==null!");
+    this.delegate = checkNotNull(delegate, "delegate==null!");
     setMetatable(metatable);
   }
 
-  public WrapperFactory getWrappers() {
+  public Wrappers getWrappers() {
     return wrappers;
   }
 

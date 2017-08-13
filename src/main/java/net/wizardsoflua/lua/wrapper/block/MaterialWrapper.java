@@ -3,16 +3,16 @@ package net.wizardsoflua.lua.wrapper.block;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
+import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class LuaMaterial {
+public class MaterialWrapper {
   public static final String METATABLE_NAME = "Material";
 
-  private final WrapperFactory wrappers;
+  private final Wrappers wrappers;
   private final Table metatable;
 
 
-  public LuaMaterial(WrapperFactory wrappers) {
+  public MaterialWrapper(Wrappers wrappers) {
     this.wrappers = wrappers;
     // TODO do declaration outside this class
     this.metatable = wrappers.getTypes().declare(METATABLE_NAME);

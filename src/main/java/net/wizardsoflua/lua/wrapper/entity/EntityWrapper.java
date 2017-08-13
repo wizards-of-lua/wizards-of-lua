@@ -4,28 +4,31 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
-import net.wizardsoflua.lua.wrapper.common.DelegatingWrapper;
+import net.wizardsoflua.lua.wrapper.Wrappers;
+import net.wizardsoflua.lua.wrapper.common.DelegatingProxy;
 
-public class LuaEntity {
+public class EntityWrapper {
   public static final String METATABLE_NAME = "Entity";
 
+  private final Wrappers wrappers;
   private final Table metatable;
 
-  public LuaEntity(WrapperFactory wrappers) {
+
+  public EntityWrapper(Wrappers wrappers) {
+    this.wrappers = wrappers;
     // TODO do declaration outside this class
     this.metatable = wrappers.getTypes().declare(METATABLE_NAME);
   }
 
-  public Table wrap(WrapperFactory wrappers, Entity delegate) {
-    return new Wrapper(wrappers, metatable, delegate);
+  public Table wrap(Entity delegate) {
+    return new Proxy(wrappers, metatable, delegate);
   }
 
-  public static class Wrapper extends DelegatingWrapper {
+  public static class Proxy extends DelegatingProxy {
 
     private final Entity delegate;
 
-    public Wrapper(WrapperFactory wrappers, Table metatable, Entity delegate) {
+    public Proxy(Wrappers wrappers, Table metatable, Entity delegate) {
       super(wrappers, metatable, delegate);
       this.delegate = delegate;
       addReadOnly("dimension", () -> delegate.dimension);

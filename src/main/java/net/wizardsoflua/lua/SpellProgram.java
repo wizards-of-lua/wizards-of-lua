@@ -29,7 +29,7 @@ import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
-import net.wizardsoflua.lua.wrapper.WrapperFactory;
+import net.wizardsoflua.lua.wrapper.Wrappers;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -57,7 +57,7 @@ public class SpellProgram {
   private final SpellRuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
   private final Types types;
-  private final WrapperFactory wrappers;
+  private final Wrappers wrappers;
   private final ModuleDependencies dependencies = new ModuleDependencies();
 
   private State state;
@@ -79,7 +79,7 @@ public class SpellProgram {
     TypesModule.installInto(env, types);
     PrintRedirector.installInto(env, source);
     RuntimeModule.installInto(env, context.getRuntime());
-    wrappers = new WrapperFactory(types);
+    wrappers = new Wrappers(types);
     
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
