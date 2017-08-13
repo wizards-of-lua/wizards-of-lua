@@ -1,13 +1,12 @@
 package net.wizardsoflua.lua.module.types;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-
-import com.google.common.base.Preconditions;
 
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -25,7 +24,7 @@ public class Types {
 
   private static final String CLASSNAME_META_KEY = "__classname";
   private final Table env;
-  private final Map<Table,String> classes = new HashMap<Table, String>();
+  private final Map<Table, String> classes = new HashMap<Table, String>();
 
   public Types(Table env) {
     this.env = env;
@@ -36,57 +35,83 @@ public class Types {
   }
 
   /**
+   * Returns the metatable of the Lua class with the given classname, of <code>null</code>, if no
+   * such class has been declared.
+   * 
+   * @param classname
+   * @return the metatable of the Lua class with the given classname
+   */
+  public @Nullable Table getClassMetatable(String classname) {
+    checkNotNull(classname, "classname==null!");
+    Table G = (Table) env.rawget("_G");
+    Object value = G.rawget(classname);
+    if (value instanceof Table) {
+      Table result = (Table) value;
+      String declaredClassname = classes.get(result);
+      if (classname.equals(declaredClassname)) {
+        return result;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Declares a new Lua class with the given name and the optionally given superclass metatable.
+   * 
    * @param classname
    * @param superclassMT
    * @return the new class metatable
    */
   public Table declare(String classname, @Nullable Table superclassMT) {
     checkNotNull(classname, "classname==null!");
-    Table G = (Table)env.rawget("_G");
-    boolean classnameAvailable = G.rawget(classname)==null;
-    Preconditions.checkState(classnameAvailable, String.format("bad argument #%s (a global variable with name '%s' is already defined)", 1, classname));
+    Table G = (Table) env.rawget("_G");
+    boolean classnameAvailable = G.rawget(classname) == null;
+    checkState(classnameAvailable, String.format(
+        "bad argument #%s (a global variable with name '%s' is already defined)", 1, classname));
 
     Table classMT = new DefaultTable();
     classMT.rawset("__index", classMT);
     classMT.rawset(CLASSNAME_META_KEY, classname);
     classMT.setMetatable(superclassMT);
-    
+
     classes.put(classMT, classname);
-    
+
     G.rawset(classname, classMT);
     return classMT;
   }
 
   /**
-   * Returns <code>true</code> if the given Lua object is an instance of the Lua class represented by
-   * the given class metatable.
+   * Returns <code>true</code> if the given Lua object is an instance of the Lua class represented
+   * by the given class metatable.
+   * 
    * @param classMT
    * @param luaObj
-   * @return <code>true</code> if the given Lua object is an instance of the Lua class represented by
-   * the given class metatable
+   * @return <code>true</code> if the given Lua object is an instance of the Lua class represented
+   *         by the given class metatable
    */
   public boolean isInstanceOf(Table classMT, Object luaObj) {
-    if ( luaObj == null) {
+    if (luaObj == null) {
       return false;
     }
-    if ( !(luaObj instanceof Table)) {
+    if (!(luaObj instanceof Table)) {
       return false;
     }
-    Table actualMT = ((Table)luaObj).getMetatable();
+    Table actualMT = ((Table) luaObj).getMetatable();
     return actualMT != null && (actualMT == classMT || isInstanceOf(classMT, actualMT));
   }
-  
+
   /**
-   * Returns the Lua type name of the given Lua object, of <code>null</code>, it the name is unknown.
+   * Returns the Lua type name of the given Lua object, of <code>null</code>, it the name is
+   * unknown.
+   * 
    * @param luaObj
    * @return the Lua type name of the given Lua object
    */
   public @Nullable String getTypename(@Nullable Object luaObj) {
-    if ( luaObj == null) {
+    if (luaObj == null) {
       return NIL_META;
     }
-    if ( luaObj instanceof Boolean) {
+    if (luaObj instanceof Boolean) {
       return BOOLEAN_META;
     }
     if (luaObj instanceof Number) {
@@ -95,14 +120,14 @@ public class Types {
     if (luaObj instanceof LuaFunction) {
       return FUNCTION_META;
     }
-    if ( (luaObj instanceof ByteString) || (luaObj instanceof String)) {
+    if ((luaObj instanceof ByteString) || (luaObj instanceof String)) {
       return STRING_META;
     }
     if (luaObj instanceof Table) {
-      Table mt = ((Table)luaObj).getMetatable();
-      if ( mt != null) {
+      Table mt = ((Table) luaObj).getMetatable();
+      if (mt != null) {
         String classname = classes.get(mt);
-        if ( classname != null) {
+        if (classname != null) {
           return classname;
         }
       }
@@ -110,7 +135,7 @@ public class Types {
     }
     return null;
   }
-  
+
   public void checkBoolean(Object luaObj) {
     checkAssignable(BOOLEAN_META, luaObj);
   }
@@ -259,5 +284,5 @@ public class Types {
     return luaObj.getClass().getSimpleName();
   }
 
-  
+
 }

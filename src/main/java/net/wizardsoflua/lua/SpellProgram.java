@@ -30,6 +30,7 @@ import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.wrapper.WrapperFactory;
+import net.wizardsoflua.lua.wrapper.spell.SpellMetatable;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -143,6 +144,18 @@ public class SpellProgram {
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
     installSystemLibraries();
+    
+    // Install Lua classes metatables
+    Table entityMT = types.declare("Entity", null);
+    Table spellMT = types.declare("Spell", entityMT);
+    Table playerMT = types.declare("Player", entityMT);
+    types.declare("Material", null);
+    types.declare("Block", null);
+    types.declare("Vec3", null);
+    
+    new SpellMetatable(wrappers, spellMT);
+    
+    
     dependencies.installModules(env, executor, stateContext);
     SpellModule.installInto(env, wrappers, spellEntity);
 
