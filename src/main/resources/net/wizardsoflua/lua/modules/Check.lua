@@ -5,7 +5,7 @@ Check={}
 
 -- Checks if obj is an instance of string. If not, a error is thrown.
 function Check.isString(obj,i)
-  local ok=instanceOf(string,obj)
+  local ok=type(obj)=="string"
   if i==nil then
     assert(ok, "bad argument (string expected, got %s)", type(obj))
   elseif tonumber(i) then

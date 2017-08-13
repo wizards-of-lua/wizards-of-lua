@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.wrapper.block.BlockWrapper;
 import net.wizardsoflua.lua.wrapper.block.MaterialWrapper;
 import net.wizardsoflua.lua.wrapper.entity.PlayerWrapper;
@@ -26,31 +26,47 @@ import net.wizardsoflua.lua.wrapper.vec3.Vec3Wrapper;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class WrapperFactory {
-  private static final String NIL_META = "nil";
-  private static final String BOOLEAN_META = "boolean";
-  private static final String NUMBER_META = "number";
-  private static final String STRING_META = "string";
-  private static final String TABLE_META = "table";
-  private static final String FUNCTION_META = "function";
-  
-  private static final String CLASSNAME_META_KEY = "__classname";
+  private class Cache {
+    private final Map<Object, SoftReference<Table>> content = new MapMaker().weakKeys().makeMap();
+
+    public Table computeIfAbsent(Object key, Function<Object, Table> supplier) {
+      SoftReference<Table> value = content.get(key);
+      if (value == null || value.get() == null) {
+        value = soft(supplier.apply(key));
+        content.put(key, value);
+      }
+      return value.get();
+    }
+
+    private <T> SoftReference<T> soft(T wrapper) {
+      SoftReference<T> z = new SoftReference<T>(wrapper);
+      return z;
+    }
+  }
+
+  private final Types types;
   private final Cache cache = new Cache();
-  private final Table env;
 
-  public WrapperFactory(Table env) {
-    this.env = env;
+  public WrapperFactory(Types types) {
+    this.types = types;
   }
 
+  // TODO use getTypes().getEnv()
+  @Deprecated
   public Table getEnv() {
-    return env;
+    return types.getEnv();
   }
   
+  public Types getTypes() {
+    return types;
+  }
+
   public @Nullable Boolean unwrapBoolean(@Nullable Object luaObj) {
-    if ( luaObj == null) {
+    if (luaObj == null) {
       return null;
     }
-    checkAssignable(BOOLEAN_META, luaObj);
-    return ((Boolean)luaObj).booleanValue();
+    types.checkBoolean(luaObj);
+    return ((Boolean) luaObj).booleanValue();
   }
 
 
@@ -66,7 +82,7 @@ public class WrapperFactory {
     if (luaObj == null) {
       return null;
     }
-    checkAssignable(Vec3Wrapper.METATABLE_NAME, luaObj);
+    types.checkAssignable(Vec3Wrapper.METATABLE_NAME, luaObj);
     Vec3d result = Vec3Wrapper.unwrap((Table) luaObj);
     return result;
   }
@@ -82,7 +98,7 @@ public class WrapperFactory {
     if (luaObj == null) {
       return null;
     }
-    checkAssignable(STRING_META, luaObj);
+    types.checkString(luaObj);
     return String.valueOf(Conversions.stringValueOf(luaObj));
   }
 
@@ -109,116 +125,20 @@ public class WrapperFactory {
     }
     return null;
   }
-  
+
   public @Nullable Table wrap(@Nullable Material material) {
-    if ( material == null) {
+    if (material == null) {
       return null;
     }
     return new MaterialWrapper(this, material).getLuaTable();
   }
-  
+
   public @Nullable ByteString wrap(@Nullable EnumPushReaction mobilityFlag) {
-    if ( mobilityFlag == null) {
+    if (mobilityFlag == null) {
       return null;
     }
     return ByteString.of(mobilityFlag.name());
   }
 
-
-  private void checkAssignable(String expectedMetatableName, Object luaObj) {
-    if (!isAssignable(expectedMetatableName, luaObj)) {
-      throw new IllegalArgumentException(
-          String.format("Expected %s but got %s", expectedMetatableName, getTypeOf(luaObj)));
-    }
-  }
-
-  private boolean isAssignable(String expectedMetatableName, Object luaObj) {
-    if (luaObj == null) {
-      return true;
-    }
-    if (BOOLEAN_META.equals(expectedMetatableName)) {
-      return luaObj instanceof Boolean;
-    }
-    if (NUMBER_META.equals(expectedMetatableName)) {
-      return Conversions.numericalValueOf(luaObj) != null;
-    }
-    if (STRING_META.equals(expectedMetatableName)) {
-      return Conversions.stringValueOf(luaObj) != null;
-    }
-    if (FUNCTION_META.equals(expectedMetatableName)) {
-      return luaObj instanceof LuaFunction;
-    }
-    if (TABLE_META.equals(expectedMetatableName)) {
-      return !(luaObj instanceof Table);
-    }
-    if (luaObj instanceof Table) {
-      Table actualMetatable = ((Table) luaObj).getMetatable();
-      if (actualMetatable != null) {
-        return isAssignable(expectedMetatableName, actualMetatable);
-      }
-    }
-    return false;
-  }
-
-  private boolean isAssignable(String expectedMetatableName, Table actualMetatable) {
-    Table expectedMetatable = (Table) env.rawget(expectedMetatableName);
-    Table currentMetatable = actualMetatable;
-    while (currentMetatable != null) {
-      if (currentMetatable == expectedMetatable) {
-        return true;
-      }
-      currentMetatable = currentMetatable.getMetatable();
-    }
-    return false;
-  }
-
-  private String getTypeOf(Object luaObj) {
-    if (luaObj == null) {
-      return NIL_META;
-    }
-    if (luaObj instanceof Table) {
-      Table actualMetatable = ((Table) luaObj).getMetatable();
-      if (actualMetatable == null) {
-        return TABLE_META;
-      }
-      String actualTypeName = (String) actualMetatable.rawget(CLASSNAME_META_KEY);
-      if (actualTypeName == null) {
-        return TABLE_META;
-      }
-      return actualTypeName;
-    }
-    if (luaObj instanceof LuaFunction) {
-      return FUNCTION_META;
-    }
-    if (luaObj instanceof Number) {
-      return NUMBER_META;
-    }
-    if (luaObj instanceof Boolean) {
-      return BOOLEAN_META;
-    }
-    if (luaObj instanceof ByteString || luaObj instanceof String) {
-      return STRING_META;
-    }
-    // Fallback
-    return luaObj.getClass().getSimpleName();
-  }
-
-  private class Cache {
-    private final Map<Object, SoftReference<Table>> content = new MapMaker().weakKeys().makeMap();
-
-    public Table computeIfAbsent(Object key, Function<Object, Table> supplier) {
-      SoftReference<Table> value = content.get(key);
-      if (value == null || value.get() == null) {
-        value = soft(supplier.apply(key));
-        content.put(key, value);
-      }
-      return value.get();
-    }
-
-    private <T> SoftReference<T> soft(T wrapper) {
-      SoftReference<T> z = new SoftReference<T>(wrapper);
-      return z;
-    }
-  }
 
 }

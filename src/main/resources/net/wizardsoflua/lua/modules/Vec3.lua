@@ -1,6 +1,6 @@
 -- Lua Module for the Vec3 class
 
-class("Vec3")
+declare("Vec3")
 
 -- Checks if obj is an instance of Vec3. If not, a error is thrown.
 -- TODO provide a generic function in check that can do this.

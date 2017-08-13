@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.wrapper.WrapperFactory;
 import net.wizardsoflua.lua.wrapper.entity.EntityWrapper;
@@ -21,6 +22,7 @@ public class SpellWrapper extends EntityWrapper {
     addReadOnly("owner", this::getOwner);
     addReadOnly("block", this::getBlock);
     add("visible", this::isVisible, this::setVisible);
+
     setMetatable((Table) wrappers.getEnv().rawget(METATABLE_NAME));
   }
 
@@ -42,6 +44,11 @@ public class SpellWrapper extends EntityWrapper {
 
   public boolean isVisible() {
     return delegate.isVisible();
+  }
+
+  public int execute(String command) {
+    World world = delegate.getEntityWorld();
+    return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
   }
 
 }

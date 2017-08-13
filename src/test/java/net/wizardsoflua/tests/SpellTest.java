@@ -215,4 +215,30 @@ public class SpellTest extends WolTestBase {
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).matches("\\[Spell-\\d+\\] hi");
   }
+
+//  // /test net.wizardsoflua.tests.SpellTest test_spell_execute_command_casted_by_server
+//  @Test
+//  public void test_spell_execute_command_casted_by_server() throws Exception {
+//    // Given:
+//
+//    // When:
+//    mc().executeCommand("/lua spell:execute('/say hi')");
+//
+//    // Then:
+//    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+//    assertThat(act.getMessage()).matches("\\[Spell-\\d+\\] hi");
+//  }
+//
+//  // /test net.wizardsoflua.tests.SpellTest test_spell_owner_name_is_current_player_name
+//  @Test
+//  public void test_spell_execute_command_casted_by_player() throws Exception {
+//    // Given:
+//
+//    // When:
+//    mc().player().perform(new ChatAction("/lua spell:execute('/say hi')"));
+//
+//    // Then:
+//    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+//    assertThat(act.getMessage()).matches("\\[Spell-\\d+\\] hi");
+//  }
 }

@@ -27,6 +27,8 @@ import net.wizardsoflua.lua.module.runtime.Runtime;
 import net.wizardsoflua.lua.module.runtime.RuntimeModule;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
+import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.wrapper.WrapperFactory;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
@@ -41,7 +43,7 @@ public class SpellProgram {
     SchedulingContextFactory getSchedulingContextFactory();
 
     Runtime getRuntime();
-    
+
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -54,9 +56,10 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final SpellRuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
+  private final Types types;
   private final WrapperFactory wrappers;
   private final ModuleDependencies dependencies = new ModuleDependencies();
-  
+
   private State state;
   private Continuation continuation;
   private SpellEntity spellEntity;
@@ -71,7 +74,8 @@ public class SpellProgram {
     runtimeEnv = new SpellRuntimeEnvironment();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
-    wrappers = new WrapperFactory(env);
+    types = new Types(env);
+    wrappers = new WrapperFactory(types);
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
@@ -88,7 +92,7 @@ public class SpellProgram {
   public void setSpellEntity(SpellEntity spellEntity) {
     this.spellEntity = spellEntity;
   }
-  
+
   public String getCode() {
     return code;
   }
@@ -141,7 +145,7 @@ public class SpellProgram {
     installSystemLibraries();
     dependencies.installModules(env, executor, stateContext);
     SpellModule.installInto(env, wrappers, spellEntity);
-    
+
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
     executor.call(stateContext, commandLineFunc);
   }
@@ -156,6 +160,7 @@ public class SpellProgram {
     TableLib.installInto(stateContext, env);
     ClasspathResourceSearcher.installInto(env, loader, /* luaFunctionCache, */
         classLoader);
+    TypesModule.installInto(env, types);
     PrintRedirector.installInto(env, source);
     RuntimeModule.installInto(env, context.getRuntime());
   }
