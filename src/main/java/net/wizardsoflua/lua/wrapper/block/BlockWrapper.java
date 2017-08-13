@@ -11,7 +11,6 @@ public class BlockWrapper {
   private final Wrappers wrappers;
   private final Table metatable;
 
-
   public BlockWrapper(Wrappers wrappers) {
     this.wrappers = wrappers;
     // TODO do declaration outside this class
@@ -20,10 +19,10 @@ public class BlockWrapper {
 
   public Table wrap(IBlockState delegate) {
     DefaultTableBuilder builder = new DefaultTableBuilder();
+    builder.setMetatable(metatable);
     builder.add("name", delegate.getBlock().getRegistryName().getResourcePath());
     builder.add("material", wrappers.wrap(delegate.getMaterial()));
 
-    builder.setMetatable(metatable);
 
     return builder.build();
   }

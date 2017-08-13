@@ -13,7 +13,6 @@ public class EntityWrapper {
   private final Wrappers wrappers;
   private final Table metatable;
 
-
   public EntityWrapper(Wrappers wrappers) {
     this.wrappers = wrappers;
     // TODO do declaration outside this class

@@ -20,6 +20,7 @@ public class MaterialWrapper {
 
   public Table wrap(Material delegate) {
     DefaultTableBuilder b = new DefaultTableBuilder();
+    b.setMetatable(metatable);
 
     b.add("blocksLight", delegate.blocksLight());
     b.add("blocksMovement", delegate.blocksMovement());
@@ -30,7 +31,6 @@ public class MaterialWrapper {
     b.add("isToolNotRequired", delegate.isToolNotRequired());
     b.add("mobility", wrappers.wrap(delegate.getMobilityFlag()));
 
-    b.setMetatable(metatable);
 
     return b.build();
   }

@@ -43,8 +43,6 @@ public class SpellWrapper {
       addReadOnly("owner", this::getOwner);
       addReadOnly("block", this::getBlock);
       add("visible", this::isVisible, this::setVisible);
-
-      setMetatable(metatable);
     }
 
     public Table getOwner() {
