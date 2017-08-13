@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.module.types;
 
+import com.google.common.base.Preconditions;
+
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -18,8 +20,8 @@ public class TypesModule {
   private final Types types;
   private final Table luaTable = DefaultTable.factory().newTable();
 
-  public TypesModule(Types Types) {
-    this.types = Types;
+  public TypesModule(Types types) {
+    this.types = Preconditions.checkNotNull(types,"types==null!");
     luaTable.rawset("declare", new DeclareFunction());
     luaTable.rawset("instanceOf", new InstanceOfFunction());
     luaTable.rawset("getTypename", new GetTypenameFunction());

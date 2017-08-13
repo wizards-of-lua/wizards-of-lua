@@ -30,7 +30,6 @@ import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.wrapper.WrapperFactory;
-import net.wizardsoflua.lua.wrapper.spell.SpellMetatable;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -75,8 +74,13 @@ public class SpellProgram {
     runtimeEnv = new SpellRuntimeEnvironment();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
+    installSystemLibraries();
     types = new Types(env);
+    TypesModule.installInto(env, types);
+    PrintRedirector.installInto(env, source);
+    RuntimeModule.installInto(env, context.getRuntime());
     wrappers = new WrapperFactory(types);
+    
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
@@ -143,19 +147,7 @@ public class SpellProgram {
 
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-    installSystemLibraries();
-    
-    // Install Lua classes metatables
-    Table entityMT = types.declare("Entity", null);
-    Table spellMT = types.declare("Spell", entityMT);
-    Table playerMT = types.declare("Player", entityMT);
-    types.declare("Material", null);
-    types.declare("Block", null);
-    types.declare("Vec3", null);
-    
-    new SpellMetatable(wrappers, spellMT);
-    
-    
+
     dependencies.installModules(env, executor, stateContext);
     SpellModule.installInto(env, wrappers, spellEntity);
 
@@ -173,9 +165,6 @@ public class SpellProgram {
     TableLib.installInto(stateContext, env);
     ClasspathResourceSearcher.installInto(env, loader, /* luaFunctionCache, */
         classLoader);
-    TypesModule.installInto(env, types);
-    PrintRedirector.installInto(env, source);
-    RuntimeModule.installInto(env, context.getRuntime());
   }
 
 }

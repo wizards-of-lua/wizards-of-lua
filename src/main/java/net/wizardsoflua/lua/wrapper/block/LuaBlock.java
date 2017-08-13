@@ -5,26 +5,27 @@ import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 import net.wizardsoflua.lua.wrapper.WrapperFactory;
 
-public class BlockWrapper {
-
+public class LuaBlock {
   public static final String METATABLE_NAME = "Block";
 
   private final WrapperFactory wrappers;
-  private final Table luaTable;
+  private final Table metatable;
 
-  // TODO no need for creating a class here. this can be done just by a function
-  public BlockWrapper(WrapperFactory wrappers, IBlockState delegate) {
+
+  public LuaBlock(WrapperFactory wrappers) {
     this.wrappers = wrappers;
+    // TODO do declaration outside this class
+    this.metatable = wrappers.getTypes().declare(METATABLE_NAME);
+  }
+
+  public Table wrap(IBlockState delegate) {
     DefaultTableBuilder builder = new DefaultTableBuilder();
     builder.add("name", delegate.getBlock().getRegistryName().getResourcePath());
     builder.add("material", wrappers.wrap(delegate.getMaterial()));
-    builder.setMetatable((Table) wrappers.getEnv().rawget(METATABLE_NAME));
 
-    luaTable = builder.build();
-  }
+    builder.setMetatable(metatable);
 
-  public Table getLuaTable() {
-    return luaTable;
+    return builder.build();
   }
 
 }

@@ -55,6 +55,18 @@ public class Types {
     return null;
   }
 
+  public Table declare(String classname) {
+    return declare(classname, (Table)null);
+  }
+  
+  public Table declare(String classname, @Nullable String superclassname) {
+    Table superclassMT = null;
+    if ( superclassname!=null) {
+      superclassMT = getClassMetatable(superclassname);
+    }
+    return declare(classname, superclassMT);
+  }
+  
   /**
    * Declares a new Lua class with the given name and the optionally given superclass metatable.
    * 
@@ -65,6 +77,7 @@ public class Types {
   public Table declare(String classname, @Nullable Table superclassMT) {
     checkNotNull(classname, "classname==null!");
     Table G = (Table) env.rawget("_G");
+    checkNotNull(G, "G==null!");
     boolean classnameAvailable = G.rawget(classname) == null;
     checkState(classnameAvailable, String.format(
         "bad argument #%s (a global variable with name '%s' is already defined)", 1, classname));

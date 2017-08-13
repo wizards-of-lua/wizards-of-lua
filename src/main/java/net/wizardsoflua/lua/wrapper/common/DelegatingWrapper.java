@@ -23,19 +23,20 @@ public class DelegatingWrapper extends Table {
   private final WrapperFactory wrappers;
   private final Object delegate;
 
-  public DelegatingWrapper(WrapperFactory wrappers, Object delegate) {
-    this.wrappers = Preconditions.checkNotNull(wrappers, "wrappers==null!");;
+  public DelegatingWrapper(WrapperFactory wrappers, Table metatable, Object delegate) {
+    this.wrappers = Preconditions.checkNotNull(wrappers, "wrappers==null!");
     this.delegate = Preconditions.checkNotNull(delegate, "delegate==null!");
+    setMetatable(metatable);
   }
 
   public WrapperFactory getWrappers() {
     return wrappers;
   }
-  
+
   public Object getDelegate() {
     return delegate;
   }
-  
+
   private static void checkKey(Object key) {
     if (key == null) {
       throw new IllegalArgumentException("table index is nil");
