@@ -20,6 +20,7 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
+import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
@@ -29,7 +30,6 @@ import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
-import net.wizardsoflua.lua.wrapper.Wrappers;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -57,7 +57,7 @@ public class SpellProgram {
   private final SpellRuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
   private final Types types;
-  private final Wrappers wrappers;
+  private final Converters converters;
   private final ModuleDependencies dependencies = new ModuleDependencies();
 
   private State state;
@@ -79,7 +79,7 @@ public class SpellProgram {
     TypesModule.installInto(env, types);
     PrintRedirector.installInto(env, source);
     RuntimeModule.installInto(env, context.getRuntime());
-    wrappers = new Wrappers(types);
+    converters = new Converters(types);
     
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
@@ -149,7 +149,7 @@ public class SpellProgram {
       throws LoaderException, CallException, CallPausedException, InterruptedException {
 
     dependencies.installModules(env, executor, stateContext);
-    SpellModule.installInto(env, wrappers, spellEntity);
+    SpellModule.installInto(env, converters, spellEntity);
 
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
     executor.call(stateContext, commandLineFunc);

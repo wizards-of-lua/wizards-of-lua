@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.wrapper.block;
+package net.wizardsoflua.lua.converters.block;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,27 +7,27 @@ import java.util.Map;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
-import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class BlockWrapper {
+public class BlockConverter {
   public static final String METATABLE_NAME = "Block";
 
-  private final Wrappers wrappers;
+  private final Converters converters;
   private final Table metatable;
 
-  public BlockWrapper(Wrappers wrappers) {
-    this.wrappers = wrappers;
+  public BlockConverter(Converters converters) {
+    this.converters = converters;
     // TODO do declaration outside this class
-    this.metatable = wrappers.getTypes().declare(METATABLE_NAME);
+    this.metatable = converters.getTypes().declare(METATABLE_NAME);
   }
 
-  public Table wrap(IBlockState delegate) {
+  public Table toLua(IBlockState delegate) {
     DefaultTableBuilder builder = new DefaultTableBuilder();
     builder.setMetatable(metatable);
     builder.add("name", delegate.getBlock().getRegistryName().getResourcePath());
-    builder.add("material", wrappers.wrap(delegate.getMaterial()));
+    builder.add("material", converters.materialToLua(delegate.getMaterial()));
     builder.add("properties", getProperties(delegate));
 
 

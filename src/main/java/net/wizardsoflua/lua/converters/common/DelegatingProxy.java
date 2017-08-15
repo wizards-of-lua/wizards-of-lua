@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.wrapper.common;
+package net.wizardsoflua.lua.converters.common;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -8,29 +8,27 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Preconditions;
-
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Metatables;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
+import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.table.Property;
-import net.wizardsoflua.lua.wrapper.Wrappers;
 
 public class DelegatingProxy extends Table {
 
   private final TraversableHashMap<Object, Object> properties = new TraversableHashMap<>();
-  private final Wrappers wrappers;
+  private final Converters converters;
   private final Object delegate;
 
-  public DelegatingProxy(Wrappers wrappers, Table metatable, Object delegate) {
-    this.wrappers = checkNotNull(wrappers, "wrappers==null!");
+  public DelegatingProxy(Converters converters, Table metatable, Object delegate) {
+    this.converters = checkNotNull(converters, "converters==null!");
     this.delegate = checkNotNull(delegate, "delegate==null!");
     setMetatable(metatable);
   }
 
-  public Wrappers getWrappers() {
-    return wrappers;
+  public Converters getConverters() {
+    return converters;
   }
 
   public Object getDelegate() {

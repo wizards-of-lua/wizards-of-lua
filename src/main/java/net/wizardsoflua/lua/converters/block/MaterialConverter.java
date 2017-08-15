@@ -1,24 +1,24 @@
-package net.wizardsoflua.lua.wrapper.block;
+package net.wizardsoflua.lua.converters.block;
 
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
-import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class MaterialWrapper {
+public class MaterialConverter {
   public static final String METATABLE_NAME = "Material";
 
-  private final Wrappers wrappers;
+  private final Converters converters;
   private final Table metatable;
 
 
-  public MaterialWrapper(Wrappers wrappers) {
-    this.wrappers = wrappers;
+  public MaterialConverter(Converters converters) {
+    this.converters = converters;
     // TODO do declaration outside this class
-    this.metatable = wrappers.getTypes().declare(METATABLE_NAME);
+    this.metatable = converters.getTypes().declare(METATABLE_NAME);
   }
 
-  public Table wrap(Material delegate) {
+  public Table toLua(Material delegate) {
     DefaultTableBuilder b = new DefaultTableBuilder();
     b.setMetatable(metatable);
 
@@ -29,7 +29,7 @@ public class MaterialWrapper {
     b.add("isOpaque", delegate.isOpaque());
     b.add("isSolid", delegate.isSolid());
     b.add("isToolNotRequired", delegate.isToolNotRequired());
-    b.add("mobility", wrappers.wrap(delegate.getMobilityFlag()));
+    b.add("mobility", converters.enumToLua(delegate.getMobilityFlag()));
 
 
     return b.build();

@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.wrapper.spell;
+package net.wizardsoflua.lua.converters.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,33 +12,33 @@ import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.wrapper.Wrappers;
-import net.wizardsoflua.lua.wrapper.entity.EntityWrapper;
+import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.converters.entity.EntityConverter;
 import net.wizardsoflua.spell.SpellEntity;
 
-public class SpellWrapper {
+public class SpellConverter {
   public static final String METATABLE_NAME = "Spell";
 
-  private final Wrappers wrappers;
+  private final Converters converters;
   private final Table metatable;
 
-  public SpellWrapper(Wrappers wrappers) {
-    this.wrappers = wrappers;
+  public SpellConverter(Converters converters) {
+    this.converters = converters;
     // TODO do declaration outside this class
-    this.metatable = wrappers.getTypes().declare(METATABLE_NAME, EntityWrapper.METATABLE_NAME);
+    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityConverter.METATABLE_NAME);
     metatable.rawset("execute", new ExecuteFunction());
   }
 
-  public Table wrap(SpellEntity delegate) {
-    return new Proxy(wrappers, metatable, delegate);
+  public Table toLua(SpellEntity delegate) {
+    return new Proxy(converters, metatable, delegate);
   }
 
-  public static class Proxy extends EntityWrapper.Proxy {
+  public static class Proxy extends EntityConverter.Proxy {
 
     private final SpellEntity delegate;
 
-    public Proxy(Wrappers wrappers, Table metatable, SpellEntity delegate) {
-      super(wrappers, metatable, delegate);
+    public Proxy(Converters converters, Table metatable, SpellEntity delegate) {
+      super(converters, metatable, delegate);
       this.delegate = delegate;
       addReadOnly("owner", this::getOwner);
       addReadOnly("block", this::getBlock);
@@ -46,18 +46,18 @@ public class SpellWrapper {
     }
 
     public Table getOwner() {
-      return getWrappers().wrap(delegate.getOwner());
+      return getConverters().entityToLua(delegate.getOwner());
     }
 
     public Table getBlock() {
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
-      return getWrappers().wrap(blockState);
+      return getConverters().blockToLua(blockState);
     }
 
     public void setVisible(Object luaObj) {
       boolean value =
-          checkNotNull(getWrappers().unwrapBoolean(luaObj), "Expected boolean but got nil!");
+          checkNotNull(getConverters().booleanToJava(luaObj), "Expected boolean but got nil!");
       delegate.setVisible(value);
     }
 
@@ -75,7 +75,7 @@ public class SpellWrapper {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      wrappers.getTypes().checkAssignable(METATABLE_NAME, arg0);
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg0);
       Proxy wrapper = (Proxy) arg0;
 
 

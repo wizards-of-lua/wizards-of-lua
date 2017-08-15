@@ -1,22 +1,22 @@
-package net.wizardsoflua.lua.wrapper.vec3;
+package net.wizardsoflua.lua.converters.vec3;
 
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
-import net.wizardsoflua.lua.wrapper.Wrappers;
 
-public class Vec3Wrapper {
+public class Vec3Converters {
   public static final String METATABLE_NAME = "Vec3";
 
   private final Table metatable;
 
-  public Vec3Wrapper(Wrappers wrappers) {
+  public Vec3Converters(Converters converters) {
     // TODO do declaration outside this class
-    this.metatable = wrappers.getTypes().declare(METATABLE_NAME);
+    this.metatable = converters.getTypes().declare(METATABLE_NAME);
   }
 
-  public Table wrap(Vec3d delegate) {
+  public Table toLua(Vec3d delegate) {
     DefaultTableBuilder builder = new DefaultTableBuilder();
     builder.add("x", delegate.xCoord);
     builder.add("y", delegate.yCoord);
@@ -26,7 +26,7 @@ public class Vec3Wrapper {
 
     return builder.build();
   }
-  
+
   public Vec3d unwrap(Table luaTable) {
     double x = Conversions.floatValueOf(luaTable.rawget("x"));
     double y = Conversions.floatValueOf(luaTable.rawget("y"));
