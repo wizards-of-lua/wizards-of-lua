@@ -27,7 +27,7 @@ public class Vec3Converters {
     return builder.build();
   }
 
-  public Vec3d unwrap(Table luaTable) {
+  public Vec3d toJava(Table luaTable) {
     double x = Conversions.floatValueOf(luaTable.rawget("x"));
     double y = Conversions.floatValueOf(luaTable.rawget("y"));
     double z = Conversions.floatValueOf(luaTable.rawget("z"));
