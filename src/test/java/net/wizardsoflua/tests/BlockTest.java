@@ -70,4 +70,38 @@ public class BlockTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("true");
   }
 
+  // /test net.wizardsoflua.tests.BlockTest test_block_has_properties
+  @Test
+  public void test_block_has_properties() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.PLANKS);
+
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.properties; print(p~=nil)",
+            posP.getX(), posP.getY(), posP.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.BlockTest test_block_properties_of_planks
+  @Test
+  public void test_block_properties_of_planks() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.PLANKS);
+    String expected = "{\n" + "  variant = \"oak\"\n" + "}";
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.properties; print(inspect(p,{metatables=false}))",
+            posP.getX(), posP.getY(), posP.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
 }

@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.MapMaker;
 
-import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -85,12 +85,11 @@ public class Wrappers {
     return ((Boolean) luaObj).booleanValue();
   }
 
-
-  public @Nullable Table wrap(@Nullable Vec3d vec3d) {
-    if (vec3d == null) {
+  public @Nullable Table wrap(@Nullable Vec3d value) {
+    if (value == null) {
       return null;
     }
-    return vec3Wrapper.wrap(vec3d);
+    return vec3Wrapper.wrap(value);
   }
 
   public @Nullable Vec3d unwrapVec3(@Nullable Object luaObj) {
@@ -150,11 +149,21 @@ public class Wrappers {
     return materialWrapper.wrap(material);
   }
 
-  public @Nullable ByteString wrap(@Nullable EnumPushReaction mobilityFlag) {
-    if (mobilityFlag == null) {
+  public @Nullable ByteString wrap(@Nullable Enum<?> value) {
+    if (value == null) {
       return null;
     }
-    return ByteString.of(mobilityFlag.name());
+    if ( value instanceof IStringSerializable) {
+      return wrap((IStringSerializable)value);
+    }
+    return ByteString.of(value.name());
+  }
+  
+  public @Nullable ByteString wrap(@Nullable IStringSerializable value) {
+    if (value == null) {
+      return null;
+    }
+    return ByteString.of(((IStringSerializable) value).getName());
   }
 
 }
