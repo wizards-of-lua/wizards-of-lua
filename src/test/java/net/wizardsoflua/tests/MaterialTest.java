@@ -57,7 +57,7 @@ public class MaterialTest extends WolTestBase {
     // When:
     mc().player()
         .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(inspect(m, {metatables=false}))",
+            "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(str(m))",
             posP.getX(), posP.getY(), posP.getZ()));
 
     // Then:

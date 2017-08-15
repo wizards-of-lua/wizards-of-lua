@@ -18,7 +18,7 @@ end
 -- end
 
 function str(obj)
-  return inspect(obj)
+  return inspect(obj,{metatables=false})
 end
 
 local error_ = error

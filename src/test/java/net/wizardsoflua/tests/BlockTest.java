@@ -96,7 +96,7 @@ public class BlockTest extends WolTestBase {
     // When:
     mc().player()
         .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.properties; print(inspect(p,{metatables=false}))",
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.properties; print(str(p))",
             posP.getX(), posP.getY(), posP.getZ()));
 
     // Then:
