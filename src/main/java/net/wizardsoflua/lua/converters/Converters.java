@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.MapMaker;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.converters.block.BlockConverter;
 import net.wizardsoflua.lua.converters.block.MaterialConverter;
 import net.wizardsoflua.lua.converters.entity.EntityConverter;
@@ -96,7 +96,7 @@ public class Converters {
       return null;
     }
     types.checkAssignable(Vec3Converters.METATABLE_NAME, luaObj);
-    Vec3d result = vec3Converter.unwrap((Table) luaObj);
+    Vec3d result = vec3Converter.toJava((Table) luaObj);
     return result;
   }
 
@@ -115,11 +115,11 @@ public class Converters {
     return String.valueOf(Conversions.stringValueOf(luaObj));
   }
 
-  public @Nullable Table blockToLua(@Nullable IBlockState blockState) {
-    if (blockState == null) {
+  public @Nullable Table blockToLua(@Nullable WolBlock block) {
+    if (block == null) {
       return null;
     }
-    return blockConverter.toLua(blockState);
+    return blockConverter.toLua(block);
   }
 
   public @Nullable Table entityToLua(@Nullable Entity entity) {

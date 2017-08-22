@@ -3,6 +3,7 @@ package net.wizardsoflua.lua.converters.spell;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
@@ -12,8 +13,11 @@ import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.converters.block.BlockConverter;
 import net.wizardsoflua.lua.converters.entity.EntityConverter;
+import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellConverter {
@@ -41,7 +45,7 @@ public class SpellConverter {
       super(converters, metatable, delegate);
       this.delegate = delegate;
       addReadOnly("owner", this::getOwner);
-      addReadOnly("block", this::getBlock);
+      add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);
     }
 
@@ -52,7 +56,18 @@ public class SpellConverter {
     public Table getBlock() {
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
-      return getConverters().blockToLua(blockState);
+      TileEntity tileEntity = delegate.getEntityWorld().getTileEntity(pos);
+      WolBlock block = new WolBlock(blockState, tileEntity);
+      return getConverters().blockToLua(block);
+    }
+
+    public void setBlock(Object luaObj) {
+      getConverters().getTypes().checkAssignable(BlockConverter.METATABLE_NAME, luaObj,
+          Terms.MANDATORY);
+      BlockConverter.Proxy proxy = (BlockConverter.Proxy) luaObj;
+      BlockPos pos = new BlockPos(delegate.getPositionVector());
+      World world = delegate.getEntityWorld();
+      BlockConverter.setBlock(proxy, pos, world);
     }
 
     public void setVisible(Object luaObj) {
@@ -95,4 +110,15 @@ public class SpellConverter {
       throw new NonsuspendableFunctionException();
     }
   }
+  
+  /**
+   * /lua b=spell.block; b.properties.wet=true; spell.block = b;
+   * 
+   * /lua b=spell.block:copy(); b.properties.wet=true; spell:paste( b);
+   * 
+   * /lua b=spell.block:copy(); b.properties.wet=true; spell.block:paste( b);
+   * 
+   * /lua b=spell:copy(); b.properties.wet=true; spell:paste( b);
+   * 
+   */
 }
