@@ -8,7 +8,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.util.TraversableHashMap;
 
-public class DefaultTableBuilder {
+public class DefaultTableBuilder implements TableBuilder {
 
   private final TraversableHashMap<Object, Object> entries;
 
@@ -73,6 +73,7 @@ public class DefaultTableBuilder {
    *
    * @throws IllegalArgumentException when {@code key} is {@code null} or a <i>NaN</i>
    */
+  @Override
   public DefaultTableBuilder add(Object key, Object value) {
     key = Conversions.normaliseKey(key);
     checkKey(key);
@@ -86,6 +87,7 @@ public class DefaultTableBuilder {
     return this;
   }
 
+  @Override
   public DefaultTableBuilder setMetatable(Table table) {
     metatable = table;
     return this;
@@ -103,6 +105,7 @@ public class DefaultTableBuilder {
    *
    * @return a new table
    */
+  @Override
   public DefaultTable build() {
     DefaultTable result = new DefaultTable();
     for (Map.Entry<Object, Object> e : entries.entrySet()) {

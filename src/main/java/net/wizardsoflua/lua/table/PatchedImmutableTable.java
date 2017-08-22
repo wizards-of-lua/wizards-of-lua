@@ -123,7 +123,7 @@ public class PatchedImmutableTable extends Table {
     for (Map.Entry<Object, Object> entry : entries) {
       builder.add(entry.getKey(), entry.getValue());
     }
-    return builder.build();
+    return (PatchedImmutableTable)builder.build();
   }
 
   /**
@@ -267,7 +267,7 @@ public class PatchedImmutableTable extends Table {
   /**
    * Builder class for constructing instances of {@link PatchedImmutableTable}.
    */
-  public static class Builder {
+  public static class Builder implements TableBuilder {
 
     private final TraversableHashMap<Object, Object> entries;
 
@@ -332,6 +332,7 @@ public class PatchedImmutableTable extends Table {
      *
      * @throws IllegalArgumentException when {@code key} is {@code null} or a <i>NaN</i>
      */
+    @Override
     public Builder add(Object key, Object value) {
       key = Conversions.normaliseKey(key);
       checkKey(key);
@@ -344,7 +345,8 @@ public class PatchedImmutableTable extends Table {
 
       return this;
     }
-
+    
+    @Override
     public Builder setMetatable(Table table) {
       metatable = table;
       return this;
@@ -362,7 +364,8 @@ public class PatchedImmutableTable extends Table {
      *
      * @return a new immutable table
      */
-    public PatchedImmutableTable build() {
+    @Override
+    public Table build() {
       Map<Object, Entry> tableEntries = new HashMap<>();
 
       for (Map.Entry<Object, Object> e : entries.entrySet()) {

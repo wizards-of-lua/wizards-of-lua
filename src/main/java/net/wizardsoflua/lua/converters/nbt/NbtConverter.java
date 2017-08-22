@@ -24,11 +24,17 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.table.DefaultTableBuilder;
+import net.wizardsoflua.lua.table.PatchedImmutableTable;
+import net.wizardsoflua.lua.table.TableBuilder;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class NbtConverter {
   public static int COMPOUND_TAG_TYPE = 10;
+
+
+  private static TableBuilder newTableBuilder() {
+    return new PatchedImmutableTable.Builder();
+  }
 
   public static NBTTagCompound merge(NBTTagCompound origTagCompound, Table luaData) {
     NBTTagCompound resultTagCompound = new NBTTagCompound();
@@ -202,7 +208,7 @@ public class NbtConverter {
     return null;
   }
 
-  public static void insertValues(DefaultTableBuilder builder, NBTTagCompound tagCompound) {
+  public static void insertValues(TableBuilder builder, NBTTagCompound tagCompound) {
     checkNotNull(tagCompound, "tagCompound==null!");
     Set<String> keys = tagCompound.getKeySet();
     for (String key : keys) {
@@ -248,13 +254,13 @@ public class NbtConverter {
 
   public static Table toLua(NBTTagCompound tagCompound) {
     checkNotNull(tagCompound, "tagCompound==null!");
-    DefaultTableBuilder builder = new DefaultTableBuilder();
+    TableBuilder builder = newTableBuilder();
     insertValues(builder, tagCompound);
     return builder.build();
   }
 
   public static Table toLua(NBTTagList list) {
-    DefaultTableBuilder builder = new DefaultTableBuilder();
+    TableBuilder builder = newTableBuilder();
     int size = list.tagCount();
     for (int i = 0; i < size; ++i) {
       NBTBase tag = list.get(i);
@@ -267,7 +273,7 @@ public class NbtConverter {
   }
 
   public static Table toLua(int[] intArray) {
-    DefaultTableBuilder builder = new DefaultTableBuilder();
+    TableBuilder builder = newTableBuilder();
     for (int i = 0; i < intArray.length; ++i) {
       builder.add((long) (i + 1), intArray[i]);
     }
