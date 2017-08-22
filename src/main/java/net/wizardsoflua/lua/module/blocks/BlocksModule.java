@@ -3,7 +3,11 @@ package net.wizardsoflua.lua.module.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -51,12 +55,30 @@ public class BlocksModule {
       Block block = getBlockByName(blockName);
 
       IBlockState blockState = block.getDefaultState();
-      NBTTagCompound nbt = null; // TODO
+
+      NBTTagCompound nbt = null;
+      if (blockState.getBlock().hasTileEntity(blockState)) {
+        World world = null; // This is safe in vanilla MC 1.11.2 as the world value is not used.
+        // TODO alternatively pass the 'default' world
+        TileEntity tileEntity = blockState.getBlock().createTileEntity(world, blockState);
+        nbt = new NBTTagCompound();
+        tileEntity.writeToNBT(nbt);
+        patch(tileEntity, nbt);
+      }
       WolBlock wolBlock = new WolBlock(blockState, nbt);
 
       Table result = converters.blockToLua(wolBlock);
-
       context.getReturnBuffer().setTo(result);
+    }
+
+    // This is a work around for the TileEntityShulkerBox, since it doesn't write the Items tag
+    // if the items are empty.
+    private void patch(TileEntity tileEntity, NBTTagCompound origData) {
+      if (tileEntity instanceof TileEntityShulkerBox) {
+        if (origData.getTag("Items") == null) {
+          origData.setTag("Items", new NBTTagList());
+        }
+      }
     }
 
     @Override

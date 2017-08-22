@@ -38,6 +38,7 @@ public class BlockConverter {
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);
     metatable.rawset("withData", new WithDataFunction());
+    metatable.rawset("withNbt", new WithNbtFunction());
   }
 
   public Table toLua(WolBlock delegate) {
@@ -75,7 +76,7 @@ public class BlockConverter {
       patch(tileEntity, origData);
       Table luaNbt = (Table) table.rawget("nbt");
       NBTTagCompound newData;
-      if ( luaNbt != null) {
+      if (luaNbt != null) {
         newData = NbtConverter.merge(origData, luaNbt);
       } else {
         newData = origData;
@@ -173,6 +174,38 @@ public class BlockConverter {
       }
 
       WolBlock newWolBlock = new WolBlock(state, oldWolBlock.getNbt());
+      Table result = converters.blockToLua(newWolBlock);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class WithNbtFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      Proxy wrapper = (Proxy) arg1;
+      Table nbtTable = converters.getTypes().castTable(arg2, Terms.MANDATORY);
+
+      WolBlock oldWolBlock = wrapper.delegate;
+      NBTTagCompound oldNbt = oldWolBlock.getNbt();
+
+      NBTTagCompound newNbt;
+      if (oldNbt != null) {
+        newNbt = NbtConverter.merge(oldNbt, nbtTable);
+      } else {
+        // newNbt = oldNbt;
+        throw new IllegalArgumentException(String.format("Can't set nbt for block '%s'",
+            oldWolBlock.getBlockState().getBlock().getRegistryName().getResourcePath()));
+      }
+
+      WolBlock newWolBlock = new WolBlock(oldWolBlock.getBlockState(), newNbt);
       Table result = converters.blockToLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }

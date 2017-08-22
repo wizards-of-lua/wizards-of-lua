@@ -104,7 +104,6 @@ public class BlockTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-
   // /test net.wizardsoflua.tests.BlockTest test_withData_furnace_facing_east
   @Test
   public void test_withData_furnace_facing_east() throws Exception {
@@ -120,5 +119,22 @@ public class BlockTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("east");
+  }
+
+  // /test net.wizardsoflua.tests.BlockTest test_withNbt_furnace_having_planks_in_slot_1
+  @Test
+  public void test_withNbt_furnace_having_planks_in_slot_1() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.AIR);
+
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
+            posP.getX(), posP.getY(), posP.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("minecraft:planks");
   }
 }
