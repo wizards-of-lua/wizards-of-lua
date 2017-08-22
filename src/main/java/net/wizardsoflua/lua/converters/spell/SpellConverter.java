@@ -111,14 +111,4 @@ public class SpellConverter {
     }
   }
   
-  /**
-   * /lua b=spell.block; b.properties.wet=true; spell.block = b;
-   * 
-   * /lua b=spell.block:copy(); b.properties.wet=true; spell:paste( b);
-   * 
-   * /lua b=spell.block:copy(); b.properties.wet=true; spell.block:paste( b);
-   * 
-   * /lua b=spell:copy(); b.properties.wet=true; spell:paste( b);
-   * 
-   */
 }

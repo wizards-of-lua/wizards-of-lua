@@ -15,11 +15,16 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.runtime.AbstractFunction2;
+import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.converters.common.DelegatingProxy;
 import net.wizardsoflua.lua.converters.nbt.NbtConverter;
 import net.wizardsoflua.lua.converters.nbt.NbtPrimitiveConverter;
+import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
 public class BlockConverter {
@@ -32,6 +37,7 @@ public class BlockConverter {
     this.converters = converters;
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);
+    metatable.rawset("withData", new WithDataFunction());
   }
 
   public Table toLua(WolBlock delegate) {
@@ -50,10 +56,10 @@ public class BlockConverter {
     Table table = (Table) proxy;
     IBlockState state = proxy.delegate.getBlockState();
     // Block-State
-    Table properties = (Table) table.rawget("data");
-    if (properties != null) {
+    Table dataTable = (Table) table.rawget("data");
+    if (dataTable != null) {
       for (IProperty<?> key : state.getPropertyKeys()) {
-        Object luaValue = properties.rawget(key.getName());
+        Object luaValue = dataTable.rawget(key.getName());
         Class<?> vc = key.getValueClass();
         Comparable javaValue = NbtPrimitiveConverter.toJava(vc, luaValue);
         state = state.withProperty((IProperty) key, javaValue);
@@ -68,7 +74,12 @@ public class BlockConverter {
       tileEntity.writeToNBT(origData);
       patch(tileEntity, origData);
       Table luaNbt = (Table) table.rawget("nbt");
-      NBTTagCompound newData = NbtConverter.merge(origData, luaNbt);
+      NBTTagCompound newData;
+      if ( luaNbt != null) {
+        newData = NbtConverter.merge(origData, luaNbt);
+      } else {
+        newData = origData;
+      }
       newData.setInteger("x", pos.getX());
       newData.setInteger("y", pos.getY());
       newData.setInteger("z", pos.getZ());
@@ -144,6 +155,34 @@ public class BlockConverter {
     }
   }
 
+  private class WithDataFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      Proxy wrapper = (Proxy) arg1;
+      Table dataTable = converters.getTypes().castTable(arg2, Terms.MANDATORY);
+
+      WolBlock oldWolBlock = wrapper.delegate;
+      IBlockState state = oldWolBlock.getBlockState();
+      for (IProperty<?> key : state.getPropertyKeys()) {
+        Object luaValue = dataTable.rawget(key.getName());
+        Class<?> vc = key.getValueClass();
+        Comparable javaValue = NbtPrimitiveConverter.toJava(vc, luaValue);
+        state = state.withProperty((IProperty) key, javaValue);
+      }
+
+      WolBlock newWolBlock = new WolBlock(state, oldWolBlock.getNbt());
+      Table result = converters.blockToLua(newWolBlock);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
 
 
 }

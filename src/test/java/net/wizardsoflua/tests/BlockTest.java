@@ -79,8 +79,8 @@ public class BlockTest extends WolTestBase {
     // When:
     mc().player()
         .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(p~=nil)",
-            posP.getX(), posP.getY(), posP.getZ()));
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(p~=nil)", posP.getX(),
+            posP.getY(), posP.getZ()));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -96,12 +96,29 @@ public class BlockTest extends WolTestBase {
     // When:
     mc().player()
         .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))",
-            posP.getX(), posP.getY(), posP.getZ()));
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))", posP.getX(),
+            posP.getY(), posP.getZ()));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+
+  // /test net.wizardsoflua.tests.BlockTest test_withData_furnace_facing_east
+  @Test
+  public void test_withData_furnace_facing_east() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.AIR);
+
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua b=Blocks.get('furnace'):withData({facing='east'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.facing)",
+            posP.getX(), posP.getY(), posP.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("east");
+  }
 }
