@@ -23,6 +23,7 @@ import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.converters.Converters;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
+import net.wizardsoflua.lua.module.blocks.BlocksModule;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.runtime.Runtime;
 import net.wizardsoflua.lua.module.runtime.RuntimeModule;
@@ -77,9 +78,10 @@ public class SpellProgram {
     installSystemLibraries();
     types = new Types(env);
     TypesModule.installInto(env, types);
+    converters = new Converters(types);
     PrintRedirector.installInto(env, source);
     RuntimeModule.installInto(env, context.getRuntime());
-    converters = new Converters(types);
+    BlocksModule.installInto(env, converters);
     
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
