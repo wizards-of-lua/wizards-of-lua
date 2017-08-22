@@ -8,11 +8,11 @@ import net.minecraft.tileentity.TileEntity;
 
 public class WolBlock {
   private IBlockState blockState;
-  private final @Nullable NBTTagCompound data;
+  private final @Nullable NBTTagCompound nbt;
 
-  public WolBlock(IBlockState blockState, NBTTagCompound data) {
+  public WolBlock(IBlockState blockState, NBTTagCompound nbt) {
     this.blockState = blockState;
-    this.data = data;
+    this.nbt = nbt;
   }
 
   public WolBlock(IBlockState blockState, @Nullable TileEntity tileEntity) {
@@ -20,9 +20,9 @@ public class WolBlock {
     if (tileEntity != null) {
       NBTTagCompound tagCompound = new NBTTagCompound();
       tileEntity.writeToNBT(tagCompound);
-      data = tagCompound;
+      nbt = tagCompound;
     } else {
-      data = null;
+      nbt = null;
     }
   }
 
@@ -34,7 +34,7 @@ public class WolBlock {
     this.blockState = blockState;
   }
 
-  public NBTTagCompound getData() {
-    return data;
+  public NBTTagCompound getNbt() {
+    return nbt;
   }
 }

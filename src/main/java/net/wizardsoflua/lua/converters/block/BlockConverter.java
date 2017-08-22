@@ -50,7 +50,7 @@ public class BlockConverter {
     Table table = (Table) proxy;
     IBlockState state = proxy.delegate.getBlockState();
     // Block-State
-    Table properties = (Table) table.rawget("properties");
+    Table properties = (Table) table.rawget("data");
     if (properties != null) {
       for (IProperty<?> key : state.getPropertyKeys()) {
         Object luaValue = properties.rawget(key.getName());
@@ -117,9 +117,9 @@ public class BlockConverter {
           () -> delegate.getBlockState().getBlock().getRegistryName().getResourcePath());
       addReadOnly("material",
           () -> converters.materialToLua(delegate.getBlockState().getMaterial()));
-      addImmutable("properties", getProperties(delegate.getBlockState()));
-      if (delegate.getData() != null) {
-        addImmutable("nbt", getNbt(delegate.getData()));
+      addImmutable("data", getData(delegate.getBlockState()));
+      if (delegate.getNbt() != null) {
+        addImmutable("nbt", getNbt(delegate.getNbt()));
       }
     }
 
@@ -132,7 +132,7 @@ public class BlockConverter {
       return builder.build();
     }
 
-    public Table getProperties(IBlockState blockState) {
+    public Table getData(IBlockState blockState) {
       DefaultTableBuilder b = new DefaultTableBuilder();
       Collection<IProperty<?>> names = blockState.getPropertyKeys();
       for (IProperty<?> name : names) {

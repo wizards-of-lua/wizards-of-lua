@@ -70,16 +70,16 @@ public class BlockTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("true");
   }
 
-  // /test net.wizardsoflua.tests.BlockTest test_block_has_properties
+  // /test net.wizardsoflua.tests.BlockTest test_block_has_data
   @Test
-  public void test_block_has_properties() throws Exception {
+  public void test_block_has_data() throws Exception {
     // Given:
     mc().setBlock(posP, Blocks.PLANKS);
 
     // When:
     mc().player()
         .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.properties; print(p~=nil)",
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(p~=nil)",
             posP.getX(), posP.getY(), posP.getZ()));
 
     // Then:
@@ -87,16 +87,16 @@ public class BlockTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("true");
   }
 
-  // /test net.wizardsoflua.tests.BlockTest test_block_properties_of_planks
+  // /test net.wizardsoflua.tests.BlockTest test_block_data_of_planks
   @Test
-  public void test_block_properties_of_planks() throws Exception {
+  public void test_block_data_of_planks() throws Exception {
     // Given:
     mc().setBlock(posP, Blocks.PLANKS);
     String expected = "{\n" + "  variant = \"oak\"\n" + "}";
     // When:
     mc().player()
         .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.properties; print(str(p))",
+            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))",
             posP.getX(), posP.getY(), posP.getZ()));
 
     // Then:
