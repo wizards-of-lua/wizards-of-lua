@@ -20,8 +20,6 @@ public class MaterialTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
   }
 
-
-
   // /test net.wizardsoflua.tests.MaterialTest test_material_classname
   @Test
   public void test_material_classname() throws Exception {
@@ -63,6 +61,20 @@ public class MaterialTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.MaterialTest test_material_is_cached
+  @Test
+  public void test_material_is_cached() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().perform(new ChatAction(
+        "/lua m1=Blocks.get('stone').material; m2=Blocks.get('stone').material; print(m1==m2)"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
   }
 
 }

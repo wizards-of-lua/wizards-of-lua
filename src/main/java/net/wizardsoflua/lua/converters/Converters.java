@@ -152,7 +152,9 @@ public class Converters {
     if (materialConverter == null) {
       return null;
     }
-    return materialConverter.toLua(material);
+    return cache.computeIfAbsent(material, t -> {
+      return materialConverter.toLua(material);
+    });
   }
 
   public @Nullable ByteString enumToLua(@Nullable Enum<?> value) {
