@@ -3,23 +3,21 @@ MickKay:
   name: MickKay
   github: mkarneim
   fullname: Michael Karneim
-  title: Archmage of Lua
-  roles: Project Lead, Mod Developer
-  category: founding-member
-Bytemage:
-  name: Bytemage
-  github: bytemage
-  roles: Feature Designer, Tester
+  roles: Mod Developer, Project Lead
   category: founding-member
 Adrodoc55:
   name: Adrodoc55
   github: Adrodoc55
-  title: Archmage of Lua
   roles: Mod Developer
+  category: founding-member
+Bytemage:
+  name: Bytemage
+  github: bytemage
+  roles: Wizard
   category: founding-member
 MrNickKay:
   name: MrNickKay
   github: MrNickKay
-  roles: Promoter, Tester
+  roles: Wizard
   category: founding-member
 # contributors:

@@ -1,6 +1,6 @@
 #### Example
 Getting the length of a vector:
 ```lua
-local p = vec3( 2, 3, 4)
-local l = p:magnitude()
+local p = Vec3( 2, 3, 4)
+local len = p:magnitude()
 ```

@@ -1,11 +1,12 @@
 ---
-title: TODO
+title: Controlling the Player
 name: Player
+extends: Entity
 properties:
 functions:
 ---
 {% include module-head.md %}
 
-TODO
+Guess what, the Player represents a player.
 
 {% include module-body.md %}

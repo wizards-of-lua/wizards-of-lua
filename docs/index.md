@@ -6,22 +6,21 @@ title: The Art of Spell Crafting
 ![Manison](images/manison.jpg)
 
 The Wizards of Lua are a [community of programmers and their friends](members.md),
-who want to spread the knowledge of programming to all people.
+who want to spread the knowledge of programming.
 
 The Wizards of Lua are also some decent gamers
-who belive that interactive programming opens a wide channel to transform
-the creativity of former plain consumers into a multitude of game contents
-and experiences.
+who want to give gamers the ability to create their own game contents.
 
 And finally 'The Wizards of Lua' is the name of a [Minecraft](https://minecraft.net/de-de/)
 modification that simply adds the `/lua` command to the game.
 
 # The Lingua Magica
 By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/luamod)
-onto your Minecraft server, you are changing the very nature of your Minecraft
+onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod transforms [Lua, the programming language](https://www.lua.org),
-into a 'lingua magica', which is made available from the in-game chat window.
+into a 'lingua magica', a language of magic, which can be used from the in-game chat window
+or from command blocks.
 Players can use it to create and cast powerful 'spells' to control almost any
 aspect of the world.
 
@@ -44,7 +43,7 @@ a valid Lua program.
 
 For example, you could enter the following line into the chat:
 ```lua
-/lua for i=1,10 do spell.block = "stone"; spell:move("UP"); end
+/lua for i=1,10 do spell.block=Blocks.get("stone"); spell:move("up"); end
 ```
 This will cast a spell that creates a pillar of stones directly in front of you,
 10 meters tall. Here is a picture of it:
@@ -52,7 +51,7 @@ This will cast a spell that creates a pillar of stones directly in front of you,
 ![Pillar of Stone](images/pillar-of-stone.jpg)
 
 The base of the pillar is right at that location you where looking at when you
-started to type the command.
+submitted the command.
 
 But changing the world by adding (or removing) blocks is not the only thing
 you can do with Lua.

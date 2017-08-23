@@ -1,3 +1,7 @@
+{% if page.extends %}
+{% assign modules = site.modules | where_exp:"m", "m.name == page.extends" %}
+The {{ page.name }} class is a subtype of the <a href="{{ modules[0].url }}">{{ modules[0].name }}</a> class and inherits all its properties and functions.
+{% endif %}
 {% if page.properties %}
 Here is a brief list of the {{ page.name }}'s *properties*:
 

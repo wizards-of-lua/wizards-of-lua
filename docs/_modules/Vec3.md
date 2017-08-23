@@ -67,10 +67,16 @@ functions:
 {% include module-head.md %}
 
 'Vec3' is short for '3-dimensional Vector'.
-Mostly a 3-dimensional Vector is used to denote a position in the
+Mostly a 3-dimensional vector is used to denote a position in the
 3-dimensional world space. And sometimes it is used to denote a constant velocity
 of an object inside that space.
 Actually a vector can be used for many other 'things' that can be described by
 3 independent numerical values.
+
+To create a vector you can call the Vec3 function:
+```lua
+/lua myvec = Vec3( 1, 2, 3)
+```
+This creates a vector called 'myvec' with the component values x=1, y=2, z=3.
 
 {% include module-body.md %}
