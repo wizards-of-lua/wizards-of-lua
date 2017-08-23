@@ -7,9 +7,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -41,27 +38,10 @@ public class BlockConverter {
     return new Proxy(converters, metatable, delegate);
   }
 
-  public static void setBlock(BlockConverter.Proxy proxy, BlockPos pos, World world) {
-    IBlockState state = proxy.delegate.getBlockState();
-    world.setBlockState(pos, state);
-    NBTTagCompound newData = proxy.delegate.getNbt();
-    if (newData != null) {
-      newData.setInteger("x", pos.getX());
-      newData.setInteger("y", pos.getY());
-      newData.setInteger("z", pos.getZ());
-
-      TileEntity tileEntity = world.getTileEntity(pos);
-      if (tileEntity != null) {
-        tileEntity.readFromNBT(newData);
-        tileEntity.markDirty();
-      } else {
-        throw new IllegalStateException(String.format("Missing tile entity for %s at %s %s %s",
-            state.getBlock().getRegistryName().getResourcePath(), pos.getX(), pos.getY(),
-            pos.getZ()));
-      }
-      int flags = 3; // TODO why 3?
-      world.notifyBlockUpdate(pos, state, state, flags);
-    }
+  public WolBlock toJava(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj, Terms.MANDATORY);
+    Proxy proxy = (Proxy) luaObj;
+    return proxy.delegate;
   }
 
   public static class Proxy extends DelegatingProxy {

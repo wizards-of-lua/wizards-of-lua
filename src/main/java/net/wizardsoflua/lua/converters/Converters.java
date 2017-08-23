@@ -24,7 +24,7 @@ import net.wizardsoflua.lua.converters.block.MaterialConverter;
 import net.wizardsoflua.lua.converters.entity.EntityConverter;
 import net.wizardsoflua.lua.converters.entity.PlayerConverter;
 import net.wizardsoflua.lua.converters.spell.SpellConverter;
-import net.wizardsoflua.lua.converters.vec3.Vec3Converters;
+import net.wizardsoflua.lua.converters.vec3.Vec3Converter;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.spell.SpellEntity;
 
@@ -49,7 +49,7 @@ public class Converters {
   private final Cache cache = new Cache();
   private final Types types;
 
-  private final Vec3Converters vec3Converter;
+  private final Vec3Converter vec3Converter;
   private final BlockConverter blockConverter;
   private final MaterialConverter materialConverter;
   private final EntityConverter entityConverter;
@@ -58,7 +58,7 @@ public class Converters {
 
   public Converters(Types types) {
     this.types = checkNotNull(types, "types==null!");
-    vec3Converter = new Vec3Converters(this);
+    vec3Converter = new Vec3Converter(this);
     blockConverter = new BlockConverter(this);
     materialConverter = new MaterialConverter(this);
     entityConverter = new EntityConverter(this);
@@ -95,7 +95,7 @@ public class Converters {
     if (luaObj == null) {
       return null;
     }
-    types.checkAssignable(Vec3Converters.METATABLE_NAME, luaObj);
+    types.checkAssignable(Vec3Converter.METATABLE_NAME, luaObj);
     Vec3d result = vec3Converter.toJava((Table) luaObj);
     return result;
   }
@@ -120,6 +120,13 @@ public class Converters {
       return null;
     }
     return blockConverter.toLua(block);
+  }
+
+  public @Nullable WolBlock blockToJava(@Nullable Object luaObj) {
+    if (luaObj == null) {
+      return null;
+    }
+    return blockConverter.toJava(luaObj);
   }
 
   public @Nullable Table entityToLua(@Nullable Entity entity) {

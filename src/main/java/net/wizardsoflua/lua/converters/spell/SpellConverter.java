@@ -21,6 +21,7 @@ import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellConverter {
+
   public static final String METATABLE_NAME = "Spell";
 
   private final Converters converters;
@@ -64,10 +65,10 @@ public class SpellConverter {
     public void setBlock(Object luaObj) {
       getConverters().getTypes().checkAssignable(BlockConverter.METATABLE_NAME, luaObj,
           Terms.MANDATORY);
-      BlockConverter.Proxy proxy = (BlockConverter.Proxy) luaObj;
-      BlockPos pos = new BlockPos(delegate.getPositionVector());
+      WolBlock wolBlock = getConverters().blockToJava(luaObj);
       World world = delegate.getEntityWorld();
-      BlockConverter.setBlock(proxy, pos, world);
+      BlockPos pos = new BlockPos(delegate.getPositionVector());
+      wolBlock.setBlock(world, pos);
     }
 
     public void setVisible(Object luaObj) {
@@ -85,6 +86,7 @@ public class SpellConverter {
       return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
     }
   }
+
 
   private class ExecuteFunction extends AbstractFunctionAnyArg {
     @Override
@@ -110,5 +112,4 @@ public class SpellConverter {
       throw new NonsuspendableFunctionException();
     }
   }
-  
 }
