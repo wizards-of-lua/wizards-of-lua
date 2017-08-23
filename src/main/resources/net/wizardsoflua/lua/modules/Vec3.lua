@@ -24,6 +24,11 @@ function Vec3.from(x,y,z)
   return Vec3.new({x=x,y=y,z=z})
 end
 
+-- This declares a convenient 'constructor' delegating to Vec3.from()
+-- Use it like this: v=Vec3(x,y,z) 
+local mt = {__call=function(tbl,x,y,z) return Vec3.from(x,y,z) end;}
+setmetatable(Vec3,mt)
+
 function Vec3.new(o)
   o = o or {}
   o.x = o.x or 0

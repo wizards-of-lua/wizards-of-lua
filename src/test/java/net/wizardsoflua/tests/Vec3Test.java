@@ -44,6 +44,23 @@ public class Vec3Test extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.Vec3Test test_Vec3_creates_new_Vec3
+  @Test
+  public void test_Vec3_creates_new_Vec3() throws Exception {
+    // Given:
+    int x = 1;
+    int y = 2;
+    int z = 3;
+    String expected = formatPos(x, y, z);
+
+    // When:
+    mc().executeCommand("/lua v=Vec3(%s,%s,%s); print(v)", x, y, z);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.Vec3Test test_new_creates_new_Vec3
   @Test
   public void test_new_creates_new_Vec3() throws Exception {
