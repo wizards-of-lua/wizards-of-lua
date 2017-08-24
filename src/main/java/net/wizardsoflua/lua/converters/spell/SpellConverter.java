@@ -87,7 +87,6 @@ public class SpellConverter {
     }
   }
 
-
   private class ExecuteFunction extends AbstractFunctionAnyArg {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {

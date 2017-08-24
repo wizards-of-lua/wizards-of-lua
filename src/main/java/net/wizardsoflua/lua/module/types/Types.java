@@ -275,11 +275,12 @@ public class Types {
       if (actualMetatable == null) {
         return TABLE_META;
       }
-      String actualTypeName = (String) actualMetatable.rawget(CLASSNAME_META_KEY);
-      if (actualTypeName == null) {
+      Object actualTypeName = actualMetatable.rawget(CLASSNAME_META_KEY);
+      if (actualTypeName != null) {
+        return String.valueOf(actualTypeName);
+      } else {
         return TABLE_META;
       }
-      return actualTypeName;
     }
     if (luaObj instanceof LuaFunction) {
       return FUNCTION_META;

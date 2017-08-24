@@ -77,6 +77,15 @@ public class NbtPrimitiveConverter {
       }
       throw new IllegalArgumentException(String.format("Unexpected name '%s' for element of valueClass %s", enumValueName, valueClass));
     }
+    if (Number.class.isAssignableFrom(valueClass)) {
+      Number num = Conversions.numericalValueOf(luaValue);
+      if ( valueClass.equals(Integer.class)) {
+        return (T) Integer.valueOf(num.intValue());
+      }
+      if ( valueClass.equals(Double.class)) {
+        return (T) Double.valueOf(num.doubleValue());
+      }
+    }
     throw new IllegalArgumentException(String.format("Unexpected valueClass %s", valueClass));
   }
 }
