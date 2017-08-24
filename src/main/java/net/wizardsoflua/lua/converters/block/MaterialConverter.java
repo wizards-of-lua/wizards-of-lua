@@ -28,11 +28,12 @@ public class MaterialConverter {
       addImmutable("blocksLight", delegate.blocksLight());
       addImmutable("blocksMovement", delegate.blocksMovement());
       addImmutable("canBurn", delegate.getCanBurn());
-      addImmutable("isLiquid", delegate.isLiquid());
-      addImmutable("isOpaque", delegate.isOpaque());
-      addImmutable("isSolid", delegate.isSolid());
-      addImmutable("isToolNotRequired", delegate.isToolNotRequired());
+      addImmutable("liquid", delegate.isLiquid());
       addImmutable("mobility", converters.enumToLua(delegate.getMobilityFlag()));
+      addImmutable("opaque", delegate.isOpaque());
+      addImmutable("replaceable", delegate.isReplaceable());
+      addImmutable("requiresNoTool", delegate.isToolNotRequired());
+      addImmutable("solid", delegate.isSolid());
     }
   }
 

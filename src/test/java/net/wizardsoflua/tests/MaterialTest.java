@@ -46,11 +46,12 @@ public class MaterialTest extends WolTestBase {
         + "  blocksLight = true,\n" //
         + "  blocksMovement = true,\n" //
         + "  canBurn = true,\n" //
-        + "  isLiquid = false,\n" //
-        + "  isOpaque = true,\n" //
-        + "  isSolid = true,\n" //
-        + "  isToolNotRequired = true,\n" //
-        + "  mobility = \"NORMAL\"\n" //
+        + "  liquid = false,\n" //
+        + "  mobility = \"NORMAL\",\n" //
+        + "  opaque = true,\n" //
+        + "  replaceable = false,\n" //
+        + "  requiresNoTool = true,\n" //
+        + "  solid = true\n" //
         + "}";
     // When:
     mc().player()
