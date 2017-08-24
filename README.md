@@ -21,8 +21,6 @@ To contribute source code to this project you should be familiar with Java 8, Fo
 
 Please not that is project is a spare time project. If you post an issue or create a pull request please give us some time to react.
 
-Right now there are no automated tests. We definitely what to add automated tests when we think the Lua Api and the in-game command API is stable. To do that, we expect to rewrite everything from scratch. So maybe you would like to help us with that?
-
 ## How to Setup a Local Development Environment for Eclipse
 Download the project sources using Git from the command line:
 * `git clone https://github.com/wizards-of-lua/wizards-of-lua.git`
@@ -42,9 +40,12 @@ Now import the project into Eclipse:
 * Set the working directory to: `${workspace_loc:wizards-of-lua}/run`
 
 ## How to Create a Mod Binary
-* Execute `gradlew build`
+* Execute `gradlew clean assemble`
 
-After that you will find the mod JAR file in `build/libs`.
+Please note that you can not use the `build` task right now since the automated test will not
+run successfully when executed from Gradle.
+
+As a result you will find the mod JAR file in `build/libs`.
 
 ## How to Install the Mod into Minecraft 
 * Install Forge
