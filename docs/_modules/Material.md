@@ -5,35 +5,41 @@ properties:
   - name: blocksLight
     type: boolean
     access: r
-    description: this is true if light can not pass this material.
+    description: This is true if light can not pass this material. If so it will prevent grass from growing on dirt underneath and kill any grass below it.
   - name: blocksMovement
     type: boolean
     access: r
-    description: this is true if entites can not pass this material.
+    description: This is true if entites can not pass this material.
   - name: canBurn
     type: boolean
     access: r
-    description: this is true if this material can catch fire.
-  - name: isLiquid
+    description: This is true if this material can catch fire.
+  - name: liquid
     type: boolean
     access: r
-    description: this is true if this material is liquid and can float.
-  - name: isOpaque
+    description: This is true if this material is liquid and can float.
+  - name: opaque
     type: boolean
     access: r
-    description: this is true if this material blocks the sight of entities.
-  - name: isSolid
+    description: This is true if this material blocks the sight of entities.
+  - name: solid
     type: boolean
     access: r
-    description: this is true if this material is solid.
-  - name: isToolNotRequired
+    description: This is true if this material is solid.
+  - name: replaceable
     type: boolean
     access: r
-    description: this is true if this material can be broken just by hands.
+    description: This is true if this material can be replaced by other blocks, eg. snow, vines, and tall grass.
+  - name: requiresNoTool
+    type: boolean
+    access: r
+    description: This is true if this material can be harvested just by hands.
   - name: mobility
-    type: boolean
+    type: string
     access: r
-    description: this is true if this material is mobile.
+    description: "This defines, if this material can be pushed, e.g. by a piston.
+    The value is one of 'NORMAL', 'DESTROY', 'BLOCK', 'IGNORE'.
+    "
 functions:
 ---
 {% include module-head.md %}

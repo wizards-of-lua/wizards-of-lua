@@ -15,7 +15,7 @@ And finally 'The Wizards of Lua' is the name of a [Minecraft](https://minecraft.
 modification that simply adds the `/lua` command to the game.
 
 # The Lingua Magica
-By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/luamod)
+By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/wizards-of-lua)
 onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod transforms [Lua, the programming language](https://www.lua.org),
@@ -63,14 +63,14 @@ The Lua Spell Book Library contains a collection of books that list all basic
 magic words that have been discovered, or invented, by the very first members,
 called archmages, so far.
 There are a lot of different categories of magic words:
-keywords, modules, types, properties, and functions.
+keywords, modules, classes, properties, and functions.
 The books listed below cover all those categories, but not all words completely.
 There are, almost certainly, more words out there, but to begin with, this library
 is a good starting point.
 
 ![Library of Lua](images/library-of-lua.jpg)
 
-Below you find a list of books that are organized by modules and types.
+Below you find a list of books that are organized by modules and classes.
 Every type and module is documented within its own book.
 Inside each book you will find sections about properties and functions.
 In each of those there is a brief description about their nature, their effects,

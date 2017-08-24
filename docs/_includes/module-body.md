@@ -23,7 +23,7 @@ Here is a brief list of the {{ page.name }}'s *functions*:
 ## Properties
 
 Below you find short descriptions about each of the {{ page.name }}'s properties
-and some examples about how to used them in your spells.
+and some examples about how to use them in your spells.
 
 ---
 {% for prop in properties %}
@@ -42,7 +42,7 @@ and some examples about how to used them in your spells.
 ## Functions
 
 Below you find short descriptions about each of the {{ page.name }}'s functions
-and some examples about how to used them in your spells.
+and some examples about how to use them in your spells.
 
 ---
 {% for func in functions %}
