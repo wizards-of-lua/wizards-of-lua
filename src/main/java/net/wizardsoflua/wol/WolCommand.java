@@ -29,6 +29,14 @@ public class WolCommand extends CommandBase {
     // TODO return usage
     return "";
   }
+  
+  /**
+   * Return the required permission level for this command.
+   */
+  public int getRequiredPermissionLevel() {
+    // TODO add real permission checking somewhere
+    return 2;
+  }
 
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)

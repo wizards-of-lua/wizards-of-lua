@@ -44,7 +44,7 @@ public class LuaCommand extends CommandBase {
    */
   public int getRequiredPermissionLevel() {
     // TODO add real permission checking somewhere
-    return 0;
+    return 2;
   }
 
   @Override
