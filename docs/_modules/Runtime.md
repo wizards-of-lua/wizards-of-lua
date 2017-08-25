@@ -29,8 +29,8 @@ functions:
     description: "Returns a string with the current real date and time.
     If you want you can change the format by providing a format string."
   - name: setAutoSleep
-    parameters:
-    results: boolean
+    parameters: boolean 
+    results: nil
     description: "Set this to true if the spell should go to sleep automatically
     when its allowance is exceeded. If this is set to false, the spell will
     never go to sleep automatically, but instead will be broken when its allowance
