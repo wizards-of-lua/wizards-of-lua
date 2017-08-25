@@ -44,6 +44,6 @@ functions:
 ---
 {% include module-head.md %}
 
-The Material describes the physical behaviour of a [Block]({% link _modules/Block.md %}).
+The Material class describes the physical behaviour of a [Block]({% link _modules/Block.md %}).
 
 {% include module-body.md %}

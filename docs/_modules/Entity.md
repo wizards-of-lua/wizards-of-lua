@@ -41,6 +41,6 @@ functions:
 ---
 {% include module-head.md %}
 
-The Entity is the base class of all entities that populate the world (excluding Blocks).
+The Entity class is the base class of all entities that populate the world.
 
 {% include module-body.md %}

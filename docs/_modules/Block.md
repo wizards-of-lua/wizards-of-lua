@@ -50,6 +50,6 @@ functions:
 ---
 {% include module-head.md %}
 
-A Block is a basic unit of structure in Minecraft.
+The Block class is a basic unit of structure in Minecraft.
 
 {% include module-body.md %}

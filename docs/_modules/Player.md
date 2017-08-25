@@ -7,6 +7,6 @@ functions:
 ---
 {% include module-head.md %}
 
-Guess what, the Player represents a player.
+The Player class represents a specific player who is currently logged into your world.
 
 {% include module-body.md %}

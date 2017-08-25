@@ -44,7 +44,7 @@ functions:
 ---
 {% include module-head.md %}
 
-"Spell" is one of the main magic types used in most known spells. It is used to
+"Spell" is one of the main magic classes used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.
 
 {% include module-body.md %}
