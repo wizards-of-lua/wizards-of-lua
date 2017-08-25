@@ -11,7 +11,7 @@ spell.move( "north", 10)
 ```
 
 #### Example
-Moving the spell's owner for 1/2 meters to the east.
+Moving the spell's owner for half a meter to the east.
 ```lua
 spell.owner:move( "east", 0.5)
 ```
