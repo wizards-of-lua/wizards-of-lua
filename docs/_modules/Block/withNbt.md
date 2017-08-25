@@ -13,7 +13,9 @@ at the spell's position:
 ```lua
 spell.block = spell.block:withNbt( {
   Items = {
-    { Count = 64, Damage = 0, Slot = 5, id = "minecraft:wheat"}
+    { Count = 64, Damage = 0, Slot = 5, 
+      id = "minecraft:wheat"
+    }
   }
 })
 ```

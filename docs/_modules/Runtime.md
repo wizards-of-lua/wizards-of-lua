@@ -36,8 +36,8 @@ functions:
     never go to sleep automatically, but instead will be broken when its allowance
     falls below zero."
   - name: sleep
-    parameters:
-    results: number
+    parameters: number
+    results: nil
     description: "Forces the current spell to sleep for the given amount of
     game ticks."
 ---
