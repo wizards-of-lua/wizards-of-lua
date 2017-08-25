@@ -19,10 +19,8 @@ By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/wizar
 onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod transforms [Lua, the programming language](https://www.lua.org),
-into a 'lingua magica', a language of magic, which can be used from the in-game chat window
-or from command blocks.
-Players can use it to create and cast powerful 'spells' to control almost any
-aspect of the world.
+into a 'lingua magica', a language of magic, players can use it to create and cast powerful 'spells' to control almost any aspect of the world.
+Lua can be executed from the in-game chat window and from command blocks.
 
 By using existing function libraries (so called 'spell books') players can enjoy
 completely new variants of the Minecraft game without great effort.
