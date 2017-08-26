@@ -1,4 +1,4 @@
-<div style="position: fixed; top: 100px; left: 20px;">
+<div id="naviRight">
 <h2>{{ site.data.navigation.docs_list_title }}</h2>
 <ul>
    {% for item in site.data.navigation.docs %}
