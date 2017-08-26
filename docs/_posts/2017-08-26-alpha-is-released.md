@@ -4,8 +4,7 @@ date:   2017-08-26 10:00:00
 categories: release
 excerpt_separator: <!--more-->
 author: mickkay
+layout: post
 ---
-<h2>{{page.title}}</h2>
-
 This post is about blah blah blah and so on.
 <!--more-->
