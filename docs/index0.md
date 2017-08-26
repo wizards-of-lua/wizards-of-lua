@@ -3,7 +3,7 @@ title: The Art of Spell Crafting
 ---
 # Welcome to the Home of the Wizards of Lua
 
-![Manison](images/manison.jpg)
+![Manison](images/manison.jpg){:width="400px"}
 
 The Wizards of Lua are a community of programmers and their friends
 who want to promote interactive programming into a new level

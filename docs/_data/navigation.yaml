@@ -1,0 +1,14 @@
+docs_list_title: Navigation
+docs:
+
+- title: Main
+  url: index.html
+
+- title: News
+  url: news.html
+
+- title: Installation
+  url: installation.html
+
+- title: Spell Book Libary
+  url: spellbooklibrary.html
