@@ -4,6 +4,9 @@ docs:
 - title: Main
   url: index.html
 
+- title: Introduction
+  url: introduction.html
+
 - title: News
   url: news.html
 

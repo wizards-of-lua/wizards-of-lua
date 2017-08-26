@@ -5,5 +5,7 @@ categories: release
 excerpt_separator: <!--more-->
 author: mickkay
 ---
+<h2>{{page.title}}</h2>
+
 This post is about blah blah blah and so on.
 <!--more-->
