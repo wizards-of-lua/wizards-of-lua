@@ -8,18 +8,18 @@ layout: post
 ---
 Today we proudly present the very first alpha release of "Wizards of Lua".
 If you are interested into this mod at this early stage, please feel free to
-[download and install](/installation/) it.
+[download and install](/installation.html) it.
 <!--more-->
-Make sure to read the [introduction](/introduction/) in order to get some hints
+Make sure to read the [introduction](/introduction.html) in order to get some hints
 about how to use this mod.
 We are eager to receive some [feedback about issues](https://github.com/wizards-of-lua/wizards-of-lua/issues)
 you discover.
 
 The following features are implemented so far.
 ### Implemented Features
-* Wizards can cast spells using the [/lua command](/lua-command).
-* Wizards can list all active spells using the [/wol command](/wol-command).
-* Wizards can break all active spells using the [/wol command](/wol-command).
+* Wizards can cast spells using the [/lua command](/lua-command.html).
+* Wizards can list all active spells using the [/wol command](/wol-command.html).
+* Wizards can break all active spells using the [/wol command](/wol-command.html).
 * Spells can be casted by command blocks.
 * Spells can create any available block using the [Blocks module](/modules/Blocks/).
 * Spells can read and modify all block properties using the [Block class](/modules/Block/).
