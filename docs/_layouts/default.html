@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <style>
 
-      #coming_soon {
+      #corner_banner {
         position: absolute;
         top: 40px;
         right: -50px;
@@ -76,7 +76,7 @@
         #header nav li {
           display: none;
         }
-        #coming_soon {
+        #corner_banner {
           top: 60px;
         }
       }
@@ -87,7 +87,7 @@
       {% if site.show_header %}
       <div id="header">
         <nav>
-          <div id="coming_soon">Coming Soon!</div>
+          <div id="corner_banner">Alpha Released!</div>
           <!-- <li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li> -->
           <li class="fork"><a href="{{ site.github.project_url }}">View On GitHub</a></li>
 
@@ -113,11 +113,9 @@
           -->
         </div>
 
-        {{ content }}
-
-
         {% include navigation.md %}
-        
+        <h1>{{ page.title }}</h1>
+        {{ content }}
 
       </section>
 

@@ -1,7 +1,6 @@
 ---
 title: Introduction
 ---
-# Introduction
 By installing the ['Wizards of Lua' mod](https://github.com/wizards-of-lua/wizards-of-lua)
 onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
@@ -16,10 +15,14 @@ players can gain a deep knowledge about how the linuga magica works
 and how anybody can use little 'magic words' to craft their own unique spells
 in order to do things that were not possible before.
 
-# Casting a Spell
+## Casting a Spell
 As any other Minecraft command you can execute it directly from the chat
 window.
-Just type 't' to open the command prompt and begin typing: `/lua`.
+Just type 't' to open the command prompt and begin typing:
+```
+/lua
+```
+
 Next to this command you can enter any sequence of statements that form
 a valid Lua program.
 
