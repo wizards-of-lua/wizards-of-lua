@@ -19,7 +19,9 @@ spell:execute( "particle %s ~ ~ ~ 0 0 0 0 0", particle)
 Building a wall by casting some parallel spells each building a pillar:
 ```lua
 for x=1,20 do
-  spell:execute( 'lua for i=1,5 do spell.block = Blocks.get( "stone"); sleep( 1); spell:move( "up"); end')
+  spell:execute(
+    'lua for i=1,5 do spell.block = Blocks.get( "stone"); sleep( 1); spell:move( "up"); end'
+  )
   spell:move( "north")
 end
 ```

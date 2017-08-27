@@ -1,11 +1,10 @@
 ---
 title: The Lua Command
 ---
-# The Lua Command
 The Wizards of Lua modification adds the <tt>/lua</tt>&nbsp;command to the Minecraft game.
 This command can be executed from the in-game chat and from any command block.
 
-To do this, the player must be a member of the Wizard of Lua.
+To do this, the player must be a member of the Wizards of Lua.
 Currently (as in Alpha 1.0.0) only players with operator priviliges are Wizards.
 In a single player game the "allow cheats" option must be active to allow the player to
 be a wizard.

@@ -1,6 +1,7 @@
 ---
-title: Controlling the Spell's Runtime Environment
 name: Runtime
+subtitle: Controlling the Runtime Environment
+layout: module
 properties:
 functions:
   - name: getAllowance
@@ -29,7 +30,7 @@ functions:
     description: "Returns a string with the current real date and time.
     If you want you can change the format by providing a format string."
   - name: setAutoSleep
-    parameters: boolean 
+    parameters: boolean
     results: nil
     description: "Set this to true if the spell should go to sleep automatically
     when its allowance is exceeded. If this is set to false, the spell will
@@ -41,8 +42,5 @@ functions:
     description: "Forces the current spell to sleep for the given amount of
     game ticks."
 ---
-{% include module-head.md %}
 
 The Runtime module provides access to runtime properties of the active Spell's world.
-
-{% include module-body.md %}

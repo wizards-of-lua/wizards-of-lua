@@ -1,5 +1,3 @@
-# The {{ page.name }}
-{{ page.title }}
 {% if page.properties %}
 {% assign properties = page.properties | sort: 'name' %}  
 {% endif %}

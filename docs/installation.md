@@ -1,5 +1,5 @@
 ---
-title: Intallation
+title: Installation
 ---
 
 TODO

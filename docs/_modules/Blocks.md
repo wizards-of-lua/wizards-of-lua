@@ -1,6 +1,7 @@
 ---
-title: The Essential Building Blocks of this World
 name: Blocks
+subtitle: The Building Blocks Directory
+layout: module
 properties:
 functions:
   - name: get
@@ -11,8 +12,5 @@ functions:
     examples:
       - url: Blocks/get.md
 ---
-{% include module-head.md %}
 
 The Blocks module provides access to all [block types](https://minecraft.gamepedia.com/Block) known in Minecraft.
-
-{% include module-body.md %}

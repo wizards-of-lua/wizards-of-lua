@@ -3,7 +3,7 @@
 The {{ page.name }} class is a subtype of the <a href="{{ modules[0].url }}">{{ modules[0].name }}</a> class and inherits all its properties and functions.
 {% endif %}
 {% if page.properties %}
-Here is a brief list of the {{ page.name }}'s *properties*:
+Here is an overview of the {{ page.name }} *properties*:
 
 | Property             | Type          | read / write |
 | ---------------------|---------------| :-----------:|
@@ -11,7 +11,7 @@ Here is a brief list of the {{ page.name }}'s *properties*:
 {% endfor %}
 {% endif %}
 {% if page.functions %}
-Here is a brief list of the {{ page.name }}'s *functions*:
+Here is an overview of the {{ page.name }} *functions*:
 
 | Function             | Parameters    | Results      |
 | ---------------------|---------------| :-----------:|
@@ -22,7 +22,7 @@ Here is a brief list of the {{ page.name }}'s *functions*:
 {% if page.properties %}
 ## Properties
 
-Below you find short descriptions about each of the {{ page.name }}'s properties
+Below you find short descriptions about each of the {{ page.name }} properties
 and some examples about how to use them in your spells.
 
 ---
@@ -41,7 +41,7 @@ and some examples about how to use them in your spells.
 {% if page.functions %}
 ## Functions
 
-Below you find short descriptions about each of the {{ page.name }}'s functions
+Below you find short descriptions about each of the {{ page.name }} functions
 and some examples about how to use them in your spells.
 
 ---

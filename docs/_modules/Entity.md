@@ -1,6 +1,7 @@
 ---
-title: Controlling an Organic or Inorganic Entity
 name: Entity
+subtitle: Controlling an Organic or Inorganic Entity
+layout: module
 properties:
   - name: uuid
     type: string
@@ -39,8 +40,5 @@ functions:
     examples:
       - url: Entity/move.md
 ---
-{% include module-head.md %}
 
 The Entity class is the base class of all entities that populate the world.
-
-{% include module-body.md %}

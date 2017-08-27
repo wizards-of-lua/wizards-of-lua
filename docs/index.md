@@ -6,7 +6,7 @@ who want to spread the knowledge of programming to kids.
 The Wizards of Lua are also some decent gamers
 who want to give gamers the ability to create their own game contents.
 
-And finally 'The Wizards of Lua' is the name of a Minecraft
+And of course, "Wizards of Lua" is the name of a Minecraft
 modification that simply adds the [/lua&nbsp;command](introduction.md) to the game.
 
 # News

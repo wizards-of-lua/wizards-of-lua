@@ -7,10 +7,13 @@ author: mickkay
 layout: post
 ---
 Today we proudly present the very first alpha release of "Wizards of Lua".
-If you are interested into this mod at this early stage, feel free to
+If you are interested into this mod at this early stage, please feel free to
 [download and install](/installation/) it.
 <!--more-->
-We are happy to receive some feedback.
+Make sure to read the [introduction](/introduction/) in order to get some hints
+about how to use this mod.
+We are eager to receive some [feedback about issues](https://github.com/wizards-of-lua/wizards-of-lua/issues)
+you discover.
 
 The following features are implemented so far.
 ### Implemented Features
@@ -19,7 +22,8 @@ The following features are implemented so far.
 * Wizards can break all active spells using the [/wol command](/wol-command).
 * Spells can be casted by command blocks.
 * Spells can create any available block using the [Blocks module](/modules/Blocks/).
-* Spells can read and modify all block properties using the [Block class](/modules/Block/). This includes copying and pasting blocks.
+* Spells can read and modify all block properties using the [Block class](/modules/Block/).
+* Spells can copy and paste blocks using the [Spell.block property](/modules/Spell/#block).
 * Spells can read and modify a small amount of entity properties using the [Entity class](/modules/Entity/).
 * Spells (in fact all entities) can be [moved](/modules/Entity/#move ) around.
 * Spells can be made [visible](/modules/Spell/#visible).

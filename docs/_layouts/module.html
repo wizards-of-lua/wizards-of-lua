@@ -15,7 +15,6 @@
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <style>
-
       #corner_banner {
         position: absolute;
         top: 40px;
@@ -115,9 +114,17 @@
         </div>
 
         {% include navigation.md %}
-        {% include newsnavi.md %}
-        <h1>{{ page.title }}</h1>
-        {{ content }}
+        <h1>{{ page.title }} - {{ page.subtitle }}</h1>
+        {% capture head %}{% include module-head.md %}{% endcapture %}
+        {{ head | markdownify }}
+
+
+        {{ page.content }}
+
+        {% capture body %}{% include module-body.md %}{% endcapture %}
+        {{ body | markdownify }}
+
+        {% include spellbooklibrary.md %}
 
       </section>
 

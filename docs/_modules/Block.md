@@ -1,6 +1,7 @@
 ---
-title: All We Want to Know About a Block
+subtitle: All There is to Know About a Block
 name: Block
+layout: module
 properties:
   - name: name
     type: string
@@ -48,8 +49,5 @@ functions:
     examples:
       - url: Block/withNbt.md
 ---
-{% include module-head.md %}
 
 The Block class is a basic unit of structure in Minecraft.
-
-{% include module-body.md %}

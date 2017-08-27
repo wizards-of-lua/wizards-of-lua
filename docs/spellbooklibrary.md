@@ -13,8 +13,8 @@ is a good starting point.
 
 ![Library of Lua](images/library-of-lua.jpg)
 
-On this page you find a list of books that are organized by modules and classes.
-Every type and module is documented within its own book.
+On this page you find a list of books that are organized by classes and modules.
+Every class and module is documented within its own book.
 Inside each book you will find sections about properties and functions.
 In each of those there is a brief description about their nature, their effects,
 and, if available, about the options you have to influence these effects.

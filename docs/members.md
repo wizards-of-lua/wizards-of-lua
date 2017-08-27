@@ -1,9 +1,8 @@
 ---
-title: The Members of the Wizards of Lua
+title: The Creators
 ---
 {% assign foundingMembers = site.data.members | where_exp:"m", "m.category=='founding-member'" %}
 {% if foundingMembers != empty %}
-# The Founding Members of the Wizards of Lua
 {% for member in foundingMembers %}
 {% assign member = entry[1] %}
 * <a href="https://github.com/{{ member.github }}">
@@ -15,7 +14,7 @@ title: The Members of the Wizards of Lua
 
 {% assign contributors = site.data.members | where:"m", "m.category=='contributor'" %}
 {% if contributors != empty %}
-# Contributors
+## Contributors
 {% assign contributorsSorted = contributors | sort:"name" %}
 {% for member in contributorsSorted %}
 * <a href="https://github.com/{{ member.github }}">
