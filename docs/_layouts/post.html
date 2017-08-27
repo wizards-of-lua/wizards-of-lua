@@ -16,6 +16,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <style>
 
+      #header nav {
+        max-width: initial;
+      }
+
       #corner_banner {
         position: absolute;
         top: 40px;
@@ -33,6 +37,7 @@
       #title img {
         position: absolute;
         top: -10px;
+        right: 0;
       }
 
       #naviLeft,
@@ -52,7 +57,7 @@
         right: 10px;
       }
 
-      @media print, screen and (max-width: 1060px) {
+      @media print, screen and (max-width: 1140px) {
         #naviLeft,
         #naviRight {
           position: initial;
@@ -64,6 +69,12 @@
         #naviRight ul {
           padding: 0 0 0 20px;
           margin: 0 10px 20px;
+        }
+      }
+
+      @media print, screen and (max-width: 760px) {
+        #title img {
+          display: none;
         }
       }
 
@@ -114,10 +125,10 @@
           -->
         </div>
 
-        {% include navigation.md %}
-        {% include newsnavi.md %}
         <h1>{{ page.title }}</h1>
         {{ content }}
+        {% include newsnavi.md %}
+        {% include navigation.md %}
 
       </section>
 
