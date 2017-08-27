@@ -1,16 +1,16 @@
 ---
 title: Introduction
 ---
-By [installing](/installation/) the 'Wizards of Lua' mod
+By [installing](/installation.html) the 'Wizards of Lua' mod
 onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod transforms [Lua, the programming language](https://www.lua.org),
 into a 'lingua magica', a language of magic, that wizards can use it to create
 and cast powerful 'spells' to control almost any aspect of the world.
 Lua can be executed from the in-game chat window and from command blocks by
-using the [/lua command](/lua-command/).
+using the [/lua command](/lua-command.html).
 
-By using existing function libraries described in the [spell book library](/spellbooklibrary/)
+By using existing function libraries described in the [spell book library](/spellbooklibrary.html)
 wizards can enjoy completely new variants of the Minecraft game without great effort.
 And by studying the examples found inside the spell books,
 players can gain a deep knowledge about how the linuga magica works

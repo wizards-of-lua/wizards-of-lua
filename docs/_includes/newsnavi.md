@@ -7,6 +7,6 @@
   </li>
 {% endfor %}
 </ul>
-<a href="/news/">Read All News...</a>
+<a href="/news.html">Read All News...</a>
 
 </div>

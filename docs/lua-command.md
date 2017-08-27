@@ -50,7 +50,7 @@ classes that come with the "Wizards of Lua" modification.
 
 ## Building a Pillar of Blocks
 A detailed documentation of mod-specific functions, modules and
-classes is available at the [Spell Book Library](/spellbooklibrary/).
+classes is available at the [Spell Book Library](/spellbooklibrary.html).
 For now, we will grep a bunch of them in order to create a tall stone pillar.
 For example, you could enter the following line into the chat:
 ```lua
@@ -67,6 +67,6 @@ submitted the command.
 
 
 
-For more examples please have a look at the [Spell Book Library](/spellbooklibrary/).
+For more examples please have a look at the [Spell Book Library](/spellbooklibrary.html).
 You also could come back and check this website frequently for other tutorials.
 We are definitely planning to publish some more.
