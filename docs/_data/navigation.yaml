@@ -5,19 +5,19 @@ docs:
   url: /
 
 - title: Introduction
-  url: /introduction/
+  url: /introduction.html
 
 - title: News
-  url: /news/
+  url: /news.html
 
 - title: Installation
-  url: /installation/
+  url: /installation.html
 
 - title: Spell Book Libary
-  url: /spellbooklibrary/
+  url: /spellbooklibrary.html
 
 - title: The /lua Command
-  url: /lua-command/
+  url: /lua-command.html
 
 - title: The /wol Command
-  url: /wol-command/
+  url: /wol-command.html
