@@ -1,6 +1,7 @@
 ---
-title: How to Controll the Aspects of an Active Spell
 name: Spell
+subtitle: Aspects of an Active Spell
+layout: module
 extends: Entity
 properties:
   - name: block
@@ -42,9 +43,6 @@ functions:
     examples:
       - url: Spell/execute.md
 ---
-{% include module-head.md %}
 
 "Spell" is one of the main magic classes used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.
-
-{% include module-body.md %}

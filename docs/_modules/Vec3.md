@@ -1,6 +1,7 @@
 ---
-title: Using Vector Math to Manipulate Location and Motion
 name: Vec3
+subtitle: Manipulating Location and Motion
+layout: module
 properties:
   - name: x
     type: number
@@ -64,7 +65,6 @@ functions:
     examples:
       - url: Vec3/invert.md
 ---
-{% include module-head.md %}
 
 'Vec3' is short for '3-dimensional Vector'.
 Mostly a 3-dimensional vector is used to denote a position in the
@@ -78,5 +78,3 @@ To create a vector you can call the Vec3 function:
 /lua myvec = Vec3( 1, 2, 3)
 ```
 This creates a vector called 'myvec' with the component values x=1, y=2, z=3.
-
-{% include module-body.md %}

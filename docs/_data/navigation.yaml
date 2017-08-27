@@ -1,17 +1,23 @@
 docs_list_title: Navigation
 docs:
 
-- title: Main
-  url: index.html
+- title: Home
+  url: /
 
 - title: Introduction
-  url: introduction.html
+  url: /introduction/
 
 - title: News
-  url: news.html
+  url: /news/
 
 - title: Installation
-  url: installation.html
+  url: /installation/
 
 - title: Spell Book Libary
-  url: spellbooklibrary.html
+  url: /spellbooklibrary/
+
+- title: The /lua Command
+  url: /lua-command/
+
+- title: The /wol Command
+  url: /wol-command/

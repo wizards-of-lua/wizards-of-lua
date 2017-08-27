@@ -1,21 +1,15 @@
 ---
-title: The Art of Spell Crafting
+title: Welcome to the Home of the Wizards of Lua
 ---
-# Welcome to the Home of the Wizards of Lua
-
-The Wizards of Lua are a [community of programmers and their friends](members.md),
+The Wizards of Lua are a [community of programmers and their friends](/members/),
 who want to spread the knowledge of programming to kids.
 The Wizards of Lua are also some decent gamers
 who want to give gamers the ability to create their own game contents.
 
-And finally 'The Wizards of Lua' is the name of a Minecraft
-modification that simply adds the **/lua** command to the game.
+And of course, "Wizards of Lua" is the name of a Minecraft
+modification that simply adds the [/lua&nbsp;command](/lua-command/) to the game.
+The [mastery of Lua](/introduction/) gives a player the power of a powerful wizard.
+
 
 # News
-<ul>
-  {% for post in site.posts %}
-    <li>
-      <a href="{{ post.url }}">{{ post.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
+{% include news.md %}
