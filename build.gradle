@@ -19,12 +19,12 @@ compileJava {
     sourceCompatibility = targetCompatibility = "1.8"
 }
 
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0-alpha"
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
 
 minecraft {
-    version = "1.11.2-13.20.0.2296"
+    version = "1.11.2-13.20.1.2454"
     runDir = "run"
 
     // the mappings can be changed at any time, and must be in the following format.
