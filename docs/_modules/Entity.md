@@ -36,7 +36,7 @@ functions:
     results: nil
     description: "The 'move' function teleports this entity instantly to the position
     relative to its current position specified by the given direction and distance.
-    If no distance is specified, 1 Meter is taken as default distance."
+    If no distance is specified, 1 meter is taken as default distance."
     examples:
       - url: Entity/move.md
 ---
