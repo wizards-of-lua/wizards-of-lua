@@ -47,6 +47,6 @@ The following features are planned to be implemented before we make the final re
 * Wizards can define a player-specific profile to configure default includes.
 * Wizards can list their own active spells.
 * Wizards can break specific spells.
-* Wizards can define event handles that cast spells automatically.
-* Operators can define permissions requires for casting a spell.
+* Wizards can define event handlers that cast spells automatically.
+* Operators can define permissions required for casting a spell.
 * Operators can configure the maximum number of Lua ticks a spell can use per game tick.
