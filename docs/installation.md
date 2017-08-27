@@ -11,6 +11,9 @@ the client as well.
 * The Wizards of Lua modification requires Minecraft 1.11.2
 * and Forge 13.20.1.*
 
+### Download
+* [wol-1.0.0-alpha.jar](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download)
+
 ### Installing Wizards of Lua on a server
 * [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.11.2.html) 13.20.1.2454 (or later)
 * Copy <tt>forge-1.11.2-13.20.1.2454-installer.jar</tt> into a new and empty directory
@@ -44,7 +47,7 @@ to
 eula=true
 ```
 and save the file.
-* Now [Download Wizards of Lua](TODO) 1.0.0-alpha and copy it into the <tt>mods</tt>
+* Now [Download Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download) 1.0.0-alpha and copy it into the <tt>mods</tt>
 directory of your server directory.
 * Now run Minecraft Forge with
 ```bash
@@ -78,7 +81,7 @@ install both and come back here.
 * [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.11.2.html) 13.20.1.2454 (or later)
 * Start the Forge installer by double-clicking on the file
 * Choose "Install client" option and click "OK"
-* Now [Download Wizards of Lua](TODO) 1.0.0-alpha
+* Now [Download Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download) 1.0.0-alpha
 * Copy wol-1.0.0-alpha.jar into the <tt>mods</tt> folder of your minecraft installation
 * Run the Minecraft Launcher
 * On right side of the "Play" button click on the small green triangle pointing upwards
