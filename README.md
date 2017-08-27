@@ -2,11 +2,6 @@
 
 The Wizards of Lua Mod is a modification of Minecraft. It adds the `/lua` command to the game.
 
-Since this project still is in development there is **no public download link for the binary available** right now.
-We are still working hard to get some stable version.
-We expect to relase a first alpha preview in August 2017.
-However, if you are interested in it anyway you could of course build it yourself from the sources.
-
 More information about this mod is available at the [Wizards of Lua homepage](http://www.wizards-of-lua.net).
 
 ## How to Contribute Ideas
