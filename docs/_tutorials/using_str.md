@@ -55,7 +55,7 @@ Now you get this:
 }
 ```
 Now you can see the internal structure of the table, which is just list of properties.
-The properties are enclosed in curly braces and seperated by commas.
+The properties are enclosed in curly braces and separated by commas.
 Each property consists of a key-value pair.
 For example, at the very bottom there is the "name" property.
 Its key is "name" and its value is "log".
