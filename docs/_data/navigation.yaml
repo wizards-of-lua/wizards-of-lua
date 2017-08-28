@@ -13,7 +13,7 @@ docs:
 - title: Installation
   url: /installation
 
-- title: Spell Book Libary
+- title: Spell Book Library
   url: /spellbooklibrary
 
 - title: The /lua Command
