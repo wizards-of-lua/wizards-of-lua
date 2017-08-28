@@ -51,13 +51,14 @@ Now you get this:
   name = "log"
 }
 ```
-Now you can see the internal structure of the table.
-As you can see, a table is just list of properties.
+Now you can see the internal structure of the table, which is just list of properties.
 The properties are enclosed in curly braces and seperated by commas.
-For each property you see a key-value pair.
+Each property consists of akey-value pair.
 For example, at the very bottom there is the "name" property.
 Its key is "name" and its value is "log".
-As you can see, the value is enclosed in quotation marks, while for the key the quotation marks are omitted.
+You may have noticed that the value is enclosed in quotation marks, while for the key the quotation marks are omitted.
+Because of this the output of the str() function is very handy, sinde it forms valid Lua code,
+provided that you strip the first and last curly braces.
 
 You can also see that the properties have a tree-like structure.
 For example, the "data" property has a value that itself is a table.
