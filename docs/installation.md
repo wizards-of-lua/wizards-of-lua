@@ -14,7 +14,7 @@ the client as well.
 ### Download
 * [wol-1.0.0-alpha.jar](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download)
 
-### Installing Wizards of Lua on a server
+### Installing Wizards of Lua on a Server
 * [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.11.2.html) 13.20.1.2454 (or later)
 * Copy <tt>forge-1.11.2-13.20.1.2454-installer.jar</tt> into a new and empty directory
 where you want to run the server from
@@ -67,7 +67,7 @@ If everything works find you should receive something like the following output:
 * Now start you Minecraft client and log into your new server
 * Don't forget to give yourself operator priviliges
 
-### Installing Wizards of Lua on a client
+### Installing Wizards of Lua on a Client
 Please note that installing Wizards of Lua on the client is **not** required if
 you only plan to play it on the server.
 However, if you want to play Wizards of Lua in singleplayer, you need to modify
