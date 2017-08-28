@@ -47,7 +47,7 @@ to
 eula=true
 ```
 and save the file.
-* Now [Download Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download) 1.0.0-alpha and copy it into the <tt>mods</tt>
+* Now [download Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download) 1.0.0-alpha and copy it into the <tt>mods</tt>
 directory of your server directory.
 * Now run Minecraft Forge with
 ```bash
@@ -79,10 +79,10 @@ If not, [get Minecraft](https://minecraft.net/),
 install both and come back here.
 
 * [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.11.2.html) 13.20.1.2454 (or later)
-* Start the Forge installer by double-clicking on the file
+* Start the Forge Installer by double-clicking on the file
 * Choose "Install client" option and click "OK"
-* Now [Download Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download) 1.0.0-alpha
-* Copy wol-1.0.0-alpha.jar into the <tt>mods</tt> folder of your minecraft installation
+* Now [download Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files/2469811/download) 1.0.0-alpha
+* Copy wol-1.0.0-alpha.jar into the <tt>mods</tt> folder of your Minecraft installation
 * Run the Minecraft Launcher
 * On right side of the "Play" button click on the small green triangle pointing upwards
 * Choose the "forge" profile
