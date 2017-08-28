@@ -10,7 +10,7 @@ This is obviously especially useful when you don't know how this object is struc
 
 For example, let's pretend you are looking at the trunk of a birch tree.
 
-![Looking at a Birch](/images/looking-at-a-birch.png)
+![Looking at a Birch](/images/looking-at-a-birch.jpg)
 
 You wonder, how this nice block is called in Minecraft.
 But sad to say, you don't know how to get the name of a block using Lua.

@@ -11,7 +11,7 @@ I picked a small one that creates a floor of colored wool blocks.
 Let me show you how this is done.
 <!--more-->
 
-![Multicolor Floor of Wool](/images/multicolor-floor-of-wool.png)
+![Multicolor Floor of Wool](/images/multicolor-floor-of-wool.jpg)
 
 The alpha version is really a little bit restricted so far since its only strengths are
 * the manipulation of the blocky aspects of the world
@@ -76,6 +76,6 @@ The height of the box is defined by <tt>h</tt>.
 
 Again I set the width, length, and height to 20 and casted the spell. Look at the results:
 
-![Multicolor Floor of Wool](/images/multicolor-box-of-wool.png)
+![Multicolor Floor of Wool](/images/multicolor-box-of-wool.jpg)
 
 Just imagine how long it would take to build this box by hand...
