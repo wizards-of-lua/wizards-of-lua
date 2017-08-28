@@ -40,11 +40,11 @@ for x=1,w do
   end;
 end;
 ```
-Please note that almost all statements are terminated with the colon character <tt>';'</tt>.
+Please note that almost all statements are terminated with the semicolon character <tt>';'</tt>.
 For normal Lua programs this is actually not neccessary.
 But due the fact that the current version of WoL (1.0.0-alpha) has no support for importing
 external Lua files, we have to insert the whole program into the single line of the chat or a command block.
-Here we need the colons, so that Lua can separate the statements from each other.
+Here we need the semicolons, so that Lua can separate the statements from each other.
 Actually, I had to execute this spell using a command block since it is a little bit longer than the character limit of the chat (wich is 256).
 
 The variables <tt>w</tt> and <tt>h</tt> stand for "width" and "height".

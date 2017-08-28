@@ -14,7 +14,7 @@ onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod transforms [Lua, the programming language](https://www.lua.org),
 into a 'lingua magica', a language of magic, that wizards can use to create
-and cast powerful 'spells' to control almost any aspect of the world.
+and cast powerful spells to control almost any aspect of the world.
 [Read more...](/introduction.html)
 
 
