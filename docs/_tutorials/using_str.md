@@ -5,7 +5,7 @@ author: mickkay
 ---
 This tutorial shows how you could use the <tt>str()</tt> function to get
 a glance of the internal structure of an object.
-This is especially useful when you don't know how this object is structured.
+This is obviously especially useful when you don't know how this object is structured.
 <!--more-->
 
 For example, let's pretend you are looking at the trunk of a birch tree.
