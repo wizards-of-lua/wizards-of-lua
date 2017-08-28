@@ -6,7 +6,7 @@ onto your Minecraft server, you are changing the nature of your Minecraft
 game: it becomes magical in a wordly sense.
 This mod transforms [Lua, the programming language](https://www.lua.org),
 into a 'lingua magica', a language of magic, that wizards can use to create
-and cast powerful 'spells' to control almost any aspect of the world.
+and cast powerful spells to control almost any aspect of the world.
 Lua can be executed from the in-game chat window and from command blocks by
 using the [/lua command](/lua-command.html).
 
@@ -44,4 +44,4 @@ submitted the command.
 But changing the world by adding (or removing) blocks is not the only thing
 you can do with Lua.
 To find out what can be done just have a look at the [Lua Spell Book Library](/spellbooklibrary)
-or have a look into the [tutorials](/tutorials.html)
+or have a look into the [tutorials](/tutorials.html).
