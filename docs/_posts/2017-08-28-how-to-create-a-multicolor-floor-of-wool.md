@@ -47,7 +47,7 @@ external Lua files, we have to insert the whole program into the single line of 
 Here we need the semicolons, so that Lua can separate the statements from each other.
 Actually, I had to execute this spell using a command block since it is a little bit longer than the character limit of the chat (wich is 256).
 
-The variables <tt>w</tt> and <tt>h</tt> stand for "width" and "height".
+The variables <tt>w</tt> and <tt>l</tt> stand for "width" and "length".
 For the screenshot above I set them both to a value of 20.
 
 You can easily modify the above spell to create a whole box of wool.
@@ -78,4 +78,4 @@ Again I set the width, length, and height to 20 and casted the spell. Look at th
 
 ![Multicolor Floor of Wool](/images/multicolor-box-of-wool.png)
 
-Just imagine, how long it would take to build this box by hand...
+Just imagine how long it would take to build this box by hand...
