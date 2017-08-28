@@ -76,3 +76,6 @@ Which gives this:
 ```lua
 log birch
 ```
+
+Btw. instead of <tt>str()</tt> you could alternativly use the <tt>inspect()</tt> function.
+This will give you also the contents of the table's metatable.
