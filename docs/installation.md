@@ -3,7 +3,7 @@ title: Installation
 ---
 Wizards of Lua is a <u>server-side modification</u> of Minecraft.
 That means, only the server must be modded.
-For clients no modificaton is required.
+For clients no modification is required.
 However, if you want to play Wizards of Lua in singleplayer, you need to modify
 the client as well.
 
