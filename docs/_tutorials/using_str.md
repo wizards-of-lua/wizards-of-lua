@@ -68,11 +68,11 @@ For example, the "data" property has a value that itself is a table.
 
 
 Now that you know the internal structure of the Block, you can rewrite the spell
-so that it only prints the part you are interested in, e.g. its name.
+so that it only prints the part you are interested in, e.g. its name and its variant.
 ```lua
-/lua print( spell.block.name)
+/lua print( spell.block.name, spell.block.data.variant)
 ```
 Which gives this:
 ```lua
-log
+log birch
 ```
