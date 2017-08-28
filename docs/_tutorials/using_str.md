@@ -12,6 +12,9 @@ For example, let's pretend you are looking at the trunk of a birch tree.
 
 ![Looking at a Birch](/images/looking-at-a-birch.png)
 
+You wonder, how this nice block is called in Minecraft.
+But sad to say, you don't know how to get the name of a block using Lua.
+
 When you execute a spell like this:
 ```lua
 /lua print( spell.block))
@@ -53,11 +56,11 @@ Now you get this:
 ```
 Now you can see the internal structure of the table, which is just list of properties.
 The properties are enclosed in curly braces and seperated by commas.
-Each property consists of akey-value pair.
+Each property consists of a key-value pair.
 For example, at the very bottom there is the "name" property.
 Its key is "name" and its value is "log".
 You may have noticed that the value is enclosed in quotation marks, while for the key the quotation marks are omitted.
-Because of this the output of the str() function is very handy, sinde it forms valid Lua code,
+Because of this the output of the str() function is very handy, since it forms valid Lua code,
 provided that you strip the first and last curly braces.
 
 You can also see that the properties have a tree-like structure.
