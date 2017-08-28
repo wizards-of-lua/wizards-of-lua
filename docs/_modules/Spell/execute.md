@@ -26,7 +26,7 @@ for x=1,20 do
 end
 ```
 #### Example
-Drawing a circular could of black smoke into the air at the spell's position.
+Drawing a circular cloud of black smoke into the air at the spell's position.
 ```lua
 start = spell.pos
 for a=0,math.pi*2,0.1 do
