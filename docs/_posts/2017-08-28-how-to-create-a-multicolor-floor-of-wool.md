@@ -21,7 +21,7 @@ However, this is quite a bit.
 A smart wizard can already do things that are otherwise quite difficult to achive.
 
 For now, let's concentrate on the manipulation of the blocky aspects.
-For example, the following spell can create a big multicolor floor of wool in seconds:
+For example, the following spell can create a big multicolor floor of wool in seconds.
 
 ```lua
 w=10;
@@ -46,6 +46,7 @@ But due the fact that the current version of WoL (1.0.0-alpha) has no support fo
 external Lua files, we have to insert the whole program into the single line of the chat or a command block.
 Here we need the semicolons, so that Lua can separate the statements from each other.
 Actually, I had to execute this spell using a command block since it is a little bit longer than the character limit of the chat (wich is 256).
+Just a reminder: don't forget to add ```/lua ``` in front of it.
 
 The variables <tt>w</tt> and <tt>l</tt> stand for "width" and "length".
 For the screenshot above I set them both to a value of 20.
