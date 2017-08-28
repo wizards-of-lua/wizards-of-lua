@@ -29,7 +29,7 @@ functions:
   - name: execute
     parameters: command, ...
     results: nil
-    description: "This function executes the given minecraft command as if it was
+    description: "This function executes the given Minecraft command as if it was
     entered into the chat window.
 
 

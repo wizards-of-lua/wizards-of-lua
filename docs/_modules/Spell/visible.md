@@ -5,7 +5,7 @@ spell.visible = true
 ```
 
 #### Example
-Making the spell visible an moving it around in a circle
+Making the spell visible and moving it around in a circle
 ```lua
 spell.visible = true
 start = spell.pos
