@@ -10,7 +10,7 @@ and cast powerful 'spells' to control almost any aspect of the world.
 Lua can be executed from the in-game chat window and from command blocks by
 using the [/lua command](/lua-command.html).
 
-By using existing function libraries described in the [spell book library](/spellbooklibrary.html)
+By using existing function libraries described in the [spell book library](/spellbooklibrary)
 wizards can enjoy completely new variants of the Minecraft game without great effort.
 And by studying the examples found inside the spell books,
 players can gain a deep knowledge about how the linuga magica works
@@ -43,4 +43,5 @@ submitted the command.
 
 But changing the world by adding (or removing) blocks is not the only thing
 you can do with Lua.
-To find out what can be done just have a look at the [Lua Spell Book Library](spellbooklibrary.md).
+To find out what can be done just have a look at the [Lua Spell Book Library](/spellbooklibrary)
+or have a look into the [tutorials](/tutorials.html)

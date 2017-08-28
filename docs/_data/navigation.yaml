@@ -16,6 +16,9 @@ docs:
 - title: Spell Book Library
   url: /spellbooklibrary
 
+- title: Tutorials
+  url: /tutorials.html
+
 - title: The /lua Command
   url: /lua-command
 

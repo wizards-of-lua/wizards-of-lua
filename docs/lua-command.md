@@ -67,6 +67,5 @@ submitted the command.
 
 
 
-For more examples please have a look at the [Spell Book Library](/spellbooklibrary.html).
-You also could come back and check this website frequently for other tutorials.
-We are definitely planning to publish some more.
+For more examples please have a look at the [Spell Book Library](/spellbooklibrary.html)
+and the [tutorials](/tutorials.html).

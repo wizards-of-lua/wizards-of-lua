@@ -6,7 +6,6 @@
     <a href="{{ post.url }}">{{ post.date | date_to_long_string}} -<br/>  {{ post.title }}</a>
   </li>
 {% endfor %}
+<li><a href="/news.html">Read All News...</a></li>
 </ul>
-<a href="/news.html">Read All News...</a>
-
 </div>

@@ -14,8 +14,15 @@ defaults:
   - scope:
       type: modules
     values:
-      layout: default
+      layout: module
+  - scope:
+      type: tutorials
+    values:
+      layout: tutorial
 collections:
   modules:
     output: true
     permalink: /modules/:path/
+  tutorials:
+    output: true
+    permalink: /tutorials/:path/
