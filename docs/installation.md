@@ -72,8 +72,8 @@ Please note that installing Wizards of Lua on the client is **not** required if
 you only plan to play it on the server.
 However, if you want to play Wizards of Lua in singleplayer, you need to modify
 the client.
-This procedure assumes that you have a working copy of Minecraft installed.
-Also you must have working Java Runtime Environment (Version 1.8).
+This procedure assumes that you have a copy of Minecraft installed.
+Also you must have a working Java Runtime Environment (Version 1.8).
 If not, [get Minecraft](https://minecraft.net/),
 [get Java](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html),
 install both and come back here.
