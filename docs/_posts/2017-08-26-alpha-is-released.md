@@ -12,8 +12,8 @@ If you are interested into this mod at this early stage, please feel free to
 <!--more-->
 Make sure to read the [introduction](/introduction.html) in order to get some hints
 about how to use this mod.
-We are eager to receive some [feedback about issues](https://github.com/wizards-of-lua/wizards-of-lua/issues)
-you discover.
+If you have some feedback or a self-made spell you want to share with us please post it on the [forum thread for the alpha release](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2855015).
+For bug reports please use our [issues tracker at GitHub](https://github.com/wizards-of-lua/wizards-of-lua/issues).
 
 The following features are implemented so far.
 ### Implemented Features
