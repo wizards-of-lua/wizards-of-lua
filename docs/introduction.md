@@ -43,5 +43,5 @@ submitted the command.
 
 But changing the world by adding (or removing) blocks is not the only thing
 you can do with Lua.
-To find out what can be done just have a look at the [Lua Spell Book Library](/spellbooklibrary)
-or have a look into the [tutorials](/tutorials.html).
+To find out what can be done just have a look at the [Lua Spell Book Library](/spellbooklibrary),
+the [tutorials](/tutorials.html), and our [list of shared spells](/spells.html).

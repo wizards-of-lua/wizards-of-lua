@@ -18,7 +18,7 @@ and cast powerful spells to control almost any aspect of the world.
 [Read more...](/introduction.html)
 
 If you have some feedback or a self-made spell you want to share please post it on the [forum thread for the alpha release](http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2855015).
-For bug reports please use our [issues tracker at GitHub](https://github.com/wizards-of-lua/wizards-of-lua/issues).
+For bug reports please use our [issue tracker at GitHub](https://github.com/wizards-of-lua/wizards-of-lua/issues).
 
 
 # News
