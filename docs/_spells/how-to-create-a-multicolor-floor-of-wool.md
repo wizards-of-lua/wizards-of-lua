@@ -4,7 +4,6 @@ date:   2017-08-28 10:49:00
 categories: share a spell
 excerpt_separator: <!--more-->
 author: mickkay
-layout: post
 ---
 I really like to to start the share-a-spell initiative to illustrate the power of spells.
 I picked a small one that creates a floor of colored wool blocks.

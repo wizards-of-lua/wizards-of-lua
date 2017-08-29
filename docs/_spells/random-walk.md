@@ -4,7 +4,6 @@ date:   2017-08-28 18:00:00
 categories: share a spell
 excerpt_separator: <!--more-->
 author: mickkay
-layout: post
 ---
 
 With a spell it's really easy to visualize a 2-dimensional [Random Walk](https://en.wikipedia.org/wiki/Random_walk).

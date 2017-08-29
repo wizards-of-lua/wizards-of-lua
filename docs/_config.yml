@@ -19,6 +19,10 @@ defaults:
       type: tutorials
     values:
       layout: tutorial
+  - scope:
+      type: spells
+    values:
+      layout: spell
 collections:
   modules:
     output: true
@@ -26,3 +30,6 @@ collections:
   tutorials:
     output: true
     permalink: /tutorials/:path/
+  spells:
+    output: true
+    permalink: /spells/:path/
