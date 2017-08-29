@@ -20,9 +20,10 @@ There are plenty of websites out there where you can do a quick lookup.
 For example, you could use the [Summon Command generator from minecraftupdates.com](http://www.minecraftupdates.com/summon-command)
 to get the following summon command for a single zombie soldier:
 ```
-/summon Zombie ~0 ~0 ~0 {HandItems:[{Count:1,id:diamond_sword},{Count:1,id:shield}],
-ArmorItems:[{Count:1,id:leather_boots},{},{Count:1,id:iron_chestplate},
-{Count:1,id:iron_helmet}],CustomName:soldier,CustomNameVisible:0,NoAI:1}
+/summon Zombie ~0 ~0 ~0 {HandItems:[{Count:1,id:diamond_sword},
+{Count:1,id:shield}],ArmorItems:[{Count:1,id:leather_boots},{},
+{Count:1,id:iron_chestplate},{Count:1,id:iron_helmet}],
+CustomName:soldier,CustomNameVisible:0,NoAI:1}
 ```
 
 Armed with this command you can start to create a new Lua spell.
@@ -43,8 +44,9 @@ This is really easy.
 You just have to enclose the execute statement in a double for-loop.
 
 ```lua
-summon="/summon Zombie ~0 ~0 ~0 {HandItems:[{Count:1,id:diamond_sword},
-{Count:1,id:shield}],ArmorItems:[{Count:1,id:leather_boots},{},
+summon="/summon Zombie ~0 ~0 ~0 {HandItems:[
+{Count:1,id:diamond_sword},{Count:1,id:shield}],
+ArmorItems:[{Count:1,id:leather_boots},{},
 {Count:1,id:iron_chestplate},{Count:1,id:iron_helmet}],
 CustomName:soldier,CustomNameVisible:0,NoAI:1}";
 s=spell.pos;
