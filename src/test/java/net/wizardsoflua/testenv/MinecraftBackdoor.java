@@ -110,7 +110,11 @@ public class MinecraftBackdoor {
   }
 
   public void setLuaTicksLimit(int luaTicksLimit) {
-    testEnv.getWol().getConfig().setLuaTicksLimit(luaTicksLimit);
+    testEnv.runAndWait(() -> testEnv.getWol().getConfig().setLuaTicksLimit(luaTicksLimit));
+  }
+
+  public int getLuaTicksLimit() {
+    return testEnv.getWol().getConfig().getLuaTicksLimit();
   }
   
 }

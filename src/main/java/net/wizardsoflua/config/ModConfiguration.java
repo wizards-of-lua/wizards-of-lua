@@ -6,6 +6,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ModConfiguration {
 
+  private static final int LUA_TICKS_LIMIT_MAX = 10000000;
+  private static final int LUA_TICKS_LIMIT_MIN = 1000;
+
   private final String configName;
 
   private File configDir;
@@ -34,8 +37,8 @@ public class ModConfiguration {
 
     shouldShowAboutMessage = config.getBoolean("showAboutMessage", "general",
         shouldShowAboutMessage, "Shows the about message to the player at first login");
-    luaTicksLimit = config.getInt("luaTicksLimit", "general", luaTicksLimit, 1000, 10000000,
-        "Max. number of Lua ticks a spell can run per game tick");
+    luaTicksLimit = config.getInt("luaTicksLimit", "general", luaTicksLimit, LUA_TICKS_LIMIT_MIN,
+        LUA_TICKS_LIMIT_MAX, "Max. number of Lua ticks a spell can run per game tick");
     if (config.hasChanged()) {
       config.save();
     }
@@ -56,8 +59,19 @@ public class ModConfiguration {
     return luaTicksLimit;
   }
 
-  public void setLuaTicksLimit(int luaTicksLimit) {
-    this.luaTicksLimit = luaTicksLimit;
+  public int setLuaTicksLimit(int luaTicksLimit) {
+    this.luaTicksLimit = clamp(luaTicksLimit, LUA_TICKS_LIMIT_MIN, LUA_TICKS_LIMIT_MAX);
     save();
+    return this.luaTicksLimit;
+  }
+
+  private int clamp(int value, int min, int max) {
+    if (value > max) {
+      return max;
+    }
+    if (value < min) {
+      return min;
+    }
+    return value;
   }
 }
