@@ -27,7 +27,7 @@ public class WizardsOfLua {
   public static final String MODID = "wol";
   public static final String NAME = "Wizards of Lua";
   public static final String CONFIG_DIR = "wizards-of-lua";
-  public static final String VERSION = "1.0.0-alpha";
+  public static final String VERSION = "@MOD_VERSION@";
   public static final String URL = "http://www.wizards-of-lua.net";
 
   @Instance(MODID)
