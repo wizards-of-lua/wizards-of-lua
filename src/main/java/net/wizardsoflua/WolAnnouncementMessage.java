@@ -1,4 +1,4 @@
-package net.wizardsoflua.wol;
+package net.wizardsoflua;
 
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;

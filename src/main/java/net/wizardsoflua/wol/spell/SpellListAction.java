@@ -9,8 +9,8 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.spell.SpellEntity;
-import net.wizardsoflua.wol.WolAnnouncementMessage;
 import net.wizardsoflua.wol.WolCommandAction;
 
 public class SpellListAction implements WolCommandAction {

@@ -16,8 +16,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.spell.SpellEntity;
-import net.wizardsoflua.wol.WolAnnouncementMessage;
 
 public class LuaCommand extends CommandBase {
   private static final String CMD_NAME = "lua";

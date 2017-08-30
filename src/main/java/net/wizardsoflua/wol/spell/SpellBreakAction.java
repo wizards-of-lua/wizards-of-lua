@@ -3,7 +3,7 @@ package net.wizardsoflua.wol.spell;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.wol.WolAnnouncementMessage;
+import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.WolCommandAction;
 
 public class SpellBreakAction implements WolCommandAction {
