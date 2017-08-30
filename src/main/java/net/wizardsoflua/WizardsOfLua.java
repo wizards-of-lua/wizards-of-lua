@@ -84,6 +84,10 @@ public class WizardsOfLua {
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
   }
 
+  public ModConfiguration getConfig() {
+    return config;
+  }
+  
   public SpellEntityFactory getSpellEntityFactory() {
     return spellEntityFactory;
   }

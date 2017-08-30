@@ -9,7 +9,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 public class ExtendedConfiguration extends Configuration {
-  
+
   public ExtendedConfiguration(File file) {
     super(file);
   }
@@ -35,6 +35,11 @@ public class ExtendedConfiguration extends Configuration {
       Property p = get(category, key, "");
       p.set(value);
     }
+  }
+
+  public void setInt(String category, String key, int value) {
+    Property p = get(category, key, 0);
+    p.set(value);
   }
 
 }

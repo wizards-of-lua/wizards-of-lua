@@ -2,7 +2,6 @@ package net.wizardsoflua.config;
 
 import java.io.File;
 
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ModConfiguration {
@@ -10,7 +9,7 @@ public class ModConfiguration {
   private final String configName;
 
   private File configDir;
-  private Configuration config;
+  private ExtendedConfiguration config;
 
   private boolean shouldShowAboutMessage = true;
   private int luaTicksLimit = 10000;
@@ -27,6 +26,10 @@ public class ModConfiguration {
     }
 
     config = new ExtendedConfiguration(cfgFile);
+    reload();
+  }
+
+  public void reload() {
     config.load();
 
     shouldShowAboutMessage = config.getBoolean("showAboutMessage", "general",
@@ -38,11 +41,23 @@ public class ModConfiguration {
     }
   }
 
+  public void save() {
+    config.setInt("luaTicksLimit", "general", luaTicksLimit);
+    if (config.hasChanged()) {
+      config.save();
+    }
+  }
+
   public boolean shouldShowAboutMessage() {
     return shouldShowAboutMessage;
   }
 
   public int getLuaTicksLimit() {
     return luaTicksLimit;
+  }
+
+  public void setLuaTicksLimit(int luaTicksLimit) {
+    this.luaTicksLimit = luaTicksLimit;
+    save();
   }
 }
