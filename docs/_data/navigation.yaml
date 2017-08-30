@@ -4,14 +4,23 @@ docs:
 - title: Home
   url: /
 
-- title: Introduction
-  url: /introduction
-
 - title: News
   url: /news
 
+- title: Introduction
+  url: /introduction
+
+- title: Features
+  url: /features
+
 - title: Installation
   url: /installation
+
+- title: The /lua Command
+  url: /lua-command
+
+- title: The /wol Command
+  url: /wol-command
 
 - title: Spell Book Library
   url: /spellbooklibrary
@@ -21,12 +30,6 @@ docs:
 
 - title: Tutorials
   url: /tutorials.html
-
-- title: The /lua Command
-  url: /lua-command
-
-- title: The /wol Command
-  url: /wol-command
 
 - title: Roadmap
   url: /roadmap

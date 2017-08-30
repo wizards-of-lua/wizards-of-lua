@@ -20,4 +20,4 @@ The following features are planned for the Beta release.
 * [Issue #45](https://github.com/wizards-of-lua/wizards-of-lua/issues/45): Wizards should be able to break specific spells
 * [Issue #46](https://github.com/wizards-of-lua/wizards-of-lua/issues/46): Wizards should be able to define event handlers that cast spells automatically
 * [Issue #47](https://github.com/wizards-of-lua/wizards-of-lua/issues/47): Operators should be able to define permissions required for casting a spell
-* [Issue #48](https://github.com/wizards-of-lua/wizards-of-lua/issues/48): Operators should be able to configure the maximum number of Lua ticks a spell can use per game tick
+* Fixed - [Issue #48](https://github.com/wizards-of-lua/wizards-of-lua/issues/48): Operators should be able to configure the maximum number of Lua ticks a spell can use per game tick
