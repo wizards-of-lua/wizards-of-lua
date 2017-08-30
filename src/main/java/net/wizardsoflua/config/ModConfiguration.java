@@ -13,6 +13,7 @@ public class ModConfiguration {
   private Configuration config;
 
   private boolean shouldShowAboutMessage = true;
+  private int luaTicksLimit = 10000;
 
   public ModConfiguration(String configName) {
     this.configName = configName;
@@ -30,7 +31,8 @@ public class ModConfiguration {
 
     shouldShowAboutMessage = config.getBoolean("showAboutMessage", "general",
         shouldShowAboutMessage, "Shows the about message to the player at first login");
-
+    luaTicksLimit = config.getInt("luaTicksLimit", "general", luaTicksLimit, 1000, 10000000,
+        "Max. number of Lua ticks a spell can run per game tick");
     if (config.hasChanged()) {
       config.save();
     }
@@ -38,5 +40,9 @@ public class ModConfiguration {
 
   public boolean shouldShowAboutMessage() {
     return shouldShowAboutMessage;
+  }
+
+  public int getLuaTicksLimit() {
+    return luaTicksLimit;
   }
 }

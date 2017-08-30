@@ -30,8 +30,6 @@ public class WizardsOfLua {
   public static final String VERSION = "1.0.0-alpha";
   public static final String URL = "http://www.wizards-of-lua.net";
 
-  private static final int DEFAULT_LUA_TICKS_LIMIT = 10000;
-
   @Instance(MODID)
   public static WizardsOfLua instance;
 
@@ -41,8 +39,6 @@ public class WizardsOfLua {
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final SpellEntityFactory spellEntityFactory;
   private final SpellProgramFactory spellProgramFactory;
-
-  private int luaTicksLimit = DEFAULT_LUA_TICKS_LIMIT;
 
   // private MinecraftServer server;
 
@@ -82,7 +78,7 @@ public class WizardsOfLua {
 
       @Override
       public int getLuaTicksLimit() {
-        return luaTicksLimit;
+        return config.getLuaTicksLimit();
       }
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
