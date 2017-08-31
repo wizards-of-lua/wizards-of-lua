@@ -17,7 +17,7 @@ But sad to say, you don't know how to get the name of a block using Lua.
 
 When you execute a spell like this:
 ```lua
-/lua print( spell.block))
+/lua print( spell.block)
 ```
 you just get something like the following not very meaningful output:
 ```lua
@@ -31,7 +31,7 @@ But we can do better.
 By using the <tt>str()</tt> function you can get a string with the table's contents
 in a human readable way.
 ```lua
-/lua print( str( spell.block)))
+/lua print( str( spell.block))
 ```
 Now you get this:
 ```lua
