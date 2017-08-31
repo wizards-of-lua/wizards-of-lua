@@ -20,7 +20,7 @@ developer.
 
 To interact with the Minecraft world, a spell can make use of a special application
 programming interface (API).
-This api is documentend by a bunch of small books which are collected inside the
+This API is documentend by a bunch of small books which are collected inside the
 [spell book library](/spellbooklibrary).
 
 By studying the [examples](/examples.html) and [tutorials](/tutorials.html),
