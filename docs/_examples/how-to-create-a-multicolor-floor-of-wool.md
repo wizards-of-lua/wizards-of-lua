@@ -1,7 +1,7 @@
 ---
 title:  "How to Create a Multicolor Floor of Wool"
 date:   2017-08-28 10:49:00
-categories: share a spell
+categories: Blocks
 excerpt_separator: <!--more-->
 author: mickkay
 ---

@@ -1,26 +1,39 @@
 ---
 title: Introduction
 ---
-By [installing](/installation.html) the 'Wizards of Lua' mod
-onto your Minecraft server, you are changing the nature of your Minecraft
-game: it becomes magical in a wordly sense.
-This mod transforms [Lua, the programming language](https://www.lua.org),
-into a 'lingua magica', a language of magic, that wizards can use to create
-and cast powerful spells to control almost any aspect of the world.
-Lua can be executed from the in-game chat window and from command blocks by
-using the [/lua command](/lua-command.html).
+*The Wizards of Lua modification adds the Lua programming language to the Minecraft game.
+By using it you can change the nature of the game.*
 
-By using existing function libraries described in the [spell book library](/spellbooklibrary)
-wizards can enjoy completely new variants of the Minecraft game without great effort.
-And by studying the examples found inside the spell books,
-players can gain a deep knowledge about how the linuga magica works
-and how anybody can use little 'magic words' to craft their own unique spells
-in order to do things that were not possible before.
+The Wizards of Lua modification adds a new entity, called the Spell entity, to Minecraft.
+A spell is a (normally) invisible entity that can be casted by a player using the
+[/lua command](/lua-command).
+Like any other entity each spell exists at a specific location
+(defined by a 3-dimensional [vector](/modules/Vec3/)) inside a specific dimension
+(like the Overworld or the Nether).
+The special thing about a spell is that it contains a sequence of magic words which
+define exactly how this spell behaves in the world.
+These words belong to a special language, which is called Lua, the 'lingua magica', meaning the
+language of magic.
+Lua is actually a popular [programming language](https://www.lua.org).
+Therefore a spell is in fact a little computer program, and a wizard is a software
+developer.
+
+To interact with the Minecraft world, a spell can make use of a special application
+programming interface (API).
+This api is documentend by a bunch of small books which are collected inside the
+[spell book library](/spellbooklibrary).
+
+By studying the [examples](/examples.html) and [tutorials](/tutorials.html),
+players can gain a deep knowledge about how the linuga magica works and become
+themselves great wizards.
 
 ## Casting a Spell
-As any other Minecraft command you can execute it directly from the chat
-window.
-Just type 't' to open the command prompt and begin typing:
+A wizard can cast a spell using the [/lua command](/lua-command).
+As any other Minecraft command it can be executed directly from the chat
+window (or from within a command block).
+
+For example, to execute a spell from the chat, just type 't' to open the chat
+prompt and begin typing:
 ```
 /lua
 ```

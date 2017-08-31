@@ -13,7 +13,7 @@ docs:
 - title: Features
   url: /features
 
-- title: Installation
+- title: Download & Installation
   url: /installation
 
 - title: The /lua Command
@@ -25,11 +25,14 @@ docs:
 - title: Spell Book Library
   url: /spellbooklibrary
 
-- title: Share a Spell
-  url: /spells.html
+- title: Examples
+  url: /examples.html
 
 - title: Tutorials
   url: /tutorials.html
 
 - title: Roadmap
   url: /roadmap
+
+- title: Feedback
+  url: /feedback

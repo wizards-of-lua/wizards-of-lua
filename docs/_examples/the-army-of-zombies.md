@@ -1,7 +1,7 @@
 ---
 title:  "The Army of Zombies"
 date:   2017-08-29 18:00:00
-categories: share a spell
+categories: Summoning
 excerpt_separator: <!--more-->
 author: mickkay
 ---
@@ -10,7 +10,7 @@ A wizard who knows not only Lua but also vanilla Minecraft commands, can combine
 both to very powerful spells. An example is the "Army of Zombies" spell.
 <!--more-->
 
-![Multicolor Floor of Wool](/images/army-of-zombies.jpg)
+![Army of Zombies](/images/army-of-zombies.jpg)
 Aren't they nice?
 
 To create an army of zombies you should be familiar with the Minecraft

@@ -1,18 +1,18 @@
 ---
 title: The Lua Command
 ---
-The Wizards of Lua modification adds the <tt>/lua</tt>&nbsp;command to the Minecraft game.
-This command can be executed from the in-game chat and from any command block.
-
-To do this, the player must be a member of the Wizards of Lua.
-Currently (as with version 1.0.0-alpha) only a player with operator priviliges is a wizard.
-In a single player game the "allow cheats" option must be active to allow the player to
-be a wizard.
+*The <tt>/lua</tt>&nbsp;command is used to cast a [spell](/introduction) entity in Minecraft.
+This command can be executed from the in-game chat and from any command block.*
 
 When executed, the Lua command casts a new spell.
 A spell is a game entity that exists at a specific location inside the world.
 It will exist as long as its program is running.
 After the program has terminated the spell vanishes from the world.
+
+To cast a spell, the player must be a member of the Wizards of Lua.
+Currently (as with the alpha version) only a player with operator priviliges is a wizard.
+In a single player game the "allow cheats" option must be active to allow the player to
+be a wizard.
 
 Due to the fact that this mod is based on the Forge mod, a maximum number of
 200 spells can be active concurrently.

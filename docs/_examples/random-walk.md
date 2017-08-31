@@ -1,17 +1,17 @@
 ---
 title:  "Random Walking Grass"
 date:   2017-08-28 18:00:00
-categories: share a spell
+categories: Movement
 excerpt_separator: <!--more-->
 author: mickkay
 ---
 
-With a spell it's really easy to visualize a 2-dimensional [Random Walk](https://en.wikipedia.org/wiki/Random_walk).
+With a spell it's really easy to visualize a 2-dimensional [random walk](https://en.wikipedia.org/wiki/Random_walk).
 <!--more-->
 
 Here is a photo of the remains left by a random walking grass block.
 
-![Multicolor Floor of Wool](/images/random-walk-in-dessert.jpg)
+![Random Walking Grass](/images/random-walk-in-dessert.jpg)
 
 Just paste the following source code into a command block.
 As always: don't forget to add ```/lua ``` in front of it.

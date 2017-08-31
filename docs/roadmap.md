@@ -1,11 +1,8 @@
 ---
 title: Roadmap
 ---
-
-Currently we have only a single milestone in our roadmap.
-
-### Beta Release
-The following features are planned for the Beta release.
+*The Wizards of Lua mod is still under heavy development.
+This roadmap shows which features are planned to be included into the upcoming beta release.*
 
 * [Issue #35](https://github.com/wizards-of-lua/wizards-of-lua/issues/35): Spells should read and write more entity properties
 * [Issue #36](https://github.com/wizards-of-lua/wizards-of-lua/issues/36): Spells should be able to read and write entity NBT data

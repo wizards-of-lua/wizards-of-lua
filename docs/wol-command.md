@@ -1,8 +1,8 @@
 ---
 title: The Wol Command
 ---
-The <tt>/wol</tt> command (wol is short for Wizards Of Lua) gives you some
-control over the Winzards of Lua mod.
+*The <tt>/wol</tt> command (wol is short for Wizards Of Lua) gives you some
+control over the Winzards of Lua mod.*
 
 As with the alpha version this command is still very limited.
 Here are all available actions:
