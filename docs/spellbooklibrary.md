@@ -3,7 +3,7 @@ title: The Spell Book Library
 ---
 *To interact with the Minecraft world, a spell can make use of a special application
 programming interface (API).
-This api is documentend by a bunch of small books which are collected inside
+This API is documentend by a bunch of small books which are collected inside
 this Spell Book Library.*
 
 The Wizards of Lua use magic words as ingredients to craft powerful spells.
