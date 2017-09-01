@@ -18,7 +18,7 @@ properties:
   - name: liquid
     type: boolean
     access: r
-    description: This is true if this material is liquid and can float.
+    description: This is true if this material is liquid and can flow.
   - name: opaque
     type: boolean
     access: r
