@@ -7,18 +7,18 @@ By using it you can change the nature of the game.*
 The Wizards of Lua modification adds a new entity, called the Spell entity, to Minecraft.
 A spell is a (normally) invisible entity that can be casted by a player using the
 [/lua command](/lua-command).
-Like any other entity each spell exists at a specific location
+Like any other entity each spell exists at a certain location
 (defined by a 3-dimensional [vector](/modules/Vec3/)) inside a specific dimension
 (like the Overworld or the Nether).
 The special thing about a spell is that it contains a sequence of magic words which
 define exactly how this spell behaves in the world.
-These words belong to a special language, which is called Lua, the 'lingua magica', meaning the
+These words belong to a language which is called Lua, the 'lingua magica', meaning the
 language of magic.
 Lua is actually a popular [programming language](https://www.lua.org).
 Therefore a spell is in fact a little computer program, and a wizard is a software
 developer.
 
-To interact with the Minecraft world, a spell can make use of a special application
+To interact with the Minecraft world, a spell can make use of a specific application
 programming interface (API).
 This API is documentend by a bunch of small books which are collected inside the
 [spell book library](/spellbooklibrary).
