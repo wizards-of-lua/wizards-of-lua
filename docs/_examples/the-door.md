@@ -10,7 +10,7 @@ Making new doors in Minecraft is difficult unless you know some magic.
 This examples shows how this can be done with two little spells.
 <!--more-->
 
-Here is a little video that shows that door in action.
+Here is a short video that shows that door in action.
 
 <iframe width="650" height="400" src="https://www.youtube.com/embed/rC6ouNtisAA" frameborder="1" allowfullscreen></iframe>
 
