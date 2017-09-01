@@ -54,7 +54,7 @@ for y=0,3 do
   for z=1,4 do
     spell.pos=s+Vec3(0,y,z);
     spell.block=b;
-    spell:execute("particle largesmoke ~ ~ ~ 0.2 0.2 0.2 0 10 force");
+    spell:execute("particle largesmoke ~ ~ ~ 0.2 0.2 0.2 0 10");
   end;
 end
 ```
