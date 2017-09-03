@@ -59,7 +59,7 @@ end;
 ```
 As you can see I stored the summon command into a variable so that I could use
 it later as a parameter for the execute function.
-This is very helpful since it increases the readability of the spells code.
+This is very helpful since it increases the readability of the spell's code.
 
 Finally I want to point out, that I created brainless zombies, essentially because I
 needed them to stand still for my little photo session.
