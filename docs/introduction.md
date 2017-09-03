@@ -32,7 +32,7 @@ A wizard can cast a spell using the [/lua command](/lua-command).
 As any other Minecraft command it can be executed directly from the chat
 window (or from within a command block).
 
-For example, to execute a spell from the chat, just type 't' to open the chat
+For example, to cast a spell from the chat, just type 't' to open the chat
 prompt and begin typing:
 ```
 /lua
