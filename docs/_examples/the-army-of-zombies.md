@@ -61,7 +61,7 @@ As you can see I stored the summon command into a variable so that I could use
 it later as a parameter for the execute function.
 This is very helpful since it increases the readability of the spell's code.
 
-Finally I want to point out, that I created brainless zombies, essentially because I
+On a side note: I created brainless zombies, because I
 needed them to stand still for my little photo session.
 However, if you want them to walk around again you can 'brainify' them any time later with the following command:
 ```/entitydata @e[name=soldier] {NoAI:0}```
