@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.spell;
+package net.wizardsoflua.lua.classes.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -14,23 +14,23 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
-import net.wizardsoflua.lua.converters.Converters;
-import net.wizardsoflua.lua.converters.block.BlockConverter;
-import net.wizardsoflua.lua.converters.entity.EntityConverter;
+import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.block.BlockClass;
+import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.spell.SpellEntity;
 
-public class SpellConverter {
+public class SpellClass {
 
   public static final String METATABLE_NAME = "Spell";
 
   private final Converters converters;
   private final Table metatable;
 
-  public SpellConverter(Converters converters) {
+  public SpellClass(Converters converters) {
     this.converters = converters;
     // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityConverter.METATABLE_NAME);
+    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityClass.METATABLE_NAME);
     metatable.rawset("execute", new ExecuteFunction());
   }
 
@@ -38,7 +38,7 @@ public class SpellConverter {
     return new Proxy(converters, metatable, delegate);
   }
 
-  public static class Proxy extends EntityConverter.Proxy {
+  public static class Proxy extends EntityClass.Proxy {
 
     private final SpellEntity delegate;
 
@@ -63,7 +63,7 @@ public class SpellConverter {
     }
 
     public void setBlock(Object luaObj) {
-      getConverters().getTypes().checkAssignable(BlockConverter.METATABLE_NAME, luaObj,
+      getConverters().getTypes().checkAssignable(BlockClass.METATABLE_NAME, luaObj,
           Terms.MANDATORY);
       WolBlock wolBlock = getConverters().blockToJava(luaObj);
       World world = delegate.getEntityWorld();

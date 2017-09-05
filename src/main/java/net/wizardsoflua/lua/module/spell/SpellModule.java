@@ -1,7 +1,7 @@
 package net.wizardsoflua.lua.module.spell;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellModule {

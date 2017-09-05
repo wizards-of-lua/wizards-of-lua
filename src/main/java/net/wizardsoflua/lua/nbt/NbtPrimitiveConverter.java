@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.nbt;
+package net.wizardsoflua.lua.nbt;
 
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;

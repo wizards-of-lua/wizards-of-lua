@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.block;
+package net.wizardsoflua.lua.classes.block;
 
 import java.util.Collection;
 
@@ -13,20 +13,20 @@ import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
-import net.wizardsoflua.lua.converters.Converters;
-import net.wizardsoflua.lua.converters.common.DelegatingProxy;
-import net.wizardsoflua.lua.converters.nbt.NbtConverter;
-import net.wizardsoflua.lua.converters.nbt.NbtPrimitiveConverter;
+import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.module.types.Terms;
+import net.wizardsoflua.lua.nbt.NbtConverter;
+import net.wizardsoflua.lua.nbt.NbtPrimitiveConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
-public class BlockConverter {
+public class BlockClass {
   public static final String METATABLE_NAME = "Block";
 
   private final Converters converters;
   private final Table metatable;
 
-  public BlockConverter(Converters converters) {
+  public BlockClass(Converters converters) {
     this.converters = converters;
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);

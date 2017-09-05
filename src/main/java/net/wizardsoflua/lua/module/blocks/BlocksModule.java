@@ -15,7 +15,7 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
-import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.module.types.Terms;
 
 public class BlocksModule {

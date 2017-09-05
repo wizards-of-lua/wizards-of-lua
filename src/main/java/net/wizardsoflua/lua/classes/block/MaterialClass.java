@@ -1,17 +1,17 @@
-package net.wizardsoflua.lua.converters.block;
+package net.wizardsoflua.lua.classes.block;
 
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.converters.Converters;
-import net.wizardsoflua.lua.converters.common.DelegatingProxy;
+import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-public class MaterialConverter {
+public class MaterialClass {
   public static final String METATABLE_NAME = "Material";
 
   private final Converters converters;
   private final Table metatable;
 
-  public MaterialConverter(Converters converters) {
+  public MaterialClass(Converters converters) {
     this.converters = converters;
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);

@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.entity;
+package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -14,17 +14,17 @@ import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.converters.Converters;
-import net.wizardsoflua.lua.converters.common.DelegatingProxy;
+import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.module.types.Terms;
 
-public class EntityConverter {
+public class EntityClass {
   public static final String METATABLE_NAME = "Entity";
 
   private final Converters converters;
   private final Table metatable;
 
-  public EntityConverter(Converters converters) {
+  public EntityClass(Converters converters) {
     this.converters = converters;
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);

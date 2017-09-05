@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.common;
+package net.wizardsoflua.lua.classes.common;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,7 +12,7 @@ import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Metatables;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
-import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.table.Property;
 
 public class DelegatingProxy extends Table {

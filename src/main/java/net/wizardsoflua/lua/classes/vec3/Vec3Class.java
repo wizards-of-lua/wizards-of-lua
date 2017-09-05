@@ -1,17 +1,17 @@
-package net.wizardsoflua.lua.converters.vec3;
+package net.wizardsoflua.lua.classes.vec3;
 
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
-public class Vec3Converter {
+public class Vec3Class {
   public static final String METATABLE_NAME = "Vec3";
 
   private final Table metatable;
 
-  public Vec3Converter(Converters converters) {
+  public Vec3Class(Converters converters) {
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);
   }

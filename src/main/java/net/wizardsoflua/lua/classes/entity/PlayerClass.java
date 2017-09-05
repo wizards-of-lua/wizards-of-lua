@@ -1,26 +1,26 @@
-package net.wizardsoflua.lua.converters.entity;
+package net.wizardsoflua.lua.classes.entity;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.converters.Converters;
+import net.wizardsoflua.lua.Converters;
 
-public class PlayerConverter {
+public class PlayerClass {
   public static final String METATABLE_NAME = "Player";
 
   private final Converters converters;
   private final Table metatable;
 
-  public PlayerConverter(Converters converters) {
+  public PlayerClass(Converters converters) {
     this.converters = converters;
     // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityConverter.METATABLE_NAME);
+    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityClass.METATABLE_NAME);
   }
 
   public Table toLua(EntityPlayer delegate) {
     return new Proxy(converters, metatable, delegate);
   }
 
-  public class Proxy extends EntityConverter.Proxy {
+  public class Proxy extends EntityClass.Proxy {
 
     private final EntityPlayer delegate;
 

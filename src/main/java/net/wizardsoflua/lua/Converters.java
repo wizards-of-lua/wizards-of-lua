@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters;
+package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -19,12 +19,12 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.block.WolBlock;
-import net.wizardsoflua.lua.converters.block.BlockConverter;
-import net.wizardsoflua.lua.converters.block.MaterialConverter;
-import net.wizardsoflua.lua.converters.entity.EntityConverter;
-import net.wizardsoflua.lua.converters.entity.PlayerConverter;
-import net.wizardsoflua.lua.converters.spell.SpellConverter;
-import net.wizardsoflua.lua.converters.vec3.Vec3Converter;
+import net.wizardsoflua.lua.classes.block.BlockClass;
+import net.wizardsoflua.lua.classes.block.MaterialClass;
+import net.wizardsoflua.lua.classes.entity.EntityClass;
+import net.wizardsoflua.lua.classes.entity.PlayerClass;
+import net.wizardsoflua.lua.classes.spell.SpellClass;
+import net.wizardsoflua.lua.classes.vec3.Vec3Class;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.spell.SpellEntity;
 
@@ -49,21 +49,21 @@ public class Converters {
   private final Cache cache = new Cache();
   private final Types types;
 
-  private final Vec3Converter vec3Converter;
-  private final BlockConverter blockConverter;
-  private final MaterialConverter materialConverter;
-  private final EntityConverter entityConverter;
-  private final PlayerConverter playerConverter;
-  private final SpellConverter spellConverter;
+  private final Vec3Class vec3Class;
+  private final BlockClass blockClass;
+  private final MaterialClass materialClass;
+  private final EntityClass entityClass;
+  private final PlayerClass playerClass;
+  private final SpellClass spellClass;
 
   public Converters(Types types) {
     this.types = checkNotNull(types, "types==null!");
-    vec3Converter = new Vec3Converter(this);
-    blockConverter = new BlockConverter(this);
-    materialConverter = new MaterialConverter(this);
-    entityConverter = new EntityConverter(this);
-    playerConverter = new PlayerConverter(this);
-    spellConverter = new SpellConverter(this);
+    vec3Class = new Vec3Class(this);
+    blockClass = new BlockClass(this);
+    materialClass = new MaterialClass(this);
+    entityClass = new EntityClass(this);
+    playerClass = new PlayerClass(this);
+    spellClass = new SpellClass(this);
   }
 
   // TODO use getTypes().getEnv()
@@ -88,15 +88,15 @@ public class Converters {
     if (value == null) {
       return null;
     }
-    return vec3Converter.toLua(value);
+    return vec3Class.toLua(value);
   }
 
   public @Nullable Vec3d vec3ToJava(@Nullable Object luaObj) {
     if (luaObj == null) {
       return null;
     }
-    types.checkAssignable(Vec3Converter.METATABLE_NAME, luaObj);
-    Vec3d result = vec3Converter.toJava((Table) luaObj);
+    types.checkAssignable(Vec3Class.METATABLE_NAME, luaObj);
+    Vec3d result = vec3Class.toJava((Table) luaObj);
     return result;
   }
 
@@ -119,14 +119,14 @@ public class Converters {
     if (block == null) {
       return null;
     }
-    return blockConverter.toLua(block);
+    return blockClass.toLua(block);
   }
 
   public @Nullable WolBlock blockToJava(@Nullable Object luaObj) {
     if (luaObj == null) {
       return null;
     }
-    return blockConverter.toJava(luaObj);
+    return blockClass.toJava(luaObj);
   }
 
   public @Nullable Table entityToLua(@Nullable Entity entity) {
@@ -135,25 +135,25 @@ public class Converters {
     }
     if (entity instanceof SpellEntity) {
       return cache.computeIfAbsent(entity, t -> {
-        return spellConverter.toLua((SpellEntity) entity);
+        return spellClass.toLua((SpellEntity) entity);
       });
     }
     if (entity instanceof EntityPlayer) {
       return cache.computeIfAbsent(entity, t -> {
-        return playerConverter.toLua((EntityPlayer) entity);
+        return playerClass.toLua((EntityPlayer) entity);
       });
     }
     return cache.computeIfAbsent(entity, t -> {
-      return entityConverter.toLua(entity);
+      return entityClass.toLua(entity);
     });
   }
 
   public @Nullable Table materialToLua(@Nullable Material material) {
-    if (materialConverter == null) {
+    if (materialClass == null) {
       return null;
     }
     return cache.computeIfAbsent(material, t -> {
-      return materialConverter.toLua(material);
+      return materialClass.toLua(material);
     });
   }
 

@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.nbt;
+package net.wizardsoflua.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

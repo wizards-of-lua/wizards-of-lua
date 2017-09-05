@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.converters.nbt;
+package net.wizardsoflua.lua.nbt;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
