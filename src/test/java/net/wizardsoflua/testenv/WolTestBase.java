@@ -29,13 +29,15 @@ public class WolTestBase extends TestDataFactory {
     TestPlayerPreparedForTestEvent evt = mc().waitFor(TestPlayerPreparedForTestEvent.class);
     assertThat(evt.getId()).isEqualTo(testId);
     
-    testEnv.runAndWait(()->testEnv.getEventRecorder().clear());
+    mc().executeCommand("/gamerule sendCommandFeedback false");
+    mc().executeCommand("/gamerule doMobSpawning");
+    mc().clearEvents();
   }
 
   @After
   public void afterTest() {
     testEnv.runAndWait(()->testEnv.getEventRecorder().setEnabled(false));
-    testEnv.runAndWait(()->testEnv.getEventRecorder().clear());
+    mc().clearEvents();
     mc().breakAllSpells();
     mc().resetClock();
   }

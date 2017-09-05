@@ -18,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.block.BlockClass;
 import net.wizardsoflua.lua.classes.block.MaterialClass;
@@ -107,6 +108,19 @@ public class Converters {
     return ByteString.of(str);
   }
 
+  public @Nullable Table stringsToLua(@Nullable Iterable<String> strings) {
+    if (strings == null) {
+      return null;
+    }
+    DefaultTable result = new DefaultTable();
+    int index = 0;
+    for (String string : strings) {
+      index++;
+      result.rawset(index, stringToLua(string));
+    }
+    return result;
+  }
+
   public @Nullable String stringToJava(@Nullable Object luaObj) {
     if (luaObj == null) {
       return null;
@@ -148,6 +162,19 @@ public class Converters {
     });
   }
 
+  public @Nullable Table entitiesToLua(@Nullable Iterable<Entity> entities) {
+    if (entities == null) {
+      return null;
+    }
+    DefaultTable result = new DefaultTable();
+    int index = 0;
+    for (Entity entity : entities) {
+      index++;
+      result.rawset(index, entityToLua(entity));
+    }
+    return result;
+  }
+
   public @Nullable Table materialToLua(@Nullable Material material) {
     if (materialClass == null) {
       return null;
@@ -173,5 +200,7 @@ public class Converters {
     }
     return ByteString.of(((IStringSerializable) value).getName());
   }
+
+
 
 }

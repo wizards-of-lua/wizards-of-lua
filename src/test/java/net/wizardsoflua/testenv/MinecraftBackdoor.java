@@ -87,6 +87,10 @@ public class MinecraftBackdoor {
     testEnv.getWol().setClock(clock);
   }
 
+  public void clearEvents() {
+    testEnv.runAndWait(()->testEnv.getEventRecorder().clear());
+  }
+  
   public void breakAllSpells() {
     testEnv.runAndWait(() -> testEnv.getWol().getSpellRegistry().breakAll());
   }

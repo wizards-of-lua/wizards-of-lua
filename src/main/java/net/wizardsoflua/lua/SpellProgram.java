@@ -23,6 +23,7 @@ import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
+import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.runtime.Runtime;
 import net.wizardsoflua.lua.module.runtime.RuntimeModule;
@@ -81,7 +82,7 @@ public class SpellProgram {
     PrintRedirector.installInto(env, source);
     RuntimeModule.installInto(env, context.getRuntime());
     BlocksModule.installInto(env, converters);
-    
+
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
@@ -148,9 +149,10 @@ public class SpellProgram {
 
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-
     dependencies.installModules(env, executor, stateContext);
+
     SpellModule.installInto(env, converters, spellEntity);
+    EntitiesModule.installInto(env, converters, spellEntity);
 
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
     executor.call(stateContext, commandLineFunc);
