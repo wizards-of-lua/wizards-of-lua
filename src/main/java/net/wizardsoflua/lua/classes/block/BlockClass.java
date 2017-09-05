@@ -83,6 +83,7 @@ public class BlockClass {
   }
 
   private class WithDataFunction extends AbstractFunction2 {
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
@@ -94,9 +95,11 @@ public class BlockClass {
       IBlockState state = oldWolBlock.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
         Object luaValue = dataTable.rawget(key.getName());
-        Class<?> vc = key.getValueClass();
-        Comparable javaValue = NbtPrimitiveConverter.toJava(vc, luaValue);
-        state = state.withProperty((IProperty) key, javaValue);
+        if ( luaValue != null) {
+          Class<?> vc = key.getValueClass();
+          Comparable javaValue = NbtPrimitiveConverter.toJava(vc, luaValue);
+          state = state.withProperty((IProperty) key, javaValue);
+        }
       }
 
       WolBlock newWolBlock = new WolBlock(state, oldWolBlock.getNbt());

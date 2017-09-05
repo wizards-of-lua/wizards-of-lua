@@ -137,4 +137,38 @@ public class BlockTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("minecraft:planks");
   }
+
+  // /test net.wizardsoflua.tests.BlockTest test_withData_log_variant_oak
+  @Test
+  public void test_withData_log_variant_oak() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.AIR);
+
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua b=Blocks.get('log'):withData({variant='oak'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.variant)",
+            posP.getX(), posP.getY(), posP.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("oak");
+  }
+
+  // /test net.wizardsoflua.tests.BlockTest test_withData_log_axis_z
+  @Test
+  public void test_withData_log_axis_z() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.AIR);
+
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua b=Blocks.get('log'):withData({axis='z'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.axis)",
+            posP.getX(), posP.getY(), posP.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("z");
+  }
 }
