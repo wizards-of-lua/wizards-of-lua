@@ -2,9 +2,12 @@ package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -17,6 +20,7 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.module.types.Terms;
+import net.wizardsoflua.lua.nbt.NbtConverter;
 
 public class EntityClass {
   public static final String METATABLE_NAME = "Entity";
@@ -46,6 +50,7 @@ public class EntityClass {
       addReadOnly("uuid", this::getUuid);
       add("name", this::getName, this::setName);
       add("pos", this::getPos, this::setPos);
+      add("nbt", this::getNbt, this::setNbt);
     }
 
     public Table getPos() {
@@ -68,6 +73,25 @@ public class EntityClass {
     public void setName(Object luaObj) {
       String name = getConverters().stringToJava(luaObj);
       delegate.setCustomNameTag(name);
+    }
+    
+    public Table getNbt() {
+      NBTTagCompound nbt = new NBTTagCompound();
+      delegate.writeToNBT(nbt);
+      Table result = NbtConverter.toLua(nbt);
+      return result;
+    }
+    
+    public void setNbt(Object luaObj) {
+      Table nbtTable = getConverters().getTypes().castTable(luaObj, Terms.MANDATORY);
+      UUID origUuid = delegate.getUniqueID();
+      NBTTagCompound oldNbt = new NBTTagCompound();
+      delegate.writeToNBT(oldNbt);
+      NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
+      // TODO (mk) we don't need to merge them again, do we?
+      // oldNbt.merge(newNbt); 
+      delegate.readFromNBT(newNbt);
+      // delegate.setUniqueId(origUuid);
     }
 
     public void move(String direction, @Nullable Number distance) {
