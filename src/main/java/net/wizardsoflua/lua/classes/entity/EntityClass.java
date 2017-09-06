@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3i;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
@@ -33,6 +34,7 @@ public class EntityClass {
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);
     metatable.rawset("move", new MoveFunction());
+    metatable.rawset("putNbt", new PutNbtFunction());
   }
 
   public Table toLua(Entity delegate) {
@@ -50,7 +52,7 @@ public class EntityClass {
       addReadOnly("uuid", this::getUuid);
       add("name", this::getName, this::setName);
       add("pos", this::getPos, this::setPos);
-      add("nbt", this::getNbt, this::setNbt);
+      addReadOnly("nbt", this::getNbt);
     }
 
     public Table getPos() {
@@ -74,22 +76,22 @@ public class EntityClass {
       String name = getConverters().stringToJava(luaObj);
       delegate.setCustomNameTag(name);
     }
-    
+
     public Table getNbt() {
       NBTTagCompound nbt = new NBTTagCompound();
       delegate.writeToNBT(nbt);
       Table result = NbtConverter.toLua(nbt);
       return result;
     }
-    
-    public void setNbt(Object luaObj) {
+
+    public void putNbt(Object luaObj) {
       Table nbtTable = getConverters().getTypes().castTable(luaObj, Terms.MANDATORY);
       UUID origUuid = delegate.getUniqueID();
       NBTTagCompound oldNbt = new NBTTagCompound();
       delegate.writeToNBT(oldNbt);
       NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
       // TODO (mk) we don't need to merge them again, do we?
-      // oldNbt.merge(newNbt); 
+      // oldNbt.merge(newNbt);
       delegate.readFromNBT(newNbt);
       // delegate.setUniqueId(origUuid);
     }
@@ -118,6 +120,23 @@ public class EntityClass {
       String direction = converters.getTypes().castString(arg2, Terms.MANDATORY);
       Number distance = converters.getTypes().castNumber(arg3, Terms.OPTIONAL);
       proxy.move(direction, distance);
+      context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class PutNbtFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      Proxy proxy = (Proxy) arg1;
+      proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
     }
 
