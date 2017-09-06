@@ -91,7 +91,7 @@ public class SpellClass {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg0);
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg0, Terms.MANDATORY);
       Proxy wrapper = (Proxy) arg0;
 
 

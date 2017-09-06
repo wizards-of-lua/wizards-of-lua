@@ -87,7 +87,7 @@ public class BlockClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
       Proxy wrapper = (Proxy) arg1;
       Table dataTable = converters.getTypes().castTable(arg2, Terms.MANDATORY);
 
@@ -95,7 +95,7 @@ public class BlockClass {
       IBlockState state = oldWolBlock.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
         Object luaValue = dataTable.rawget(key.getName());
-        if ( luaValue != null) {
+        if (luaValue != null) {
           Class<?> vc = key.getValueClass();
           Comparable javaValue = NbtPrimitiveConverter.toJava(vc, luaValue);
           state = state.withProperty((IProperty) key, javaValue);
@@ -118,7 +118,7 @@ public class BlockClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
       Proxy wrapper = (Proxy) arg1;
       Table nbtTable = converters.getTypes().castTable(arg2, Terms.MANDATORY);
 

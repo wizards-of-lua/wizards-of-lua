@@ -115,7 +115,7 @@ public class EntityClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
       Proxy proxy = (Proxy) arg1;
       String direction = converters.getTypes().castString(arg2, Terms.MANDATORY);
       Number distance = converters.getTypes().castNumber(arg3, Terms.OPTIONAL);
@@ -134,7 +134,7 @@ public class EntityClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1);
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
       Proxy proxy = (Proxy) arg1;
       proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
