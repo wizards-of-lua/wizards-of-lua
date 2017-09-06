@@ -1,5 +1,5 @@
 #### Example
-Printing the number of all [Players](/module/Player) in this world.
+Printing the number of all [Players](/module/Player) currently logged in.
 ```lua
 found = Entities.find("@e[type=Player]")
 print(#found)
