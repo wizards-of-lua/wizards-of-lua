@@ -50,7 +50,8 @@ functions:
     results: nil
     description: "The 'putNbt' function inserts the given table entries into the
     [nbt](!SITE_URL!/modules/Entity/#nbt) property of this entity.
-    Please note that this function is not supported for [Player](!SITE_URL!/modules/Player/) objects.
+    Please note that this function is not supported for
+    [Player](!SITE_URL!/modules/Player/) objects.
     "
     examples:
       - url: Entity/putNbt.md

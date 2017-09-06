@@ -1,7 +1,7 @@
 #### Example
 Printing the number of all [Players](/module/Player) in this world.
 ```lua
-found = Entities.find("@p")
+found = Entities.find("@e[type=Player]")
 print(#found)
 ```
 
