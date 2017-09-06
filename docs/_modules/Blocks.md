@@ -5,7 +5,7 @@ layout: module
 properties:
 functions:
   - name: get
-    parameters: name
+    parameters: string
     results: "[Block](!SITE_URL!/modules/Block/)"
     description: "The 'get' function returns the block with the given name.
     "

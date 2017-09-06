@@ -30,6 +30,12 @@ properties:
     description: "The 'pos' is short for 'position'. It is a 3-dimensional vector
     containing the location of the entity inside the world it is living in.
     "
+  - name: nbt
+    type: table
+    access: r
+    description: "The 'nbt' value (short for Named Binary Tag) is a table of entity-specifc key-value pairs
+    also called [data tags](https://minecraft.gamepedia.com/Commands#Data_tags).
+    "
 functions:
   - name: move
     parameters: direction, distance
@@ -39,6 +45,15 @@ functions:
     If no distance is specified, 1 meter is taken as default distance."
     examples:
       - url: Entity/move.md
+  - name: putNbt
+    parameters: table
+    results: nil
+    description: "The 'putNbt' function inserts the given table entries into the
+    [nbt](!SITE_URL!/modules/Entity/#nbt) property of this entity.
+    Please note that this function is not supported for [Player](!SITE_URL!/modules/Player/) objects.
+    "
+    examples:
+      - url: Entity/putNbt.md
 ---
 
 The Entity class is the base class of all entities that populate the world.
