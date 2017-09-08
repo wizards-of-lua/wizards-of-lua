@@ -18,6 +18,13 @@ public class ModConfiguration {
 
     Configuration config = new Configuration(cfgFile);
     config.load();
+    
+    if (config.hasKey("luatickslimit", "general")) {
+      // Little fix because of bad config entry
+      // See https://github.com/wizards-of-lua/wizards-of-lua/issues/51
+      // TODO remove this when we left alpha phase
+      config.removeCategory(config.getCategory("luatickslimit"));
+    }
     return new ModConfiguration(config);
   }
 
