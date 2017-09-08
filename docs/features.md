@@ -22,5 +22,7 @@ The following features are already implemented in 1.1.0-alpha:
 * A spell can be made [visible](/modules/Spell/#visible).
 * A spell can [execute](/modules/Spell/#execute) any Minecraft command. This includes casting other spells.
 * A spell can be sent to [sleep](/modules/Runtime/#sleep) for a certain amount of game ticks.
+* A spell can read and write entity NBT data using [Entity.nbt](/modules/Entity/#nbt) and [Entity.putNbt()](/modules/Entity/#putNbt)
+* A spell can query for entities using [Entities.find()](/modules/Entities/#find).
 
 For a list of upcoming features please have a look at the [roadmap](/roadmap).
