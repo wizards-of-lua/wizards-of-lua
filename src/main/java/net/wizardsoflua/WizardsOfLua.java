@@ -26,7 +26,7 @@ import net.wizardsoflua.wol.WolCommand;
 public class WizardsOfLua {
   public static final String MODID = "wol";
   public static final String NAME = "Wizards of Lua";
-  public static final String CONFIG_DIR = "wizards-of-lua";
+  public static final String CONFIG_NAME = "wizards-of-lua";
   public static final String VERSION = "@MOD_VERSION@";
   public static final String URL = "http://www.wizards-of-lua.net";
 
@@ -34,11 +34,13 @@ public class WizardsOfLua {
   public static WizardsOfLua instance;
 
   public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
-  private final ModConfiguration config = new ModConfiguration(CONFIG_DIR);
-  private final AboutMessage aboutMessage;
   private final SpellRegistry spellRegistry = new SpellRegistry();
-  private final SpellEntityFactory spellEntityFactory;
-  private final SpellProgramFactory spellProgramFactory;
+
+  // TODO move these lazy instances into a new state class
+  private ModConfiguration config;
+  private AboutMessage aboutMessage;
+  private SpellEntityFactory spellEntityFactory;
+  private SpellProgramFactory spellProgramFactory;
 
   // private MinecraftServer server;
 
@@ -47,7 +49,11 @@ public class WizardsOfLua {
    */
   private Clock clock = getDefaultClock();
 
-  public WizardsOfLua() {
+  public WizardsOfLua() {}
+
+  @EventHandler
+  public void preInit(FMLPreInitializationEvent event) {
+    config = ModConfiguration.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 
       @Override
@@ -84,35 +90,6 @@ public class WizardsOfLua {
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
   }
 
-  public ModConfiguration getConfig() {
-    return config;
-  }
-  
-  public SpellEntityFactory getSpellEntityFactory() {
-    return spellEntityFactory;
-  }
-
-  public SpellRegistry getSpellRegistry() {
-    return spellRegistry;
-  }
-
-  public Clock getClock() {
-    return clock;
-  }
-
-  public void setClock(Clock clock) {
-    this.clock = clock;
-  }
-
-  public Clock getDefaultClock() {
-    return Clock.systemDefaultZone();
-  }
-
-  @EventHandler
-  public void preInit(FMLPreInitializationEvent event) {
-    config.init(event);
-  }
-
   @EventHandler
   public void init(FMLInitializationEvent event) {
     logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
@@ -132,6 +109,30 @@ public class WizardsOfLua {
   @EventHandler
   public void serverStarted(FMLServerStartedEvent event) {
     logger.info(aboutMessage);
+  }
+
+  public ModConfiguration getConfig() {
+    return config;
+  }
+
+  public SpellEntityFactory getSpellEntityFactory() {
+    return spellEntityFactory;
+  }
+
+  public SpellRegistry getSpellRegistry() {
+    return spellRegistry;
+  }
+
+  public Clock getClock() {
+    return clock;
+  }
+
+  public void setClock(Clock clock) {
+    this.clock = clock;
+  }
+
+  public Clock getDefaultClock() {
+    return Clock.systemDefaultZone();
   }
 
 }

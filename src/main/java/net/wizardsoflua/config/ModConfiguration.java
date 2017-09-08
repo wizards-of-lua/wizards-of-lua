@@ -1,77 +1,50 @@
 package net.wizardsoflua.config;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ModConfiguration {
 
-  private static final int LUA_TICKS_LIMIT_MAX = 10000000;
-  private static final int LUA_TICKS_LIMIT_MIN = 1000;
-
-  private final String configName;
-
-  private File configDir;
-  private ExtendedConfiguration config;
-
-  private boolean shouldShowAboutMessage = true;
-  private int luaTicksLimit = 10000;
-
-  public ModConfiguration(String configName) {
-    this.configName = configName;
-  }
-
-  public void init(FMLPreInitializationEvent event) {
-    configDir = new File(event.getModConfigurationDirectory(), configName);
-    File cfgFile = new File(this.configDir, configName + ".cfg");
+  public static ModConfiguration create(FMLPreInitializationEvent event, String configName) {
+    File configDir = new File(event.getModConfigurationDirectory(), configName);
+    File cfgFile = new File(configDir, configName + ".cfg");
     if (event.getSuggestedConfigurationFile().exists() && !cfgFile.exists()) {
       event.getSuggestedConfigurationFile().renameTo(cfgFile);
     }
 
-    config = new ExtendedConfiguration(cfgFile);
-    reload();
-  }
-
-  public void reload() {
+    Configuration config = new Configuration(cfgFile);
     config.load();
-
-    shouldShowAboutMessage = config.getBoolean("showAboutMessage", "general",
-        shouldShowAboutMessage, "Shows the about message to the player at first login");
-    luaTicksLimit = config.getInt("luaTicksLimit", "general", luaTicksLimit, LUA_TICKS_LIMIT_MIN,
-        LUA_TICKS_LIMIT_MAX, "Max. number of Lua ticks a spell can run per game tick");
-    if (config.hasChanged()) {
-      config.save();
-    }
+    return new ModConfiguration(config);
   }
 
-  public void save() {
-    config.setInt("luaTicksLimit", "general", luaTicksLimit);
+  private IntProperty luaTicksLimit;
+  private BooleanProperty shouldShowAboutMessage;
+
+  public ModConfiguration(Configuration config) {
+    checkNotNull(config, "config==null!");
+    luaTicksLimit = new IntProperty(config, "general", "luaTicksLimit", 10000, 1000, 10000000,
+        "Max. number of Lua ticks a spell can run per game tick");
+    shouldShowAboutMessage = new BooleanProperty(config, "general", "showAboutMessage", true,
+        "Shows the about message to the player at first login");
     if (config.hasChanged()) {
       config.save();
     }
   }
 
   public boolean shouldShowAboutMessage() {
-    return shouldShowAboutMessage;
+    return shouldShowAboutMessage.getValue();
   }
 
   public int getLuaTicksLimit() {
-    return luaTicksLimit;
+    return luaTicksLimit.getValue();
   }
 
-  public int setLuaTicksLimit(int luaTicksLimit) {
-    this.luaTicksLimit = clamp(luaTicksLimit, LUA_TICKS_LIMIT_MIN, LUA_TICKS_LIMIT_MAX);
-    save();
-    return this.luaTicksLimit;
+  public int setLuaTicksLimit(int value) {
+    return luaTicksLimit.setValue(value, true);
   }
 
-  private int clamp(int value, int min, int max) {
-    if (value > max) {
-      return max;
-    }
-    if (value < min) {
-      return min;
-    }
-    return value;
-  }
 }
