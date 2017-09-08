@@ -67,8 +67,9 @@ end
 When activated this spell loops forever or until you break it, of course.
 
 ## Some Credits
+This spell was created by Adrodoc55.
 
-This spell was inspried by an amazing command block setup published by *Sparks* of *Gamemode 4*.
+It was inspried by an amazing command block setup published by *Sparks* of *Gamemode 4*.
 
 If you are curious, here is a video of it.
 {% include youtube.md id="LJoN7CmJL4Q" %}
