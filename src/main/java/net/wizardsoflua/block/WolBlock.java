@@ -48,7 +48,7 @@ public class WolBlock {
         ((IInventory) oldTileEntity).clear();
       }
     }
-    if (world.setBlockState(pos, blockState)) {
+    if (world.setBlockState(pos, blockState, 2)) {
       if (nbt != null) {
         // TODO remove this side effect
         // however, it does not hurt

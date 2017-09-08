@@ -37,7 +37,7 @@ public class BlocksModule {
     ResourceLocation resourceLocation = new ResourceLocation(blockName);
     if (!Block.REGISTRY.containsKey(resourceLocation)) {
       throw new IllegalArgumentException(
-          String.format("Can't find block with name '%'", blockName));
+          String.format("Can't find block with name '%s'", blockName));
     }
     Block block = (Block) Block.REGISTRY.getObject(resourceLocation);
     return block;
