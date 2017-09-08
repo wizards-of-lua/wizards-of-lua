@@ -22,7 +22,8 @@ import net.wizardsoflua.spell.SpellEntityFactory;
 import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.wol.WolCommand;
 
-@Mod(modid = WizardsOfLua.MODID, version = WizardsOfLua.VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = WizardsOfLua.MODID, version = WizardsOfLua.VERSION, acceptableRemoteVersions = "*",
+    updateJSON = "https://raw.githubusercontent.com/wizards-of-lua/wizards-of-lua/master/versions.json")
 public class WizardsOfLua {
   public static final String MODID = "wol";
   public static final String NAME = "Wizards of Lua";
