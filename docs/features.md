@@ -5,7 +5,7 @@ title: Features
 the lua command and the wol command.
 For more information please read the [introduction](/introduction).*
 
-The following features are already implemented in 1.1.0-alpha:
+The following features are already implemented:
 
 ### Commands
 * The [/lua command](/lua-command) casts a spell.
