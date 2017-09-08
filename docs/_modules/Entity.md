@@ -8,7 +8,7 @@ properties:
     access: r
     description: "The 'uuid' is a string of 36 characters forming an immutable universally
     unique identifier that identifies this entity inside the world.
-    This means that entities having the same ID are actually the same object.
+    This means if entities have the same ID they are actually the same object.
     "
   - name: name
     type: string
