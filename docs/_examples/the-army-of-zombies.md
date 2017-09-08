@@ -1,7 +1,7 @@
 ---
 title:  "The Army of Zombies"
 date:   2017-08-29 18:00:00
-categories: Summoning
+categories: Mobs
 excerpt_separator: <!--more-->
 author: mickkay
 ---

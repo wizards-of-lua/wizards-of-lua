@@ -1,7 +1,7 @@
 ---
 title:  "Random Walking Grass"
 date:   2017-08-28 18:00:00
-categories: Movement
+categories: Moving Blocks
 excerpt_separator: <!--more-->
 author: mickkay
 ---

@@ -1,7 +1,7 @@
 ---
 title:  "The Door"
 date:   2017-09-01 10:00:00
-categories: Summoning
+categories: Doors
 excerpt_separator: <!--more-->
 author: mickkay
 ---
@@ -12,7 +12,7 @@ This examples shows how this can be done with two little spells.
 
 Here is a short video that shows that door in action.
 
-<iframe width="650" height="400" src="https://www.youtube.com/embed/rC6ouNtisAA" frameborder="1" allowfullscreen></iframe>
+{% include youtube.md id="rC6ouNtisAA" %}
 
 <br/>
 To make a door like this, place two command blocks in a distance of
