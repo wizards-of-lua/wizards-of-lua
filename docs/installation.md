@@ -64,7 +64,7 @@ Let's give it a try:
 ```bash
 /lua print(1+1)
 ```
-If everything works find you should receive something like the following output:
+If everything works fine you should receive something like the following output:
 ```
 [17:06:13] [Server thread/INFO]: 2
 ```
