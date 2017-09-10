@@ -12,6 +12,7 @@ import com.google.common.collect.MapMaker;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.Vec3d;
@@ -23,6 +24,7 @@ import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.block.BlockClass;
 import net.wizardsoflua.lua.classes.block.MaterialClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
+import net.wizardsoflua.lua.classes.entity.CreatureClass;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.spell.SpellClass;
 import net.wizardsoflua.lua.classes.vec3.Vec3Class;
@@ -54,6 +56,7 @@ public class Converters {
   private final BlockClass blockClass;
   private final MaterialClass materialClass;
   private final EntityClass entityClass;
+  private final CreatureClass creatureClass;
   private final PlayerClass playerClass;
   private final SpellClass spellClass;
 
@@ -63,6 +66,7 @@ public class Converters {
     blockClass = new BlockClass(this);
     materialClass = new MaterialClass(this);
     entityClass = new EntityClass(this);
+    creatureClass = new CreatureClass(this);
     playerClass = new PlayerClass(this);
     spellClass = new SpellClass(this);
   }
@@ -92,6 +96,7 @@ public class Converters {
     return vec3Class.toLua(value);
   }
 
+  // TODO add Terms parameter. Maybe join with Types implementation of castXXX
   public @Nullable Vec3d vec3ToJava(@Nullable Object luaObj) {
     if (luaObj == null) {
       return null;
@@ -155,6 +160,11 @@ public class Converters {
     if (entity instanceof EntityPlayer) {
       return cache.computeIfAbsent(entity, t -> {
         return playerClass.toLua((EntityPlayer) entity);
+      });
+    }
+    if (entity instanceof EntityLiving) {
+      return cache.computeIfAbsent(entity, t -> {
+        return creatureClass.toLua((EntityLiving) entity);
       });
     }
     return cache.computeIfAbsent(entity, t -> {
