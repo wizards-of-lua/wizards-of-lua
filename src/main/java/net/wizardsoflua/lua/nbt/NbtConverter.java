@@ -24,7 +24,7 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.table.PatchedImmutableTable;
+import net.wizardsoflua.lua.table.DefaultTableBuilder;
 import net.wizardsoflua.lua.table.TableBuilder;
 import net.wizardsoflua.lua.table.TableIterable;
 
@@ -33,7 +33,7 @@ public class NbtConverter {
 
 
   private static TableBuilder newTableBuilder() {
-    return new PatchedImmutableTable.Builder();
+    return new DefaultTableBuilder();
   }
 
   public static NBTTagCompound merge(NBTTagCompound origTagCompound, Table luaData) {
