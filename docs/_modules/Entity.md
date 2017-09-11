@@ -1,6 +1,6 @@
 ---
 name: Entity
-subtitle: Controlling an Organic or Inorganic Entity
+subtitle: The Base Class of all Organic or Inorganic Entities
 layout: module
 properties:
   - name: uuid
