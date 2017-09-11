@@ -37,6 +37,8 @@ properties:
     also called [data tags](https://minecraft.gamepedia.com/Commands#Data_tags).
     The nbt property is readonly but gives you a modifiable copy of the internal value. You can change the contents, but to activate them you have to assign the modified table to the entity by using the [putNbt()](/modules/Entity/#putNbt) function.
     "
+    examples:
+      - url: Entity/nbt.md
 functions:
   - name: move
     parameters: direction, distance
