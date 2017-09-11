@@ -15,10 +15,6 @@ Here is a short video that shows a spell that transforms ladders to vertical rai
 
 {% include youtube.md id="VWeUUNAbcpU" %}
 
-<br/>
-
-
-
 Essentially the spell searches the world for all types of minecarts and checks if
 they are close to a ladder.
 If so, the minecart's motion property is updated so that it moves upwards.
@@ -66,10 +62,11 @@ end
 ```
 When activated this spell loops forever or until you break it, of course.
 
-## Some Credits
-This spell was created by Adrodoc55.
+## Credits
+This spell was created by Adrodoc55. Many thanks for that!
 
 It was inspired by an amazing command block setup published by *Sparks* of *Gamemode 4*.
 
 If you are curious, here is a video of it.
 {% include youtube.md id="LJoN7CmJL4Q" %}
+
