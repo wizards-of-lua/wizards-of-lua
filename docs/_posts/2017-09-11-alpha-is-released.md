@@ -6,7 +6,7 @@ excerpt_separator: <!--more-->
 author: mickkay
 layout: post
 ---
-The new 1.3.0-alpha release two small enhancements.
+The new 1.3.0-alpha release contains two small enhancements.
 <!--more-->
 
 * Fixed [#53](https://github.com/wizards-of-lua/wizards-of-lua/issues/54) - Make a "Creature" class for all creature entities
