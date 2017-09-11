@@ -60,7 +60,7 @@ while true do
   sleep(1);
 end
 ```
-When activated this spell loops forever or until you break it, of course.
+When activated this spell loops until you manually break it.
 
 ## Credits
 This spell was created by Adrodoc55. Many thanks for that!
