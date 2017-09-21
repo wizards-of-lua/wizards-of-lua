@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class SpellRegistry {
@@ -17,9 +18,42 @@ public class SpellRegistry {
     for (SpellEntity spellEntity : spells) {
       spellEntity.setDead();
     }
-    if ( spells.size()>0) {
+    if (spells.size() > 0) {
       throw new IllegalStateException("Couldn't break all spells!");
     }
+  }
+
+  public int breakByName(String name) {
+    int result = 0;
+    for (SpellEntity spellEntity : spells) {
+      if (name.equals(spellEntity.getName())) {
+        spellEntity.setDead();
+        result++;
+      }
+    }
+    return result;
+  }
+
+  public int breakByOwner(String ownerName) {
+    int result = 0;
+    for (SpellEntity spellEntity : spells) {
+      Entity owner = spellEntity.getOwner();
+      if (owner != null && ownerName.equals(owner.getName())) {
+        spellEntity.setDead();
+        result++;
+      }
+    }
+    return result;
+  }
+
+  public boolean breakBySid(long sid) {
+    for (SpellEntity spellEntity : spells) {
+      if (spellEntity.getSid() == sid) {
+        spellEntity.setDead();
+        return true;
+      }
+    }
+    return false;
   }
 
   public Iterable<SpellEntity> getAll() {
@@ -30,5 +64,6 @@ public class SpellRegistry {
   public void onEvent(SpellTerminatedEvent evt) {
     spells.remove(evt.getSpell());
   }
+
 
 }

@@ -29,7 +29,6 @@ public class Menu extends MenuEntry {
 
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
-    System.out.println(argList);
     if (!argList.isEmpty()) {
       String arg = argList.pop();
       MenuEntry entry = entries.get(arg);

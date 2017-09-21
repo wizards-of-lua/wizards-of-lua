@@ -48,6 +48,7 @@ public class SpellClass {
       addReadOnly("owner", this::getOwner);
       add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);
+      addReadOnly("sid", () -> delegate.getSid());
     }
 
     public Table getOwner() {

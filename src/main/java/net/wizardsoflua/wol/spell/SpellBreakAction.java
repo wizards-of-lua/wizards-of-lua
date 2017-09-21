@@ -23,24 +23,68 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (argList.size() == 1) {
-      return getMatchingTokens(argList.peek(), Lists.newArrayList("all"));
+      return getMatchingTokens(argList.poll(),
+          Lists.newArrayList("all", "byName", "byOwner", "bySid"));
     }
+    // TODO support auto completion for byName, byOwner, and bySid
     return Collections.emptyList();
   }
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    String selector = argList.peekFirst();
-    if ("all".equals(selector)) {
+    String option = argList.poll();
+    if ("all".equalsIgnoreCase(option)) {
       WizardsOfLua.instance.getSpellRegistry().breakAll();
       // TODO I18n
       sender.getEntityWorld().getMinecraftServer().getPlayerList()
           .sendMessage(new WolAnnouncementMessage("Broke all spells"));
+    } else if ("bySid".equalsIgnoreCase(option)) {
+      String sidString = argList.poll();
+      // TODO throw command exception if value is not an integer or null
+      int sid = Integer.parseInt(sidString);
+      boolean found = WizardsOfLua.instance.getSpellRegistry().breakBySid(sid);
+      if (found) {
+        // TODO I18n
+        sender.getEntityWorld().getMinecraftServer().getPlayerList()
+            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", 1)));
+      } else {
+        throw new CommandException("No matching spell found!");
+      }
+    } else if ("byName".equalsIgnoreCase(option)) {
+      String name = argList.poll();
+      // TODO support names with white spaces!
+      // TODO throw command exception if value is null
+      int count = WizardsOfLua.instance.getSpellRegistry().breakByName(name);
+      if (count == 1) {
+        // TODO I18n
+        sender.getEntityWorld().getMinecraftServer().getPlayerList()
+            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", count)));
+      } else if (count > 1) {
+        // TODO I18n
+        sender.getEntityWorld().getMinecraftServer().getPlayerList()
+            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spells", count)));
+      } else {
+        throw new CommandException("No matching spells found!");
+      }
+    } else if ("byOwner".equalsIgnoreCase(option)) {
+      String ownerName = argList.poll();
+      // TODO throw command exception if value is null
+      int count = WizardsOfLua.instance.getSpellRegistry().breakByOwner(ownerName);
+      if (count == 1) {
+        // TODO I18n
+        sender.getEntityWorld().getMinecraftServer().getPlayerList()
+            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", count)));
+      } else if (count > 1) {
+        // TODO I18n
+        sender.getEntityWorld().getMinecraftServer().getPlayerList()
+            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spells", count)));
+      } else {
+        throw new CommandException("No matching spells found!");
+      }
     } else {
       // TODO I18n
-      throw new CommandException("Illegal spell selector: %s!", selector);
+      throw new CommandException("Illegal spell break option: %s!", option);
     }
   }
-
 
 }

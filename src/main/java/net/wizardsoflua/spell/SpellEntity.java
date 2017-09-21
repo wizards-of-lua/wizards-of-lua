@@ -33,7 +33,7 @@ public class SpellEntity extends Entity {
 
   private ICommandSender source;
   private SpellProgram program;
-  private String sid; // immutable spell id
+  private long sid; // immutable spell id
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
   private boolean visible = false;
 
@@ -43,13 +43,14 @@ public class SpellEntity extends Entity {
   }
 
   public SpellEntity(World world, ICommandSender source, SpellProgram program, Vec3d pos,
-      String sid) {
+      long sid) {
     this(world);
     this.source = checkNotNull(source, "source==null!");
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
     setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
-    setCustomNameTag(sid);
+    String name = SpellEntity.NAME + "-" + sid;
+    setCustomNameTag(name);
     chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
   }
@@ -58,10 +59,10 @@ public class SpellEntity extends Entity {
     return source;
   }
 
-  public String getSid() {
+  public long getSid() {
     return sid;
   }
-  
+
   public Entity getOwner() {
     return source.getCommandSenderEntity();
   }
@@ -73,11 +74,11 @@ public class SpellEntity extends Entity {
   public boolean isVisible() {
     return visible;
   }
-  
+
   public void setVisible(boolean visible) {
     this.visible = visible;
   }
-  
+
   @Override
   protected void readEntityFromNBT(NBTTagCompound compound) {}
 

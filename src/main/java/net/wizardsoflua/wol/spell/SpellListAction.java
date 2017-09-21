@@ -28,14 +28,14 @@ public class SpellListAction extends MenuEntry implements CommandAction {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (argList.size() == 1) {
-      return getMatchingTokens(argList.peek(), Lists.newArrayList("all"));
+      return getMatchingTokens(argList.poll(), Lists.newArrayList("all"));
     }
     return Collections.emptyList();
   }
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    String selector = argList.peek();
+    String selector = argList.poll();
     if (selector == null || "all".equals(selector)) {
       Iterable<SpellEntity> spells = WizardsOfLua.instance.getSpellRegistry().getAll();
       ITextComponent message = format(spells);

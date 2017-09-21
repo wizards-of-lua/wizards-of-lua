@@ -25,7 +25,7 @@ public class WolSpellListTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).startsWith("[WoL] Active spells:\n");
-    assertThat(act.getMessage().replace('\n', ' ')).matches(".*Spell-\\d+:.*");
+    assertThat(act.getMessage().replace('\n', ' ')).matches(".*\\d+:.*");
     assertThat(act.getMessage()).contains(code);
   }
 

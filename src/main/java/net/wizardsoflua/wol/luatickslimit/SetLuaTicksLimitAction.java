@@ -24,7 +24,7 @@ public class SetLuaTicksLimitAction extends MenuEntry implements CommandAction {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (argList.size() == 1) {
-      return getMatchingTokens(argList.peek(),
+      return getMatchingTokens(argList.poll(),
           Lists.newArrayList("1000", "10000", "100000", "1000000", "10000000"));
     }
     return Collections.emptyList();
@@ -32,7 +32,7 @@ public class SetLuaTicksLimitAction extends MenuEntry implements CommandAction {
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    String limit = argList.peek();
+    String limit = argList.poll();
     if (limit != null) {
       Integer luaTicksLimit = Ints.tryParse(limit);
       if (luaTicksLimit != null) {

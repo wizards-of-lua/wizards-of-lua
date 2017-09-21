@@ -19,7 +19,7 @@ public class SpellEntityFactory {
   private final SpellRegistry spellRegistry;
   private final SpellProgramFactory programFactory;
 
-  private long nextId = 1;
+  private long nextSid = 1;
 
   public SpellEntityFactory(SpellRegistry spellRegistry, SpellProgramFactory programFactory) {
     this.spellRegistry = checkNotNull(spellRegistry, "spellRegistry==null!");
@@ -31,9 +31,8 @@ public class SpellEntityFactory {
     ICommandSender source = getSource(sender);
     SpellProgram program = programFactory.create(world, source, code);
     Vec3d pos = getPos(sender);
-    String name = SpellEntity.NAME + "-" + nextId;
-    nextId++;
-    SpellEntity result = new SpellEntity(world, source, program, pos, name);
+    nextSid++;
+    SpellEntity result = new SpellEntity(world, source, program, pos, nextSid);
     program.setSpellEntity(result);
     spellRegistry.add(result);
     return result;
