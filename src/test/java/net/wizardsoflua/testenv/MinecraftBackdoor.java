@@ -5,13 +5,17 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.concurrent.CountDownLatch;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -119,6 +123,16 @@ public class MinecraftBackdoor {
 
   public int getLuaTicksLimit() {
     return testEnv.getWol().getConfig().getLuaTicksLimit();
+  }
+  
+  public @Nullable List<Entity> findEntities(String target) {
+    try {
+      ICommandSender sender = testEnv.getServer();
+      List<Entity> result = EntitySelector.<Entity>matchEntities(sender, target, Entity.class);
+      return result;
+    } catch (CommandException e) {
+      throw new UndeclaredThrowableException(e);
+    }
   }
   
 }

@@ -1,6 +1,5 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -11,11 +10,6 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class EntitiesTest extends WolTestBase {
-
-  @After
-  public void killNonPlayerEntities() {
-    mc().executeCommand("/kill @e[type=!Player]");
-  }
 
   // /test net.wizardsoflua.tests.EntitiesTest test_find_pigs
   @Test
@@ -44,11 +38,12 @@ public class EntitiesTest extends WolTestBase {
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua pigs=Entities.find('@e[type=Pig]'); print(pigs[1].name, type(pigs[1]))");
+    mc().executeCommand(
+        "/lua pigs=Entities.find('@e[type=Pig]'); print(pigs[1].name, type(pigs[1]))");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("Pig Entity");
+    assertThat(act.getMessage()).isEqualTo("Pig Creature");
   }
 
 }
