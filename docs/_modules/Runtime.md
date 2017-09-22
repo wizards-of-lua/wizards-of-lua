@@ -35,7 +35,7 @@ functions:
     description: "Set this to true if the spell should go to sleep automatically
     when its allowance is exceeded. If this is set to false, the spell will
     never go to sleep automatically, but instead will be broken when its allowance
-    falls below zero."
+    falls below zero. Default is true."
   - name: sleep
     parameters: number
     results: nil
