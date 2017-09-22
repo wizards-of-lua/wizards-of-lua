@@ -10,7 +10,7 @@ if Types==nil then
 end
 
 function sleep(ticks)
-  Runtime.sleep(ticks)
+  Time.sleep(ticks)
 end
 
 -- TODO do we need this? if so, why?

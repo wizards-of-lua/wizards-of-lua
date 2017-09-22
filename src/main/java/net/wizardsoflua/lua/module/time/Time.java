@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.module.runtime;
+package net.wizardsoflua.lua.module.time;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 import net.minecraft.world.World;
 
-public class Runtime {
+public class Time {
   public interface Context {
     Clock getClock();
   }
@@ -24,7 +24,7 @@ public class Runtime {
 
   private boolean autoSleep = true;
 
-  public Runtime(World world, int luaTicksLimit, Context context) {
+  public Time(World world, int luaTicksLimit, Context context) {
     this.world = world;
     this.luaTicksLimit = luaTicksLimit;
     this.context = context;
@@ -95,7 +95,7 @@ public class Runtime {
     return false;
   }
   
-  public String getRealDateTime(String pattern) {
+  public String getDate(String pattern) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     if (pattern != null) {
       formatter = DateTimeFormatter.ofPattern(pattern);

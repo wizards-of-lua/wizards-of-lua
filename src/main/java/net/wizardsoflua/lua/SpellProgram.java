@@ -25,10 +25,10 @@ import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
-import net.wizardsoflua.lua.module.runtime.Runtime;
-import net.wizardsoflua.lua.module.runtime.RuntimeModule;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
+import net.wizardsoflua.lua.module.time.Time;
+import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.spell.SpellEntity;
@@ -43,7 +43,7 @@ public class SpellProgram {
 
     SchedulingContextFactory getSchedulingContextFactory();
 
-    Runtime getRuntime();
+    Time getTime();
 
   }
 
@@ -80,7 +80,7 @@ public class SpellProgram {
     TypesModule.installInto(env, types);
     converters = new Converters(types);
     PrintRedirector.installInto(env, source);
-    RuntimeModule.installInto(env, context.getRuntime());
+    TimeModule.installInto(converters, context.getTime());
     BlocksModule.installInto(env, converters);
 
     dependencies.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));

@@ -30,7 +30,7 @@ public class GlobalsTest extends WolTestBase {
     long sleepTime = 10;
     // When:
     mc().executeCommand(
-        "/lua print(Runtime.getGametime()); sleep(%s); print(Runtime.getGametime())", sleepTime);
+        "/lua print(Time.gametime); sleep(%s); print(Time.gametime)", sleepTime);
 
     // Then:
     ServerLog4jEvent message1 = mc().waitFor(ServerLog4jEvent.class);

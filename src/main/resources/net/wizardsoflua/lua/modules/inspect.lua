@@ -238,7 +238,7 @@ end
 
 function Inspector:putTable(t)
   -- PATCHED by m.karneim
-  Runtime.sleep(0)
+  sleep(0)
   if t == inspect.KEY or t == inspect.METATABLE then
     self:puts(tostring(t))
   elseif self:alreadyVisited(t) then

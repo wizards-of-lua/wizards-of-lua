@@ -13,80 +13,63 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
-public class RuntimeTest extends WolTestBase {
+public class TimeTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.RuntimeTest test_getRealDateTime_executed_by_player
+  // /test net.wizardsoflua.tests.TimeTest test_getDate_executed_by_player
   @Test
-  public void test_getRealDateTime_executed_by_player() throws Exception {
+  public void test_getDate_executed_by_player() throws Exception {
     // Given:
     LocalDateTime now = LocalDateTime.now();
     String expected = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     mc().freezeClock(now);
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(Runtime.getRealDateTime())"));
+    mc().player().perform(new ChatAction("/lua print(Time.getDate())"));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.RuntimeTest test_getRealDateTime_executed_by_server
+  // /test net.wizardsoflua.tests.TimeTest test_getDate_executed_by_server
   @Test
-  public void test_getRealDateTime_executed_by_server() throws Exception {
+  public void test_getDate_executed_by_server() throws Exception {
     // Given:
     LocalDateTime now = LocalDateTime.now();
     String expected = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     mc().freezeClock(now);
 
     // When:
-    mc().executeCommand("/lua print(Runtime.getRealDateTime())");
+    mc().executeCommand("/lua print(Time.getDate())");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  /// test net.wizardsoflua.tests.RuntimeTest test_getRealtime_executed_by_player
+  // /test net.wizardsoflua.tests.TimeTest test_realtime
   @Test
-  public void test_getRealtime_executed_by_player() throws Exception {
+  public void test_realtime() throws Exception {
     // Given:
     long now = System.currentTimeMillis();
     String expected = String.valueOf(now);
     mc().freezeClock(now);
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(Runtime.getRealtime())"));
-
-    // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
-  }
-
-  // /test net.wizardsoflua.tests.RuntimeTest test_getRealtime_executed_by_server
-  @Test
-  public void test_getRealtime_executed_by_server() throws Exception {
-    // Given:
-    long now = System.currentTimeMillis();
-    String expected = String.valueOf(now);
-    mc().freezeClock(now);
-
-    // When:
-    mc().executeCommand("/lua print(Runtime.getRealtime())");
+    mc().executeCommand("/lua print(Time.realtime)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.RuntimeTest test_sleep
+  // /test net.wizardsoflua.tests.TimeTest test_sleep
   @Test
   public void test_sleep() throws Exception {
     // Given:
     long sleepTime = 10;
     // When:
-    mc().executeCommand(
-        "/lua print(Runtime.getGametime()); Runtime.sleep(%s); print(Runtime.getGametime())",
+    mc().executeCommand("/lua print(Time.gametime); Time.sleep(%s); print(Time.gametime)",
         sleepTime);
 
     // Then:
@@ -96,20 +79,20 @@ public class RuntimeTest extends WolTestBase {
     assertThat(actual).isEqualTo(sleepTime);
   }
 
-  // /test net.wizardsoflua.tests.RuntimeTest test_spell_will_be_broken_when_autosleep_is_off
+  // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_broken_when_autosleep_is_off
   @Test
   public void test_spell_will_be_broken_when_autosleep_is_off() throws Exception {
     // Given:
     int repetitions = 2000;
     mc().setLuaTicksLimit(10000);
     // When:
-    mc().player().perform(new ChatAction(
-        "/lua Runtime.setAutoSleep(false); for i=1,%s do print(i); end", repetitions));
+    mc().player().perform(
+        new ChatAction("/lua Time.autosleep=false; for i=1,%s do print(i); end", repetitions));
 
     // Then:
-    for (int i = 0; i < 1998; ++i) {
+    for (int i = 1; i < 2000; ++i) {
       TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-      assertThat(act.getMessage()).isEqualTo(String.valueOf(i + 1));
+      assertThat(act.getMessage()).isEqualTo(String.valueOf(i));
     }
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).contains("Spell has been broken automatically");

@@ -8,7 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.world.World;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
-import net.wizardsoflua.lua.module.runtime.Runtime;
+import net.wizardsoflua.lua.module.time.Time;
 
 public class SpellProgramFactory {
   public interface Context {
@@ -30,14 +30,14 @@ public class SpellProgramFactory {
 
   private SpellProgram.Context createSpellProgramContext(World world) {
     checkNotNull(world, "world==null!");
-    Runtime.Context runtimeContext = new Runtime.Context() {
+    Time.Context timeContext = new Time.Context() {
       @Override
       public Clock getClock() {
         return context.getClock();
       }
     };
     int luaTicksLimit = context.getLuaTicksLimit();
-    Runtime runtime = new Runtime(world, luaTicksLimit, runtimeContext);
+    Time time = new Time(world, luaTicksLimit, timeContext);
     return new SpellProgram.Context() {
 
       @Override
@@ -46,17 +46,17 @@ public class SpellProgramFactory {
 
           @Override
           public SchedulingContext newInstance() {
-            runtime.resetAllowance();
+            time.resetAllowance();
             return new SchedulingContext() {
 
               @Override
               public boolean shouldPause() {
-                return runtime.shouldPause();
+                return time.shouldPause();
               }
 
               @Override
               public void registerTicks(int ticks) {
-                runtime.consumeLuaTicks(ticks);
+                time.consumeLuaTicks(ticks);
               }
             };
           }
@@ -64,8 +64,8 @@ public class SpellProgramFactory {
       }
 
       @Override
-      public Runtime getRuntime() {
-        return runtime;
+      public Time getTime() {
+        return time;
       }
     };
   }
