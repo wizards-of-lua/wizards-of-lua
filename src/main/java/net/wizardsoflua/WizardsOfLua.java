@@ -2,13 +2,20 @@ package net.wizardsoflua;
 
 import java.time.Clock;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.common.ForgeVersion.CheckResult;
+import net.minecraftforge.common.ForgeVersion.Status;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
@@ -75,6 +82,21 @@ public class WizardsOfLua {
       @Override
       public String getName() {
         return NAME;
+      }
+
+      @Override
+      public @Nullable String getRecommendedVersion() {
+        String result = null;
+        for (ModContainer mod : Loader.instance().getModList()) {
+          if (mod.getModId().equals(MODID)) {
+            CheckResult checkResult = ForgeVersion.getResult(mod);
+            Status status = checkResult.status;
+            if (status == Status.OUTDATED || status == Status.BETA_OUTDATED) {
+              result = checkResult.target.toString();
+            }
+          }
+        }
+        return result;
       }
     });
     spellProgramFactory = new SpellProgramFactory(new SpellProgramFactory.Context() {
