@@ -54,7 +54,7 @@ This will break all spells owned by player mickkay.
 ## Lua Ticks Limit Configuration
 The <tt>luaTicksLimit</tt> value defines how many Lua ticks each spell can use during
 a single game tick. When this value is exceeded, the spell will be broken or
-sent to sleep for one game tick. This depends on the [Runtime.autosleep](/modules/Runtime/#setAutoSleep) setting.
+sent to sleep for one game tick. This depends on the [Time.autosleep](/modules/Time/#autosleep) setting.
 
 ### Showing the Lua Ticks Limit
 ```

@@ -12,7 +12,7 @@ However, if you want to play Wizards of Lua in singleplayer, you need to modify
 the client as well.
 
 ### Requirements
-* The Wizards of Lua modification requires Minecraft 1.11.2 (Java)
+* The Wizards of Lua modification requires Minecraft 1.11.2 (Java Edition)
 * and Forge 13.20.1.*
 
 ### Download
