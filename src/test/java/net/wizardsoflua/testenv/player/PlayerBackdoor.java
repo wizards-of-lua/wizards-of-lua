@@ -2,7 +2,10 @@ package net.wizardsoflua.testenv.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.spell.SpellUtil;
@@ -39,9 +42,22 @@ public class PlayerBackdoor {
     Vec3d result = SpellUtil.getPositionLookingAt(getDelegate());
     return result;
   }
-  
+
   public BlockPos getBlockPosLookingAt() {
     return new BlockPos(SpellUtil.getPositionLookingAt(getDelegate()));
+  }
+
+  public void setTeam(String team) {
+    getDelegate().getWorldScoreboard().addPlayerToTeam(getDelegate().getName(), team);
+  }
+
+  public @Nullable String getTeam() {
+    Team team = getDelegate().getTeam();
+    if (team == null) {
+      return null;
+    } else {
+      return team.getRegisteredName();
+    }
   }
 
 }

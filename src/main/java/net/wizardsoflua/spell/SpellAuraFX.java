@@ -30,14 +30,19 @@ public class SpellAuraFX {
       return;
     }
     time = time / 2;
+    
+    double x = spell.posX;
+    double y = spell.posY;
+    double z = spell.posZ;
 
+    spawnParticle(spell, x, y, z, time);
+  }
+
+  private static void spawnParticle(SpellEntity spell, double x, double y, double z, int time) {
     WorldServer worldserver = (WorldServer) spell.getEntityWorld();
     State state = STATES[time % STATES.length];
     EnumParticleTypes particleType = state.type;
     boolean longDistance = state.longDistance;
-    double x = spell.posX;
-    double y = spell.posY;
-    double z = spell.posZ;
     int numberOfParticles = 2;
     double offset = state.offset;
     double xOffset = offset;

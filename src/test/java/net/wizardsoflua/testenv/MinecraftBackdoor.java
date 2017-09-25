@@ -10,12 +10,16 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -92,9 +96,9 @@ public class MinecraftBackdoor {
   }
 
   public void clearEvents() {
-    testEnv.runAndWait(()->testEnv.getEventRecorder().clear());
+    testEnv.runAndWait(() -> testEnv.getEventRecorder().clear());
   }
-  
+
   public void breakAllSpells() {
     testEnv.runAndWait(() -> testEnv.getWol().getSpellRegistry().breakAll());
   }
@@ -124,7 +128,7 @@ public class MinecraftBackdoor {
   public int getLuaTicksLimit() {
     return testEnv.getWol().getConfig().getLuaTicksLimit();
   }
-  
+
   public @Nullable List<Entity> findEntities(String target) {
     try {
       ICommandSender sender = testEnv.getServer();
@@ -134,5 +138,16 @@ public class MinecraftBackdoor {
       throw new UndeclaredThrowableException(e);
     }
   }
-  
+
+  public void createTeam(String team) {
+    testEnv.getTestPlayer().getWorldScoreboard().createTeam(team);
+  }
+
+  public void deleteTeams() {
+    Scoreboard scoreBoard = testEnv.getTestPlayer().getWorldScoreboard();
+    for (ScorePlayerTeam team : Lists.newArrayList(scoreBoard.getTeams())) {
+      scoreBoard.removeTeam(team);
+    }
+  }
+
 }

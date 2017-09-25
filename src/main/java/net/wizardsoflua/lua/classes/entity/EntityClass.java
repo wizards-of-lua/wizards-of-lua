@@ -2,13 +2,17 @@ package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.sandius.rembulan.ByteString;
@@ -20,6 +24,7 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.vec3.Vec3Class;
 import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
@@ -35,6 +40,8 @@ public class EntityClass {
     this.metatable = converters.getTypes().declare(METATABLE_NAME);
     metatable.rawset("move", new MoveFunction());
     metatable.rawset("putNbt", new PutNbtFunction());
+    metatable.rawset("addTag", new AddTagFunction());
+    metatable.rawset("removeTag", new RemoveTagFunction());
   }
 
   public Table toLua(Entity delegate) {
@@ -53,6 +60,14 @@ public class EntityClass {
       add("name", this::getName, this::setName);
       add("pos", this::getPos, this::setPos);
       addReadOnly("nbt", this::getNbt);
+
+      addReadOnly("orientation", this::getOrientation);
+      addReadOnly("lookVec", this::getLookVector);
+      add("rotationYaw", this::getRotationYaw, this::setRotationYaw);
+      add("rotationPitch", this::getRotationPitch, this::setRotationPitch);
+      addReadOnly("eyeHeight", () -> delegate.getEyeHeight());
+      add("motion", this::getMotion, this::setMotion);
+      add("tags", this::getTags, this::setTags);
     }
 
     public Table getPos() {
@@ -62,6 +77,90 @@ public class EntityClass {
     public void setPos(Object luaObj) {
       Vec3d pos = getConverters().vec3ToJava(luaObj);
       delegate.setPositionAndUpdate(pos.xCoord, pos.yCoord, pos.zCoord);
+    }
+
+    public ByteString getOrientation() {
+      EnumFacing result = delegate.getHorizontalFacing();
+      return getConverters().enumToLua(result);
+    }
+
+    public Table getLookVector() {
+      Vec3d result = delegate.getLookVec();
+      return getConverters().vec3ToLua(result);
+    }
+
+    public double getRotationYaw() {
+      return MathHelper.wrapDegrees(delegate.rotationYaw);
+    }
+
+    /**
+     * Sets the rotation yaw (rot-y) value.
+     * 
+     * @param luaObj
+     * @see Entity#readFromNBT(NBTTagCompound)
+     */
+    public void setRotationYaw(Object luaObj) {
+      float yaw = getConverters().getTypes().castNumber(luaObj, Terms.MANDATORY).floatValue();
+      delegate.setRotationYawHead(yaw);
+      delegate.setRenderYawOffset(yaw);
+      delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw,
+          delegate.rotationPitch);
+    }
+
+    public double getRotationPitch() {
+      return delegate.rotationPitch;
+    }
+
+    public void setRotationPitch(Object luaObj) {
+      Number pitch = getConverters().getTypes().castNumber(luaObj, Terms.MANDATORY);
+      delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ,
+          delegate.rotationYaw, pitch.floatValue());
+    }
+
+    public Table getMotion() {
+      double x = delegate.motionX;
+      double y = delegate.motionY;
+      double z = delegate.motionZ;
+      return getConverters().vec3ToLua(new Vec3d(x, y, z));
+    }
+
+    public void setMotion(Object luaObj) {
+      getConverters().getTypes().checkAssignable(Vec3Class.METATABLE_NAME, luaObj, Terms.MANDATORY);
+      Vec3d v = getConverters().vec3ToJava(luaObj);
+      double x = v.xCoord;
+      double y = v.yCoord;
+      double z = v.zCoord;
+
+      // see SPacketEntityVelocity
+      double maxLen = 3.9;
+      double lenSqr = x * x + y * y + z * z;
+      if (lenSqr > maxLen * maxLen) {
+        double f = maxLen / Math.sqrt(lenSqr);
+        x = x * f;
+        y = y * f;
+        z = z * f;
+      }
+
+      delegate.motionX = x;
+      delegate.motionY = y;
+      delegate.motionZ = z;
+      delegate.velocityChanged = true;
+    }
+
+    public Table getTags() {
+      Set<String> result = delegate.getTags();
+      return getConverters().stringsToLua(result);
+    }
+
+    public void setTags(Object luaObj) {
+      Iterable<String> tags = getConverters().stringsToJava(luaObj, Terms.MANDATORY);
+
+      for (String oldTag : Lists.newArrayList(delegate.getTags())) {
+        delegate.removeTag(oldTag);
+      }
+      for (String newTag : tags) {
+        delegate.addTag(newTag);
+      }
     }
 
     public ByteString getUuid() {
@@ -109,6 +208,16 @@ public class EntityClass {
       delegate.setPositionAndUpdate(x, y, z);
     }
 
+    public boolean addTag(Object luaObj) {
+      String tag = getConverters().getTypes().castString(luaObj, Terms.MANDATORY);
+      return delegate.addTag(tag);
+    }
+
+    public boolean removeTag(Object luaObj) {
+      String tag = getConverters().getTypes().castString(luaObj, Terms.MANDATORY);
+      return delegate.removeTag(tag);
+    }
+
   }
 
   private class MoveFunction extends AbstractFunction3 {
@@ -132,12 +241,43 @@ public class EntityClass {
 
   private class PutNbtFunction extends AbstractFunction2 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2)
-        throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
       converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
       Proxy proxy = (Proxy) arg1;
       proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class AddTagFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
+      Proxy proxy = (Proxy) arg1;
+      boolean result = proxy.addTag(arg2);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class RemoveTagFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
+      Proxy proxy = (Proxy) arg1;
+      boolean result = proxy.removeTag(arg2);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override

@@ -21,29 +21,11 @@ public class EntitiesTest extends WolTestBase {
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua pigs=Entities.find('@e[type=Pig]'); print(#pigs)");
+    mc().executeCommand("/lua pigs=Entities.find('@e[type=Pig]'); print(#pigs, pigs[1].name)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("1");
-  }
-
-  // /test net.wizardsoflua.tests.EntitiesTest test_find_pigs_2
-  @Test
-  public void test_find_pigs_2() throws Exception {
-    // Given:
-    BlockPos pos = mc().getWorldSpawnPoint();
-
-    mc().executeCommand("/summon minecraft:pig %s %s %s", pos.getX(), pos.getY(), pos.getZ());
-    mc().clearEvents();
-
-    // When:
-    mc().executeCommand(
-        "/lua pigs=Entities.find('@e[type=Pig]'); print(pigs[1].name, type(pigs[1]))");
-
-    // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("Pig Creature");
+    assertThat(act.getMessage()).isEqualTo("1   Pig");
   }
 
 }

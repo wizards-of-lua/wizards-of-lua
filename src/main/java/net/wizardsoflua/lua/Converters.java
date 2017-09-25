@@ -3,6 +3,8 @@ package net.wizardsoflua.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -13,6 +15,7 @@ import com.google.common.collect.MapMaker;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.Vec3d;
@@ -23,12 +26,15 @@ import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.block.BlockClass;
 import net.wizardsoflua.lua.classes.block.MaterialClass;
-import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.lua.classes.entity.CreatureClass;
+import net.wizardsoflua.lua.classes.entity.EntityClass;
+import net.wizardsoflua.lua.classes.entity.MobClass;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.spell.SpellClass;
 import net.wizardsoflua.lua.classes.vec3.Vec3Class;
+import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.table.TableIterable;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class Converters {
@@ -57,6 +63,7 @@ public class Converters {
   private final MaterialClass materialClass;
   private final EntityClass entityClass;
   private final CreatureClass creatureClass;
+  private final MobClass mobClass;
   private final PlayerClass playerClass;
   private final SpellClass spellClass;
 
@@ -67,6 +74,7 @@ public class Converters {
     materialClass = new MaterialClass(this);
     entityClass = new EntityClass(this);
     creatureClass = new CreatureClass(this);
+    mobClass = new MobClass(this);
     playerClass = new PlayerClass(this);
     spellClass = new SpellClass(this);
   }
@@ -134,6 +142,19 @@ public class Converters {
     return String.valueOf(Conversions.stringValueOf(luaObj));
   }
 
+  public @Nullable Iterable<String> stringsToJava(Object luaObj, Terms terms) {
+    Table table = types.castTable(luaObj, terms);
+    if (table == null) {
+      return null;
+    }
+    List<String> result = new ArrayList<>();
+    TableIterable it = new TableIterable(table);
+    for (Map.Entry<Object, Object> entry : it) {
+      result.add(stringToJava(entry.getValue()));
+    }
+    return result;
+  }
+
   public @Nullable Table blockToLua(@Nullable WolBlock block) {
     if (block == null) {
       return null;
@@ -164,7 +185,12 @@ public class Converters {
     }
     if (entity instanceof EntityLiving) {
       return cache.computeIfAbsent(entity, t -> {
-        return creatureClass.toLua((EntityLiving) entity);
+        return mobClass.toLua((EntityLiving) entity);
+      });
+    }
+    if (entity instanceof EntityLivingBase) {
+      return cache.computeIfAbsent(entity, t -> {
+        return creatureClass.toLua((EntityLivingBase) entity);
       });
     }
     return cache.computeIfAbsent(entity, t -> {
@@ -194,23 +220,22 @@ public class Converters {
     });
   }
 
-  public @Nullable ByteString enumToLua(@Nullable Enum<?> value) {
+  public @Nullable <E extends Enum<?>> ByteString enumToLua(@Nullable E value) {
     if (value == null) {
       return null;
     }
     if (value instanceof IStringSerializable) {
-      return enumToLua((IStringSerializable) value);
+      return stringSerializableToLua((IStringSerializable) value);
     }
     return ByteString.of(value.name());
   }
 
-  public @Nullable ByteString enumToLua(@Nullable IStringSerializable value) {
+  public @Nullable ByteString stringSerializableToLua(@Nullable IStringSerializable value) {
     if (value == null) {
       return null;
     }
     return ByteString.of(((IStringSerializable) value).getName());
   }
-
 
 
 }

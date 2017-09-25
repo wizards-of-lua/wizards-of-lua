@@ -1,9 +1,9 @@
 package net.wizardsoflua.lua.classes.entity;
 
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.MathHelper;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.module.types.Terms;
 
 public class CreatureClass {
   public static final String METATABLE_NAME = "Creature";
@@ -17,28 +17,25 @@ public class CreatureClass {
     this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityClass.METATABLE_NAME);
   }
 
-  public Table toLua(EntityLiving delegate) {
+  public Table toLua(EntityLivingBase delegate) {
     return new Proxy(converters, metatable, delegate);
   }
 
   public static class Proxy extends EntityClass.Proxy {
 
-    private final EntityLiving delegate;
+    private final EntityLivingBase delegate;
 
-    public Proxy(Converters converters, Table metatable, EntityLiving delegate) {
+    public Proxy(Converters converters, Table metatable, EntityLivingBase delegate) {
       super(converters, metatable, delegate);
       this.delegate = delegate;
-      add("ai", this::getAi, this::setAi);
     }
 
-    public boolean getAi() {
-      return !delegate.isAIDisabled();
+    @Override
+    public double getRotationYaw() {
+      float v = delegate.renderYawOffset;
+      return MathHelper.wrapDegrees(v);
     }
 
-    public void setAi(Object luaObj) {
-      boolean enabled = getConverters().getTypes().castBoolean(luaObj, Terms.MANDATORY);
-      delegate.setNoAI(!enabled);
-    }
   }
 
 }

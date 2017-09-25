@@ -91,6 +91,14 @@ public class SpellEntity extends Entity {
   }
 
   @Override
+  public void setPosition(double x, double y, double z) {
+    if (chunkLoaderTicketSupport != null) {
+      chunkLoaderTicketSupport.updatePosition();
+    }
+    super.setPosition(x, y, z);
+  }
+
+  @Override
   public void onUpdate() {
     super.onUpdate();
     if (program == null) {
@@ -105,11 +113,16 @@ public class SpellEntity extends Entity {
     if (program.isTerminated()) {
       setDead();
     }
-    if (chunkLoaderTicketSupport != null) {
-      chunkLoaderTicketSupport.updatePosition();
-    }
+
     if (visible) {
       SpellAuraFX.spawnParticle(this);
+    }
+    applyMotion();
+  }
+
+  private void applyMotion() {
+    if (motionX != 0 || motionY != 0 || motionZ != 0) {
+      setPositionAndUpdate(posX + motionX, posY + motionY, posZ + motionZ);
     }
   }
 
