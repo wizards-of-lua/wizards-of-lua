@@ -39,6 +39,50 @@ properties:
     "
     examples:
       - url: Entity/nbt.md
+  - name: orientation
+    type: string
+    access: r
+    description: "The 'orientation' is the compass direction this entity is facing. This is one of 'north', 'east', 'south', and 'west'.
+    "
+  - name: lookVec
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    access: r
+    description: "The 'lookVec' is a 3-dimensional vector that points into the direction this entity is looking at, or nil, if it
+    is not looking anywhere, for example, if it has no eyes.
+    "
+    examples:
+      - url: Entity/lookVec.md
+  - name: rotationYaw
+    type: number
+    access: r/w
+    description: "The 'rotationYaw' is the rotation of this entity around its Y axis in degrees. For example, a value of 0 means south,
+    90 is west, and 45 is south-west.
+    "
+  - name: rotationPitch
+    type: number
+    access: r/w
+    description: "The 'rotationPitch' is the rotation of this entity's head around its X axis in degrees. A value of -90 means straight up. A value of 90 means straight down.
+    "
+  - name: eyeHeight
+    type: number
+    access: r
+    description: "The 'eyeHeight' is the distance from this entity's feet to its eyes in Y direction.
+    "
+  - name: motion
+    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    access: r/w
+    description: "The 'motion' is a 3-dimensional vector that represents the velocity of this entity when it is moved by some
+    external force, e.g. when it is falling or when it is pushed by an explosion.
+    "
+    examples:
+      - url: Entity/motion.md
+  - name: tags
+    type: table
+    access: r/w
+    description: "The 'tags' value is a list of strings that have been assigned to this entity.
+    "
+    examples:
+      - url: Entity/tags.md
 functions:
   - name: move
     parameters: direction, distance
@@ -58,6 +102,18 @@ functions:
     "
     examples:
       - url: Entity/putNbt.md
+  - name: addTag
+    parameters: string
+    result: boolean
+    description: "The 'addTag' function add the given tag to the [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
+    This function returns true if this operation was successful.
+    "
+  - name: removeTag
+    parameters: string
+    result: boolean
+    description: "The 'removeTag' function removes the given tag from the [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
+    This function returns true if the tag has been removed successfully, and false if there was no such tag.
+    "
 ---
 
 The Entity class is the base class of all entities that populate the world.
