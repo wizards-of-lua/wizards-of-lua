@@ -4,7 +4,7 @@ title: Roadmap
 *The Wizards of Lua mod is still under heavy development.
 This roadmap shows which features are planned to be included into the upcoming beta release.*
 
-* [Issue #35](https://github.com/wizards-of-lua/wizards-of-lua/issues/35): Spells should read and write more entity properties
+* Fixed - [Issue #35](https://github.com/wizards-of-lua/wizards-of-lua/issues/35): Spells should read and write more entity properties
 * Fixed - [Issue #36](https://github.com/wizards-of-lua/wizards-of-lua/issues/36): Spells should be able to read and write entity NBT data
 * Fixed - [Issue #37](https://github.com/wizards-of-lua/wizards-of-lua/issues/37): Spells should be able to query for entities
 * [Issue #38](https://github.com/wizards-of-lua/wizards-of-lua/issues/38): Spells should be able to receive in-game events
