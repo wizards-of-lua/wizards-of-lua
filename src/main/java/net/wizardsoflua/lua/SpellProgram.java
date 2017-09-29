@@ -12,6 +12,7 @@ import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
+import net.sandius.rembulan.lib.CoroutineLib;
 import net.sandius.rembulan.lib.MathLib;
 import net.sandius.rembulan.lib.ModuleLib;
 import net.sandius.rembulan.lib.StringLib;
@@ -163,6 +164,7 @@ public class SpellProgram {
 
     BasicLib.installInto(stateContext, env, runtimeEnv, loader);
     ModuleLib.installInto(stateContext, env, runtimeEnv, /* modulesLoader */ loader, classLoader);
+    CoroutineLib.installInto(stateContext, env);
     StringLib.installInto(stateContext, env);
     MathLib.installInto(stateContext, env);
     TableLib.installInto(stateContext, env);
