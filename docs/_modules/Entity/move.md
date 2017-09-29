@@ -15,3 +15,14 @@ Moving the spell's owner for half a meter to the east.
 ```lua
 spell.owner:move( "east", 0.5)
 ```
+
+#### Example
+Building a huge circle of wool blocks.
+```lua
+wool=Blocks.get( "wool")
+for i=1,360 do
+  spell.block=wool
+  spell.rotationYaw=spell.rotationYaw+1
+  spell:move("forward")
+end
+```

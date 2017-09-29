@@ -89,6 +89,8 @@ functions:
     results: nil
     description: "The 'move' function teleports this entity instantly to the position
     relative to its current position specified by the given direction and distance.
+    Valid direction values are 'up', 'down', 'north', 'east', 'south', 'west',
+    'forward', 'back', 'left', and 'right'.
     If no distance is specified, 1 meter is taken as default distance."
     examples:
       - url: Entity/move.md
