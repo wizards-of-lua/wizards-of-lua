@@ -12,9 +12,12 @@ import net.wizardsoflua.testenv.net.ChatAction;
 @RunWith(MinecraftJUnitRunner.class)
 public class PlayerTest extends WolTestBase {
 
+  private static final String DEMOMODULE = "my.demomodule";
+
   @After
-  public void deleteTeams() {
+  public void after() {
     mc().deleteTeams();
+    mc().deletePlayerModule(DEMOMODULE);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported
@@ -60,6 +63,20 @@ public class PlayerTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
     assertThat(mc().player().getTeam()).isEqualTo(team);
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_require_player_module
+  @Test
+  public void test_require_player_module() throws Exception {
+    // Given:
+    mc().createPlayerModule(DEMOMODULE, "function dummy() print('hello') end");
+
+    // When:
+    mc().player().perform(new ChatAction("/lua require('%s'); dummy();", DEMOMODULE));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("hello");
   }
 
 }

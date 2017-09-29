@@ -1,5 +1,6 @@
 package net.wizardsoflua;
 
+import java.io.File;
 import java.time.Clock;
 
 import javax.annotation.Nullable;
@@ -7,6 +8,7 @@ import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.ForgeVersion.CheckResult;
 import net.minecraftforge.common.ForgeVersion.Status;
@@ -109,6 +111,12 @@ public class WizardsOfLua {
       public int getLuaTicksLimit() {
         return config.getLuaTicksLimit();
       }
+
+      @Override
+      public File getLuaHomeDir(ICommandSender owner) {
+        return config.getLuaHomeDir(owner);
+      }
+      
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
   }

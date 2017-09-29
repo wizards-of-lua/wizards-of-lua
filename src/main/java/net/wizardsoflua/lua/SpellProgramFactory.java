@@ -2,6 +2,7 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
 import java.time.Clock;
 
 import net.minecraft.command.ICommandSender;
@@ -11,10 +12,13 @@ import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.module.time.Time;
 
 public class SpellProgramFactory {
+
   public interface Context {
     Clock getClock();
 
     int getLuaTicksLimit();
+
+    File getLuaHomeDir(ICommandSender owner);
   }
 
   private final Context context;
@@ -24,11 +28,12 @@ public class SpellProgramFactory {
   }
 
   public SpellProgram create(World world, ICommandSender owner, String code) {
-    SpellProgram.Context spellProgramContext = createSpellProgramContext(world);
+    File libDir = context.getLuaHomeDir(owner);
+    SpellProgram.Context spellProgramContext = createSpellProgramContext(world, libDir);
     return new SpellProgram(owner, code, spellProgramContext);
   }
 
-  private SpellProgram.Context createSpellProgramContext(World world) {
+  private SpellProgram.Context createSpellProgramContext(World world, File libraryDir) {
     checkNotNull(world, "world==null!");
     Time.Context timeContext = new Time.Context() {
       @Override
@@ -38,6 +43,7 @@ public class SpellProgramFactory {
     };
     int luaTicksLimit = context.getLuaTicksLimit();
     Time time = new Time(world, luaTicksLimit, timeContext);
+
     return new SpellProgram.Context() {
 
       @Override
@@ -66,6 +72,11 @@ public class SpellProgramFactory {
       @Override
       public Time getTime() {
         return time;
+      }
+
+      @Override
+      public File getLibraryDir() {
+        return libraryDir;
       }
     };
   }

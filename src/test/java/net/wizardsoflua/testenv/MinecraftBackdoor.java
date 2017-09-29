@@ -1,5 +1,7 @@
 package net.wizardsoflua.testenv;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Clock;
 import java.time.Instant;
@@ -10,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -120,7 +124,7 @@ public class MinecraftBackdoor {
   public BlockPos getWorldSpawnPoint() {
     return testEnv.getServer().getEntityWorld().getSpawnPoint();
   }
-  
+
   public void setWorldSpawnPoint(BlockPos pos) {
     testEnv.getServer().getEntityWorld().setSpawnPoint(pos);
   }
@@ -154,4 +158,30 @@ public class MinecraftBackdoor {
     }
   }
 
+  public void createPlayerModule(String moduleName, String content) {
+    File moduleFile = getModuleFile(moduleName);
+    if (moduleFile.exists()) {
+      moduleFile.delete();
+    }
+    moduleFile.getParentFile().mkdirs();
+    try {
+      Files.write(content, moduleFile, Charsets.UTF_8);
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
+  public void deletePlayerModule(String moduleName) {
+    File moduleFile = getModuleFile(moduleName);
+    if (moduleFile.exists()) {
+      moduleFile.delete();
+    }
+  }
+
+  private File getModuleFile(String moduleName) {
+    String path = moduleName.replace('.', File.separatorChar) + ".lua";
+    File moduleFile =
+        new File(testEnv.getWol().getConfig().getLuaHomeDir(testEnv.getTestPlayer()), path);
+    return moduleFile;
+  }
 }

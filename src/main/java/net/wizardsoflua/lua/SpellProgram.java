@@ -2,6 +2,8 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+
 import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -45,6 +47,8 @@ public class SpellProgram {
     SchedulingContextFactory getSchedulingContextFactory();
 
     Time getTime();
+    
+    File getLibraryDir();
 
   }
 
@@ -73,7 +77,7 @@ public class SpellProgram {
     this.executor = DirectCallExecutor.newExecutor(context.getSchedulingContextFactory());
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
-    runtimeEnv = new SpellRuntimeEnvironment();
+    runtimeEnv = new SpellRuntimeEnvironment(context.getLibraryDir());
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
