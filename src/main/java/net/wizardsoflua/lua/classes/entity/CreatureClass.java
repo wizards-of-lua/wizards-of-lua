@@ -31,7 +31,7 @@ public class CreatureClass {
     }
 
     @Override
-    public double getRotationYaw() {
+    public float getRotationYaw() {
       float v = delegate.renderYawOffset;
       return MathHelper.wrapDegrees(v);
     }

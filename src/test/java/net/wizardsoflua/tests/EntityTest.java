@@ -292,7 +292,7 @@ public class EntityTest extends WolTestBase {
     BlockPos pos = mc().getWorldSpawnPoint();
 
     mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
-        pos.getX(), pos.getY() + 10, pos.getZ(), tag);
+        pos.getX(), pos.getY(), pos.getZ(), tag);
     mc().clearEvents();
 
     // When:
@@ -313,7 +313,7 @@ public class EntityTest extends WolTestBase {
     BlockPos pos = mc().getWorldSpawnPoint();
 
     mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
-        pos.getX(), pos.getY() + 10, pos.getZ(), initialTag);
+        pos.getX(), pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
     // When:
@@ -340,7 +340,7 @@ public class EntityTest extends WolTestBase {
     BlockPos pos = mc().getWorldSpawnPoint();
 
     mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
-        pos.getX(), pos.getY() + 10, pos.getZ(), initialTag);
+        pos.getX(), pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
     // When:
@@ -365,7 +365,7 @@ public class EntityTest extends WolTestBase {
     BlockPos pos = mc().getWorldSpawnPoint();
 
     mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
-        pos.getX(), pos.getY() + 10, pos.getZ(), initialTag);
+        pos.getX(), pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
     // When:
@@ -379,6 +379,108 @@ public class EntityTest extends WolTestBase {
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).isEmpty();
+  }
+
+  // /test net.wizardsoflua.tests.EntityTest test_move_forward
+  @Test
+  public void test_move_forward() throws Exception {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint().up();
+    float rotation = 90;
+    BlockPos expectedPos = pos.west();
+
+    mc().executeCommand(
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        pos.getX(), pos.getY(), pos.getZ(), rotation);
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand(
+        "/lua p=Entities.find('@e[name=testpig]')[1]; p:move('forward'); print('ok')");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    assertThat(actEntities).hasSize(1);
+    BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
+    assertThat(actPos).isEqualTo(expectedPos);
+  }
+
+  // /test net.wizardsoflua.tests.EntityTest test_move_back
+  @Test
+  public void test_move_back() throws Exception {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint().up();
+    float rotation = 90;
+    BlockPos expectedPos = pos.east();
+
+    mc().executeCommand(
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        pos.getX(), pos.getY(), pos.getZ(), rotation);
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; p:move('back'); print('ok')");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    assertThat(actEntities).hasSize(1);
+    BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
+    assertThat(actPos).isEqualTo(expectedPos);
+  }
+
+  // /test net.wizardsoflua.tests.EntityTest test_move_left
+  @Test
+  public void test_move_left() throws Exception {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint().up();
+    float rotation = 90;
+    BlockPos expectedPos = pos.south();
+
+    mc().executeCommand(
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        pos.getX(), pos.getY(), pos.getZ(), rotation);
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; p:move('left'); print('ok')");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    assertThat(actEntities).hasSize(1);
+    BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
+    assertThat(actPos).isEqualTo(expectedPos);
+  }
+
+  // /test net.wizardsoflua.tests.EntityTest test_move_right
+  @Test
+  public void test_move_right() throws Exception {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint().up();
+    float rotation = 90;
+    BlockPos expectedPos = pos.north();
+
+    mc().executeCommand(
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        pos.getX(), pos.getY(), pos.getZ(), rotation);
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand(
+        "/lua p=Entities.find('@e[name=testpig]')[1]; p:move('right'); print('ok')");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    assertThat(actEntities).hasSize(1);
+    BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
+    assertThat(actPos).isEqualTo(expectedPos);
   }
 
 }

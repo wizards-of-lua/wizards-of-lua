@@ -42,17 +42,28 @@ public class SpellEntity extends Entity {
     super(checkNotNull(world, "world==null!"));
   }
 
-  public SpellEntity(World world, ICommandSender source, SpellProgram program, Vec3d pos,
-      long sid) {
+  public SpellEntity(World world, ICommandSender source, SpellProgram program,
+      PositionAndRotation posRot, long sid) {
     this(world);
     this.source = checkNotNull(source, "source==null!");
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
-    setPosition(pos.xCoord, pos.yCoord, pos.zCoord);
+    setPositionAndRotation(posRot);
     String name = SpellEntity.NAME + "-" + sid;
     setCustomNameTag(name);
     chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
+  }
+
+  public PositionAndRotation getPositionAndRotation() {
+    return new PositionAndRotation(getPositionVector(), rotationYaw, rotationPitch);
+  }
+
+  private void setPositionAndRotation(PositionAndRotation posRot) {
+    Vec3d pos = posRot.getPos();
+    float yaw = posRot.getRotationYaw();
+    float pitch = posRot.getRotationPitch();
+    setPositionAndRotation(pos.xCoord, pos.yCoord, pos.zCoord, yaw, pitch);
   }
 
   public ICommandSender getSource() {
@@ -86,9 +97,7 @@ public class SpellEntity extends Entity {
   protected void writeEntityToNBT(NBTTagCompound compound) {}
 
   @Override
-  protected void entityInit() {
-
-  }
+  protected void entityInit() {}
 
   @Override
   public void setPosition(double x, double y, double z) {
@@ -96,6 +105,11 @@ public class SpellEntity extends Entity {
       chunkLoaderTicketSupport.updatePosition();
     }
     super.setPosition(x, y, z);
+  }
+
+  @Override
+  public Vec3d getLookVec() {
+    return this.getLook(1.0F);
   }
 
   @Override
@@ -145,4 +159,5 @@ public class SpellEntity extends Entity {
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     source.sendMessage(txt);
   }
+
 }

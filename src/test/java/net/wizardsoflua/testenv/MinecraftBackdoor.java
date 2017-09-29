@@ -120,6 +120,10 @@ public class MinecraftBackdoor {
   public BlockPos getWorldSpawnPoint() {
     return testEnv.getServer().getEntityWorld().getSpawnPoint();
   }
+  
+  public void setWorldSpawnPoint(BlockPos pos) {
+    testEnv.getServer().getEntityWorld().setSpawnPoint(pos);
+  }
 
   public void setLuaTicksLimit(int luaTicksLimit) {
     testEnv.runAndWait(() -> testEnv.getWol().getConfig().setLuaTicksLimit(luaTicksLimit));

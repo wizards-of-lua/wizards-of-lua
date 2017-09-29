@@ -14,7 +14,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -89,7 +88,7 @@ public class EntityClass {
       return getConverters().vec3ToLua(result);
     }
 
-    public double getRotationYaw() {
+    public float getRotationYaw() {
       return MathHelper.wrapDegrees(delegate.rotationYaw);
     }
 
@@ -195,16 +194,16 @@ public class EntityClass {
       // delegate.setUniqueId(origUuid);
     }
 
-    public void move(String direction, @Nullable Number distance) {
-      EnumFacing facing = EnumFacing.byName(direction);
-      checkNotNull(facing != null, "expected direction but got %s", direction);
+    public void move(String directionName, @Nullable Number distance) {
+      Direction direction = Direction.byName(directionName);
+      checkNotNull(direction != null, "expected direction but got %s", direction);
       if (distance == null) {
         distance = 1L;
       }
-      Vec3i vec = facing.getDirectionVec();
-      double x = delegate.posX + vec.getX() * distance.doubleValue();
-      double y = delegate.posY + vec.getY() * distance.doubleValue();
-      double z = delegate.posZ + vec.getZ() * distance.doubleValue();
+      Vec3d vec = direction.getDirectionVec(getRotationYaw());
+      double x = delegate.posX + vec.xCoord * distance.doubleValue();
+      double y = delegate.posY + vec.yCoord * distance.doubleValue();
+      double z = delegate.posZ + vec.zCoord * distance.doubleValue();
       delegate.setPositionAndUpdate(x, y, z);
     }
 

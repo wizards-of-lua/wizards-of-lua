@@ -1,8 +1,11 @@
 package net.wizardsoflua.tests;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
@@ -13,6 +16,16 @@ import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class SpellTest extends WolTestBase {
+
+  private BlockPos posP1 = new BlockPos(1, 4, 1);
+  private BlockPos posP2 = new BlockPos(1, 5, 1);
+  
+  @After
+  public void clearBlock() {
+    mc().setBlock(posP1, Blocks.AIR);
+    mc().setBlock(posP2, Blocks.AIR);
+  }
+
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_is_not_nil
   @Test
@@ -42,6 +55,27 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.SpellTest test_spell_orientation_casted_by_server
+  @Test
+  public void test_spell_orientation_casted_by_server() throws Exception {
+    // Given:
+    String expected = EnumFacing.WEST.getName();
+    int facing = 4; // west
+    String command = "/lua spell:execute('say '..spell.orientation)";
+
+    mc().executeCommand("/setblock %s %s %s minecraft:command_block %s replace {Command:\"%s\"}",
+        posP1.getX(), posP1.getY(), posP1.getZ(), facing, command);
+    mc().waitFor(ServerLog4jEvent.class);
+    // When:
+    mc().executeCommand("/setblock %s %s %s minecraft:redstone_block", posP2.getX(), posP2.getY(),
+        posP2.getZ());
+    mc().waitFor(ServerLog4jEvent.class);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).contains(expected);
+  }
+
   // /test net.wizardsoflua.tests.SpellTest test_spell_pos_when_casted_by_player
   @Test
   public void test_spell_pos_when_casted_by_player() throws Exception {
@@ -51,6 +85,21 @@ public class SpellTest extends WolTestBase {
 
     // When:
     mc().player().perform(new ChatAction("/lua p=spell.pos; print(p)"));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_orientation_when_casted_by_player
+  @Test
+  public void test_spell_orientation_when_casted_by_player() throws Exception {
+    // Given:
+    EnumFacing orienation = mc().player().getOrientation();
+    String expected = orienation.getName();
+
+    // When:
+    mc().player().perform(new ChatAction("/lua o=spell.orientation; print(o)"));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
