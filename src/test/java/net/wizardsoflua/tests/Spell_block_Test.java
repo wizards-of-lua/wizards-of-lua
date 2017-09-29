@@ -122,4 +122,22 @@ public class Spell_block_Test extends WolTestBase {
         .isEqualTo(BlockDoor.EnumDoorHalf.UPPER);
   }
 
+  // /test net.wizardsoflua.tests.Spell_block_Test test_block_withNbt
+  @Test
+  public void test_block_withNbt() throws Exception {
+    // Given:
+    mc().setBlock(posP1, Blocks.FURNACE);
+
+    // When:
+    mc().player()
+        .perform(new ChatAction(
+            "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
+            posP1.getX(), posP1.getY(), posP1.getZ()));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("minecraft:planks");
+  }
+
+
 }
