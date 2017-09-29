@@ -106,13 +106,13 @@ functions:
       - url: Entity/putNbt.md
   - name: addTag
     parameters: string
-    result: boolean
+    results: boolean
     description: "The 'addTag' function add the given tag to the [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
     This function returns true if this operation was successful.
     "
   - name: removeTag
     parameters: string
-    result: boolean
+    results: boolean
     description: "The 'removeTag' function removes the given tag from the [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
     This function returns true if the tag has been removed successfully, and false if there was no such tag.
     "
