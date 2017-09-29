@@ -3,6 +3,7 @@ package net.wizardsoflua.lua.nbt;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 import net.wizardsoflua.lua.table.TableBuilder;
@@ -157,7 +159,7 @@ public class NbtConverter {
     return NumberUtils.isNumber(txt);
   }
 
-  public static NBTTagCompound toNntCompound(Table data) {
+  public static NBTTagCompound toNbtCompound(Table data) {
     NBTTagCompound result = new NBTTagCompound();
     Object key = data.initialKey();
     while (key != null) {
@@ -170,12 +172,30 @@ public class NbtConverter {
     return result;
   }
 
+  public static NBTTagList toNbtList(Table data) {
+    NBTTagList result = new NBTTagList();
+    Object key = data.initialKey();
+    while (key != null) {
+      NBTBase value = toNbt(data.rawget(key));
+      if (value != null) {
+        result.appendTag(value);
+      }
+      key = data.successorKeyOf(key);
+    }
+    return result;
+  }
+
   private static NBTBase toNbt(Object value) {
     if (value == null) {
       return null;
     }
     if (value instanceof Table) {
-      return toNntCompound((Table) value);
+      Table table = (Table) value;
+      if (isArray(table)) {
+        return toNbtList(table);
+      } else {
+        return toNbtCompound(table);
+      }
     }
     if (value instanceof Double) {
       return new NBTTagDouble((Double) value);
@@ -278,6 +298,29 @@ public class NbtConverter {
       builder.add((long) (i + 1), intArray[i]);
     }
     return builder.build();
+  }
+
+  /**
+   * Try to guess if the given table is an array.
+   * 
+   * @param table
+   * @return true if we guess it's an array
+   */
+  private static boolean isArray(Table table) {
+    TableIterable it = new TableIterable(table);
+    long count = 0;
+    for (Map.Entry<Object, Object> entry : it) {
+      count++;
+      Object key = entry.getKey();
+      Long intValue = Conversions.integerValueOf(key);
+      if (intValue == null) {
+        return false;
+      }
+      if (intValue.longValue() != count) {
+        return false;
+      }
+    }
+    return count > 0;
   }
 
 }

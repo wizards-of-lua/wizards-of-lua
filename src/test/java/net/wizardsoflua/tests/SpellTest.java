@@ -19,7 +19,7 @@ public class SpellTest extends WolTestBase {
 
   private BlockPos posP1 = new BlockPos(1, 4, 1);
   private BlockPos posP2 = new BlockPos(1, 5, 1);
-  
+
   @After
   public void clearBlock() {
     mc().setBlock(posP1, Blocks.AIR);
@@ -213,4 +213,20 @@ public class SpellTest extends WolTestBase {
     String message = act.getMessage();
     assertThat(message).matches("\\[Spell-\\d+\\] ho");
   }
+
+  // /test net.wizardsoflua.tests.SpellTest test_putNbt_can_set_tag
+  @Test
+  public void test_putNbt_can_set_tag() throws Exception {
+    // Given:
+    String newTag = "demotag";
+
+    // When:
+    mc().executeCommand("/lua spell:putNbt({Tags={\"%s\"}}); print(str(spell.tags))", newTag);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("{ \"" + newTag + "\" }");
+  }
+
+  //
 }

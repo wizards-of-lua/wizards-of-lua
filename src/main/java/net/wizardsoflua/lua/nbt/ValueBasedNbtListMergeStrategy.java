@@ -37,7 +37,7 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
         NBTBase newValue = NbtConverter.merge(oldValue, luaValue);
         resultTagList.appendTag(newValue);
       } else {
-        NBTBase newValue = NbtConverter.toNntCompound(luaValue);
+        NBTBase newValue = NbtConverter.toNbtCompound(luaValue);
         resultTagList.appendTag(newValue);
       }
     }
