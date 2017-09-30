@@ -29,6 +29,7 @@ public class WolTestBase extends TestDataFactory {
     TestPlayerPreparedForTestEvent evt = mc().waitFor(TestPlayerPreparedForTestEvent.class);
     assertThat(evt.getId()).isEqualTo(testId);
 
+    mc().clearUserConfigs();
     mc().executeCommand("/gamerule logAdminCommands false");
     mc().executeCommand("/gamerule sendCommandFeedback false");
     mc().executeCommand("/gamerule doMobSpawning false");

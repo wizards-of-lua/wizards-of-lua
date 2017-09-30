@@ -17,7 +17,8 @@ public class PlayerTest extends WolTestBase {
   @After
   public void after() {
     mc().deleteTeams();
-    mc().deletePlayerModule(DEMOMODULE);
+    mc().player().deleteModule(DEMOMODULE);
+    mc().clearUserConfigs();
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported
@@ -69,10 +70,25 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_require_player_module() throws Exception {
     // Given:
-    mc().createPlayerModule(DEMOMODULE, "function dummy() print('hello') end");
+    mc().player().createModule(DEMOMODULE, "function dummy() print('hello') end");
 
     // When:
     mc().player().perform(new ChatAction("/lua require('%s'); dummy();", DEMOMODULE));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("hello");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_player_profile
+  @Test
+  public void test_player_profile() throws Exception {
+    // Given:
+    mc().player().createModule(DEMOMODULE, "function dummy() print('hello') end");
+    mc().player().setProfile(DEMOMODULE);
+
+    // When:
+    mc().player().perform(new ChatAction("/lua dummy();", DEMOMODULE));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

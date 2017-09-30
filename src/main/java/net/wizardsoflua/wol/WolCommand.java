@@ -14,6 +14,9 @@ import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
+import net.wizardsoflua.wol.profile.PrintProfileAction;
+import net.wizardsoflua.wol.profile.SetProfileAction;
+import net.wizardsoflua.wol.profile.UnsetProfileAction;
 import net.wizardsoflua.wol.spell.SpellBreakAction;
 import net.wizardsoflua.wol.spell.SpellListAction;
 
@@ -31,6 +34,7 @@ public class WolCommand extends CommandBase {
     WolMenu() {
       put("spell", new SpellMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
+      put("profile", new ProfileMenu());
     }
   }
   class SpellMenu extends Menu {
@@ -45,6 +49,14 @@ public class WolCommand extends CommandBase {
       put("set", new SetLuaTicksLimitAction());
     }
   }
+  class ProfileMenu extends Menu {
+    ProfileMenu() {
+      put(new PrintProfileAction());
+      put("set", new SetProfileAction());
+      put("unset", new UnsetProfileAction());
+    }
+  }
+  // /wol profile set "profile"
 
   @Override
   public String getName() {

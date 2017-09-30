@@ -158,30 +158,8 @@ public class MinecraftBackdoor {
     }
   }
 
-  public void createPlayerModule(String moduleName, String content) {
-    File moduleFile = getModuleFile(moduleName);
-    if (moduleFile.exists()) {
-      moduleFile.delete();
-    }
-    moduleFile.getParentFile().mkdirs();
-    try {
-      Files.write(content, moduleFile, Charsets.UTF_8);
-    } catch (IOException e) {
-      throw new UndeclaredThrowableException(e);
-    }
+  public void clearUserConfigs() {
+    testEnv.getWol().getConfig().clearUserConfigs();
   }
 
-  public void deletePlayerModule(String moduleName) {
-    File moduleFile = getModuleFile(moduleName);
-    if (moduleFile.exists()) {
-      moduleFile.delete();
-    }
-  }
-
-  private File getModuleFile(String moduleName) {
-    String path = moduleName.replace('.', File.separatorChar) + ".lua";
-    File moduleFile =
-        new File(testEnv.getWol().getConfig().getLuaHomeDir(testEnv.getTestPlayer()), path);
-    return moduleFile;
-  }
 }

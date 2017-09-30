@@ -9,6 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.ForgeVersion.CheckResult;
 import net.minecraftforge.common.ForgeVersion.Status;
@@ -23,8 +26,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.wizardsoflua.config.ModConfiguration;
+import net.wizardsoflua.config.UserConfig;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
+import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellEntityFactory;
@@ -40,6 +45,10 @@ public class WizardsOfLua {
   public static final String VERSION = "@MOD_VERSION@";
   public static final String URL = "http://www.wizards-of-lua.net";
 
+  private static final String SHARED_HOME = "shared";
+  private static final String SERVER_HOME = "server";
+
+
   @Instance(MODID)
   public static WizardsOfLua instance;
 
@@ -51,6 +60,7 @@ public class WizardsOfLua {
   private AboutMessage aboutMessage;
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
+  private Profiles profiles;
 
   // private MinecraftServer server;
 
@@ -114,11 +124,22 @@ public class WizardsOfLua {
 
       @Override
       public File getLuaHomeDir(ICommandSender owner) {
-        return config.getLuaHomeDir(owner);
+        return WizardsOfLua.this.getLuaHomeDir(owner);
       }
-      
+
+      @Override
+      public Profiles getProfiles() {
+        return profiles;
+      }
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
+    profiles = new Profiles(new Profiles.Context() {
+
+      @Override
+      public ModConfiguration getConfig() {
+        return config;
+      }
+    });
   }
 
   @EventHandler
@@ -146,6 +167,10 @@ public class WizardsOfLua {
     return config;
   }
 
+  public Profiles getProfiles() {
+    return profiles;
+  }
+
   public SpellEntityFactory getSpellEntityFactory() {
     return spellEntityFactory;
   }
@@ -164,6 +189,22 @@ public class WizardsOfLua {
 
   public Clock getDefaultClock() {
     return Clock.systemDefaultZone();
+  }
+
+  public File getLuaHomeDir(ICommandSender owner) {
+    Entity entity = owner.getCommandSenderEntity();
+    if (entity instanceof EntityPlayer) {
+      UserConfig userConfig = config.getUserConfig((EntityPlayer) entity);
+      String libDir = userConfig.getLibDir();
+      if (new File(libDir).isAbsolute()) {
+        return new File(libDir);
+      }
+      return new File(config.getLuaHomeDir(), libDir);
+    }
+    if (owner instanceof MinecraftServer) {
+      return new File(config.getLuaHomeDir(), SERVER_HOME);
+    }
+    return new File(config.getLuaHomeDir(), SHARED_HOME);
   }
 
 }

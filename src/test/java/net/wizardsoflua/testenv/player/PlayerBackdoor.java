@@ -2,7 +2,14 @@ package net.wizardsoflua.testenv.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+
 import javax.annotation.Nullable;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
@@ -64,5 +71,40 @@ public class PlayerBackdoor {
   public EnumFacing getOrientation() {
     return getDelegate().getHorizontalFacing();
   }
+
+  public void setProfile(String module) {
+    testEnv.getWol().getConfig().getUserConfig(getDelegate()).setProfile(module);
+  }
+
+  public String getPlayerProfile() {
+    return testEnv.getWol().getConfig().getUserConfig(getDelegate()).getProfile();
+  }
+
+  public void createModule(String moduleName, String content) {
+    File moduleFile = getModuleFile(moduleName);
+    if (moduleFile.exists()) {
+      moduleFile.delete();
+    }
+    moduleFile.getParentFile().mkdirs();
+    try {
+      Files.write(content, moduleFile, Charsets.UTF_8);
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
+  public void deleteModule(String moduleName) {
+    File moduleFile = getModuleFile(moduleName);
+    if (moduleFile.exists()) {
+      moduleFile.delete();
+    }
+  }
+
+  private File getModuleFile(String moduleName) {
+    String path = moduleName.replace('.', File.separatorChar) + ".lua";
+    File moduleFile = new File(testEnv.getWol().getLuaHomeDir(getDelegate()), path);
+    return moduleFile;
+  }
+
 
 }
