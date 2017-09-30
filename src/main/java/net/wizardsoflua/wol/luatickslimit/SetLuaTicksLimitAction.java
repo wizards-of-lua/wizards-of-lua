@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
 import net.minecraft.command.CommandException;
@@ -24,8 +23,7 @@ public class SetLuaTicksLimitAction extends MenuEntry implements CommandAction {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (argList.size() == 1) {
-      return getMatchingTokens(argList.poll(),
-          Lists.newArrayList("1000", "10000", "100000", "1000000", "10000000"));
+      return getMatchingTokens(argList.poll(), "1000", "10000", "100000", "1000000", "10000000");
     }
     return Collections.emptyList();
   }

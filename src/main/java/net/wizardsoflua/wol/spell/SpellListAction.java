@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +26,7 @@ public class SpellListAction extends MenuEntry implements CommandAction {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (argList.size() == 1) {
-      return getMatchingTokens(argList.poll(), Lists.newArrayList("all"));
+      return getMatchingTokens(argList.poll(), "all");
     }
     return Collections.emptyList();
   }

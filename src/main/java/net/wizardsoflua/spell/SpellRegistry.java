@@ -1,6 +1,10 @@
 package net.wizardsoflua.spell;
 
-import java.util.Collections;
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.String.valueOf;
+import static java.util.Collections.unmodifiableCollection;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -12,6 +16,14 @@ public class SpellRegistry {
 
   public void add(SpellEntity spell) {
     spells.add(spell);
+  }
+
+  public Iterable<String> getActiveSids() {
+    return transform(spells, (s) -> valueOf(s.getSid()));
+  }
+
+  public Iterable<String> getActiveNames() {
+    return newHashSet(transform(spells, SpellEntity::getName));
   }
 
   public void breakAll() {
@@ -57,13 +69,12 @@ public class SpellRegistry {
   }
 
   public Iterable<SpellEntity> getAll() {
-    return Collections.unmodifiableCollection(spells);
+    return unmodifiableCollection(spells);
   }
 
   @SubscribeEvent
   public void onEvent(SpellTerminatedEvent evt) {
     spells.remove(evt.getSpell());
   }
-
 
 }

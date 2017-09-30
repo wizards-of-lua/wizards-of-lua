@@ -20,7 +20,7 @@ public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction
       Deque<String> argList, BlockPos targetPos) {
     return Collections.emptyList();
   }
-  
+
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     int luaTicksLimit = WizardsOfLua.instance.getConfig().getLuaTicksLimit();
