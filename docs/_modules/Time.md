@@ -37,16 +37,20 @@ properties:
     has worked since it has been casted.
     "
 functions:
-  - name: getRealDateTime
+  - name: getDate
     parameters: string
     results: string
     description: "Returns a string with the current real date and time.
-    If you want you can change the format by providing a format string."
+    If you want you can change the format by providing an optional format string."
+    examples:
+      - url: Time/getDate.md
   - name: sleep
     parameters: number
     results: nil
     description: "Forces the current spell to sleep for the given amount of
     game ticks."
+    examples:
+      - url: Time/sleep.md
 ---
 
 The Time module provides access to time related properties of the active Spell's world.
