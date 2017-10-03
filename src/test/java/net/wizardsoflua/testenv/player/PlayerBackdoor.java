@@ -73,11 +73,11 @@ public class PlayerBackdoor {
   }
 
   public void setProfile(String module) {
-    testEnv.getWol().getConfig().getUserConfig(getDelegate()).setProfile(module);
+    testEnv.getWol().getConfig().getUserConfig(getDelegate()).setRequiredModule(module);
   }
 
   public String getPlayerProfile() {
-    return testEnv.getWol().getConfig().getUserConfig(getDelegate()).getProfile();
+    return testEnv.getWol().getConfig().getUserConfig(getDelegate()).getRequireModule();
   }
 
   public void createModule(String moduleName, String content) {

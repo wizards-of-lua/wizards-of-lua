@@ -29,7 +29,8 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (argList.size() == 1) {
-      return getMatchingTokens(argList.poll(), ALL, BY_NAME, BY_OWNER, BY_SID);
+      String next = argList.poll();
+      return getMatchingTokens(next, ALL, BY_NAME, BY_OWNER, BY_SID);
     }
     String filterKey = argList.poll();
     if (argList.size() == 1) {

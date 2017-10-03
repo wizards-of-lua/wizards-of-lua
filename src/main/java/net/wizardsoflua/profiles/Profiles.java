@@ -21,11 +21,11 @@ public class Profiles {
   }
 
   public void setProfile(EntityPlayer player, @Nullable String module) {
-    context.getConfig().getUserConfig(player).setProfile(module);
+    context.getConfig().getUserConfig(player).setRequiredModule(module);
   }
 
   public @Nullable String getProfile(EntityPlayer player) {
-    return context.getConfig().getUserConfig(player).getProfile();
+    return context.getConfig().getUserConfig(player).getRequireModule();
   }
 
 }

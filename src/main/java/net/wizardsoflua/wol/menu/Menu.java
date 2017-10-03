@@ -39,7 +39,6 @@ public class Menu extends MenuEntry {
       return getMatchingTokens(arg, names);
     }
     return Collections.emptyList();
-    // return sort(entries.keySet());
   }
 
   private List<String> sort(Set<String> set) {
@@ -63,7 +62,7 @@ public class Menu extends MenuEntry {
         throw new IllegalStateException("Unexpected entry type: " + entry.getClass());
       }
       // TODO I18n
-      throw new CommandException("Unexpected token! Expected one of %s, but got",
+      throw new CommandException("Unexpected token! Expected one of %s, but got '%s'",
           sort(entries.keySet()), arg);
     } else if (rootAction != null) {
       return rootAction;

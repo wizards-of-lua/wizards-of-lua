@@ -15,11 +15,11 @@ import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class PrintProfileAction extends MenuEntry implements CommandAction {
+public class UnsetRequireAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public PrintProfileAction() {
+  public UnsetRequireAction() {
     wol = WizardsOfLua.instance;
   }
 
@@ -34,13 +34,8 @@ public class PrintProfileAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      String module = wol.getProfiles().getProfile(player);
-      if (module != null) {
-        sender.sendMessage(new WolAnnouncementMessage("profile = " + module));
-      } else {
-        // TODO I18n
-        sender.sendMessage(new WolAnnouncementMessage("profile is not set"));
-      }
+      wol.getProfiles().setProfile(player, null);
+      sender.sendMessage(new WolAnnouncementMessage("unset required module"));
     } else {
       // TODO I18n
       throw new CommandException("Only players can execute this command!");

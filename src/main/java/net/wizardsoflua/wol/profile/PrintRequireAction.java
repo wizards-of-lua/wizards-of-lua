@@ -10,16 +10,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class SetProfileAction extends MenuEntry implements CommandAction {
+public class PrintRequireAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public SetProfileAction() {
+  public PrintRequireAction() {
     wol = WizardsOfLua.instance;
   }
 
@@ -31,22 +32,24 @@ public class SetProfileAction extends MenuEntry implements CommandAction {
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    String module = argList.poll();
-    if (module != null) {
-      Entity entity = sender.getCommandSenderEntity();
-      if (entity instanceof EntityPlayer) {
-        EntityPlayer player = (EntityPlayer) entity;
-        wol.getProfiles().setProfile(player, module);
-        sender.sendMessage(new WolAnnouncementMessage("profile = " + module));
+    Entity entity = sender.getCommandSenderEntity();
+    if (entity instanceof EntityPlayer) {
+      EntityPlayer player = (EntityPlayer) entity;
+      String module = wol.getProfiles().getProfile(player);
+      if (module != null) {
+        sender.sendMessage(getMessage(module));
       } else {
         // TODO I18n
-        throw new CommandException("Only players can execute this command!");
+        sender.sendMessage(new WolAnnouncementMessage("required module is not set"));
       }
     } else {
       // TODO I18n
-      throw new CommandException("Missing module!");
+      throw new CommandException("Only players can execute this command!");
     }
   }
 
+  public static ITextComponent getMessage(String module) {
+    return new WolAnnouncementMessage(String.format("require = \"%s\"", module));
+  }
 
 }

@@ -11,15 +11,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class UnsetProfileAction extends MenuEntry implements CommandAction {
+public class SetRequireAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public UnsetProfileAction() {
+  public SetRequireAction() {
     wol = WizardsOfLua.instance;
   }
 
@@ -31,14 +30,20 @@ public class UnsetProfileAction extends MenuEntry implements CommandAction {
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    Entity entity = sender.getCommandSenderEntity();
-    if (entity instanceof EntityPlayer) {
-      EntityPlayer player = (EntityPlayer) entity;
-      wol.getProfiles().setProfile(player, null);
-      sender.sendMessage(new WolAnnouncementMessage("unset profile"));
+    String module = argList.poll();
+    if (module != null) {
+      Entity entity = sender.getCommandSenderEntity();
+      if (entity instanceof EntityPlayer) {
+        EntityPlayer player = (EntityPlayer) entity;
+        wol.getProfiles().setProfile(player, module);
+        sender.sendMessage(PrintRequireAction.getMessage(module));
+      } else {
+        // TODO I18n
+        throw new CommandException("Only players can execute this command!");
+      }
     } else {
       // TODO I18n
-      throw new CommandException("Only players can execute this command!");
+      throw new CommandException("Missing module!");
     }
   }
 
