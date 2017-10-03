@@ -101,10 +101,12 @@ public class PlayerBackdoor {
   }
 
   private File getModuleFile(String moduleName) {
-    String path = moduleName.replace('.', File.separatorChar) + ".lua";
-    File moduleFile = new File(testEnv.getWol().getLuaHomeDir(getDelegate()), path);
-    return moduleFile;
+    String path = moduleName.replace(".", File.separator) + ".lua";
+    return new File(testEnv.getWol().getConfig().getUserConfig(getDelegate()).getLibDir(), path);
   }
 
+  public String getName() {
+    return getDelegate().getName();
+  }
 
 }

@@ -49,7 +49,7 @@ public class SpellRegistry {
   public int breakByOwner(String ownerName) {
     int result = 0;
     for (SpellEntity spellEntity : spells) {
-      Entity owner = spellEntity.getOwner();
+      Entity owner = spellEntity.getOwnerEntity();
       if (owner != null && ownerName.equals(owner.getName())) {
         spellEntity.setDead();
         result++;

@@ -33,20 +33,20 @@ public class SpellEntityFactory {
 
   public SpellEntity create(World world, ICommandSender sender, String code) {
     checkNotNull(world, "world==null!");
-    ICommandSender source = getSource(sender);
-    SpellProgram program = programFactory.create(world, source, code);
+    ICommandSender owner = getOwner(sender);
+    SpellProgram program = programFactory.create(world, owner, code);
     PositionAndRotation pos = getPositionAndRotation(sender);
     nextSid++;
-    SpellEntity result = new SpellEntity(world, source, program, pos, nextSid);
+    SpellEntity result = new SpellEntity(world, owner, program, pos, nextSid);
     program.setSpellEntity(result);
     spellRegistry.add(result);
     return result;
   }
 
-  private ICommandSender getSource(ICommandSender sender) {
+  private ICommandSender getOwner(ICommandSender sender) {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof SpellEntity) {
-      return ((SpellEntity) entity).getSource();
+      return ((SpellEntity) entity).getOwner();
     }
     return sender;
   }

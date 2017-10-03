@@ -31,7 +31,7 @@ public class SpellEntity extends Entity {
         updateFrequency, sendsVelocityUpdates);
   }
 
-  private ICommandSender source;
+  private ICommandSender owner;
   private SpellProgram program;
   private long sid; // immutable spell id
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
@@ -42,10 +42,10 @@ public class SpellEntity extends Entity {
     super(checkNotNull(world, "world==null!"));
   }
 
-  public SpellEntity(World world, ICommandSender source, SpellProgram program,
+  public SpellEntity(World world, ICommandSender owner, SpellProgram program,
       PositionAndRotation posRot, long sid) {
     this(world);
-    this.source = checkNotNull(source, "source==null!");
+    this.owner = checkNotNull(owner, "owner==null!");
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
     setPositionAndRotation(posRot);
@@ -66,16 +66,16 @@ public class SpellEntity extends Entity {
     setPositionAndRotation(pos.xCoord, pos.yCoord, pos.zCoord, yaw, pitch);
   }
 
-  public ICommandSender getSource() {
-    return source;
+  public ICommandSender getOwner() {
+    return owner;
   }
 
   public long getSid() {
     return sid;
   }
 
-  public Entity getOwner() {
-    return source.getCommandSenderEntity();
+  public Entity getOwnerEntity() {
+    return owner.getCommandSenderEntity();
   }
 
   public SpellProgram getProgram() {
@@ -157,7 +157,7 @@ public class SpellEntity extends Entity {
     String message = String.format("Error during command execution: %s", e.getMessage());
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-    source.sendMessage(txt);
+    owner.sendMessage(txt);
   }
 
 }

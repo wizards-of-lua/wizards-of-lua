@@ -162,4 +162,34 @@ public class MinecraftBackdoor {
     testEnv.getWol().getConfig().clearUserConfigs();
   }
 
+  public void createSharedModule(String moduleName, String content) {
+    File moduleFile = getSharedModuleFile(moduleName);
+    if (moduleFile.exists()) {
+      moduleFile.delete();
+    }
+    moduleFile.getParentFile().mkdirs();
+    try {
+      Files.write(content, moduleFile, Charsets.UTF_8);
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
+  public void deleteModule(String moduleName) {
+    File moduleFile = getSharedModuleFile(moduleName);
+    if (moduleFile.exists()) {
+      moduleFile.delete();
+    }
+  }
+
+  private File getSharedModuleFile(String moduleName) {
+    String path = moduleName.replace(".", File.separator) + ".lua";
+    return new File(testEnv.getWol().getConfig().getSharedLibDir(), path);
+  }
+
+  public void deleteSharedModule(String moduleName) {
+    File file = getSharedModuleFile(moduleName);
+    file.delete();
+  }
+
 }

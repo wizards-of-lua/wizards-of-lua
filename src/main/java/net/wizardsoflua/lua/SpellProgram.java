@@ -2,8 +2,6 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
-
 import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -26,6 +24,7 @@ import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
+import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
@@ -47,7 +46,7 @@ public class SpellProgram {
 
     Time getTime();
 
-    File getLibraryDir();
+    String getLuaPathElementOfPlayer(String nameOrUuid);
 
   }
 
@@ -62,21 +61,26 @@ public class SpellProgram {
   private final SpellExceptionFactory exceptionFactory;
   private final Types types;
   private final Converters converters;
-
   private State state;
   private Continuation continuation;
   private SpellEntity spellEntity;
 
   SpellProgram(String code, ModuleDependencies dependencies, ICommandSender owner,
-      Context context) {
+      String defaultLuaPath, Context context) {
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     checkNotNull(owner, "source==null!");;
     checkNotNull(context, "context==null!");
+
     this.executor = DirectCallExecutor.newExecutor(context.getSchedulingContextFactory());
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
-    runtimeEnv = new SpellRuntimeEnvironment(context.getLibraryDir());
+    runtimeEnv = new SpellRuntimeEnvironment(new SpellRuntimeEnvironment.Context() {
+      @Override
+      public String getLuaPath() {
+        return defaultLuaPath;
+      }
+    });
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
@@ -84,6 +88,12 @@ public class SpellProgram {
     TypesModule.installInto(env, types);
     converters = new Converters(types);
     PrintRedirector.installInto(env, owner);
+    AddPathFunction.installInto(env, converters, new AddPathFunction.Context() {
+      @Override
+      public String getLuaPathElementOfPlayer(String nameOrUuid) {
+        return context.getLuaPathElementOfPlayer(nameOrUuid);
+      }
+    });
     TimeModule.installInto(converters, context.getTime());
     BlocksModule.installInto(env, converters);
 
@@ -143,10 +153,10 @@ public class SpellProgram {
 
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-    
+
     SpellModule.installInto(env, converters, spellEntity);
     EntitiesModule.installInto(env, converters, spellEntity);
-    
+
     dependencies.installModules(env, executor, stateContext);
 
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);

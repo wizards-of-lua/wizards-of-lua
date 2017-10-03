@@ -52,7 +52,7 @@ public class SpellClass {
     }
 
     public Table getOwner() {
-      return getConverters().entityToLua(delegate.getOwner());
+      return getConverters().entityToLua(delegate.getOwnerEntity());
     }
 
     public Table getBlock() {

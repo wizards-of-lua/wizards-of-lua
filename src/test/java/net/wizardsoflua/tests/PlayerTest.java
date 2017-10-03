@@ -13,11 +13,13 @@ import net.wizardsoflua.testenv.net.ChatAction;
 public class PlayerTest extends WolTestBase {
 
   private static final String DEMOMODULE = "my.demomodule";
+  private static final String SHAREDMODULE = "somewhere.sharedmodule";
 
   @After
   public void after() {
     mc().deleteTeams();
     mc().player().deleteModule(DEMOMODULE);
+    mc().deleteSharedModule(SHAREDMODULE);
     mc().clearUserConfigs();
   }
 
@@ -78,6 +80,20 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("hello");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_require_shared_module
+  @Test
+  public void test_require_shared_module() throws Exception {
+    // Given:
+    mc().createSharedModule(SHAREDMODULE, "function shareddummy() print('world!') end");
+
+    // When:
+    mc().player().perform(new ChatAction("/lua require('%s'); shareddummy();", SHAREDMODULE));
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("world!");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_player_profile

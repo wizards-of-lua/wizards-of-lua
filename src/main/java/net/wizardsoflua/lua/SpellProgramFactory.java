@@ -2,7 +2,6 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
 import java.time.Clock;
 
 import net.minecraft.command.ICommandSender;
@@ -23,9 +22,12 @@ public class SpellProgramFactory {
 
     int getLuaTicksLimit();
 
-    File getLuaHomeDir(ICommandSender owner);
-
     Profiles getProfiles();
+
+    String getSharedLuaPath();
+
+    String getLuaPathElementOfPlayer(String nameOrUuid);
+
   }
 
   private final Context context;
@@ -35,13 +37,22 @@ public class SpellProgramFactory {
   }
 
   public SpellProgram create(World world, ICommandSender owner, String code) {
-    File libDir = context.getLuaHomeDir(owner);
-    SpellProgram.Context spellProgramContext = createSpellProgramContext(world, libDir);
     ModuleDependencies dependencies = createDependencies(owner);
-    return new SpellProgram(code, dependencies, owner, spellProgramContext);
+    String defaultLuaPath = getDefaultLuaPath(owner);
+    SpellProgram.Context context = createSpellProgramContext(world);
+    return new SpellProgram(code, dependencies, owner, defaultLuaPath, context);
   }
 
-  private SpellProgram.Context createSpellProgramContext(World world, File libraryDir) {
+  private String getDefaultLuaPath(ICommandSender owner) {
+    Entity entity = owner.getCommandSenderEntity();
+    if (entity instanceof EntityPlayer) {
+      return context.getSharedLuaPath() + ";"
+          + context.getLuaPathElementOfPlayer(entity.getCachedUniqueIdString());
+    }
+    return context.getSharedLuaPath();
+  }
+
+  private SpellProgram.Context createSpellProgramContext(World world) {
     checkNotNull(world, "world==null!");
     Time.Context timeContext = new Time.Context() {
       @Override
@@ -83,8 +94,8 @@ public class SpellProgramFactory {
       }
 
       @Override
-      public File getLibraryDir() {
-        return libraryDir;
+      public String getLuaPathElementOfPlayer(String nameOrUuid) {
+        return context.getLuaPathElementOfPlayer(nameOrUuid);
       }
     };
   }
