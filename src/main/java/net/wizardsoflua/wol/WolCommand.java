@@ -14,13 +14,13 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.wizardsoflua.wol.autorequire.PrintAutoRequireAction;
+import net.wizardsoflua.wol.autorequire.SetAutoRequireAction;
+import net.wizardsoflua.wol.autorequire.UnsetAutoRequireAction;
 import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
-import net.wizardsoflua.wol.profile.PrintRequireAction;
-import net.wizardsoflua.wol.profile.SetRequireAction;
-import net.wizardsoflua.wol.profile.UnsetRequireAction;
 import net.wizardsoflua.wol.spell.SpellBreakAction;
 import net.wizardsoflua.wol.spell.SpellListAction;
 
@@ -44,7 +44,7 @@ public class WolCommand extends CommandBase {
     WolMenu() {
       put("spell", new SpellMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
-      put("require", new RequireMenu());
+      put("autoRequire", new AutoRequireMenu());
     }
   }
   class SpellMenu extends Menu {
@@ -59,11 +59,11 @@ public class WolCommand extends CommandBase {
       put("set", new SetLuaTicksLimitAction());
     }
   }
-  class RequireMenu extends Menu {
-    RequireMenu() {
-      put(new PrintRequireAction());
-      put("set", new SetRequireAction());
-      put("unset", new UnsetRequireAction());
+  class AutoRequireMenu extends Menu {
+    AutoRequireMenu() {
+      put(new PrintAutoRequireAction());
+      put("set", new SetAutoRequireAction());
+      put("unset", new UnsetAutoRequireAction());
     }
   }
   // /wol profile set "profile"

@@ -73,11 +73,13 @@ public class PlayerBackdoor {
   }
 
   public void setProfile(String module) {
-    testEnv.getWol().getConfig().getUserConfig(getDelegate()).setRequiredModule(module);
+    testEnv.getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID())
+        .setAutoRequire(module);
   }
 
   public String getPlayerProfile() {
-    return testEnv.getWol().getConfig().getUserConfig(getDelegate()).getRequireModule();
+    return testEnv.getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID())
+        .getAutoRequire();
   }
 
   public void createModule(String moduleName, String content) {
@@ -102,7 +104,8 @@ public class PlayerBackdoor {
 
   private File getModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
-    return new File(testEnv.getWol().getConfig().getUserConfig(getDelegate()).getLibDir(), path);
+    return new File(testEnv.getWol().getConfig()
+        .getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(), path);
   }
 
   public String getName() {

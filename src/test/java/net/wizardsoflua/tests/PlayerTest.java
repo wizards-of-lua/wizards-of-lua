@@ -20,7 +20,7 @@ public class PlayerTest extends WolTestBase {
     mc().deleteTeams();
     mc().player().deleteModule(DEMOMODULE);
     mc().deleteSharedModule(SHAREDMODULE);
-    mc().clearUserConfigs();
+    mc().clearWizardConfigs();
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported

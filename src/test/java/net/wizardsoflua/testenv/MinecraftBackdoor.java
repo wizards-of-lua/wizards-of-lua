@@ -130,11 +130,12 @@ public class MinecraftBackdoor {
   }
 
   public void setLuaTicksLimit(int luaTicksLimit) {
-    testEnv.runAndWait(() -> testEnv.getWol().getConfig().setLuaTicksLimit(luaTicksLimit));
+    testEnv.runAndWait(
+        () -> testEnv.getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
   public int getLuaTicksLimit() {
-    return testEnv.getWol().getConfig().getLuaTicksLimit();
+    return testEnv.getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
   }
 
   public @Nullable List<Entity> findEntities(String target) {
@@ -158,8 +159,8 @@ public class MinecraftBackdoor {
     }
   }
 
-  public void clearUserConfigs() {
-    testEnv.getWol().getConfig().clearUserConfigs();
+  public void clearWizardConfigs() {
+    testEnv.getWol().getConfig().clearWizardConfigs();
   }
 
   public void createSharedModule(String moduleName, String content) {

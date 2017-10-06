@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.ForgeVersion.CheckResult;
@@ -25,7 +26,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.wizardsoflua.config.ModConfiguration;
+import net.wizardsoflua.config.WizardConfig;
+import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.profiles.Profiles;
@@ -52,7 +54,7 @@ public class WizardsOfLua {
   private final SpellRegistry spellRegistry = new SpellRegistry();
 
   // TODO move these lazy instances into a new state class
-  private ModConfiguration config;
+  private WolConfig config;
   private AboutMessage aboutMessage;
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
@@ -69,13 +71,13 @@ public class WizardsOfLua {
   public WizardsOfLua() {}
 
   @EventHandler
-  public void preInit(FMLPreInitializationEvent event) {
-    config = ModConfiguration.create(event, CONFIG_NAME);
+  public void preInit(FMLPreInitializationEvent event) throws Exception {
+    config = WolConfig.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 
       @Override
       public boolean shouldShowAboutMessage() {
-        return config.shouldShowAboutMessage();
+        return config.getGeneralConfig().isShowAboutMessage();
       }
 
       @Override
@@ -116,7 +118,7 @@ public class WizardsOfLua {
 
       @Override
       public int getLuaTicksLimit() {
-        return config.getLuaTicksLimit();
+        return config.getGeneralConfig().getLuaTicksLimit();
       }
 
       @Override
@@ -126,7 +128,7 @@ public class WizardsOfLua {
           throw new IllegalArgumentException(
               format("Player not found with name or uuid '%s'", nameOrUuid));
         }
-        return getConfig().getUserConfig(profile).getLibDirPathElement();
+        return getConfig().getOrCreateWizardConfig(profile.getId()).getLibDirPathElement();
       }
 
       @Override
@@ -143,9 +145,10 @@ public class WizardsOfLua {
     profiles = new Profiles(new Profiles.Context() {
 
       @Override
-      public ModConfiguration getConfig() {
-        return config;
+      public WizardConfig getWizardConfig(EntityPlayer player) {
+        return getConfig().getOrCreateWizardConfig(player.getUniqueID());
       }
+
     });
   }
 
@@ -171,7 +174,7 @@ public class WizardsOfLua {
     logger.info(aboutMessage);
   }
 
-  public ModConfiguration getConfig() {
+  public WolConfig getConfig() {
     return config;
   }
 

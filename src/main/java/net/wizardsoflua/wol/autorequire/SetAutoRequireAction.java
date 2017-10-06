@@ -1,4 +1,4 @@
-package net.wizardsoflua.wol.profile;
+package net.wizardsoflua.wol.autorequire;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -14,11 +14,11 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class SetRequireAction extends MenuEntry implements CommandAction {
+public class SetAutoRequireAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public SetRequireAction() {
+  public SetAutoRequireAction() {
     wol = WizardsOfLua.instance;
   }
 
@@ -36,7 +36,7 @@ public class SetRequireAction extends MenuEntry implements CommandAction {
       if (entity instanceof EntityPlayer) {
         EntityPlayer player = (EntityPlayer) entity;
         wol.getProfiles().setProfile(player, module);
-        sender.sendMessage(PrintRequireAction.getMessage(module));
+        sender.sendMessage(PrintAutoRequireAction.getMessage(module));
       } else {
         // TODO I18n
         throw new CommandException("Only players can execute this command!");

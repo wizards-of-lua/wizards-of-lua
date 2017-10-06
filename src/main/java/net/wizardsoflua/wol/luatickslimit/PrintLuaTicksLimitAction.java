@@ -23,7 +23,7 @@ public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    int luaTicksLimit = WizardsOfLua.instance.getConfig().getLuaTicksLimit();
+    int luaTicksLimit = WizardsOfLua.instance.getConfig().getGeneralConfig().getLuaTicksLimit();
     WolAnnouncementMessage message = new WolAnnouncementMessage("luaTicksLimit = " + luaTicksLimit);
     sender.sendMessage(message);
   }

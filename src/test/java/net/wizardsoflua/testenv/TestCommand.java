@@ -95,7 +95,11 @@ public class TestCommand extends CommandBase {
               new TextComponentString(TRIANGLE + NO_BREAK_SPACE + failure.getTestHeader() + ":\n");
           header.setStyle(new Style().setColor(TextFormatting.DARK_AQUA));
           details.add(header);
-          ITextComponent failureMessage = new TextComponentString(failure.getMessage());
+          String message = failure.getMessage();
+          if (message == null) {
+            message = "<null>";
+          }
+          ITextComponent failureMessage = new TextComponentString(message);
           failureMessage.setStyle(new Style().setColor(TextFormatting.RED));
           details.add(failureMessage);
         }

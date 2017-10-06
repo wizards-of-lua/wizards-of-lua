@@ -1,4 +1,4 @@
-package net.wizardsoflua.wol.profile;
+package net.wizardsoflua.wol.autorequire;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -10,16 +10,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class UnsetRequireAction extends MenuEntry implements CommandAction {
+public class PrintAutoRequireAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public UnsetRequireAction() {
+  public PrintAutoRequireAction() {
     wol = WizardsOfLua.instance;
   }
 
@@ -34,12 +35,21 @@ public class UnsetRequireAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      wol.getProfiles().setProfile(player, null);
-      sender.sendMessage(new WolAnnouncementMessage("unset required module"));
+      String module = wol.getProfiles().getProfile(player);
+      if (module != null) {
+        sender.sendMessage(getMessage(module));
+      } else {
+        // TODO I18n
+        sender.sendMessage(new WolAnnouncementMessage("autoRequire is not set"));
+      }
     } else {
       // TODO I18n
       throw new CommandException("Only players can execute this command!");
     }
+  }
+
+  public static ITextComponent getMessage(String module) {
+    return new WolAnnouncementMessage(String.format("autoRequire = \"%s\"", module));
   }
 
 }

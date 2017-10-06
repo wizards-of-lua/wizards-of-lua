@@ -34,7 +34,8 @@ public class SetLuaTicksLimitAction extends MenuEntry implements CommandAction {
     if (limit != null) {
       Integer luaTicksLimit = Ints.tryParse(limit);
       if (luaTicksLimit != null) {
-        luaTicksLimit = WizardsOfLua.instance.getConfig().setLuaTicksLimit(luaTicksLimit);
+        luaTicksLimit =
+            WizardsOfLua.instance.getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit);
         // TODO I18n
         WolAnnouncementMessage message =
             new WolAnnouncementMessage("luaTicksLimit has been updated to " + luaTicksLimit);
