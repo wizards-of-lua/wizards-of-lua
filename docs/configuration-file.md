@@ -43,6 +43,7 @@ This directory is parent to the shared libs and all user-specific library direct
 
 ### Wizard
 This function adds a player-specific configuration.
+New entries are added automatically when a new player uses the [/lua command](/lua-command.html) or the [/wol command](/wol-command.html) the first time.
 * **id**: is the UUID of the player this configuration belongs to.
 * **libDir**: defines the relative or absolute location of the player-specific Lua library directory.
 If defined as relative, it will be located inside the directory defined by <tt>General.luaLibDirHome</tt>.
