@@ -16,6 +16,9 @@ docs:
 - title: Download & Installation
   url: /installation
 
+- title: Configuration
+  url: /configuration-file
+
 - title: The /lua Command
   url: /lua-command
 

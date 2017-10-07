@@ -51,6 +51,36 @@ This will break all spells owned by player mickkay.
 
 <br/>
 
+<a name="Automatic-Requirements" style="position:relative; top:-70px; display:block;"></a>
+## Automatic Requirements
+The <tt>autoRequire</tt> value is a player-specific value that defines which Lua module will be loaded
+automatically into a new spell's environment.
+The respective module must be available within the [player's Lua path](/configuration-file.html).
+
+### Showing the autoRequire value
+```
+/wol autoRequire
+```
+This prints the value of the "autoRequire" setting.
+
+### Setting the autoRequire value
+Lets assume that the current player has a file called "myprofile.lua" in his
+Lua library directory.
+```
+/wol autoRequire set myprofile
+```
+This sets the "myprofile" module as the automatic requirement for the current player.
+This is equivalent to prefixing a new spell's code with <tt>require "myprofile"</tt>.
+
+### Unsetting the autoRequire value
+```
+/wol autoRequire unset
+```
+This sets the value of the "autoRequire" setting to none.
+
+<br/>
+
+<a name="Lua-Ticks-Limit" style="position:relative; top:-70px; display:block;"></a>
 ## Lua Ticks Limit Configuration
 The <tt>luaTicksLimit</tt> value defines how many Lua ticks each spell can use during
 a single game tick. When this value is exceeded, the spell will be broken or
