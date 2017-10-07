@@ -100,7 +100,7 @@ This will set the number of Lua tick a spell can use during a single game tick t
 Allowed are values between 1000 and 10000000.
 Default is 10000.
 
-The new value will also stored into the config file at <tt>config/wizards-of-lua/wizards-of-lua.cfg</tt>, which means that it survives a server restart.
+The new value will also stored into the config file at <tt>config/wizards-of-lua/wizards-of-lua.luacfg</tt>, which means that it survives a server restart.
 
 Please use this with care, since this can slow down your Minecraft server, especially
 when there are a lot of spells runnung concurrently.

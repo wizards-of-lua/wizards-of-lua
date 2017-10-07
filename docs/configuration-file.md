@@ -4,7 +4,7 @@ title: The Wizards of Lua Configuration File
 *The Wizards of Lua Mod stores its configuration in a configuration file.
 This file can be edited prior to server startup.*
 
-The Wizards of Lua configuration is located at <tt>&lt;minecraft&gt;/conf/wizards-of-lua/wizards-of-lua.cfg</tt>,
+The Wizards of Lua configuration is located at <tt>&lt;minecraft&gt;/conf/wizards-of-lua/wizards-of-lua.luacfg</tt>,
 where &lt;minecraft&gt; is your Minecraft folder.
 
 Please not that the configuration file is loaded into Minecraft only once at startup.
@@ -12,7 +12,7 @@ It gets frequently overwritten when the mod's configuration has been changed by 
 You should only edit it manually when Minecraft is not running, otherwise your changes will be ignored and might get overwritten.
 
 ## Example
-Here is an example of the <tt>wizards-of-lua.cfg</tt>:
+Here is an example of the <tt>wizards-of-lua.luacfg</tt>:
 ```lua
 General {
   luaTicksLimit=10000,
@@ -29,7 +29,7 @@ Wizard {
 ```
 
 ## Format
-The contents of <tt>wizards-of-lua.cfg</tt> is actually valid Lua code which is executed by Wol at server startup.
+The contents of <tt>wizards-of-lua.luacfg</tt> is actually valid Lua code which is executed by Wol at server startup.
 "General" and "Wizard" are two internal functions that accept a Lua table as parameter.
 
 ### General

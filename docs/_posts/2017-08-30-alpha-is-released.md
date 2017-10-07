@@ -11,7 +11,7 @@ Now you can set the number of Lua ticks that a spell can use during a single gam
 <!--more-->
 This closes ticket [#48](https://github.com/wizards-of-lua/wizards-of-lua/issues/48) of the [roadmap](/roadmap).
 
-You can set the value eighter by editing the config file at <tt>config/wizards-of-lua/wizards-of-lua.cfg</tt> (located inside your Minecraft folder), or online with the [/wol command](/wol-command).
+You can set the value eighter by editing the config file at <tt>config/wizards-of-lua/wizards-of-lua.luacfg</tt> (located inside your Minecraft folder), or online with the [/wol command](/wol-command).
 
 For example:
 ```
