@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
 
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -48,9 +49,12 @@ public class WolConfig {
       InterruptedException, IOException {
     File configDir = event.getModConfigurationDirectory();
     File wolConfigDir = new File(configDir, configName);
-    File wolConfigFile = new File(wolConfigDir, configName+".cfg");
-    WolConfig result = new WolConfig(wolConfigFile);
-    return result;
+
+    File oldConfigFile = new File(wolConfigDir, configName + ".cfg");
+    oldConfigFile.delete();
+    
+    File wolConfigFile = new File(wolConfigDir, configName + ".luacfg");
+    return new WolConfig(wolConfigFile);
   }
 
   private final ExecutorService service = Executors.newFixedThreadPool(1);
