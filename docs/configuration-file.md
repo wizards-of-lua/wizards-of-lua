@@ -7,7 +7,7 @@ This file can be edited prior to server startup.*
 The Wizards of Lua configuration is located at <tt>&lt;minecraft&gt;/conf/wizards-of-lua/wizards-of-lua.luacfg</tt>,
 where &lt;minecraft&gt; is your Minecraft folder.
 
-Please not that the configuration file is loaded into Minecraft only once at startup.
+Please note that the configuration file is loaded into Minecraft only once at startup.
 It gets frequently overwritten when the mod's configuration has been changed by some [/wol command](/wol-command.html).
 You should only edit it manually when Minecraft is not running, otherwise your changes will be ignored and might get overwritten.
 

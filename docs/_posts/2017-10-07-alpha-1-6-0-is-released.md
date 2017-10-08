@@ -14,3 +14,5 @@ The 1.6.1-alpha is available. It brings a great productivity boost since Lua pro
 * Fixed [#65](https://github.com/wizards-of-lua/wizards-of-lua/issues/65) - Support auto completion for [/wol spell break](/wol-command)
 
 Please note that this version is not backwards compatible since the config file format has been changed from the standard Forge format to the Lua standard.
+
+There is a new tutorial that shows [how to import Lua files from the file system](/tutorials/importing_lua_files/).
