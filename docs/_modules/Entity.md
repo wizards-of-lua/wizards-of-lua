@@ -55,13 +55,13 @@ properties:
   - name: rotationYaw
     type: number
     access: r/w
-    description: "The 'rotationYaw' is the rotation of this entity around its Y axis in degrees. For example, a value of 0 means south,
-    90 is west, and 45 is south-west.
+    description: "The 'rotationYaw' is the rotation of this entity around its Y axis in degrees.
+    For example, a value of 0 means the entity is facing south. 90 corresponds to west, and 45 to south-west.
     "
   - name: rotationPitch
     type: number
     access: r/w
-    description: "The 'rotationPitch' is the rotation of this entity's head around its X axis in degrees. A value of -90 means straight up. A value of 90 means straight down.
+    description: "The 'rotationPitch' is the rotation of this entity's head around its X axis in degrees. A value of -90 means the entity is looking straight up. A value of 90 means it is looking straight down.
     "
   - name: eyeHeight
     type: number
@@ -89,9 +89,12 @@ functions:
     results: nil
     description: "The 'move' function teleports this entity instantly to the position
     relative to its current position specified by the given direction and distance.
-    Valid direction values are 'up', 'down', 'north', 'east', 'south', 'west',
-    'forward', 'back', 'left', and 'right'.
-    If no distance is specified, 1 meter is taken as default distance."
+    If no distance is specified, 1 meter is taken as default distance.
+    Valid direction values are absolute directions ('up', 'down', 'north', 'east',
+    'south', and 'west'), as well as relative directions ('forward', 'back',
+    'left', and 'right'). Relative directions are interpreted relative to the entity's
+    [orientation](!SITE_URL!/modules/Entity/#orientation).
+    "
     examples:
       - url: Entity/move.md
   - name: putNbt
@@ -107,13 +110,13 @@ functions:
   - name: addTag
     parameters: string
     results: boolean
-    description: "The 'addTag' function add the given tag to the [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
-    This function returns true if this operation was successful.
+    description: "The 'addTag' function adds the given tag to the set of [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
+    This function returns true if the tag was added successfully.
     "
   - name: removeTag
     parameters: string
     results: boolean
-    description: "The 'removeTag' function removes the given tag from the [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
+    description: "The 'removeTag' function removes the given tag from the set of [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
     This function returns true if the tag has been removed successfully, and false if there was no such tag.
     "
 ---

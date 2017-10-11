@@ -1,9 +1,9 @@
 #### Example
-Finding all pigs and putting a saddle on them.
+Putting on a helmet on all zombies.
 ```lua
-for _,p in pairs(Entities.find("@e[type=Pig]")) do
-  nbt=p.nbt
-  nbt.Saddle=1
-  p:putNbt(nbt)
+for _,zombie in pairs(Entities.find("@e[type=zombie]")) do
+  local n=zombie.nbt
+  n.ArmorItems[4]={Count=1,id="iron_helmet"}
+  zombie:putNbt(n)
 end
 ```
