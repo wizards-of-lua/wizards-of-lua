@@ -56,17 +56,18 @@ public class Types {
   }
 
   public Table declare(String classname) {
-    return declare(classname, (Table)null);
+    return declare(classname, (Table) null);
   }
-  
+
   public Table declare(String classname, @Nullable String superclassname) {
     Table superclassMT = null;
-    if ( superclassname!=null) {
-      superclassMT = getClassMetatable(superclassname);
+    if (superclassname != null) {
+      superclassMT = checkNotNull(getClassMetatable(superclassname),
+          "getClassMetatable(superclassname)==null!");
     }
     return declare(classname, superclassMT);
   }
-  
+
   /**
    * Declares a new Lua class with the given name and the optionally given superclass metatable.
    * 
@@ -149,73 +150,8 @@ public class Types {
     return null;
   }
 
-  public void checkBoolean(Object luaObj) {
-    checkAssignable(BOOLEAN_META, luaObj);
-  }
-
-  public void checkBoolean(Object luaObj, Terms terms) {
-    checkAssignable(BOOLEAN_META, luaObj, terms);
-  }
-
-  public Boolean castBoolean(Object luaObj, Terms terms) {
-    checkAssignable(BOOLEAN_META, luaObj, terms);
-    return (Boolean) luaObj;
-  }
-
-  public void checkNumber(Object luaObj) {
-    checkAssignable(NUMBER_META, luaObj);
-  }
-
-  public void checkNumber(Object luaObj, Terms terms) {
-    checkAssignable(NUMBER_META, luaObj, terms);
-  }
-
-  public Number castNumber(Object luaObj, Terms terms) {
-    checkAssignable(NUMBER_META, luaObj, terms);
-    return Conversions.numericalValueOf(luaObj);
-  }
-
-  public void checkString(Object luaObj) {
-    checkAssignable(STRING_META, luaObj);
-  }
-
-  public void checkString(Object luaObj, Terms terms) {
-    checkAssignable(STRING_META, luaObj, terms);
-  }
-
-  public String castString(Object luaObj, Terms terms) {
-    checkAssignable(STRING_META, luaObj, terms);
-    return luaObj == null ? null : String.valueOf(luaObj);
-  }
-
-  public void checkTable(Object luaObj) {
-    checkAssignable(TABLE_META, luaObj);
-  }
-
-  public void checkTable(Object luaObj, Terms terms) {
-    checkAssignable(TABLE_META, luaObj, terms);
-  }
-
-  public Table castTable(Object luaObj, Terms terms) {
-    checkAssignable(TABLE_META, luaObj, terms);
-    return (Table) luaObj;
-  }
-
-  public void checkFunction(Object luaObj) {
-    checkAssignable(FUNCTION_META, luaObj);
-  }
-
-  public void checkFunction(Object luaObj, Terms terms) {
-    checkAssignable(FUNCTION_META, luaObj, terms);
-  }
-
-  public LuaFunction castFunction(Object luaObj, Terms terms) {
-    checkAssignable(FUNCTION_META, luaObj, terms);
-    return (LuaFunction) luaObj;
-  }
-
   public void checkAssignable(String expectedMetatableName, Object luaObj) {
-    checkAssignable(expectedMetatableName, luaObj, Terms.OPTIONAL);
+    checkAssignable(expectedMetatableName, luaObj, Terms.MANDATORY);
   }
 
   public void checkAssignable(String expectedMetatableName, Object luaObj, Terms terms) {
@@ -297,6 +233,5 @@ public class Types {
     // Fallback
     return luaObj.getClass().getSimpleName();
   }
-
 
 }

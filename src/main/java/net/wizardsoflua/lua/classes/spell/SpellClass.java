@@ -1,8 +1,7 @@
 package net.wizardsoflua.lua.classes.spell;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,7 +14,6 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.block.BlockClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.spell.SpellEntity;
@@ -38,6 +36,16 @@ public class SpellClass {
     return new Proxy(converters, metatable, delegate);
   }
 
+  public SpellEntity toJava(Object luaObj) {
+    Proxy proxy = getProxy(luaObj);
+    return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
+  }
+
   public static class Proxy extends EntityClass.Proxy {
 
     private final SpellEntity delegate;
@@ -51,30 +59,28 @@ public class SpellClass {
       addReadOnly("sid", () -> delegate.getSid());
     }
 
-    public Table getOwner() {
-      return getConverters().entityToLua(delegate.getOwnerEntity());
+    public Object getOwner() {
+      Entity ownerEntity = delegate.getOwnerEntity();
+      return getConverters().toLua(ownerEntity);
     }
 
-    public Table getBlock() {
+    public Object getBlock() {
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
       TileEntity tileEntity = delegate.getEntityWorld().getTileEntity(pos);
       WolBlock block = new WolBlock(blockState, tileEntity);
-      return getConverters().blockToLua(block);
+      return getConverters().toLua(block);
     }
 
     public void setBlock(Object luaObj) {
-      getConverters().getTypes().checkAssignable(BlockClass.METATABLE_NAME, luaObj,
-          Terms.MANDATORY);
-      WolBlock wolBlock = getConverters().blockToJava(luaObj);
+      WolBlock wolBlock = getConverters().toJava(WolBlock.class, luaObj);
       World world = delegate.getEntityWorld();
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       wolBlock.setBlock(world, pos);
     }
 
     public void setVisible(Object luaObj) {
-      boolean value =
-          checkNotNull(getConverters().booleanToJava(luaObj), "Expected boolean but got nil!");
+      boolean value = getConverters().toJava(Boolean.class, luaObj);
       delegate.setVisible(value);
     }
 

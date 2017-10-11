@@ -85,7 +85,7 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
     types = new Types(env);
-    TypesModule.installInto(env, types);
+    TypesModule.installInto(env, converters);
     converters = new Converters(types);
     PrintRedirector.installInto(env, owner);
     AddPathFunction.installInto(env, converters, new AddPathFunction.Context() {

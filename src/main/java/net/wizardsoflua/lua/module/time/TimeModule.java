@@ -8,7 +8,6 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
-import net.wizardsoflua.lua.module.types.Terms;
 
 public class TimeModule extends DelegatingProxy {
 
@@ -35,7 +34,7 @@ public class TimeModule extends DelegatingProxy {
   }
 
   public void setAutoSleep(Object luaObj) {
-    boolean value = getConverters().getTypes().castBoolean(luaObj, Terms.MANDATORY);
+    boolean value = getConverters().toJava(Boolean.class, luaObj);
     delegate.setAutoSleep(value);
   }
 

@@ -3,7 +3,6 @@ package net.wizardsoflua.lua.classes.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +13,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -23,8 +21,6 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
-import net.wizardsoflua.lua.classes.vec3.Vec3Class;
-import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 public class EntityClass {
@@ -45,6 +41,16 @@ public class EntityClass {
 
   public Table toLua(Entity delegate) {
     return new Proxy(converters, metatable, delegate);
+  }
+
+  public Entity toJava(Object luaObj) {
+    Proxy proxy = getProxy(luaObj);
+    return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
   }
 
   public static class Proxy extends DelegatingProxy {
@@ -69,23 +75,23 @@ public class EntityClass {
       add("tags", this::getTags, this::setTags);
     }
 
-    public Table getPos() {
-      return getConverters().vec3ToLua(delegate.getPositionVector());
+    public Object getPos() {
+      return getConverters().toLua(delegate.getPositionVector());
     }
 
     public void setPos(Object luaObj) {
-      Vec3d pos = getConverters().vec3ToJava(luaObj);
+      Vec3d pos = getConverters().toJava(Vec3d.class, luaObj);
       delegate.setPositionAndUpdate(pos.xCoord, pos.yCoord, pos.zCoord);
     }
 
-    public ByteString getOrientation() {
+    public Object getOrientation() {
       EnumFacing result = delegate.getHorizontalFacing();
-      return getConverters().enumToLua(result);
+      return getConverters().toLua(result);
     }
 
-    public Table getLookVector() {
+    public Object getLookVector() {
       Vec3d result = delegate.getLookVec();
-      return getConverters().vec3ToLua(result);
+      return getConverters().toLua(result);
     }
 
     public float getRotationYaw() {
@@ -99,7 +105,7 @@ public class EntityClass {
      * @see Entity#readFromNBT(NBTTagCompound)
      */
     public void setRotationYaw(Object luaObj) {
-      float yaw = getConverters().getTypes().castNumber(luaObj, Terms.MANDATORY).floatValue();
+      float yaw = getConverters().toJava(Number.class, luaObj).floatValue();
       delegate.setRotationYawHead(yaw);
       delegate.setRenderYawOffset(yaw);
       delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw,
@@ -111,21 +117,21 @@ public class EntityClass {
     }
 
     public void setRotationPitch(Object luaObj) {
-      Number pitch = getConverters().getTypes().castNumber(luaObj, Terms.MANDATORY);
+      float pitch = getConverters().toJava(Number.class, luaObj).floatValue();
       delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ,
-          delegate.rotationYaw, pitch.floatValue());
+          delegate.rotationYaw, pitch);
     }
 
-    public Table getMotion() {
+    public Object getMotion() {
       double x = delegate.motionX;
       double y = delegate.motionY;
       double z = delegate.motionZ;
-      return getConverters().vec3ToLua(new Vec3d(x, y, z));
+      Object result = getConverters().toLua(new Vec3d(x, y, z));
+      return result;
     }
 
     public void setMotion(Object luaObj) {
-      getConverters().getTypes().checkAssignable(Vec3Class.METATABLE_NAME, luaObj, Terms.MANDATORY);
-      Vec3d v = getConverters().vec3ToJava(luaObj);
+      Vec3d v = getConverters().toJava(Vec3d.class, luaObj);
       double x = v.xCoord;
       double y = v.yCoord;
       double z = v.zCoord;
@@ -148,11 +154,11 @@ public class EntityClass {
 
     public Table getTags() {
       Set<String> result = delegate.getTags();
-      return getConverters().stringsToLua(result);
+      return getConverters().toLuaIterable(result);
     }
 
     public void setTags(Object luaObj) {
-      Iterable<String> tags = getConverters().stringsToJava(luaObj, Terms.MANDATORY);
+      Iterable<String> tags = getConverters().toJavaIterable(String.class, luaObj);
 
       for (String oldTag : Lists.newArrayList(delegate.getTags())) {
         delegate.removeTag(oldTag);
@@ -162,16 +168,16 @@ public class EntityClass {
       }
     }
 
-    public ByteString getUuid() {
-      return getConverters().stringToLua(delegate.getUniqueID().toString());
+    public Object getUuid() {
+      return getConverters().toLua(String.class, delegate.getUniqueID().toString());
     }
 
-    public ByteString getName() {
-      return getConverters().stringToLua(delegate.getName());
+    public Object getName() {
+      return getConverters().toLua(String.class, delegate.getName());
     }
 
     public void setName(Object luaObj) {
-      String name = getConverters().stringToJava(luaObj);
+      String name = getConverters().toJava(String.class, luaObj);
       delegate.setCustomNameTag(name);
     }
 
@@ -183,8 +189,8 @@ public class EntityClass {
     }
 
     public void putNbt(Object luaObj) {
-      Table nbtTable = getConverters().getTypes().castTable(luaObj, Terms.MANDATORY);
-      UUID origUuid = delegate.getUniqueID();
+      Table nbtTable = getConverters().castToTable(luaObj);
+      // UUID origUuid = delegate.getUniqueID();
       NBTTagCompound oldNbt = new NBTTagCompound();
       delegate.writeToNBT(oldNbt);
       NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
@@ -208,12 +214,12 @@ public class EntityClass {
     }
 
     public boolean addTag(Object luaObj) {
-      String tag = getConverters().getTypes().castString(luaObj, Terms.MANDATORY);
+      String tag = getConverters().toJava(String.class, luaObj);
       return delegate.addTag(tag);
     }
 
     public boolean removeTag(Object luaObj) {
-      String tag = getConverters().getTypes().castString(luaObj, Terms.MANDATORY);
+      String tag = getConverters().toJava(String.class, luaObj);
       return delegate.removeTag(tag);
     }
 
@@ -223,10 +229,9 @@ public class EntityClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
-      Proxy proxy = (Proxy) arg1;
-      String direction = converters.getTypes().castString(arg2, Terms.MANDATORY);
-      Number distance = converters.getTypes().castNumber(arg3, Terms.OPTIONAL);
+      Proxy proxy = getProxy(arg1);
+      String direction = converters.toJava(String.class, arg2);
+      Number distance = converters.toJavaNullable(Number.class, arg3);
       proxy.move(direction, distance);
       context.getReturnBuffer().setTo();
     }
@@ -241,8 +246,7 @@ public class EntityClass {
   private class PutNbtFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
-      Proxy proxy = (Proxy) arg1;
+      Proxy proxy = getProxy(arg1);
       proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
     }
@@ -257,8 +261,7 @@ public class EntityClass {
   private class AddTagFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
-      Proxy proxy = (Proxy) arg1;
+      Proxy proxy = getProxy(arg1);
       boolean result = proxy.addTag(arg2);
       context.getReturnBuffer().setTo(result);
     }
@@ -273,8 +276,7 @@ public class EntityClass {
   private class RemoveTagFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
-      Proxy proxy = (Proxy) arg1;
+      Proxy proxy = getProxy(arg1);
       boolean result = proxy.removeTag(arg2);
       context.getReturnBuffer().setTo(result);
     }

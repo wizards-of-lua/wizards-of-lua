@@ -6,7 +6,6 @@ import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.module.types.Terms;
 
 public class PlayerClass {
   public static final String METATABLE_NAME = "Player";
@@ -23,6 +22,16 @@ public class PlayerClass {
 
   public Table toLua(EntityPlayer delegate) {
     return new Proxy(converters, metatable, delegate);
+  }
+
+  public EntityPlayer toJava(Object luaObj) {
+    Proxy proxy = getProxy(luaObj);
+    return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
   }
 
   public class Proxy extends CreatureClass.Proxy {
@@ -65,7 +74,7 @@ public class PlayerClass {
     }
 
     public void setTeam(Object luaObj) {
-      String teamName = getConverters().getTypes().castString(luaObj, Terms.OPTIONAL);
+      String teamName = getConverters().toJavaNullable(String.class, luaObj);
       if (teamName == null) {
         delegate.getWorldScoreboard().removePlayerFromTeams(delegate.getName());
       } else {

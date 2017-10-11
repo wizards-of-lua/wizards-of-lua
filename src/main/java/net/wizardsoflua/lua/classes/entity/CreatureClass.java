@@ -21,6 +21,16 @@ public class CreatureClass {
     return new Proxy(converters, metatable, delegate);
   }
 
+  public EntityLivingBase toJava(Object luaObj) {
+    Proxy proxy = getProxy(luaObj);
+    return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
+  }
+
   public static class Proxy extends EntityClass.Proxy {
 
     private final EntityLivingBase delegate;

@@ -9,9 +9,11 @@ import net.wizardsoflua.lua.table.DefaultTableBuilder;
 public class Vec3Class {
   public static final String METATABLE_NAME = "Vec3";
 
+  private final Converters converters;
   private final Table metatable;
 
   public Vec3Class(Converters converters) {
+    this.converters = converters;
     // TODO do declaration outside this class
     this.metatable = converters.getTypes().declare(METATABLE_NAME);
   }
@@ -27,7 +29,9 @@ public class Vec3Class {
     return builder.build();
   }
 
-  public Vec3d toJava(Table luaTable) {
+  public Vec3d toJava(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    Table luaTable = converters.castToTable(luaObj);
     double x = Conversions.floatValueOf(luaTable.rawget("x"));
     double y = Conversions.floatValueOf(luaTable.rawget("y"));
     double z = Conversions.floatValueOf(luaTable.rawget("z"));

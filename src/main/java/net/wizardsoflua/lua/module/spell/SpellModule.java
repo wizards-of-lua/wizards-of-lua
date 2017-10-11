@@ -7,7 +7,7 @@ import net.wizardsoflua.spell.SpellEntity;
 public class SpellModule {
 
   public static void installInto(Table env, Converters converters, SpellEntity spellEntity) {
-    env.rawset("spell", converters.entityToLua(spellEntity));
+    env.rawset("spell", converters.toLua(spellEntity));
   }
 
 }

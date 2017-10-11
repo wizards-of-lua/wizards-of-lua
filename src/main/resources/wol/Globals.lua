@@ -1,8 +1,8 @@
 -- Global Utility Functions
--- net.wizardsoflua.lua.modules.Globals.lua
+-- wol.Globals.lua
 
-require "net.wizardsoflua.lua.modules.Check"
-inspect = require "net.wizardsoflua.lua.modules.inspect"
+require "wol.Check"
+inspect = require "wol.inspect"
 
 -- Ensure that Types module is loaded
 if Types==nil then

@@ -1,5 +1,5 @@
 -- Library for checking preconditions 
--- net.wizardsoflua.lua.modules.Check.lua
+-- wol.Check.lua
 
 Check={}
 

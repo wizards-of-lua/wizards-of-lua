@@ -6,7 +6,6 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.module.types.Terms;
 
 public class AddPathFunction extends AbstractFunction1 {
 
@@ -34,11 +33,11 @@ public class AddPathFunction extends AbstractFunction1 {
 
   @Override
   public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-    String nameOrUuid = converters.getTypes().castString(arg1, Terms.MANDATORY);
+    String nameOrUuid = converters.toJava(String.class, arg1);
     String pathElement = this.context.getLuaPathElementOfPlayer(nameOrUuid);
 
     Table pkg = (Table) env.rawget("package");
-    String path = converters.getTypes().castString(pkg.rawget("path"), Terms.MANDATORY);
+    String path = converters.toJava(String.class, pkg.rawget("path"));
 
     if (!path.contains(pathElement)) {
       path += ";" + pathElement;

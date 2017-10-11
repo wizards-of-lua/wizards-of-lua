@@ -15,7 +15,6 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class EntitiesModule {
@@ -55,9 +54,10 @@ public class EntitiesModule {
   private class FindFunction extends AbstractFunction1 {
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String target = converters.getTypes().castString(arg1, Terms.MANDATORY);
+      String target = converters.toJava(String.class, arg1);
       Iterable<Entity> entities = find(target);
-      context.getReturnBuffer().setTo(converters.entitiesToLua(entities));
+      Table result = converters.toLuaIterable(entities);
+      context.getReturnBuffer().setTo(result);
     }
 
     @Override

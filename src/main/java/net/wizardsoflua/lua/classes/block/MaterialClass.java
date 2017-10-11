@@ -23,17 +23,24 @@ public class MaterialClass {
 
   public static class Proxy extends DelegatingProxy {
 
+    private Material delegate;
+
     public Proxy(Converters converters, Table metatable, Material delegate) {
       super(converters, metatable, delegate);
+      this.delegate = delegate;
       addImmutable("blocksLight", delegate.blocksLight());
       addImmutable("blocksMovement", delegate.blocksMovement());
       addImmutable("canBurn", delegate.getCanBurn());
       addImmutable("liquid", delegate.isLiquid());
-      addImmutable("mobility", converters.enumToLua(delegate.getMobilityFlag()));
+      addImmutable("mobility", getMobilityFlag());
       addImmutable("opaque", delegate.isOpaque());
       addImmutable("replaceable", delegate.isReplaceable());
       addImmutable("requiresNoTool", delegate.isToolNotRequired());
       addImmutable("solid", delegate.isSolid());
+    }
+
+    private Object getMobilityFlag() {
+      return getConverters().toLua(delegate.getMobilityFlag());
     }
   }
 

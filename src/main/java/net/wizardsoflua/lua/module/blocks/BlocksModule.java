@@ -16,7 +16,6 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.module.types.Terms;
 
 public class BlocksModule {
   public static BlocksModule installInto(Table env, Converters converters) {
@@ -51,7 +50,7 @@ public class BlocksModule {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String blockName = converters.getTypes().castString(arg1, Terms.MANDATORY);
+      String blockName = converters.toJava(String.class, arg1);
       Block block = getBlockByName(blockName);
 
       IBlockState blockState = block.getDefaultState();
@@ -67,7 +66,7 @@ public class BlocksModule {
       }
       WolBlock wolBlock = new WolBlock(blockState, nbt);
 
-      Table result = converters.blockToLua(wolBlock);
+      Object result = converters.toLua(wolBlock);
       context.getReturnBuffer().setTo(result);
     }
 

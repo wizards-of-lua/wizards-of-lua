@@ -1,6 +1,6 @@
 package net.wizardsoflua.lua.module.types;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -9,19 +9,22 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.wizardsoflua.lua.Converters;
 
 public class TypesModule {
-  public static TypesModule installInto(Table env, Types types) {
-    TypesModule result = new TypesModule(types);
+  public static TypesModule installInto(Table env, Converters converters) {
+    TypesModule result = new TypesModule(converters);
     env.rawset("Types", result.getLuaTable());
     return result;
   }
 
+  private final Converters converters;
   private final Types types;
   private final Table luaTable = DefaultTable.factory().newTable();
 
-  public TypesModule(Types types) {
-    this.types = Preconditions.checkNotNull(types,"types==null!");
+  public TypesModule(Converters converters) {
+    this.converters = checkNotNull(converters, "converters==null!");
+    this.types = converters.getTypes();
     luaTable.rawset("declare", new DeclareFunction());
     luaTable.rawset("instanceOf", new InstanceOfFunction());
     luaTable.rawset("getTypename", new GetTypenameFunction());
@@ -30,16 +33,17 @@ public class TypesModule {
   public Table getLuaTable() {
     return luaTable;
   }
-  
+
   private class DeclareFunction extends AbstractFunction2 {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2) throws ResolvedControlThrowable {
-      String classname = types.castString(arg1, Terms.MANDATORY);
-      Table superclassMT = types.castTable(arg2, Terms.OPTIONAL);
-      
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      String classname = converters.toJava(String.class, arg1);
+      Table superclassMT = converters.castToTableNullable(arg2);
+
       types.declare(classname, superclassMT);
-      
+
       context.getReturnBuffer().setTo();
     }
 
@@ -49,14 +53,15 @@ public class TypesModule {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class InstanceOfFunction extends AbstractFunction2 {
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2) throws ResolvedControlThrowable {
-      Table classMT = types.castTable(arg1, Terms.OPTIONAL);
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      Table classMT = converters.castToTableNullable(arg1);
       boolean result = types.isInstanceOf(classMT, arg2);
-      
+
       context.getReturnBuffer().setTo(result);
     }
 
@@ -66,7 +71,7 @@ public class TypesModule {
       throw new NonsuspendableFunctionException();
     }
   }
-  
+
   private class GetTypenameFunction extends AbstractFunction1 {
 
     @Override

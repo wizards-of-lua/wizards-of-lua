@@ -102,15 +102,15 @@ public class SpellProgramFactory {
 
   private ModuleDependencies createDependencies(ICommandSender owner) {
     ModuleDependencies result = new ModuleDependencies();
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Globals"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.inspect"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Check"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Vec3"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Material"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Block"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Entity"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Spell"));
-    result.add(new ModuleDependency("net.wizardsoflua.lua.modules.Player"));
+    result.add(new ModuleDependency("wol.Globals"));
+    result.add(new ModuleDependency("wol.inspect"));
+    result.add(new ModuleDependency("wol.Check"));
+    result.add(new ModuleDependency("wol.Vec3"));
+    result.add(new ModuleDependency("wol.Material"));
+    result.add(new ModuleDependency("wol.Block"));
+    result.add(new ModuleDependency("wol.Entity"));
+    result.add(new ModuleDependency("wol.Spell"));
+    result.add(new ModuleDependency("wol.Player"));
 
     Entity entity = owner.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {

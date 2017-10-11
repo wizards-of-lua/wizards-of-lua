@@ -22,8 +22,8 @@ import net.wizardsoflua.lua.compiler.LuaFunctionBinary;
  * <p>
  * Please note, that according to the Lua conventions, the required module must be specified using
  * the dotted package notation but without the '.lua' extension, for example the resource
- * 'net/wizardsoflua/lua/modules/Globals.lua' must be specified as
- * 'net.wizardsoflua.lua.modules.Globals'.
+ * 'wol/Globals.lua' must be specified as
+ * 'wol.Globals'.
  */
 public class ClasspathResourceSearcher {
 

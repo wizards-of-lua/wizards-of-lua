@@ -15,21 +15,23 @@ public class TableUtils {
 
   private static final Pattern LUA_IDENTIFIER = Pattern.compile("^[_a-zA-Z][_a-zA-Z0-9]*$");
 
+  private static final WolConversions CONVERSION = new WolConversions();
+
   private TableUtils() {}
 
   public static <T> T getAs(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
-    return WolConversions.toJava(type, value, key);
+    return CONVERSION.toJava(type, value, key);
   }
 
   public static <T> Optional<T> getAsOptional(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
-    return WolConversions.toJavaOptional(type, value);
+    return CONVERSION.toJavaOptional(type, value);
   }
 
   public static @Nullable <T> T getAsNullable(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
-    return WolConversions.toJavaNullable(type, value, key);
+    return CONVERSION.toJavaNullable(type, value, key);
   }
 
   public static void writeTo(PrintWriter out, Table table) {

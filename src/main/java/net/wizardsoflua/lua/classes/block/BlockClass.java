@@ -2,8 +2,7 @@ package net.wizardsoflua.lua.classes.block;
 
 import java.util.Collection;
 
-import javax.annotation.Nullable;
-
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +14,6 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
-import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.nbt.NbtPrimitiveConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
@@ -39,9 +37,13 @@ public class BlockClass {
   }
 
   public WolBlock toJava(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj, Terms.MANDATORY);
-    Proxy proxy = (Proxy) luaObj;
+    Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
   }
 
   public static class Proxy extends DelegatingProxy {
@@ -51,26 +53,25 @@ public class BlockClass {
     public Proxy(Converters converters, Table metatable, WolBlock delegate) {
       super(converters, metatable, delegate);
       this.delegate = delegate;
-      addReadOnly("name",
-          () -> delegate.getBlockState().getBlock().getRegistryName().getResourcePath());
-      addReadOnly("material",
-          () -> converters.materialToLua(delegate.getBlockState().getMaterial()));
-      addImmutable("data", getData(delegate.getBlockState()));
+      addReadOnly("name", this::getName);
+      addReadOnly("material", this::getMaterial);
+      addImmutable("data", getData());
       if (delegate.getNbt() != null) {
-        addImmutable("nbt", getNbt(delegate.getNbt()));
+        addImmutable("nbt", getNbt());
       }
     }
 
-    private @Nullable Table getNbt(@Nullable NBTTagCompound data) {
-      if (data == null) {
-        return null;
-      }
-      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
-      NbtConverter.insertValues(builder, data);
-      return builder.build();
+    private String getName() {
+      return delegate.getBlockState().getBlock().getRegistryName().getResourcePath();
     }
 
-    public Table getData(IBlockState blockState) {
+    private Object getMaterial() {
+      Material mat = delegate.getBlockState().getMaterial();
+      return getConverters().toLua(mat);
+    }
+
+    private Object getData() {
+      IBlockState blockState = delegate.getBlockState();
       PatchedImmutableTable.Builder b = new PatchedImmutableTable.Builder();
       Collection<IProperty<?>> names = blockState.getPropertyKeys();
       for (IProperty<?> name : names) {
@@ -80,6 +81,16 @@ public class BlockClass {
       }
       return b.build();
     }
+
+    private Object getNbt() {
+      NBTTagCompound data = delegate.getNbt();
+      if (data == null) {
+        return null;
+      }
+      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
+      NbtConverter.insertValues(builder, data);
+      return builder.build();
+    }
   }
 
   private class WithDataFunction extends AbstractFunction2 {
@@ -87,11 +98,9 @@ public class BlockClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
-      Proxy wrapper = (Proxy) arg1;
-      Table dataTable = converters.getTypes().castTable(arg2, Terms.MANDATORY);
+      WolBlock oldWolBlock = converters.toJava(WolBlock.class, arg1);
+      Table dataTable = converters.castToTable(arg2);
 
-      WolBlock oldWolBlock = wrapper.delegate;
       IBlockState state = oldWolBlock.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
         Object luaValue = dataTable.rawget(key.getName());
@@ -103,7 +112,7 @@ public class BlockClass {
       }
 
       WolBlock newWolBlock = new WolBlock(state, oldWolBlock.getNbt());
-      Table result = converters.blockToLua(newWolBlock);
+      Object result = converters.toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -118,13 +127,10 @@ public class BlockClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg1, Terms.MANDATORY);
-      Proxy wrapper = (Proxy) arg1;
-      Table nbtTable = converters.getTypes().castTable(arg2, Terms.MANDATORY);
+      WolBlock oldWolBlock = converters.toJava(WolBlock.class, arg1);
+      Table nbtTable = converters.castToTable(arg2);
 
-      WolBlock oldWolBlock = wrapper.delegate;
       NBTTagCompound oldNbt = oldWolBlock.getNbt();
-
       NBTTagCompound newNbt;
       if (oldNbt != null) {
         newNbt = NbtConverter.merge(oldNbt, nbtTable);
@@ -135,7 +141,7 @@ public class BlockClass {
       }
 
       WolBlock newWolBlock = new WolBlock(oldWolBlock.getBlockState(), newNbt);
-      Table result = converters.blockToLua(newWolBlock);
+      Object result = converters.toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -145,6 +151,5 @@ public class BlockClass {
       throw new NonsuspendableFunctionException();
     }
   }
-
 
 }

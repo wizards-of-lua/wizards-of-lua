@@ -1,6 +1,6 @@
 -- Lua Module for the Vec3 class
 
-require "net.wizardsoflua.lua.modules.Check"
+require "wol.Check"
 
 -- Checks if obj is an instance of Vec3. If not, a error is thrown.
 -- TODO provide a generic function in check that can do this.

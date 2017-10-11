@@ -3,7 +3,6 @@ package net.wizardsoflua.lua.classes.entity;
 import net.minecraft.entity.EntityLiving;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.module.types.Terms;
 
 public class MobClass {
   public static final String METATABLE_NAME = "Mob";
@@ -21,6 +20,16 @@ public class MobClass {
     return new Proxy(converters, metatable, delegate);
   }
 
+  public EntityLiving toJava(Object luaObj) {
+    Proxy proxy = getProxy(luaObj);
+    return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
+  }
+
   public static class Proxy extends CreatureClass.Proxy {
 
     private final EntityLiving delegate;
@@ -36,7 +45,7 @@ public class MobClass {
     }
 
     public void setAi(Object luaObj) {
-      boolean enabled = getConverters().getTypes().castBoolean(luaObj, Terms.MANDATORY);
+      boolean enabled = getConverters().toJava(Boolean.class, luaObj);
       delegate.setNoAI(!enabled);
     }
 
