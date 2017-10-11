@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.classes.spell;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -14,35 +16,34 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
-import net.wizardsoflua.lua.module.types.Terms;
 import net.wizardsoflua.spell.SpellEntity;
 
-public class SpellClass {
+@DeclareLuaClass(name = SpellClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
+public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
 
   public static final String METATABLE_NAME = "Spell";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public SpellClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityClass.METATABLE_NAME);
-    metatable.rawset("execute", new ExecuteFunction());
+  public SpellClass() {
+    super(SpellEntity.class);
+    add("execute", new ExecuteFunction());
   }
 
+  @Override
   public Table toLua(SpellEntity delegate) {
-    return new Proxy(converters, metatable, delegate);
+    return new Proxy(getConverters(), getMetatable(), delegate);
   }
 
-  public SpellEntity toJava(Object luaObj) {
+  @Override
+  public SpellEntity toJava(Table luaObj) {
     Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
   protected Proxy getProxy(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
     return (Proxy) luaObj;
   }
 
@@ -59,9 +60,9 @@ public class SpellClass {
       addReadOnly("sid", () -> delegate.getSid());
     }
 
-    public Object getOwner() {
+    public @Nullable Object getOwner() {
       Entity ownerEntity = delegate.getOwnerEntity();
-      return getConverters().toLua(ownerEntity);
+      return getConverters().toLuaNullable(ownerEntity);
     }
 
     public Object getBlock() {
@@ -98,9 +99,7 @@ public class SpellClass {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      converters.getTypes().checkAssignable(METATABLE_NAME, arg0, Terms.MANDATORY);
-      Proxy wrapper = (Proxy) arg0;
-
+      Proxy wrapper = getProxy(arg0);
 
       LuaFunction formatFunc = StringLib.format();
       Object[] argArray = new Object[args.length - 1];

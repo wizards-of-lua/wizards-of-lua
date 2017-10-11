@@ -3,22 +3,32 @@ package net.wizardsoflua.lua.classes.block;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-public class MaterialClass {
+@DeclareLuaClass(name = MaterialClass.METATABLE_NAME)
+public class MaterialClass extends InstanceCachingLuaClass<Material> {
   public static final String METATABLE_NAME = "Material";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public MaterialClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME);
+  public MaterialClass() {
+    super(Material.class);
   }
 
-  public Table toLua(Material delegate) {
-    return new Proxy(converters, metatable, delegate);
+  @Override
+  public Proxy toLua(Material delegate) {
+    return new Proxy(getConverters(), getMetatable(), delegate);
+  }
+
+  @Override
+  public Material toJava(Table luaObj) {
+    Proxy proxy = getProxy(luaObj);
+    return proxy.delegate;
+  }
+
+  protected Proxy getProxy(Object luaObj) {
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    return (Proxy) luaObj;
   }
 
   public static class Proxy extends DelegatingProxy {

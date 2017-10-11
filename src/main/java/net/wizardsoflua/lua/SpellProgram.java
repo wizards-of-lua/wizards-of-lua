@@ -20,6 +20,7 @@ import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
+import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
@@ -47,6 +48,8 @@ public class SpellProgram {
     Time getTime();
 
     String getLuaPathElementOfPlayer(String nameOrUuid);
+
+    LuaClasses getLuaClasses();
 
   }
 
@@ -85,8 +88,8 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
     types = new Types(env);
-    TypesModule.installInto(env, converters);
-    converters = new Converters(types);
+    converters = new Converters(types, context.getLuaClasses());
+    TypesModule.installInto(env, types, converters);
     PrintRedirector.installInto(env, owner);
     AddPathFunction.installInto(env, converters, new AddPathFunction.Context() {
       @Override
@@ -94,7 +97,7 @@ public class SpellProgram {
         return context.getLuaPathElementOfPlayer(nameOrUuid);
       }
     });
-    TimeModule.installInto(converters, context.getTime());
+    TimeModule.installInto(env, converters, context.getTime());
     BlocksModule.installInto(env, converters);
 
     state = State.NEW;

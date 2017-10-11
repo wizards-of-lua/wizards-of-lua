@@ -20,36 +20,36 @@ import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
-public class EntityClass {
+@DeclareLuaClass(name = EntityClass.METATABLE_NAME)
+public class EntityClass extends InstanceCachingLuaClass<Entity> {
   public static final String METATABLE_NAME = "Entity";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public EntityClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME);
-    metatable.rawset("move", new MoveFunction());
-    metatable.rawset("putNbt", new PutNbtFunction());
-    metatable.rawset("addTag", new AddTagFunction());
-    metatable.rawset("removeTag", new RemoveTagFunction());
+  public EntityClass() {
+    super(Entity.class);
+    add("move", new MoveFunction());
+    add("putNbt", new PutNbtFunction());
+    add("addTag", new AddTagFunction());
+    add("removeTag", new RemoveTagFunction());
   }
 
+  @Override
   public Table toLua(Entity delegate) {
-    return new Proxy(converters, metatable, delegate);
+    return new Proxy(getConverters(), getMetatable(), delegate);
   }
 
-  public Entity toJava(Object luaObj) {
+  @Override
+  public Entity toJava(Table luaObj) {
     Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
   protected Proxy getProxy(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
     return (Proxy) luaObj;
   }
 
@@ -89,9 +89,9 @@ public class EntityClass {
       return getConverters().toLua(result);
     }
 
-    public Object getLookVector() {
+    public @Nullable Object getLookVector() {
       Vec3d result = delegate.getLookVec();
-      return getConverters().toLua(result);
+      return getConverters().toLuaNullable(result);
     }
 
     public float getRotationYaw() {
@@ -169,11 +169,11 @@ public class EntityClass {
     }
 
     public Object getUuid() {
-      return getConverters().toLua(String.class, delegate.getUniqueID().toString());
+      return getConverters().toLua(delegate.getUniqueID().toString());
     }
 
     public Object getName() {
-      return getConverters().toLua(String.class, delegate.getName());
+      return getConverters().toLua(delegate.getName());
     }
 
     public void setName(Object luaObj) {
@@ -230,8 +230,8 @@ public class EntityClass {
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
         throws ResolvedControlThrowable {
       Proxy proxy = getProxy(arg1);
-      String direction = converters.toJava(String.class, arg2);
-      Number distance = converters.toJavaNullable(Number.class, arg3);
+      String direction = getConverters().toJava(String.class, arg2);
+      Number distance = getConverters().toJavaNullable(Number.class, arg3);
       proxy.move(direction, distance);
       context.getReturnBuffer().setTo();
     }

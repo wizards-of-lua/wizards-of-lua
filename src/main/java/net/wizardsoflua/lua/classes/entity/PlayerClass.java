@@ -6,31 +6,31 @@ import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 
-public class PlayerClass {
+@DeclareLuaClass(name = PlayerClass.METATABLE_NAME, superclassname = CreatureClass.METATABLE_NAME)
+public class PlayerClass extends InstanceCachingLuaClass<EntityPlayer> {
   public static final String METATABLE_NAME = "Player";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public PlayerClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME, CreatureClass.METATABLE_NAME);
-    metatable.rawset("putNbt", new UnsupportedFunction("putNbt", METATABLE_NAME));
+  public PlayerClass() {
+    super(EntityPlayer.class);
+    add("putNbt", new UnsupportedFunction("putNbt", METATABLE_NAME));
   }
 
+  @Override
   public Table toLua(EntityPlayer delegate) {
-    return new Proxy(converters, metatable, delegate);
+    return new Proxy(getConverters(), getMetatable(), delegate);
   }
 
-  public EntityPlayer toJava(Object luaObj) {
+  @Override
+  public EntityPlayer toJava(Table luaObj) {
     Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
   protected Proxy getProxy(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
     return (Proxy) luaObj;
   }
 

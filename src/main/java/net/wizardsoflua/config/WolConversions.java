@@ -88,6 +88,7 @@ public class WolConversions {
   }
 
   public <T> Object toLua(T value) throws ConversionException {
+    checkNotNull(value, "value==null!");
     if (value instanceof String) {
       return ByteString.of((String) value);
     }
@@ -158,6 +159,7 @@ public class WolConversions {
 
   @SuppressWarnings("unchecked")
   public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
+    checkNotNull(luaObj, "luaObj==null!");
     if (Boolean.class == type) {
       if (luaObj instanceof Boolean) {
         return (T) luaObj;

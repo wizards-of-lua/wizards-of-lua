@@ -13,8 +13,9 @@ import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.lua.ITypes;
 
-public class Types {
+public class Types implements ITypes {
   private static final String NIL_META = "nil";
   private static final String BOOLEAN_META = "boolean";
   private static final String NUMBER_META = "number";
@@ -150,11 +151,13 @@ public class Types {
     return null;
   }
 
-  public void checkAssignable(String expectedMetatableName, Object luaObj) {
+  public void checkAssignable(String expectedMetatableName, Object luaObj)
+      throws IllegalArgumentException {
     checkAssignable(expectedMetatableName, luaObj, Terms.MANDATORY);
   }
 
-  public void checkAssignable(String expectedMetatableName, Object luaObj, Terms terms) {
+  public void checkAssignable(String expectedMetatableName, Object luaObj, Terms terms)
+      throws IllegalArgumentException {
     if (luaObj == null && terms == Terms.MANDATORY
         || !isAssignable(expectedMetatableName, luaObj)) {
       throw new IllegalArgumentException(

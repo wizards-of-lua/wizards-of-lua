@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
+import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.module.time.Time;
@@ -27,6 +28,8 @@ public class SpellProgramFactory {
     String getSharedLuaPath();
 
     String getLuaPathElementOfPlayer(String nameOrUuid);
+
+    LuaClasses getLuaClasses();
 
   }
 
@@ -96,6 +99,11 @@ public class SpellProgramFactory {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
         return context.getLuaPathElementOfPlayer(nameOrUuid);
+      }
+
+      @Override
+      public LuaClasses getLuaClasses() {
+        return context.getLuaClasses();
       }
     };
   }

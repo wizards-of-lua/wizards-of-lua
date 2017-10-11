@@ -12,8 +12,8 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 
 public class TypesModule {
-  public static TypesModule installInto(Table env, Converters converters) {
-    TypesModule result = new TypesModule(converters);
+  public static TypesModule installInto(Table env, Types types, Converters converters) {
+    TypesModule result = new TypesModule(types, converters);
     env.rawset("Types", result.getLuaTable());
     return result;
   }
@@ -22,9 +22,9 @@ public class TypesModule {
   private final Types types;
   private final Table luaTable = DefaultTable.factory().newTable();
 
-  public TypesModule(Converters converters) {
+  public TypesModule(Types types, Converters converters) {
     this.converters = checkNotNull(converters, "converters==null!");
-    this.types = converters.getTypes();
+    this.types = types;
     luaTable.rawset("declare", new DeclareFunction());
     luaTable.rawset("instanceOf", new InstanceOfFunction());
     luaTable.rawset("getTypename", new GetTypenameFunction());

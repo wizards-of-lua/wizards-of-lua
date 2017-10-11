@@ -13,36 +13,36 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.nbt.NbtPrimitiveConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
-public class BlockClass {
+@DeclareLuaClass(name = BlockClass.METATABLE_NAME)
+public class BlockClass extends LuaClass<WolBlock> {
   public static final String METATABLE_NAME = "Block";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public BlockClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME);
-    metatable.rawset("withData", new WithDataFunction());
-    metatable.rawset("withNbt", new WithNbtFunction());
+  public BlockClass() {
+    super(WolBlock.class);
+    add("withData", new WithDataFunction());
+    add("withNbt", new WithNbtFunction());
   }
 
-  public Table toLua(WolBlock delegate) {
-    return new Proxy(converters, metatable, delegate);
+  @Override
+  public Table toLua(WolBlock javaObj) {
+    return new Proxy(getConverters(), getMetatable(), javaObj);
   }
 
-  public WolBlock toJava(Object luaObj) {
+  @Override
+  public WolBlock toJava(Table luaObj) {
     Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
   protected Proxy getProxy(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
     return (Proxy) luaObj;
   }
 
@@ -98,8 +98,8 @@ public class BlockClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock oldWolBlock = converters.toJava(WolBlock.class, arg1);
-      Table dataTable = converters.castToTable(arg2);
+      WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
+      Table dataTable = getConverters().castToTable(arg2);
 
       IBlockState state = oldWolBlock.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
@@ -112,7 +112,7 @@ public class BlockClass {
       }
 
       WolBlock newWolBlock = new WolBlock(state, oldWolBlock.getNbt());
-      Object result = converters.toLua(newWolBlock);
+      Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -127,8 +127,8 @@ public class BlockClass {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock oldWolBlock = converters.toJava(WolBlock.class, arg1);
-      Table nbtTable = converters.castToTable(arg2);
+      WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
+      Table nbtTable = getConverters().castToTable(arg2);
 
       NBTTagCompound oldNbt = oldWolBlock.getNbt();
       NBTTagCompound newNbt;
@@ -141,7 +141,7 @@ public class BlockClass {
       }
 
       WolBlock newWolBlock = new WolBlock(oldWolBlock.getBlockState(), newNbt);
-      Object result = converters.toLua(newWolBlock);
+      Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 

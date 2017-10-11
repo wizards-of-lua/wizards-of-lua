@@ -30,6 +30,7 @@ import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
+import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
@@ -52,6 +53,7 @@ public class WizardsOfLua {
 
   public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
   private final SpellRegistry spellRegistry = new SpellRegistry();
+  private final LuaClasses luaClasses = new LuaClasses();
 
   // TODO move these lazy instances into a new state class
   private WolConfig config;
@@ -139,6 +141,11 @@ public class WizardsOfLua {
       @Override
       public Profiles getProfiles() {
         return profiles;
+      }
+
+      @Override
+      public LuaClasses getLuaClasses() {
+        return luaClasses;
       }
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);

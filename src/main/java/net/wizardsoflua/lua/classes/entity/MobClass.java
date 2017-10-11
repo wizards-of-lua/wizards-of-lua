@@ -3,30 +3,30 @@ package net.wizardsoflua.lua.classes.entity;
 import net.minecraft.entity.EntityLiving;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 
-public class MobClass {
+@DeclareLuaClass(name = MobClass.METATABLE_NAME, superclassname = CreatureClass.METATABLE_NAME)
+public class MobClass extends InstanceCachingLuaClass<EntityLiving> {
   public static final String METATABLE_NAME = "Mob";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public MobClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME, CreatureClass.METATABLE_NAME);
+  public MobClass() {
+    super(EntityLiving.class);
   }
 
+  @Override
   public Table toLua(EntityLiving delegate) {
-    return new Proxy(converters, metatable, delegate);
+    return new Proxy(getConverters(), getMetatable(), delegate);
   }
 
-  public EntityLiving toJava(Object luaObj) {
+  @Override
+  public EntityLiving toJava(Table luaObj) {
     Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
   protected Proxy getProxy(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
     return (Proxy) luaObj;
   }
 
@@ -48,7 +48,6 @@ public class MobClass {
       boolean enabled = getConverters().toJava(Boolean.class, luaObj);
       delegate.setNoAI(!enabled);
     }
-
   }
 
 }

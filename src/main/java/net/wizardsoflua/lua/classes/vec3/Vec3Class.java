@@ -3,39 +3,37 @@ package net.wizardsoflua.lua.classes.vec3;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
+import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
-public class Vec3Class {
+@DeclareLuaClass(name = Vec3Class.METATABLE_NAME)
+public class Vec3Class extends LuaClass<Vec3d> {
   public static final String METATABLE_NAME = "Vec3";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public Vec3Class(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME);
+  public Vec3Class() {
+    super(Vec3d.class);
   }
 
-  public Table toLua(Vec3d delegate) {
+  @Override
+  public Table toLua(Vec3d javaObj) {
     DefaultTableBuilder builder = new DefaultTableBuilder();
-    builder.add("x", delegate.xCoord);
-    builder.add("y", delegate.yCoord);
-    builder.add("z", delegate.zCoord);
-
-    builder.setMetatable(metatable);
-
+    builder.add("x", javaObj.xCoord);
+    builder.add("y", javaObj.yCoord);
+    builder.add("z", javaObj.zCoord);
+    builder.setMetatable(getMetatable());
     return builder.build();
   }
 
-  public Vec3d toJava(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    Table luaTable = converters.castToTable(luaObj);
+  @Override
+  public Vec3d toJava(Table luaObj) {
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    Table luaTable = getConverters().castToTable(luaObj);
     double x = Conversions.floatValueOf(luaTable.rawget("x"));
     double y = Conversions.floatValueOf(luaTable.rawget("y"));
     double z = Conversions.floatValueOf(luaTable.rawget("z"));
     return new Vec3d(x, y, z);
   }
+
 
 }

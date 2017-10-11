@@ -4,30 +4,30 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.DeclareLuaClass;
 
-public class CreatureClass {
+@DeclareLuaClass(name = CreatureClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
+public class CreatureClass extends InstanceCachingLuaClass<EntityLivingBase> {
   public static final String METATABLE_NAME = "Creature";
 
-  private final Converters converters;
-  private final Table metatable;
-
-  public CreatureClass(Converters converters) {
-    this.converters = converters;
-    // TODO do declaration outside this class
-    this.metatable = converters.getTypes().declare(METATABLE_NAME, EntityClass.METATABLE_NAME);
+  public CreatureClass() {
+    super(EntityLivingBase.class);
   }
-
+  
+  @Override
   public Table toLua(EntityLivingBase delegate) {
-    return new Proxy(converters, metatable, delegate);
+    return new Proxy(getConverters(), getMetatable(), delegate);
   }
 
-  public EntityLivingBase toJava(Object luaObj) {
+  @Override
+  public EntityLivingBase toJava(Table luaObj) {
     Proxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
   protected Proxy getProxy(Object luaObj) {
-    converters.getTypes().checkAssignable(METATABLE_NAME, luaObj);
+    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
     return (Proxy) luaObj;
   }
 
@@ -45,7 +45,6 @@ public class CreatureClass {
       float v = delegate.renderYawOffset;
       return MathHelper.wrapDegrees(v);
     }
-
   }
 
 }
