@@ -16,8 +16,8 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.spell.SpellEntity;
 
@@ -91,6 +91,11 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
 
     public int execute(String command) {
       World world = delegate.getEntityWorld();
+      // int length = command.getBytes().length;
+      // if (length > 4000) {
+      // throw new IllegalArgumentException(String.format(
+      // "Can't execute command! String is to long (max is %s, but was %s)", 4000, length));
+      // }
       return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
     }
   }
@@ -99,7 +104,7 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      Proxy wrapper = getProxy(arg0);
+      Proxy proxy = getProxy(arg0);
 
       LuaFunction formatFunc = StringLib.format();
       Object[] argArray = new Object[args.length - 1];
@@ -107,7 +112,7 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
       formatFunc.invoke(context, argArray);
       String command = String.valueOf(context.getReturnBuffer().get(0));
 
-      int result = wrapper.execute(command);
+      int result = proxy.execute(command);
       context.getReturnBuffer().setTo(result);
     }
 

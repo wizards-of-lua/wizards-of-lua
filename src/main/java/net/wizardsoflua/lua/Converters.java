@@ -10,11 +10,14 @@ import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClasses;
+import net.wizardsoflua.lua.data.TableData;
+import net.wizardsoflua.lua.data.TableDataConverter;
 
 public class Converters extends WolConversions {
 
   private final ITypes types;
   private final Set<LuaClass<?>> classInstances;
+  private final TableDataConverter tableDataConverter = new TableDataConverter(this);
 
   public Converters(ITypes types, LuaClasses luaClasses) {
     this.types = checkNotNull(types, "types==null!");
@@ -51,6 +54,11 @@ public class Converters extends WolConversions {
   @Override
   public <T> Object toLua(T value) throws ConversionException {
     checkNotNull(value, "value==null!");
+
+    if (value instanceof TableData) {
+      TableData data = (TableData) value;
+      return tableDataConverter.toLua(data);
+    }
 
     @SuppressWarnings("unchecked")
     Class<T> javaClass = (Class<T>) value.getClass();

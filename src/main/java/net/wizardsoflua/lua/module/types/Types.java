@@ -42,6 +42,7 @@ public class Types implements ITypes {
    * @param classname
    * @return the metatable of the Lua class with the given classname
    */
+  @Override
   public @Nullable Table getClassMetatable(String classname) {
     checkNotNull(classname, "classname==null!");
     Table G = (Table) env.rawget("_G");
@@ -96,6 +97,22 @@ public class Types implements ITypes {
   }
 
   /**
+   * Returns the classname of the given table, or <code>null</code> if this table is not an instance
+   * belonging to a class.
+   * 
+   * @param table
+   * @return the classname
+   */
+  @Override
+  public @Nullable String getClassname(Table table) {
+    Table mt = table.getMetatable();
+    if (mt != null) {
+      return classes.get(mt);
+    }
+    return null;
+  }
+
+  /**
    * Returns <code>true</code> if the given Lua object is an instance of the Lua class represented
    * by the given class metatable.
    * 
@@ -122,6 +139,7 @@ public class Types implements ITypes {
    * @param luaObj
    * @return the Lua type name of the given Lua object
    */
+  @Override
   public @Nullable String getTypename(@Nullable Object luaObj) {
     if (luaObj == null) {
       return NIL_META;
@@ -139,12 +157,10 @@ public class Types implements ITypes {
       return STRING_META;
     }
     if (luaObj instanceof Table) {
-      Table mt = ((Table) luaObj).getMetatable();
-      if (mt != null) {
-        String classname = classes.get(mt);
-        if (classname != null) {
-          return classname;
-        }
+      Table table = (Table) luaObj;
+      String classname = getClassname(table);
+      if (classname != null) {
+        return classname;
       }
       return TABLE_META;
     }

@@ -16,14 +16,32 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.lua.table.TableIterable;
 
-// TODO refactor WolConversions and Converters and Types, since they do some equal things.
 public class WolConversions {
+
+  public @Nullable Table castToTableNullable(Object luaObj, String name)
+      throws ConversionException {
+    checkNotNull(name, "name==null!");
+    try {
+      return castToTableNullable(luaObj);
+    } catch (Exception e) {
+      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
+    }
+  }
 
   public @Nullable Table castToTableNullable(Object luaObj) throws ConversionException {
     if (luaObj == null) {
       return null;
     }
     return castToTable(luaObj);
+  }
+
+  public Table castToTable(Object luaObj, String name) throws ConversionException {
+    checkNotNull(name, "name==null!");
+    try {
+      return castToTable(luaObj);
+    } catch (Exception e) {
+      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
+    }
   }
 
   public Table castToTable(Object luaObj) throws ConversionException {
@@ -92,6 +110,12 @@ public class WolConversions {
     if (value instanceof String) {
       return ByteString.of((String) value);
     }
+    if (value instanceof Number) {
+      return value;
+    }
+    if (value instanceof Boolean) {
+      return value;
+    }
     throw new ConversionException(
         format("Can't convert value! Unsupported type: %s", value.getClass().getName()));
   }
@@ -140,8 +164,8 @@ public class WolConversions {
     }
   }
 
-  public final <T, I extends Iterable<? super T>> I toJavaIterableFromArray(Class<T> type, Object[] luaObjs)
-      throws ConversionException {
+  public final <T, I extends Iterable<? super T>> I toJavaIterableFromArray(Class<T> type,
+      Object[] luaObjs) throws ConversionException {
     List<T> resultList = new ArrayList<>();
     for (Object luaObj : luaObjs) {
       T javaObj = toJava(type, luaObj);

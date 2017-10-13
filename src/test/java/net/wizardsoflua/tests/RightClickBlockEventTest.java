@@ -22,7 +22,7 @@ public class RightClickBlockEventTest extends WolTestBase {
     BlockPos playerPos = new BlockPos(0, 4, 0);
     mc().player().setPosition(playerPos);
     BlockPos clickPos = new BlockPos(0, 3, 0);
-    mc().setBlock(clickPos, Blocks.DIRT);
+    mc().setBlock(clickPos, Blocks.OBSIDIAN);
     EnumFacing facing = EnumFacing.UP;
     Vec3d hitvec = new Vec3d(clickPos);
     EnumHand hand = EnumHand.MAIN_HAND;

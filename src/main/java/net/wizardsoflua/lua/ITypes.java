@@ -5,11 +5,17 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.Table;
 
 public interface ITypes {
-  public Table declare(String classname, @Nullable String superclassname);
+  Table declare(String classname, @Nullable String superclassname);
 
-  public Table declare(String classname);
+  Table declare(String classname);
 
-  public void checkAssignable(String expectedMetatableName, Object luaObj)
-      throws IllegalArgumentException;
+  void checkAssignable(String expectedMetatableName, Object luaObj) throws IllegalArgumentException;
+
+  @Nullable
+  Table getClassMetatable(String classname);
+
+  String getClassname(Table table);
+
+  String getTypename(Object luaObj);
 
 }

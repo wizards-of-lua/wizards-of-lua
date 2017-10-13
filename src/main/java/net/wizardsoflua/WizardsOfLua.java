@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
@@ -168,11 +169,14 @@ public class WizardsOfLua {
 
       @Override
       public boolean isSupportedLuaEvent(Event event) {
-        return luaClasses.isSupported(event.getClass());
+        return event instanceof CustomLuaEvent || luaClasses.isSupported(event.getClass());
       }
 
       @Override
       public String getEventName(Event event) {
+        if (event instanceof CustomLuaEvent) {
+          return ((CustomLuaEvent) event).getName();
+        }
         return luaClasses.getLuaClassnameOf(event.getClass());
       }
     });

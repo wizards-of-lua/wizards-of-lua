@@ -1,13 +1,18 @@
 package net.wizardsoflua.lua.module.events;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
+import net.wizardsoflua.lua.data.Data;
 
 public class EventHandlers {
 
@@ -71,10 +76,9 @@ public class EventHandlers {
     return false;
   }
 
-  public void fire(String eventName, Object eventLuaObj) {
-
-    // TODO fire event using the Forge event queue
-
+  public void fire(String eventName, Object dataLuaObj) {
+    Data data = Data.createData(dataLuaObj, converters);
+    MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data));
   }
 
   public void onEvent(String eventName, Event event) {
