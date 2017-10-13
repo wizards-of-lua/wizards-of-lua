@@ -11,11 +11,11 @@ import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
-public class EventsTest extends WolTestBase {
+public class LeftClickBlockEventsTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.EventsTest test_register_LeftClickBlockEvent
+  // /test net.wizardsoflua.tests.LeftClickBlockEventsTest test
   @Test
-  public void test_register_LeftClickBlockEvent() {
+  public void test() {
     // Given:
     BlockPos playerPos = new BlockPos(0, 4, 0);
     mc().player().setPosition(playerPos);
