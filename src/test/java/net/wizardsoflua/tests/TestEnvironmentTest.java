@@ -9,7 +9,9 @@ import org.junit.runner.RunWith;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -18,8 +20,6 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
-import net.wizardsoflua.testenv.net.ClickAction;
 import net.wizardsoflua.testenv.server.ServerProxy;
 
 @RunWith(MinecraftJUnitRunner.class)
@@ -88,7 +88,7 @@ public class TestEnvironmentTest extends WolTestBase {
     String message = "hello";
 
     // When:
-    mc().player().perform(new ChatAction(message));
+    mc().player().chat(message);
 
     // Then:
     ServerChatEvent act = mc().waitFor(ServerChatEvent.class);
@@ -103,8 +103,8 @@ public class TestEnvironmentTest extends WolTestBase {
     String message2 = "dude";
 
     // When:
-    mc().player().perform(new ChatAction(message1));
-    mc().player().perform(new ChatAction(message2));
+    mc().player().chat(message1);
+    mc().player().chat(message2);
 
     // Then:
     ServerChatEvent act1 = mc().waitFor(ServerChatEvent.class);
@@ -113,9 +113,9 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(act2.getMessage()).isEqualTo(message2);
   }
 
-  // /test net.wizardsoflua.tests.TestEnvironmentTest test_player_can_click_on_blockpos
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_player_can_leftclick_on_blockpos
   @Test
-  public void test_player_can_click_on_blockpos() {
+  public void test_player_can_leftclick_on_blockpos() {
     // Given:
     BlockPos playerPos = new BlockPos(0, 4, 0);
     mc().player().setPosition(playerPos);
@@ -123,10 +123,30 @@ public class TestEnvironmentTest extends WolTestBase {
     EnumFacing facing = EnumFacing.UP;
 
     // When:
-    mc().player().perform(new ClickAction(clickPos, facing));
+    mc().player().leftclick(clickPos, facing);
 
     // Then:
     LeftClickBlock act = mc().waitFor(LeftClickBlock.class);
+    assertThat(act.getPos()).isEqualTo(clickPos);
+    assertThat(act.getFace()).isEqualTo(facing);
+  }
+
+  // /test net.wizardsoflua.tests.TestEnvironmentTest test_player_can_rightclick_on_blockpos
+  @Test
+  public void test_player_can_rightclick_on_blockpos() {
+    // Given:
+    BlockPos playerPos = new BlockPos(0, 4, 0);
+    mc().player().setPosition(playerPos);
+    BlockPos clickPos = new BlockPos(0, 3, 0);
+    EnumFacing facing = EnumFacing.UP;
+    Vec3d hitvec = new Vec3d(clickPos);
+    EnumHand hand = EnumHand.MAIN_HAND;
+
+    // When:
+    mc().player().rightclick(clickPos, facing, hitvec, hand);
+
+    // Then:
+    RightClickBlock act = mc().waitFor(RightClickBlock.class);
     assertThat(act.getPos()).isEqualTo(clickPos);
     assertThat(act.getFace()).isEqualTo(facing);
   }
@@ -169,14 +189,14 @@ public class TestEnvironmentTest extends WolTestBase {
     // Given:
     BlockPos pos = new BlockPos(1, 4, 1);
     mc().setBlock(pos, Blocks.AIR);
-    
+
     // When:
     mc().setBlock(pos, Blocks.DIAMOND_BLOCK);
 
     // Then:
     assertThat(mc().getBlock(pos)).isA(Blocks.DIAMOND_BLOCK);
   }
-  
+
   @After
   public void clearBlock() {
     BlockPos pos = new BlockPos(1, 4, 1);

@@ -28,9 +28,9 @@ public class MaterialTest extends WolTestBase {
 
     // When:
     mc().player()
-        .perform(new ChatAction(
+        .chat(
             "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; cls=type(m); print(cls)",
-            posP.getX(), posP.getY(), posP.getZ()));
+            posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -55,9 +55,9 @@ public class MaterialTest extends WolTestBase {
         + "}";
     // When:
     mc().player()
-        .perform(new ChatAction(
+        .chat(
             "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(str(m))",
-            posP.getX(), posP.getY(), posP.getZ()));
+            posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -70,8 +70,8 @@ public class MaterialTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().perform(new ChatAction(
-        "/lua m1=Blocks.get('stone').material; m2=Blocks.get('stone').material; print(m1==m2)"));
+    mc().player().chat(
+        "/lua m1=Blocks.get('stone').material; m2=Blocks.get('stone').material; print(m1==m2)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

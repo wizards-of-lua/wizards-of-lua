@@ -8,14 +8,14 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
-public class ClickAction extends ClientAction {
+public class LeftClickAction extends ClientAction {
 
   private BlockPos pos;
   private EnumFacing face;
 
-  public ClickAction() {}
+  public LeftClickAction() {}
 
-  public ClickAction(BlockPos pos, EnumFacing face) {
+  public LeftClickAction(BlockPos pos, EnumFacing face) {
     this.pos = pos;
     this.face = face;
   }
@@ -40,7 +40,7 @@ public class ClickAction extends ClientAction {
 
   @Override
   public void handleClientSide(EntityPlayer player) {
-    System.out.println("pos: " + pos + ", " + face);
+    System.out.println("left-click at pos: " + pos + ", " + face);
     Minecraft.getMinecraft().playerController.clickBlock(pos, face);
   }
 

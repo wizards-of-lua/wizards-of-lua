@@ -14,11 +14,15 @@ import com.google.common.io.Files;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.WolTestEnvironment;
+import net.wizardsoflua.testenv.net.ChatAction;
 import net.wizardsoflua.testenv.net.ClientAction;
+import net.wizardsoflua.testenv.net.LeftClickAction;
+import net.wizardsoflua.testenv.net.RightClickAction;
 
 public class PlayerBackdoor {
   private WolTestEnvironment testEnv;
@@ -31,6 +35,18 @@ public class PlayerBackdoor {
     EntityPlayerMP testPlayer = testEnv.getTestPlayer();
     checkNotNull(testPlayer, "testPlayer==null!");
     return testPlayer;
+  }
+
+  public void leftclick(BlockPos pos, EnumFacing face) {
+    perform(new LeftClickAction(pos, face));
+  }
+
+  public void rightclick(BlockPos pos, EnumFacing face, Vec3d vec, EnumHand hand) {
+    perform(new RightClickAction(pos, face, vec, hand));
+  }
+
+  public void chat(String format, Object... args) {
+    perform(new ChatAction(format, args));
   }
 
   public void perform(ClientAction action) {

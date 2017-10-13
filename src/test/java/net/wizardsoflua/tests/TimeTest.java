@@ -10,7 +10,6 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class TimeTest extends WolTestBase {
@@ -24,7 +23,7 @@ public class TimeTest extends WolTestBase {
     mc().freezeClock(now);
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(Time.getDate())"));
+    mc().player().chat("/lua print(Time.getDate())");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -86,8 +85,7 @@ public class TimeTest extends WolTestBase {
     int repetitions = 2000;
     mc().setLuaTicksLimit(10000);
     // When:
-    mc().player().perform(
-        new ChatAction("/lua Time.autosleep=false; for i=1,%s do print(i); end", repetitions));
+    mc().player().chat("/lua Time.autosleep=false; for i=1,%s do print(i); end", repetitions);
 
     // Then:
     for (int i = 1; i < 2000; ++i) {

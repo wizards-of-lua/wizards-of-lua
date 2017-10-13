@@ -19,12 +19,15 @@ import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
+import net.wizardsoflua.lua.module.events.EventHandlers;
+import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
@@ -43,10 +46,6 @@ public class SpellProgram {
   }
   public interface Context {
 
-    SchedulingContextFactory getSchedulingContextFactory();
-
-    Time getTime();
-
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
     LuaClasses getLuaClasses();
@@ -64,20 +63,25 @@ public class SpellProgram {
   private final SpellExceptionFactory exceptionFactory;
   private final Types types;
   private final Converters converters;
+  private final EventHandlers eventHandlers;
   private State state;
+
   private Continuation continuation;
   private SpellEntity spellEntity;
+  private Time time;
 
   SpellProgram(String code, ModuleDependencies dependencies, ICommandSender owner,
-      String defaultLuaPath, Context context) {
+      String defaultLuaPath, Time time, Context context) {
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     checkNotNull(owner, "source==null!");;
+    this.time = checkNotNull(time, "time==null!");
     checkNotNull(context, "context==null!");
 
-    this.executor = DirectCallExecutor.newExecutor(context.getSchedulingContextFactory());
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
+    types = new Types(env);
+    this.executor = DirectCallExecutor.newExecutor(createSchedulingContextFactory());
     runtimeEnv = new SpellRuntimeEnvironment(new SpellRuntimeEnvironment.Context() {
       @Override
       public String getLuaPath() {
@@ -87,7 +91,6 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
-    types = new Types(env);
     converters = new Converters(types, context.getLuaClasses());
     TypesModule.installInto(env, types, converters);
     PrintRedirector.installInto(env, owner);
@@ -97,11 +100,46 @@ public class SpellProgram {
         return context.getLuaPathElementOfPlayer(nameOrUuid);
       }
     });
-    TimeModule.installInto(env, converters, context.getTime());
+    TimeModule.installInto(env, converters, time);
     BlocksModule.installInto(env, converters);
+    eventHandlers = new EventHandlers(converters, createEventHandlersContext());
+    EventsModule.installInto(env, converters, eventHandlers);
 
     state = State.NEW;
   }
+
+  private EventHandlers.Context createEventHandlersContext() {
+    return new EventHandlers.Context() {
+
+      @Override
+      public long getCurrentTime() {
+        return time.getGameTotalTime();
+      }
+    };
+  }
+
+  private SchedulingContextFactory createSchedulingContextFactory() {
+    return new SchedulingContextFactory() {
+      @Override
+      public SchedulingContext newInstance() {
+        time.resetAllowance();
+        return new SchedulingContext() {
+
+          @Override
+          public boolean shouldPause() {
+            boolean result = time.shouldPause() || eventHandlers.shouldPause();
+            return result;
+          }
+
+          @Override
+          public void registerTicks(int ticks) {
+            time.consumeLuaTicks(ticks);
+          }
+        };
+      }
+    };
+  }
+
 
   public void setSpellEntity(SpellEntity spellEntity) {
     this.spellEntity = spellEntity;
@@ -109,6 +147,10 @@ public class SpellProgram {
 
   public String getCode() {
     return code;
+  }
+
+  public EventHandlers getEventHandlers() {
+    return eventHandlers;
   }
 
   public boolean isTerminated() {

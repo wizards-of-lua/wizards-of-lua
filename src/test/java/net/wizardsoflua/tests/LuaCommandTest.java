@@ -19,7 +19,7 @@ public class LuaCommandTest extends WolTestBase {
     String text = "some text";
 
     // When:
-    mc().player().perform(new ChatAction("/lua print('%s')", text));
+    mc().player().chat("/lua print('%s')", text);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -33,7 +33,7 @@ public class LuaCommandTest extends WolTestBase {
     String text = "13 * 7";
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(%s)", text));
+    mc().player().chat("/lua print(%s)", text);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -46,7 +46,7 @@ public class LuaCommandTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().perform(new ChatAction("/lua for i=1,10 do print(i); end"));
+    mc().player().chat("/lua for i=1,10 do print(i); end");
 
     // Then:
     for (int i = 0; i < 10; ++i) {

@@ -29,7 +29,7 @@ public class PlayerTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell.owner:putNbt({})"));
+    mc().player().chat("/lua spell.owner:putNbt({})");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -45,7 +45,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().setTeam(team);
 
     // When:
-    mc().player().perform(new ChatAction("/lua p=spell.owner; print(p.team)"));
+    mc().player().chat("/lua p=spell.owner; print(p.team)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -60,7 +60,7 @@ public class PlayerTest extends WolTestBase {
     mc().createTeam(team);
 
     // When:
-    mc().player().perform(new ChatAction("/lua p=spell.owner; p.team='%s'; print('ok')", team));
+    mc().player().chat("/lua p=spell.owner; p.team='%s'; print('ok')", team);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -75,7 +75,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().createModule(DEMOMODULE, "function dummy() print('hello') end");
 
     // When:
-    mc().player().perform(new ChatAction("/lua require('%s'); dummy();", DEMOMODULE));
+    mc().player().chat("/lua require('%s'); dummy();", DEMOMODULE);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -89,7 +89,7 @@ public class PlayerTest extends WolTestBase {
     mc().createSharedModule(SHAREDMODULE, "function shareddummy() print('world!') end");
 
     // When:
-    mc().player().perform(new ChatAction("/lua require('%s'); shareddummy();", SHAREDMODULE));
+    mc().player().chat("/lua require('%s'); shareddummy();", SHAREDMODULE);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -104,7 +104,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().setProfile(DEMOMODULE);
 
     // When:
-    mc().player().perform(new ChatAction("/lua dummy();", DEMOMODULE));
+    mc().player().chat("/lua dummy();", DEMOMODULE);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

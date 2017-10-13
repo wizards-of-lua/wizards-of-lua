@@ -140,6 +140,18 @@ public class WolConversions {
     }
   }
 
+  public final <T, I extends Iterable<? super T>> I toJavaIterableFromArray(Class<T> type, Object[] luaObjs)
+      throws ConversionException {
+    List<T> resultList = new ArrayList<>();
+    for (Object luaObj : luaObjs) {
+      T javaObj = toJava(type, luaObj);
+      resultList.add(javaObj);
+    }
+    @SuppressWarnings("unchecked")
+    I result = (I) resultList;
+    return result;
+  }
+
   public final <T, I extends Iterable<? super T>> I toJavaIterable(Class<T> type, Object luaObj)
       throws ConversionException {
     Table table = castToTable(luaObj);

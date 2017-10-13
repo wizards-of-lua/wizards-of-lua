@@ -8,8 +8,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.sandius.rembulan.runtime.SchedulingContext;
-import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
@@ -42,8 +40,9 @@ public class SpellProgramFactory {
   public SpellProgram create(World world, ICommandSender owner, String code) {
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
+    Time time = createTime(world);
     SpellProgram.Context context = createSpellProgramContext(world);
-    return new SpellProgram(code, dependencies, owner, defaultLuaPath, context);
+    return new SpellProgram(code, dependencies, owner, defaultLuaPath, time, context);
   }
 
   private String getDefaultLuaPath(ICommandSender owner) {
@@ -55,8 +54,7 @@ public class SpellProgramFactory {
     return context.getSharedLuaPath();
   }
 
-  private SpellProgram.Context createSpellProgramContext(World world) {
-    checkNotNull(world, "world==null!");
+  private Time createTime(World world) {
     Time.Context timeContext = new Time.Context() {
       @Override
       public Clock getClock() {
@@ -64,38 +62,13 @@ public class SpellProgramFactory {
       }
     };
     int luaTicksLimit = context.getLuaTicksLimit();
-    Time time = new Time(world, luaTicksLimit, timeContext);
+    return new Time(world, luaTicksLimit, timeContext);
+  }
+
+  private SpellProgram.Context createSpellProgramContext(World world) {
+    checkNotNull(world, "world==null!");
 
     return new SpellProgram.Context() {
-
-      @Override
-      public SchedulingContextFactory getSchedulingContextFactory() {
-        return new SchedulingContextFactory() {
-
-          @Override
-          public SchedulingContext newInstance() {
-            time.resetAllowance();
-            return new SchedulingContext() {
-
-              @Override
-              public boolean shouldPause() {
-                return time.shouldPause();
-              }
-
-              @Override
-              public void registerTicks(int ticks) {
-                time.consumeLuaTicks(ticks);
-              }
-            };
-          }
-        };
-      }
-
-      @Override
-      public Time getTime() {
-        return time;
-      }
-
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
         return context.getLuaPathElementOfPlayer(nameOrUuid);

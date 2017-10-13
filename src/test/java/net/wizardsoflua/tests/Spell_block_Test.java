@@ -12,7 +12,6 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class Spell_block_Test extends WolTestBase {
@@ -41,9 +40,8 @@ public class Spell_block_Test extends WolTestBase {
     mc().setBlock(posP1, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(
-        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-            posP1.getX(), posP1.getY(), posP1.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+        posP1.getX(), posP1.getY(), posP1.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -57,9 +55,8 @@ public class Spell_block_Test extends WolTestBase {
     mc().setBlock(posP2, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(
-        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-            posP2.getX(), posP2.getY(), posP2.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+        posP2.getX(), posP2.getY(), posP2.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -73,9 +70,8 @@ public class Spell_block_Test extends WolTestBase {
     mc().setBlock(posP3, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(
-        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-            posP3.getX(), posP3.getY(), posP3.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+        posP3.getX(), posP3.getY(), posP3.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -89,9 +85,8 @@ public class Spell_block_Test extends WolTestBase {
     mc().setBlock(posP4, Blocks.DIAMOND_ORE);
 
     // When:
-    mc().player().perform(
-        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-            posP4.getX(), posP4.getY(), posP4.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+        posP4.getX(), posP4.getY(), posP4.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -129,10 +124,9 @@ public class Spell_block_Test extends WolTestBase {
     mc().setBlock(posP1, Blocks.FURNACE);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
-            posP1.getX(), posP1.getY(), posP1.getZ()));
+    mc().player().chat(
+        "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
+        posP1.getX(), posP1.getY(), posP1.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

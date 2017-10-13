@@ -11,8 +11,8 @@ import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
 public class TimeModule extends DelegatingProxy {
 
-  public static TimeModule installInto(Table env, Converters converters, Time runtime) {
-    TimeModule result = new TimeModule(converters, runtime);
+  public static TimeModule installInto(Table env, Converters converters, Time time) {
+    TimeModule result = new TimeModule(converters, time);
     env.rawset("Time", result);
     return result;
   }

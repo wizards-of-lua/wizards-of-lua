@@ -27,7 +27,7 @@ public class WolAutoRequireTest extends WolTestBase {
     String expected = "[WoL] autoRequire is not set";
 
     // When:
-    mc().player().perform(new ChatAction("/wol autoRequire"));
+    mc().player().chat("/wol autoRequire");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -43,7 +43,7 @@ public class WolAutoRequireTest extends WolTestBase {
     mc().player().setProfile(module);
 
     // When:
-    mc().player().perform(new ChatAction("/wol autoRequire"));
+    mc().player().chat("/wol autoRequire");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -58,7 +58,7 @@ public class WolAutoRequireTest extends WolTestBase {
     String expected = String.format("[WoL] autoRequire = \"%s\"", module);
 
     // When:
-    mc().player().perform(new ChatAction("/wol autoRequire set %s", module));
+    mc().player().chat("/wol autoRequire set %s", module);
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -74,7 +74,7 @@ public class WolAutoRequireTest extends WolTestBase {
     mc().player().setProfile(module);
 
     // When:
-    mc().player().perform(new ChatAction("/wol autoRequire unset"));
+    mc().player().chat("/wol autoRequire unset");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

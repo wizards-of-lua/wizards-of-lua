@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class BlockTest extends WolTestBase {
@@ -27,9 +26,8 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.PLANKS);
 
     // When:
-    mc().player().perform(
-        new ChatAction("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -43,10 +41,9 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.PLANKS);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; cls=type(b); print(cls)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat(
+        "/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; cls=type(b); print(cls)", posP.getX(),
+        posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -60,10 +57,9 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.PLANKS);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(m~=nil)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat(
+        "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(m~=nil)", posP.getX(),
+        posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -77,10 +73,8 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.PLANKS);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(p~=nil)", posP.getX(),
-            posP.getY(), posP.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(p~=nil)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -94,10 +88,8 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.PLANKS);
     String expected = "{\n" + "  variant = \"oak\"\n" + "}";
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))", posP.getX(),
-            posP.getY(), posP.getZ()));
+    mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -111,10 +103,9 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua b=Blocks.get('furnace'):withData({facing='east'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.facing)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat(
+        "/lua b=Blocks.get('furnace'):withData({facing='east'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.facing)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -128,10 +119,9 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat(
+        "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -145,10 +135,9 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua b=Blocks.get('log'):withData({variant='oak'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.variant)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat(
+        "/lua b=Blocks.get('log'):withData({variant='oak'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.variant)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -162,10 +151,9 @@ public class BlockTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
 
     // When:
-    mc().player()
-        .perform(new ChatAction(
-            "/lua b=Blocks.get('log'):withData({axis='z'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.axis)",
-            posP.getX(), posP.getY(), posP.getZ()));
+    mc().player().chat(
+        "/lua b=Blocks.get('log'):withData({axis='z'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.axis)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

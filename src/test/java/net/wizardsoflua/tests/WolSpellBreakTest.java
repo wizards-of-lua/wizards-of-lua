@@ -7,7 +7,6 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 /**
  * Testing the "/wol spell break" command
@@ -72,7 +71,7 @@ public class WolSpellBreakTest extends WolTestBase {
   public void test_spell_break_by_owner() throws Exception {
     // Given:
     String code = "print(spell.owner.name); while true do sleep(100); end";
-    mc().player().perform(new ChatAction("/lua %s", code));
+    mc().player().chat("/lua %s", code);
     TestPlayerReceivedChatEvent evt = mc().waitFor(TestPlayerReceivedChatEvent.class);
     String ownerName = evt.getMessage();
 

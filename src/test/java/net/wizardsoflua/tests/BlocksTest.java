@@ -28,9 +28,9 @@ public class BlocksTest extends WolTestBase {
 
     // When:
     mc().player()
-        .perform(new ChatAction(
+        .chat(
             "/lua b=Blocks.get('dirt'); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.name)",
-            posP.getX(), posP.getY(), posP.getZ()));
+            posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

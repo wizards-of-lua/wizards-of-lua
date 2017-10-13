@@ -12,7 +12,6 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class SpellTest extends WolTestBase {
@@ -84,7 +83,7 @@ public class SpellTest extends WolTestBase {
     String expected = format(lookPoint);
 
     // When:
-    mc().player().perform(new ChatAction("/lua p=spell.pos; print(p)"));
+    mc().player().chat("/lua p=spell.pos; print(p)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -99,7 +98,7 @@ public class SpellTest extends WolTestBase {
     String expected = orienation.getName();
 
     // When:
-    mc().player().perform(new ChatAction("/lua o=spell.orientation; print(o)"));
+    mc().player().chat("/lua o=spell.orientation; print(o)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -112,7 +111,7 @@ public class SpellTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(spell.owner~=nil)"));
+    mc().player().chat("/lua print(spell.owner~=nil)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -139,7 +138,7 @@ public class SpellTest extends WolTestBase {
     String expected = mc().player().getDelegate().getUniqueID().toString();
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(spell.owner.uuid)"));
+    mc().player().chat("/lua print(spell.owner.uuid)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -153,7 +152,7 @@ public class SpellTest extends WolTestBase {
     String expected = mc().player().getDelegate().getName();
 
     // When:
-    mc().player().perform(new ChatAction("/lua print(spell.owner.name)"));
+    mc().player().chat("/lua print(spell.owner.name)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -166,7 +165,7 @@ public class SpellTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell.owner = nil"));
+    mc().player().chat("/lua spell.owner = nil");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -206,7 +205,7 @@ public class SpellTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().perform(new ChatAction("/lua spell:execute('/say ho')"));
+    mc().player().chat("/lua spell:execute('/say ho')");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

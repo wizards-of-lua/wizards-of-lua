@@ -26,8 +26,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
@@ -58,6 +60,7 @@ public class WizardsOfLua {
   // TODO move these lazy instances into a new state class
   private WolConfig config;
   private AboutMessage aboutMessage;
+  private WolEventHandler eventHandler;
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
   private Profiles profiles;
@@ -157,6 +160,22 @@ public class WizardsOfLua {
       }
 
     });
+    eventHandler = new WolEventHandler(new WolEventHandler.Context() {
+      @Override
+      public Iterable<SpellEntity> getSpells() {
+        return spellRegistry.getAll();
+      }
+
+      @Override
+      public boolean isSupportedLuaEvent(Event event) {
+        return luaClasses.isSupported(event.getClass());
+      }
+
+      @Override
+      public String getEventName(Event event) {
+        return luaClasses.getLuaClassnameOf(event.getClass());
+      }
+    });
   }
 
   @EventHandler
@@ -164,6 +183,7 @@ public class WizardsOfLua {
     logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
     MinecraftForge.EVENT_BUS.register(getSpellRegistry());
     MinecraftForge.EVENT_BUS.register(aboutMessage);
+    MinecraftForge.EVENT_BUS.register(eventHandler);
     SpellEntity.register();
   }
 
