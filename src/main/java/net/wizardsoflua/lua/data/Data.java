@@ -15,7 +15,7 @@ import net.wizardsoflua.lua.table.TableIterable;
 public class Data {
 
   public static Data createData(Object luaObj, Converters converters) {
-    return new Data(copyObj(luaObj, new IdentityHashMap<>(), converters));
+    return new Data(transferObj(luaObj, new IdentityHashMap<>(), converters));
   }
 
   private final @Nullable Object content;
@@ -28,7 +28,7 @@ public class Data {
     return content;
   }
 
-  private static Object copyObj(Object luaObj, IdentityHashMap<Object, Object> copies,
+  private static Object transferObj(Object luaObj, IdentityHashMap<Object, Object> copies,
       Converters converters) {
     if (luaObj == null) {
       return null;
@@ -43,25 +43,30 @@ public class Data {
       return converters.toJava(String.class, luaObj);
     }
     if (luaObj instanceof DelegatingProxy) {
+      DelegatingProxy proxy = (DelegatingProxy) luaObj;
+      if (!proxy.isTransferable()) {
+        throw new IllegalArgumentException(String.format(
+            "Can't transfer Lua object. Unsupported data type: %s", luaObj.getClass().getName()));
+      }
       String classname = converters.getTypes().getClassname((Table) luaObj);
       if (classname != null) {
         return ((DelegatingProxy) luaObj).getDelegate();
       } else {
         throw new IllegalArgumentException(String.format(
-            "Can't copy Lua object. Unsupported data type: %s", luaObj.getClass().getName()));
+            "Can't transfer Lua object. Unsupported data type: %s", luaObj.getClass().getName()));
       }
     }
     if (luaObj instanceof Table) {
       Table table = (Table) luaObj;
-      TableData result = copyTable(table, copies, converters);
+      TableData result = transferTable(table, copies, converters);
       return result;
     }
     throw new IllegalArgumentException(
-        String.format("Can't copy Lua object. Unsupported data type: %s", Optional
+        String.format("Can't transfer Lua object. Unsupported data type: %s", Optional
             .of(converters.getTypes().getTypename(luaObj)).orElse(luaObj.getClass().getName())));
   }
 
-  private static TableData copyTable(Table table, IdentityHashMap<Object, Object> copies,
+  private static TableData transferTable(Table table, IdentityHashMap<Object, Object> copies,
       Converters converters) {
     if (table == null) {
       return null;
@@ -78,8 +83,8 @@ public class Data {
     copies.put(table, result);
 
     for (Entry<Object, Object> entry : new TableIterable(table)) {
-      Object newKey = copyObj(entry.getKey(), copies, converters);
-      Object newValue = copyObj(entry.getValue(), copies, converters);
+      Object newKey = transferObj(entry.getKey(), copies, converters);
+      Object newValue = transferObj(entry.getValue(), copies, converters);
       contents.put(newKey, newValue);
     }
     return result;

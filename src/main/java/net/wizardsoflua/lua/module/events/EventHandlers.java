@@ -23,8 +23,8 @@ public class EventHandlers {
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
   private final EventQueue.Context eventQueueContext = new EventQueue.Context() {
     @Override
-    public void unregister(EventQueue eventQueue) {
-      EventHandlers.this.unregister(eventQueue);
+    public void disconnect(EventQueue eventQueue) {
+      EventHandlers.this.disconnect(eventQueue);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class EventHandlers {
     this.context = checkNotNull(context, "context==null!");;
   }
 
-  public EventQueue register(Iterable<String> eventNames) {
+  public EventQueue connect(Iterable<String> eventNames) {
     EventQueue result = new EventQueue(eventNames, eventQueueContext);
     for (String name : eventNames) {
       queues.put(name, result);
@@ -48,7 +48,7 @@ public class EventHandlers {
     return result;
   }
 
-  public void unregister(EventQueue queue) {
+  public void disconnect(EventQueue queue) {
     for (String name : queue.getNames()) {
       queues.remove(name, queue);
     }

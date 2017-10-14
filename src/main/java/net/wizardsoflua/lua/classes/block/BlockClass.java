@@ -60,6 +60,11 @@ public class BlockClass extends LuaClass<WolBlock> {
         addImmutable("nbt", getNbt());
       }
     }
+    
+    @Override
+    public boolean isTransferable() {
+      return true;
+    }
 
     private String getName() {
       return delegate.getBlockState().getBlock().getRegistryName().getResourcePath();

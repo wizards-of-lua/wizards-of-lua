@@ -79,6 +79,11 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
       add("motion", this::getMotion, this::setMotion);
       add("tags", this::getTags, this::setTags);
     }
+    
+    @Override
+    public boolean isTransferable() {
+      return true;
+    }
 
     public Object getPos() {
       return getConverters().toLua(delegate.getPositionVector());

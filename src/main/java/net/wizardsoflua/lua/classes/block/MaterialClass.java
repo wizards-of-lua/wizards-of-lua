@@ -48,6 +48,11 @@ public class MaterialClass extends InstanceCachingLuaClass<Material> {
       addImmutable("requiresNoTool", delegate.isToolNotRequired());
       addImmutable("solid", delegate.isSolid());
     }
+    
+    @Override
+    public boolean isTransferable() {
+      return true;
+    }
 
     private Object getMobilityFlag() {
       return getConverters().toLua(delegate.getMobilityFlag());

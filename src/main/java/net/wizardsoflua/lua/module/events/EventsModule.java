@@ -25,16 +25,21 @@ public class EventsModule extends DelegatingProxy {
     super(converters, null, delegate);
     this.delegate = delegate;
 
-    addImmutable("register", new RegisterFunction());
+    addImmutable("connect", new ConnectFunction());
     addImmutable("fire", new FireFunction());
   }
 
-  private class RegisterFunction extends AbstractFunctionAnyArg {
+  @Override
+  public boolean isTransferable() {
+    return false;
+  }
+
+  private class ConnectFunction extends AbstractFunctionAnyArg {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Iterable<String> eventNames = getConverters().toJavaIterableFromArray(String.class, args);
-      EventQueue eventQueue = delegate.register(eventNames);
+      EventQueue eventQueue = delegate.connect(eventNames);
       Object result = getConverters().toLua(eventQueue);
       context.getReturnBuffer().setTo(result);
     }

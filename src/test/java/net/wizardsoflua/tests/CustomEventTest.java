@@ -18,7 +18,7 @@ public class CustomEventTest extends WolTestBase {
     String message = "hello world!";
     String expected = "received " + message;
 
-    mc().executeCommand("/lua q=Events.register('%s'); e=q:pop(); print('received '..e.data)",
+    mc().executeCommand("/lua q=Events.connect('%s'); e=q:pop(); print('received '..e.data)",
         eventName);
 
     // When:

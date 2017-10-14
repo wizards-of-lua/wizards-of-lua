@@ -13,9 +13,9 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 @RunWith(MinecraftJUnitRunner.class)
 public class EventsTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.EventsTest test_register_LeftClickBlockEvent
+  // /test net.wizardsoflua.tests.EventsTest test_connect_LeftClickBlockEvent
   @Test
-  public void test_register_LeftClickBlockEvent() {
+  public void test_connect_LeftClickBlockEvent() {
     // Given:
     BlockPos playerPos = new BlockPos(0, 4, 0);
     mc().player().setPosition(playerPos);
@@ -24,7 +24,7 @@ public class EventsTest extends WolTestBase {
     EnumFacing facing = EnumFacing.UP;
     String expected = format(clickPos);
 
-    mc().executeCommand("/lua q=Events.register('LeftClickBlockEvent'); e=q:pop(); print(e.pos)");
+    mc().executeCommand("/lua q=Events.connect('LeftClickBlockEvent'); e=q:pop(); print(e.pos)");
 
     // When:
     mc().player().leftclick(clickPos, facing);

@@ -28,7 +28,7 @@ public class RightClickBlockEventTest extends WolTestBase {
     EnumHand hand = EnumHand.MAIN_HAND;
     String expected = format(clickPos);
 
-    mc().executeCommand("/lua q=Events.register('RightClickBlockEvent'); e=q:pop(); print(e.pos)");
+    mc().executeCommand("/lua q=Events.connect('RightClickBlockEvent'); e=q:pop(); print(e.pos)");
 
     // When:
     mc().player().rightclick(clickPos, facing, hitvec, hand);

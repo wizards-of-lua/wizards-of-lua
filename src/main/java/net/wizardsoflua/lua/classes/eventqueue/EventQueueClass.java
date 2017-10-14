@@ -20,7 +20,7 @@ public class EventQueueClass extends LuaClass<EventQueue> {
     super(EventQueue.class);
     add("isEmpty", new IsEmptyFunction());
     add("pop", new PopFunction());
-    add("unregister", new UnregisterFunction());
+    add("disconnect", new DisconnectFunction());
   }
 
   @Override
@@ -47,6 +47,11 @@ public class EventQueueClass extends LuaClass<EventQueue> {
       super(converters, metatable, delegate);
       this.delegate = delegate;
       addReadOnly("names", this::getNames);
+    }
+    
+    @Override
+    public boolean isTransferable() {
+      return false;
     }
 
     private Table getNames() {
@@ -105,11 +110,11 @@ public class EventQueueClass extends LuaClass<EventQueue> {
     }
   }
 
-  private class UnregisterFunction extends AbstractFunction1 {
+  private class DisconnectFunction extends AbstractFunction1 {
     @Override
     public void invoke(ExecutionContext context, Object arg1) {
       EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
-      eventQueue.unregister();
+      eventQueue.disconnect();
       context.getReturnBuffer().setTo();
     }
 

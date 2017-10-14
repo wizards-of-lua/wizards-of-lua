@@ -31,6 +31,11 @@ public class TimeModule extends DelegatingProxy {
     addImmutable("sleep", new SleepFunction());
     addImmutable("getDate", new GetDateFunction());
   }
+  
+  @Override
+  public boolean isTransferable() {
+    return false;
+  }
 
   public void setAutoSleep(Object luaObj) {
     boolean value = getConverters().toJava(Boolean.class, luaObj);

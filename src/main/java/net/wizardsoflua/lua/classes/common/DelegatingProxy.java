@@ -5,7 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 
-public class DelegatingProxy extends DelegatingTable {
+public abstract class DelegatingProxy extends DelegatingTable {
 
   private final Object delegate;
   private final Converters converters;
@@ -23,5 +23,7 @@ public class DelegatingProxy extends DelegatingTable {
   public Converters getConverters() {
     return converters;
   }
+
+  public abstract boolean isTransferable();
 
 }

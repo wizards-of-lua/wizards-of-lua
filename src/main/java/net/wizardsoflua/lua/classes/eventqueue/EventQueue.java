@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableSet;
 public class EventQueue {
 
   public interface Context {
-    void unregister(EventQueue eventQueue);
+    void disconnect(EventQueue eventQueue);
 
     long getCurrentTime();
   }
@@ -29,8 +29,8 @@ public class EventQueue {
     return names;
   }
 
-  public void unregister() {
-    context.unregister(this);
+  public void disconnect() {
+    context.disconnect(this);
   }
 
   public long getWaitUntil() {

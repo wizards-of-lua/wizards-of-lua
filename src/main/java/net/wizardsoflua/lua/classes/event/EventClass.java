@@ -46,6 +46,11 @@ public class EventClass extends LuaClass<Event> {
       // addReadOnly("cancelable", () -> delegate.isCancelable());
       // addReadOnly("canceled", () -> delegate.isCanceled());
     }
+    
+    @Override
+    public boolean isTransferable() {
+      return true;
+    }
 
     public final String getName() {
       return name;
