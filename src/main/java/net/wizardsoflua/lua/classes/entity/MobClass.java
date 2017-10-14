@@ -3,10 +3,10 @@ package net.wizardsoflua.lua.classes.entity;
 import net.minecraft.entity.EntityLiving;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 
-@DeclareLuaClass(name = MobClass.METATABLE_NAME, superclassname = CreatureClass.METATABLE_NAME)
+@DeclareLuaClass(name = MobClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
 public class MobClass extends InstanceCachingLuaClass<EntityLiving> {
   public static final String METATABLE_NAME = "Mob";
 
@@ -30,7 +30,7 @@ public class MobClass extends InstanceCachingLuaClass<EntityLiving> {
     return (Proxy) luaObj;
   }
 
-  public static class Proxy extends CreatureClass.Proxy {
+  public static class Proxy extends EntityClass.EntityLivingBaseProxy {
 
     private final EntityLiving delegate;
 

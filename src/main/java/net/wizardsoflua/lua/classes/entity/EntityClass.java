@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
@@ -39,25 +40,29 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
 
   @Override
   public Table toLua(Entity delegate) {
-    return new Proxy(getConverters(), getMetatable(), delegate);
+    if (delegate instanceof EntityLivingBase) {
+      return new EntityLivingBaseProxy(getConverters(), getMetatable(),
+          (EntityLivingBase) delegate);
+    }
+    return new EntityProxy(getConverters(), getMetatable(), delegate);
   }
 
   @Override
   public Entity toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
+    EntityProxy proxy = getProxy(luaObj);
     return proxy.delegate;
   }
 
-  protected Proxy getProxy(Object luaObj) {
+  protected EntityProxy getProxy(Object luaObj) {
     getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
+    return (EntityProxy) luaObj;
   }
 
-  public static class Proxy extends DelegatingProxy {
+  public static class EntityProxy extends DelegatingProxy {
 
     private final Entity delegate;
 
-    public Proxy(Converters converters, Table metatable, Entity delegate) {
+    public EntityProxy(Converters converters, Table metatable, Entity delegate) {
       super(converters, metatable, delegate);
       this.delegate = delegate;
       addReadOnly("dimension", () -> delegate.dimension);
@@ -225,11 +230,28 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
 
   }
 
+  public static class EntityLivingBaseProxy extends EntityProxy {
+
+    private final EntityLivingBase delegate;
+
+    public EntityLivingBaseProxy(Converters converters, Table metatable,
+        EntityLivingBase delegate) {
+      super(converters, metatable, delegate);
+      this.delegate = delegate;
+    }
+
+    @Override
+    public float getRotationYaw() {
+      float v = delegate.renderYawOffset;
+      return MathHelper.wrapDegrees(v);
+    }
+  }
+
   private class MoveFunction extends AbstractFunction3 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
         throws ResolvedControlThrowable {
-      Proxy proxy = getProxy(arg1);
+      EntityProxy proxy = getProxy(arg1);
       String direction = getConverters().toJava(String.class, arg2);
       Number distance = getConverters().toJavaNullable(Number.class, arg3);
       proxy.move(direction, distance);
@@ -246,7 +268,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   private class PutNbtFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getProxy(arg1);
+      EntityProxy proxy = getProxy(arg1);
       proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
     }
@@ -261,7 +283,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   private class AddTagFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getProxy(arg1);
+      EntityProxy proxy = getProxy(arg1);
       boolean result = proxy.addTag(arg2);
       context.getReturnBuffer().setTo(result);
     }
@@ -276,7 +298,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   private class RemoveTagFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getProxy(arg1);
+      EntityProxy proxy = getProxy(arg1);
       boolean result = proxy.removeTag(arg2);
       context.getReturnBuffer().setTo(result);
     }

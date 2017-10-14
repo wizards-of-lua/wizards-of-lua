@@ -47,7 +47,7 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
     return (Proxy) luaObj;
   }
 
-  public static class Proxy extends EntityClass.Proxy {
+  public static class Proxy extends EntityClass.EntityProxy {
 
     private final SpellEntity delegate;
 

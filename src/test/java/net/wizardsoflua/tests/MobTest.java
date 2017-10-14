@@ -15,9 +15,9 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 @RunWith(MinecraftJUnitRunner.class)
 public class MobTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.MobTest test_pig_instanceOf_Creature
+  // /test net.wizardsoflua.tests.MobTest test_pig_instanceOf_Mob
   @Test
-  public void test_pig_instanceOf_Creature() throws Exception {
+  public void test_pig_instanceOf_Mob() throws Exception {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 

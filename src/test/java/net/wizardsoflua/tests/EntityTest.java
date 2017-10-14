@@ -482,5 +482,5 @@ public class EntityTest extends WolTestBase {
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
     assertThat(actPos).isEqualTo(expectedPos);
   }
-
+  
 }

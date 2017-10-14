@@ -6,10 +6,10 @@ import net.minecraft.scoreboard.Team;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 
-@DeclareLuaClass(name = PlayerClass.METATABLE_NAME, superclassname = CreatureClass.METATABLE_NAME)
+@DeclareLuaClass(name = PlayerClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
 public class PlayerClass extends InstanceCachingLuaClass<EntityPlayer> {
   public static final String METATABLE_NAME = "Player";
 
@@ -34,7 +34,7 @@ public class PlayerClass extends InstanceCachingLuaClass<EntityPlayer> {
     return (Proxy) luaObj;
   }
 
-  public class Proxy extends CreatureClass.Proxy {
+  public class Proxy extends EntityClass.EntityLivingBaseProxy {
 
     private final EntityPlayer delegate;
 
