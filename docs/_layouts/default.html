@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>{{ site.title | default: site.github.repository_name }} by {{ site.github.owner_name }}</title>
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="/assets/css/extra.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="{{ '/assets/js/respond.js' | relative_url }}"></script>
     <!--[if lt IE 9]>
@@ -14,95 +15,6 @@
     <link rel="stylesheet" href="{{ '/assets/css/ie.css' | relative_url }}">
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <style>
-
-      #header nav {
-        max-width: initial;
-      }
-
-      #corner_banner {
-        position: absolute;
-        top: 40px;
-        right: -50px;
-        width: 300px;
-        transform: rotate(30deg);
-        font-family: Arial Black;
-        font-size: 24px;
-        text-align: center;
-        color: yellow;
-        background: red;
-        border: 1px solid yellow;
-      }
-
-      #title img {
-        position: absolute;
-        top: -10px;
-        right: 0;
-      }
-
-      #naviLeft,
-      #naviRight {
-        position: fixed;
-        width: 200px;
-        top: 100px;
-        left: 10px;
-        padding: 10px;
-        background: #323232;
-        border: 2px solid #434343;
-        border-radius: 4px;
-      }
-
-      #naviRight {
-        left: auto;
-        right: 10px;
-      }
-
-
-      #naviLeft {
-        position: absolute;
-        top: 30px;
-        left: -230px;
-        width:200px;
-      }
-
-      @media print, screen and (max-width: 1140px) {
-        #naviLeft,
-        #naviRight {
-          position: initial;
-          padding: 0;
-          background: none;
-          border: none;
-          width: auto;
-        }
-        #naviLeft ul,
-        #naviRight ul {
-          padding: 0 0 0 20px;
-          margin: 0 10px 20px;
-        }
-      }
-
-      @media print, screen and (max-width: 760px) {
-        #title img {
-          display: none;
-        }
-      }
-
-      @media print, screen and (max-width: 480px) {
-        section {
-          margin-top: 100px;
-        }
-        nav {
-          display: block;
-        }
-        #header nav li {
-          display: none;
-        }
-        #corner_banner {
-          top: 60px;
-        }
-      }
-
-    </style>
   </head>
   <body>
       {% if site.show_header %}
