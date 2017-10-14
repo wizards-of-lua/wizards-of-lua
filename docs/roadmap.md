@@ -7,8 +7,8 @@ This roadmap shows which features are planned to be included into the upcoming b
 * Fixed - [Issue #35](https://github.com/wizards-of-lua/wizards-of-lua/issues/35): Spells should read and write more entity properties
 * Fixed - [Issue #36](https://github.com/wizards-of-lua/wizards-of-lua/issues/36): Spells should be able to read and write entity NBT data
 * Fixed - [Issue #37](https://github.com/wizards-of-lua/wizards-of-lua/issues/37): Spells should be able to query for entities
-* [Issue #38](https://github.com/wizards-of-lua/wizards-of-lua/issues/38): Spells should be able to receive in-game events
-* [Issue #39](https://github.com/wizards-of-lua/wizards-of-lua/issues/39): Spells should be able to send and receive custom events
+* Fixed - [Issue #38](https://github.com/wizards-of-lua/wizards-of-lua/issues/38): Spells should be able to receive in-game events
+* Fixed - [Issue #39](https://github.com/wizards-of-lua/wizards-of-lua/issues/39): Spells should be able to send and receive custom events
 * Fixed - [Issue #40](https://github.com/wizards-of-lua/wizards-of-lua/issues/40): Spells should support importing Lua files from the server’s file system
 * [Issue #41](https://github.com/wizards-of-lua/wizards-of-lua/issues/41): Spells should support importing Lua files from GitHub Gists
 * [Issue #42](https://github.com/wizards-of-lua/wizards-of-lua/issues/42): Spells should support sharing data using a player-specific clipboard
