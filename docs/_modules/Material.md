@@ -1,6 +1,7 @@
 ---
 name: Material
 subtitle: Physical Properties of Blocks
+type: class
 layout: module
 properties:
   - name: blocksLight

@@ -1,6 +1,7 @@
 ---
 name: Entity
 subtitle: The Base Class of all Organic or Inorganic Entities
+type: class
 layout: module
 properties:
   - name: uuid

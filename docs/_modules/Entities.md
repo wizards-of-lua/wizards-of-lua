@@ -1,6 +1,7 @@
 ---
 name: Entities
 subtitle: Finding Entities
+type: module
 layout: module
 properties:
 functions:

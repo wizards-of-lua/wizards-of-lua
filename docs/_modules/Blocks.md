@@ -1,6 +1,7 @@
 ---
 name: Blocks
 subtitle: The Building Blocks Directory
+type: module
 layout: module
 properties:
 functions:

@@ -1,6 +1,7 @@
 ---
 name: Time
 subtitle: Accessing the Time
+type: module
 layout: module
 properties:
   - name: autosleep

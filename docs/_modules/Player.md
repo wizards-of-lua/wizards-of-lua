@@ -1,8 +1,9 @@
 ---
 name: Player
 subtitle: Controlling the Player
-layout: module
+type: class
 extends: Entity
+layout: module
 properties:
   - name: team
     type: string

@@ -1,6 +1,7 @@
 ---
-subtitle: All There is to Know About a Block
 name: Block
+subtitle: All There is to Know About a Block
+type: class
 layout: module
 properties:
   - name: name

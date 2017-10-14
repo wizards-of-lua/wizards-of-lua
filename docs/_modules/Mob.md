@@ -1,8 +1,9 @@
 ---
 name: Mob
 subtitle: Mobile Creatures
+type: class
+extends: Entity
 layout: module
-extends: Creature
 properties:
   - name: ai
     type: boolean
@@ -15,5 +16,5 @@ properties:
 functions:
 ---
 
-The Mob class represents mobile [Creatures](/modules/Creature) that are self-controlled
+The Mob class represents mobile creatures that are self-controlled
 and have a distinct behaviour.
