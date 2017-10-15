@@ -1,5 +1,7 @@
 package net.wizardsoflua.tests;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -12,6 +14,18 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class LeftClickBlockEventsTest extends WolTestBase {
+
+  BlockPos playerPos = new BlockPos(0, 4, 0);
+  BlockPos clickPos = new BlockPos(2, 5, 0);
+  BlockPos blockPos = new BlockPos(1, 5, 0);
+
+  @After
+  @Before
+  public void clearBlocks() {
+    mc().setBlock(playerPos, Blocks.AIR);
+    mc().setBlock(clickPos, Blocks.AIR);
+    mc().setBlock(blockPos, Blocks.AIR);
+  }
 
   // /test net.wizardsoflua.tests.LeftClickBlockEventsTest test
   @Test

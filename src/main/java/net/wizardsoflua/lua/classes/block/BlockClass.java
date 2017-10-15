@@ -6,6 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -60,14 +61,19 @@ public class BlockClass extends LuaClass<WolBlock> {
         addImmutable("nbt", getNbt());
       }
     }
-    
+
     @Override
     public boolean isTransferable() {
       return true;
     }
 
     private String getName() {
-      return delegate.getBlockState().getBlock().getRegistryName().getResourcePath();
+      ResourceLocation name = delegate.getBlockState().getBlock().getRegistryName();
+      if ("minecraft".equals(name.getResourceDomain())) {
+        return name.getResourcePath();
+      } else {
+        return name.toString();
+      }
     }
 
     private Object getMaterial() {

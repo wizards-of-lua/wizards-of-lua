@@ -62,7 +62,7 @@ public class WolBlock {
         tileEntity.markDirty();
       } else {
         throw new IllegalStateException(String.format("Missing tile entity for %s at %s %s %s",
-            blockState.getBlock().getRegistryName().getResourcePath(), pos.getX(), pos.getY(),
+            blockState.getBlock().getRegistryName(), pos.getX(), pos.getY(),
             pos.getZ()));
       }
       int flags = 3; // Do a block update (1) and send it to all clients (2)

@@ -4,10 +4,12 @@ package net.wizardsoflua.tests;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +26,18 @@ import net.wizardsoflua.testenv.server.ServerProxy;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
+
+  BlockPos playerPos = new BlockPos(0, 4, 0);
+  BlockPos clickPos = new BlockPos(2, 5, 0);
+  BlockPos blockPos = new BlockPos(1, 5, 0);
+
+  @After
+  @Before
+  public void clearBlocks() {
+    mc().setBlock(playerPos, Blocks.AIR);
+    mc().setBlock(clickPos, Blocks.AIR);
+    mc().setBlock(blockPos, Blocks.AIR);
+  }
 
   // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_receive_ServerChatEvent
   @Test
@@ -117,10 +131,9 @@ public class TestEnvironmentTest extends WolTestBase {
   @Test
   public void test_player_can_leftclick_on_blockpos() {
     // Given:
-    BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    BlockPos clickPos = new BlockPos(0, 3, 0);
+    mc().setBlock(clickPos, Blocks.DIRT);
     EnumFacing facing = EnumFacing.UP;
 
     // When:
@@ -136,13 +149,15 @@ public class TestEnvironmentTest extends WolTestBase {
   @Test
   public void test_player_can_rightclick_on_blockpos() {
     // Given:
-    BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    BlockPos clickPos = new BlockPos(0, 3, 0);
-    EnumFacing facing = EnumFacing.UP;
-    Vec3d hitvec = new Vec3d(clickPos);
+    ItemStack item = mc().getItem(Blocks.PLANKS);
+    mc().player().setMainHandItem(item);
+    mc().setBlock(clickPos, Blocks.OBSIDIAN);
+
     EnumHand hand = EnumHand.MAIN_HAND;
+    EnumFacing facing = EnumFacing.WEST;
+    Vec3d hitvec = new Vec3d(clickPos);
 
     // When:
     mc().player().rightclick(clickPos, facing, hitvec, hand);
@@ -150,7 +165,6 @@ public class TestEnvironmentTest extends WolTestBase {
     // Then:
     RightClickBlock act = mc().waitFor(RightClickBlock.class);
     assertThat(act.getPos()).isEqualTo(clickPos);
-    assertThat(act.getFace()).isEqualTo(facing);
   }
 
   // /test net.wizardsoflua.tests.TestEnvironmentTest test_waitFor_has_timeout

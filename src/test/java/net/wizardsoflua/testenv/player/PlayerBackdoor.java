@@ -12,6 +12,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -63,8 +65,8 @@ public class PlayerBackdoor {
       EntityPlayerMP delegate = getDelegate();
       delegate.setRotationYawHead(yaw);
       delegate.setRenderYawOffset(yaw);
-      delegate.connection.setPlayerLocation(delegate.posX, delegate.posY,
-          delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
+      delegate.connection.setPlayerLocation(delegate.posX, delegate.posY, delegate.posZ,
+          delegate.rotationYaw, delegate.rotationPitch);
     });
   }
 
@@ -138,5 +140,12 @@ public class PlayerBackdoor {
     return getDelegate().getName();
   }
 
+  public void setMainHandItem(ItemStack item) {
+    testEnv.runAndWait(() -> getDelegate().setItemStackToSlot(EntityEquipmentSlot.MAINHAND, item));
+  }
+
+  public ItemStack getMainHandItem() {
+    return getDelegate().getHeldItemMainhand();
+  }
 
 }

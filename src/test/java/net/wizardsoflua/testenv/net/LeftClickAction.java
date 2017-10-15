@@ -1,12 +1,17 @@
 package net.wizardsoflua.testenv.net;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 
 public class LeftClickAction extends ClientAction {
 
@@ -41,7 +46,19 @@ public class LeftClickAction extends ClientAction {
   @Override
   public void handleClientSide(EntityPlayer player) {
     System.out.println("left-click at pos: " + pos + ", " + face);
-    Minecraft.getMinecraft().playerController.clickBlock(pos, face);
+    
+    Vec3d vec = new Vec3d(pos);
+    
+    Minecraft.getMinecraft().objectMouseOver = new RayTraceResult(vec, face, pos);
+    try {
+      Method m = Minecraft.class.getDeclaredMethod("clickMouse");
+      m.setAccessible(true);
+      m.invoke(Minecraft.getMinecraft());
+    } catch (NoSuchMethodException | SecurityException | IllegalAccessException
+        | IllegalArgumentException | InvocationTargetException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+    
   }
 
 }

@@ -22,10 +22,12 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
@@ -113,7 +115,7 @@ public class MinecraftBackdoor {
 
   public void setBlock(BlockPos pos, Block blockType) {
     World world = testEnv.getTestPlayer().getEntityWorld();
-    world.setBlockState(pos, blockType.getDefaultState());
+    testEnv.runAndWait(() -> world.setBlockState(pos, blockType.getDefaultState()));
   }
 
   public IBlockState getBlock(BlockPos pos) {
@@ -193,6 +195,7 @@ public class MinecraftBackdoor {
     file.delete();
   }
 
+
   public void setSharedAutoRequire(String module) {
     testEnv.getWol().getConfig().getGeneralConfig().setSharedAutoRequire(module);
   }
@@ -204,4 +207,13 @@ public class MinecraftBackdoor {
   public String getSharedAutoRequire() {
     return testEnv.getWol().getConfig().getGeneralConfig().getSharedAutoRequire();
   }
+
+  public ItemStack getItem(Block block) {
+    IBlockState state = block.getDefaultState();
+    RayTraceResult target = null; // unused
+    World world = player().getDelegate().getEntityWorld();
+    BlockPos pos = null; // unused
+    return block.getPickBlock(state, target, world, pos, player().getDelegate());
+  }
+
 }

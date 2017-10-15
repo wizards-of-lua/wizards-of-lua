@@ -1,15 +1,17 @@
 package net.wizardsoflua.testenv.net;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
 public class RightClickAction extends ClientAction {
@@ -59,10 +61,16 @@ public class RightClickAction extends ClientAction {
   @Override
   public void handleClientSide(EntityPlayer player) {
     System.out.println("right-click at pos: " + pos + ", " + face);
-    EntityPlayerSP playerSp = (EntityPlayerSP) player;
-    WorldClient world = (WorldClient) playerSp.getEntityWorld();
-    Minecraft.getMinecraft().playerController.processRightClickBlock(playerSp, world, pos, face,
-        vec, hand);
+
+    Minecraft.getMinecraft().objectMouseOver = new RayTraceResult(vec, face, pos);
+    try {
+      Method m = Minecraft.class.getDeclaredMethod("rightClickMouse");
+      m.setAccessible(true);
+      m.invoke(Minecraft.getMinecraft());
+    } catch (NoSuchMethodException | SecurityException | IllegalAccessException
+        | IllegalArgumentException | InvocationTargetException e) {
+      throw new UndeclaredThrowableException(e);
+    }
   }
 
 }
