@@ -30,9 +30,9 @@ public class CustomEventTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.CustomEventTest test_with_complext_data
+  // /test net.wizardsoflua.tests.CustomEventTest test_with_complex_data
   @Test
-  public void test_with_complext_data() {
+  public void test_with_complex_data() {
     // Given:
     BlockPos posP = new BlockPos(1, 4, 1);
     String eventName = "my-custom-event-name";
@@ -54,6 +54,25 @@ public class CustomEventTest extends WolTestBase {
     assertThat(act1.getMessage()).isEqualTo(expected1);
     ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act2.getMessage()).isEqualTo(expected2);
+  }
+
+  // /test net.wizardsoflua.tests.CustomEventTest test_complex_data_preserves_order
+  @Test
+  public void test_complex_data_preserves_order() {
+    // Given:
+    String eventName = "my-custom-event-name";
+
+    mc().executeCommand(
+        "/lua q=Events.connect('%s'); e=q:pop(); for i,d in pairs(e.data) do assert(d==i,d..'=='..i); end; print('ok')",
+        eventName);
+
+    // When:
+    mc().executeCommand("/lua data={}; for i=1,10 do data[i]=i; end; Events.fire('%s',data)",
+        eventName);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
   }
 
 }

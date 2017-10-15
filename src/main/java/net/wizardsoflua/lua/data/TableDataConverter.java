@@ -2,13 +2,13 @@ package net.wizardsoflua.lua.data;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.IdentityHashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
+import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.WeakKeySoftValueMap;
 
@@ -24,7 +24,7 @@ public class TableDataConverter {
     if (data == null) {
       return null;
     }
-    IdentityHashMap<Object, Object> map = data.getContents();
+    TraversableHashMap<Object, Object> map = data.getContents();
     Table result = cache.get(map);
     if (result != null) {
       return result;
@@ -47,7 +47,7 @@ public class TableDataConverter {
 
   private @Nullable Table getMetatable(TableData data) {
     String classname = data.getClassname();
-    if ( classname == null) {
+    if (classname == null) {
       return null;
     }
     return converters.getTypes().getClassMetatable(classname);

@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.table.TableIterable;
@@ -78,7 +79,7 @@ public class Data {
     }
 
     String typename = converters.getTypes().getClassname(table);
-    IdentityHashMap<Object, Object> contents = new IdentityHashMap<>();
+    TraversableHashMap<Object, Object> contents = new TraversableHashMap<>();
     TableData result = new TableData(contents, typename);
     copies.put(table, result);
 
