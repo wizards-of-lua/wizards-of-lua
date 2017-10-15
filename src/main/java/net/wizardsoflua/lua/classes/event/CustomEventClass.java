@@ -42,6 +42,11 @@ public class CustomEventClass extends LuaClass<CustomLuaEvent> {
       Object content = delegate.getData().getContent();
       addImmutableNullable("data", getConverters().toLuaNullable(content));
     }
+    
+    @Override
+    public CustomLuaEvent getDelegate() {
+      return delegate;
+    }
   }
 
 }

@@ -9,8 +9,10 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
+import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.event.CustomEventClass;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class Data {
@@ -34,6 +36,10 @@ public class Data {
     if (luaObj == null) {
       return null;
     }
+    Object copy = copies.get(luaObj);
+    if (copy != null) {
+      return copy;
+    }
     if (luaObj instanceof String //
         || luaObj instanceof Number//
         || luaObj instanceof Boolean//
@@ -42,6 +48,15 @@ public class Data {
     }
     if (luaObj instanceof ByteString) {
       return converters.toJava(String.class, luaObj);
+    }
+    if (luaObj instanceof CustomEventClass.Proxy) {
+      CustomEventClass.Proxy proxy = (CustomEventClass.Proxy)luaObj;
+      CustomLuaEvent delegate = proxy.getDelegate();
+      Data data = Data.createData(proxy.rawget("data"), converters);
+      // return a new event object with the (modified) data
+      CustomLuaEvent result = new CustomLuaEvent(delegate.getName(), data);
+      copies.put(luaObj, result);
+      return result;
     }
     if (luaObj instanceof DelegatingProxy) {
       DelegatingProxy proxy = (DelegatingProxy) luaObj;

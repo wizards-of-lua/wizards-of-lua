@@ -75,4 +75,42 @@ public class CustomEventTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("ok");
   }
 
+  // /test net.wizardsoflua.tests.CustomEventTest test_complex_data_is_writable
+  @Test
+  public void test_complex_data_is_writable() {
+    // Given:
+    String eventName = "my-custom-event-name";
+
+    mc().executeCommand(
+        "/lua q=Events.connect('%s'); e=q:pop(); e.data.key=2345; print(e.data.key)", eventName);
+
+    // When:
+    mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("2345");
+  }
+
+  // /test net.wizardsoflua.tests.CustomEventTest test_forward_event_with_modified_complex_data
+  @Test
+  public void test_forward_event_with_modified_complex_data() {
+    // Given:
+    String eventName1 = "my-custom-event-name-1";
+    String eventName2 = "my-custom-event-name-2";
+
+    mc().executeCommand(
+        "/lua q=Events.connect('%s'); e=q:pop(); e.data.key=2345; Events.fire('%s', e)",
+        eventName1, eventName2);
+
+    mc().executeCommand("/lua q=Events.connect('%s'); e=q:pop(); print(e.data.data.key)", eventName2);
+
+    // When:
+    mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName1);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("2345");
+  }
+
 }
