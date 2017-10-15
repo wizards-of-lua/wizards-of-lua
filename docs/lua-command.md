@@ -42,7 +42,7 @@ This will cast a spell that prints the following line into your chat output:
 ```lua
 2
 ```
-After that the spell will terminate.
+After this, the spell will terminate.
 The word <tt>print</tt> is the name of a function of a standard Lua module.
 
 Besides standard functions you can also use functions, modules and
