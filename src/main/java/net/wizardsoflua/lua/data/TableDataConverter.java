@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.lua.Converters;
@@ -36,11 +38,19 @@ public class TableDataConverter {
       Object luaValue = converters.toLuaNullable(javaValue);
       result.rawset(luaKey, luaValue);
     }
-    Table mt = converters.getTypes().getClassMetatable(data.getClassname());
+    Table mt = getMetatable(data);
     if (mt != null) {
       result.setMetatable(mt);
     }
     return result;
+  }
+
+  private @Nullable Table getMetatable(TableData data) {
+    String classname = data.getClassname();
+    if ( classname == null) {
+      return null;
+    }
+    return converters.getTypes().getClassMetatable(classname);
   }
 
 }
