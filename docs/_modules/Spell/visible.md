@@ -1,11 +1,11 @@
 #### Example
-Making the spell visible
+Making the spell visible.
 ```lua
 spell.visible = true
 ```
 
 #### Example
-Making the spell visible and moving it around in a circle
+Making the spell visible and moving it around in a circle.
 ```lua
 spell.visible = true
 start = spell.pos

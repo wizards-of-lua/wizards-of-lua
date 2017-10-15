@@ -4,19 +4,19 @@ Setting the game time to 'day'.
 spell:execute( "time set day")
 ```
 #### Example
-Spawning a zombie at the spell's current location:
+Spawning a zombie at the spell's current location.
 ```lua
 spell:move( "up")
 spell:execute( "summon Zombie ~ ~ ~")
 ```
 #### Example
-Spawning some smoke particles at the spell's current location:
+Spawning some smoke particles at the spell's current location.
 ```lua
 local particle = "smoke"
 spell:execute( "particle %s ~ ~ ~ 0 0 0 0 0", particle)
 ```
 #### Example
-Building a wall by casting some parallel spells each building a pillar:
+Building a wall by casting some parallel spells each building a pillar.
 ```lua
 for x=1,20 do
   spell:execute(

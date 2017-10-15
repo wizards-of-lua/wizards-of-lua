@@ -1,6 +1,7 @@
 ---
 name: Vec3
 subtitle: Manipulating Location and Motion
+type: class
 layout: module
 properties:
   - name: x

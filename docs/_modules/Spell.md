@@ -1,8 +1,9 @@
 ---
 name: Spell
 subtitle: Aspects of an Active Spell
-layout: module
+type: class
 extends: Entity
+layout: module
 properties:
   - name: block
     type: "[Block](!SITE_URL!/modules/Block/)"

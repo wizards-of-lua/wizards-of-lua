@@ -28,7 +28,7 @@ The following features are implemented so far.
 * Spells (in fact all entities) can be [moved](/modules/Entity/#move ) around.
 * Spells can be made [visible](/modules/Spell/#visible).
 * Spells can [execute](/modules/Spell/#execute) any Minecraft command. This includes casting other spells.
-* Spells can be sent to [sleep](/modules/Runtime/#sleep) for a certain amount of game ticks.
+* Spells can be sent to [sleep](/modules/Time/#sleep) for a certain amount of game ticks.
 
 However, this version is marked as *Alpha*, which means that there are still
 important features missing.

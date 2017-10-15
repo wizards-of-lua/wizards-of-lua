@@ -1,5 +1,5 @@
 #### Example
-Creating a smooth diorite block and placing it at the spell's position:
+Creating a smooth diorite block and placing it at the spell's position.
 ```lua
 spell.block = Blocks.get( "stone"):withData(
   { variant = "smooth_diorite"}
@@ -7,7 +7,7 @@ spell.block = Blocks.get( "stone"):withData(
 ```
 
 #### Example
-Creating a bundle of full grown wheat on top of the block at the spell's position:
+Creating a bundle of full grown wheat on top of the block at the spell's position.
 ```lua
 spell:move( "up")
 spell.block = Blocks.get( "wheat"):withData(
