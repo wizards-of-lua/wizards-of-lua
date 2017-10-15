@@ -93,7 +93,7 @@ public class WolConfig {
       InterruptedException, FileNotFoundException, IOException {
     this.configFile = checkNotNull(configFile, "configFile==null!");
     if (!configFile.getParentFile().exists()) {
-      configFile.mkdirs();
+      configFile.getParentFile().mkdirs();
     }
     generalConfig = new GeneralConfig(generalConfigContext);
 
