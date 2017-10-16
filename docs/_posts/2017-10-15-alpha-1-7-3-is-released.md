@@ -1,5 +1,5 @@
 ---
-title:  "Alpha 1.7.2 is Released"
+title:  "Alpha 1.7.3 is Released"
 date:   2017-10-16 04:00:00
 categories: release
 excerpt_separator: <!--more-->
