@@ -97,7 +97,7 @@ public class WolConfig {
     }
     generalConfig = new GeneralConfig(generalConfigContext);
 
-    if (!configFile.exists()) {
+    if (!configFile.exists() || configFile.isDirectory()) {
       saveSync();
     }
     String filename = configFile.getAbsolutePath();

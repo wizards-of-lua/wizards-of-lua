@@ -1,10 +1,11 @@
 {
     "homepage": "http://www.wizards-of-lua.net",
     "promos": {
-        "1.11.2-latest": "1.11.2-1.7.3-alpha",
-        "1.11.2-recommended": "1.11.2-1.7.3-alpha"     
+        "1.11.2-latest": "1.11.2-1.7.4-alpha",
+        "1.11.2-recommended": "1.11.2-1.7.4-alpha"     
     },
     "1.11.2": {
+        "1.11.2-1.7.4-alpha": "* Fixed #73\n",
         "1.11.2-1.7.3-alpha": "* Fixed #72\n",
         "1.11.2-1.7.2-alpha": "* Fixed #69\n* Fixed #70\n",
         "1.11.2-1.7.1-alpha": "* Fixed #68\n",
