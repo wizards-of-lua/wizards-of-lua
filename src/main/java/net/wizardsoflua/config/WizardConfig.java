@@ -2,6 +2,8 @@ package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static net.wizardsoflua.lua.table.TableUtils.getAs;
+import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
 import java.util.UUID;
@@ -11,7 +13,6 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
-import net.wizardsoflua.lua.table.TableUtils;
 
 public class WizardConfig {
 
@@ -23,21 +24,20 @@ public class WizardConfig {
 
   private UUID id;
   private String libDir;
-  private @Nullable String autoRequire;
+  private String autoRequire = "";
   private final Context context;
 
   public WizardConfig(Table table, Context context) {
-    this.id = UUID.fromString(TableUtils.getAs(String.class, table, "id"));
-    this.libDir = TableUtils.getAs(String.class, table, "libDir");
-    this.autoRequire = TableUtils.getAs(String.class, table, "autoRequire");
+    this.id = UUID.fromString(getAs(String.class, table, "id"));
+    this.libDir = getAsOptional(String.class, table, "libDir").orElse(id.toString());
+    this.autoRequire = getAsOptional(String.class, table, "autoRequire").orElse(autoRequire);
     this.context = checkNotNull(context, "context==null!");
   }
 
   public WizardConfig(UUID id, Context context) {
     this.id = id;
-    this.libDir = id.toString();
-    this.autoRequire = "";
     this.context = checkNotNull(context, "context==null!");
+    this.libDir = id.toString();
 
     File dir = getLibDir();
     if (dir.exists() && !dir.isDirectory()) {

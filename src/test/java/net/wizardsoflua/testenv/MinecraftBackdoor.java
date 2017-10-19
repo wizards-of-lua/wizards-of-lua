@@ -193,4 +193,15 @@ public class MinecraftBackdoor {
     file.delete();
   }
 
+  public void setSharedAutoRequire(String module) {
+    testEnv.getWol().getConfig().getGeneralConfig().setSharedAutoRequire(module);
+  }
+
+  public void clearSharedAutoRequire() {
+    testEnv.getWol().getConfig().getGeneralConfig().setSharedAutoRequire(null);
+  }
+
+  public String getSharedAutoRequire() {
+    return testEnv.getWol().getConfig().getGeneralConfig().getSharedAutoRequire();
+  }
 }

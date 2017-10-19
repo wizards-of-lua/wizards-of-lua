@@ -93,12 +93,16 @@ public class SpellProgramFactory {
     result.add(new ModuleDependency("wol.Spell"));
     result.add(new ModuleDependency("wol.Player"));
 
+    String sharedProfile = context.getProfiles().getSharedProfile();
+    if (sharedProfile != null) {
+      result.add(new ModuleDependency(sharedProfile));
+    }
     Entity entity = owner.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      String module = context.getProfiles().getProfile(player);
-      if (module != null) {
-        result.add(new ModuleDependency(module));
+      String playerProfile = context.getProfiles().getProfile(player);
+      if (playerProfile != null) {
+        result.add(new ModuleDependency(playerProfile));
       }
     }
     return result;

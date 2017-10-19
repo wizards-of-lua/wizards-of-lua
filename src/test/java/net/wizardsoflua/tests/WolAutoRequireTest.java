@@ -21,9 +21,9 @@ public class WolAutoRequireTest extends WolTestBase {
     mc().clearWizardConfigs();
   }
 
-  // /test net.wizardsoflua.tests.WolAutoRequireTest test_profile_returns_profile_is_not_set
+  // /test net.wizardsoflua.tests.WolAutoRequireTest test_AutoRequire_not_set
   @Test
-  public void test_profile_returns_profile_is_not_set() throws Exception {
+  public void test_AutoRequire_not_set() throws Exception {
     // Given:
     String expected = "[WoL] autoRequire is not set";
 
@@ -35,13 +35,13 @@ public class WolAutoRequireTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.WolAutoRequireTest test_profile_returns_current_profile
+  // /test net.wizardsoflua.tests.WolAutoRequireTest test_AutoRequire_not_set
   @Test
-  public void test_profile_returns_current_profile() throws Exception {
+  public void test_autoRequire_set() throws Exception {
     // Given:
     String module = "mymodule";
     String expected = String.format("[WoL] autoRequire = \"%s\"", module);
-    mc().player().setProfile(module);
+    mc().player().setAutoRequire(module);
 
     // When:
     mc().player().chat("/wol autoRequire");
@@ -51,9 +51,9 @@ public class WolAutoRequireTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.WolAutoRequireTest test_profile_set
+  // /test net.wizardsoflua.tests.WolAutoRequireTest test_AutoRequire_set
   @Test
-  public void test_profile_set() throws Exception {
+  public void test_AutoRequire_set() throws Exception {
     // Given:
     String module = "mymodule";
     String expected = String.format("[WoL] autoRequire = \"%s\"", module);
@@ -66,13 +66,13 @@ public class WolAutoRequireTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.WolAutoRequireTest test_profile_unset
+  // /test net.wizardsoflua.tests.WolAutoRequireTest test_autoRequire_unset
   @Test
-  public void test_profile_unset() throws Exception {
+  public void test_autoRequire_unset() throws Exception {
     // Given:
     String module = "mymodule";
     String expected = "[WoL] unset autoRequire";
-    mc().player().setProfile(module);
+    mc().player().setAutoRequire(module);
 
     // When:
     mc().player().chat("/wol autoRequire unset");
@@ -80,7 +80,7 @@ public class WolAutoRequireTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
-    String actModule = mc().player().getPlayerProfile();
+    String actModule = mc().player().getAutoRequire();
     assertThat(actModule).isNull();
   }
 

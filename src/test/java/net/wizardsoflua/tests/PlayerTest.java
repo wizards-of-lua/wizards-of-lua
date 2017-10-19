@@ -22,6 +22,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().deleteModule(DEMOMODULE);
     mc().deleteSharedModule(SHAREDMODULE);
     mc().clearWizardConfigs();
+    mc().clearSharedAutoRequire();
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported
@@ -97,12 +98,12 @@ public class PlayerTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("world!");
   }
 
-  // /test net.wizardsoflua.tests.PlayerTest test_player_profile
+  // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_autoRequire_set
   @Test
-  public void test_player_profile() throws Exception {
+  public void test_cast_spell_with_autoRequire_set() throws Exception {
     // Given:
     mc().player().createModule(DEMOMODULE, "function dummy() print('hello') end");
-    mc().player().setProfile(DEMOMODULE);
+    mc().player().setAutoRequire(DEMOMODULE);
 
     // When:
     mc().player().chat("/lua dummy();", DEMOMODULE);
@@ -110,6 +111,21 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("hello");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_sharedAutoRequire_set
+  @Test
+  public void test_cast_spell_with_sharedAutoRequire_set() throws Exception {
+    // Given:
+    mc().createSharedModule(SHAREDMODULE, "function shareddummy() print('world!') end");
+    mc().setSharedAutoRequire(SHAREDMODULE);
+
+    // When:
+    mc().player().chat("/lua shareddummy();");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("world!");
   }
 
 }

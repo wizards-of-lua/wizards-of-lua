@@ -227,5 +227,4 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("{ \"" + newTag + "\" }");
   }
 
-  //
 }

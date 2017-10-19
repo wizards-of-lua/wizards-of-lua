@@ -6,9 +6,10 @@ import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
+
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.lua.table.TableUtils;
 
 public class GeneralConfig {
 
@@ -32,24 +33,28 @@ public class GeneralConfig {
   private String shardLibDir = "shared";
   private final File shardLibDirFile;
 
+  private String sharedAutoRequire = "";
+
   private final Context context;
 
   public GeneralConfig(Context context) {
+    this.context = checkNotNull(context, "context==null!");
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
     shardLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, shardLibDir));
-    this.context = checkNotNull(context, "context==null!");
+    sharedAutoRequire = "";
   }
 
   public GeneralConfig(Table table, Context context) {
+    this.context = checkNotNull(context, "context==null!");
     setLuaTicksLimit(
         getAsOptional(Integer.class, table, "luaTicksLimit").orElse(luaTicksLimit).intValue(),
         false);
     showAboutMessage = getAsOptional(Boolean.class, table, "showAboutMessage")
         .orElse(showAboutMessage).booleanValue();
-    luaLibDirHome =
-        TableUtils.getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
-    shardLibDir = TableUtils.getAsOptional(String.class, table, "shardLibDir").orElse(shardLibDir);
-    this.context = checkNotNull(context, "context==null!");
+    luaLibDirHome = getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
+    shardLibDir = getAsOptional(String.class, table, "shardLibDir").orElse(shardLibDir);
+    sharedAutoRequire =
+        getAsOptional(String.class, table, "sharedAutoRequire").orElse(sharedAutoRequire);
 
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
     shardLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, shardLibDir));
@@ -60,6 +65,7 @@ public class GeneralConfig {
     table.rawset("showAboutMessage", showAboutMessage);
     table.rawset("luaLibDirHome", luaLibDirHome);
     table.rawset("shardLibDir", shardLibDir);
+    table.rawset("sharedAutoRequire", sharedAutoRequire);
     return table;
   }
 
@@ -109,6 +115,21 @@ public class GeneralConfig {
       }
     }
     return dir;
+  }
+
+  public @Nullable String getSharedAutoRequire() {
+    if ("".equals(sharedAutoRequire)) {
+      return null;
+    }
+    return sharedAutoRequire;
+  }
+
+  public void setSharedAutoRequire(@Nullable String value) {
+    if (value == null) {
+      value = "";
+    }
+    this.sharedAutoRequire = value;
+    context.save();
   }
 
 }

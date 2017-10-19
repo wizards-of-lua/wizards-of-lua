@@ -21,6 +21,9 @@ import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
+import net.wizardsoflua.wol.sharedautorequire.PrintSharedAutoRequireAction;
+import net.wizardsoflua.wol.sharedautorequire.SetSharedAutoRequireAction;
+import net.wizardsoflua.wol.sharedautorequire.UnsetSharedAutoRequireAction;
 import net.wizardsoflua.wol.spell.SpellBreakAction;
 import net.wizardsoflua.wol.spell.SpellListAction;
 
@@ -45,6 +48,7 @@ public class WolCommand extends CommandBase {
       put("spell", new SpellMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
       put("autoRequire", new AutoRequireMenu());
+      put("sharedAutoRequire", new SharedAutoRequireMenu());
     }
   }
   class SpellMenu extends Menu {
@@ -66,7 +70,13 @@ public class WolCommand extends CommandBase {
       put("unset", new UnsetAutoRequireAction());
     }
   }
-  // /wol profile set "profile"
+  class SharedAutoRequireMenu extends Menu {
+    SharedAutoRequireMenu() {
+      put(new PrintSharedAutoRequireAction());
+      put("set", new SetSharedAutoRequireAction());
+      put("unset", new UnsetSharedAutoRequireAction());
+    }
+  }
 
   @Override
   public String getName() {

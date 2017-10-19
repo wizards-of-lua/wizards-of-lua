@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.event.CustomLuaEvent;
@@ -154,6 +155,11 @@ public class WizardsOfLua {
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {
+
+      @Override
+      public GeneralConfig getGeneralConfig() {
+        return getConfig().getGeneralConfig();
+      }
 
       @Override
       public WizardConfig getWizardConfig(EntityPlayer player) {

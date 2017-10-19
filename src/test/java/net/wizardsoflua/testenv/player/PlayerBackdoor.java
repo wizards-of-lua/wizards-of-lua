@@ -98,12 +98,12 @@ public class PlayerBackdoor {
     return getDelegate().getHorizontalFacing();
   }
 
-  public void setProfile(String module) {
+  public void setAutoRequire(String module) {
     testEnv.getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID())
         .setAutoRequire(module);
   }
 
-  public String getPlayerProfile() {
+  public String getAutoRequire() {
     return testEnv.getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID())
         .getAutoRequire();
   }
