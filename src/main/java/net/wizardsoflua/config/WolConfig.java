@@ -121,14 +121,6 @@ public class WolConfig {
     LuaFunction main = loader.loadTextChunk(new Variable(env), filename, content);
     DirectCallExecutor.newExecutor().call(state, main);
 
-    File sharedDir = getSharedLibDir();
-    if (!sharedDir.exists()) {
-      if (!sharedDir.mkdirs()) {
-        WizardsOfLua.instance.logger
-            .warn(format("Couldn't create shared lib directory at %s because of an unknown reason!",
-                sharedDir.getAbsolutePath()));
-      }
-    }
   }
 
   public GeneralConfig getGeneralConfig() {
@@ -145,7 +137,7 @@ public class WolConfig {
   }
 
   public File getSharedLibDir() {
-    return new File(getGeneralConfig().getLuaLibDirHome(), SHARED_HOME);
+    return getGeneralConfig().getSharedLibDir();
   }
 
   public String getSharedLuaPath() {
@@ -171,7 +163,7 @@ public class WolConfig {
     String name = configFile.getName().substring(0, dotindex);
     String ext = configFile.getName().substring(dotindex);
     File tmpFile = File.createTempFile(name, ext);
-    
+
     PrintWriter writer = new PrintWriter(tmpFile);
     writeTo(writer);
     writer.close();

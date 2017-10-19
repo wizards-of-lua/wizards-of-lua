@@ -1,11 +1,13 @@
 package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
 
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.table.TableUtils;
 
 public class GeneralConfig {
@@ -27,11 +29,14 @@ public class GeneralConfig {
 
   private String luaLibDirHome = "libs";
   private final File luaLibDirHomeFile;
+  private String shardLibDir = "shared";
+  private final File shardLibDirFile;
 
   private final Context context;
 
   public GeneralConfig(Context context) {
-    luaLibDirHomeFile = new File(context.getWolConfigDir(), luaLibDirHome);
+    luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
+    shardLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, shardLibDir));
     this.context = checkNotNull(context, "context==null!");
   }
 
@@ -41,10 +46,21 @@ public class GeneralConfig {
         false);
     showAboutMessage = getAsOptional(Boolean.class, table, "showAboutMessage")
         .orElse(showAboutMessage).booleanValue();
-    luaLibDirHome = TableUtils.getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
+    luaLibDirHome =
+        TableUtils.getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
+    shardLibDir = TableUtils.getAsOptional(String.class, table, "shardLibDir").orElse(shardLibDir);
     this.context = checkNotNull(context, "context==null!");
 
-    luaLibDirHomeFile = new File(context.getWolConfigDir(), luaLibDirHome);
+    luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
+    shardLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, shardLibDir));
+  }
+
+  public Table writeTo(Table table) {
+    table.rawset("luaTicksLimit", luaTicksLimit);
+    table.rawset("showAboutMessage", showAboutMessage);
+    table.rawset("luaLibDirHome", luaLibDirHome);
+    table.rawset("shardLibDir", shardLibDir);
+    return table;
   }
 
   public int getLuaTicksLimit() {
@@ -80,11 +96,19 @@ public class GeneralConfig {
     return luaLibDirHomeFile;
   }
 
-  public Table writeTo(Table table) {
-    table.rawset("luaTicksLimit", luaTicksLimit);
-    table.rawset("showAboutMessage", showAboutMessage);
-    table.rawset("luaLibDirHome", luaLibDirHome);
-    return table;
+  public File getSharedLibDir() {
+    return shardLibDirFile;
+  }
+
+  private File tryToCreateDir(File dir) {
+    if (!dir.exists()) {
+      if (!dir.mkdirs()) {
+        WizardsOfLua.instance.logger
+            .warn(format("Couldn't create directory at %s because of an unknown reason!",
+                dir.getAbsolutePath()));
+      }
+    }
+    return dir;
   }
 
 }
