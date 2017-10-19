@@ -1,6 +1,7 @@
 package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 import java.io.File;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.table.TableUtils;
 
@@ -36,6 +38,18 @@ public class WizardConfig {
     this.libDir = id.toString();
     this.autoRequire = "";
     this.context = checkNotNull(context, "context==null!");
+
+    File dir = getLibDir();
+    if (dir.exists() && !dir.isDirectory()) {
+      throw new IllegalStateException(
+          format("Illegal libDir. %s is not a directory!", dir.getAbsolutePath()));
+    }
+    if (!dir.exists()) {
+      if (!dir.mkdirs()) {
+        WizardsOfLua.instance.logger.warn(format(
+            "Couldn't create libDir at %s because of an unknown reason!", dir.getAbsolutePath()));
+      }
+    }
   }
 
   public UUID getId() {
@@ -69,8 +83,7 @@ public class WizardConfig {
   }
 
   public String getLibDirPathElement() {
-    return getLibDir().getAbsolutePath() + File.separator
-        + AddPathFunction.LUA_EXTENSION_WILDCARD;
+    return getLibDir().getAbsolutePath() + File.separator + AddPathFunction.LUA_EXTENSION_WILDCARD;
   }
 
 }

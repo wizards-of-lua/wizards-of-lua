@@ -2,6 +2,7 @@ package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,7 +93,11 @@ public class WolConfig {
       InterruptedException, FileNotFoundException, IOException {
     this.configFile = checkNotNull(configFile, "configFile==null!");
     if (!configFile.getParentFile().exists()) {
-      configFile.getParentFile().mkdirs();
+      if (!configFile.getParentFile().mkdirs()) {
+        WizardsOfLua.instance.logger
+            .warn(format("Couldn't create config directory at %s because of an unknown reason!",
+                configFile.getParentFile().getAbsolutePath()));
+      }
     }
     generalConfig = new GeneralConfig(generalConfigContext);
 
@@ -115,6 +120,15 @@ public class WolConfig {
     ChunkLoader loader = CompilerChunkLoader.of("WolConfigFile");
     LuaFunction main = loader.loadTextChunk(new Variable(env), filename, content);
     DirectCallExecutor.newExecutor().call(state, main);
+
+    File sharedDir = getSharedLibDir();
+    if (!sharedDir.exists()) {
+      if (!sharedDir.mkdirs()) {
+        WizardsOfLua.instance.logger
+            .warn(format("Couldn't create shared lib directory at %s because of an unknown reason!",
+                sharedDir.getAbsolutePath()));
+      }
+    }
   }
 
   public GeneralConfig getGeneralConfig() {
@@ -157,14 +171,22 @@ public class WolConfig {
     String name = configFile.getName().substring(0, dotindex);
     String ext = configFile.getName().substring(dotindex);
     File tmpFile = File.createTempFile(name, ext);
-    System.out.println("tmpFile=" + tmpFile.getAbsolutePath());
+    
     PrintWriter writer = new PrintWriter(tmpFile);
     writeTo(writer);
     writer.close();
     if (!configFile.getParentFile().exists()) {
-      configFile.getParentFile().mkdirs();
+      if (!configFile.getParentFile().mkdirs()) {
+        throw new IOException(
+            format("Couldn't create config directory at %s because of an unknown reason!",
+                configFile.getParentFile().getAbsolutePath()));
+      }
     }
-    tmpFile.renameTo(configFile);
+    if (!tmpFile.renameTo(configFile)) {
+      throw new IOException(
+          format("Couldn't save configuration to %s because of an unknown reason!",
+              configFile.getAbsolutePath()));
+    }
   }
 
   private void writeTo(PrintWriter out) {
