@@ -117,8 +117,9 @@ public class TestEnvironmentTest extends WolTestBase {
   @Test
   public void test_player_can_leftclick_on_blockpos() {
     // Given:
-    BlockPos playerPos = new BlockPos(0, 4, 0);
+    BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
+    mc().player().setRotationYaw(0);
     BlockPos clickPos = new BlockPos(0, 3, 0);
     EnumFacing facing = EnumFacing.UP;
 
@@ -135,8 +136,9 @@ public class TestEnvironmentTest extends WolTestBase {
   @Test
   public void test_player_can_rightclick_on_blockpos() {
     // Given:
-    BlockPos playerPos = new BlockPos(0, 4, 0);
+    BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
+    mc().player().setRotationYaw(0);
     BlockPos clickPos = new BlockPos(0, 3, 0);
     EnumFacing facing = EnumFacing.UP;
     Vec3d hitvec = new Vec3d(clickPos);

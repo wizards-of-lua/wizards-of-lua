@@ -58,6 +58,16 @@ public class PlayerBackdoor {
         .runAndWait(() -> getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ()));
   }
 
+  public void setRotationYaw(float yaw) {
+    testEnv.runAndWait(() -> {
+      EntityPlayerMP delegate = getDelegate();
+      delegate.setRotationYawHead(yaw);
+      delegate.setRenderYawOffset(yaw);
+      delegate.connection.setPlayerLocation(delegate.posX, delegate.posY,
+          delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
+    });
+  }
+
   public BlockPos getBlockPos() {
     return getDelegate().getPosition();
   }
@@ -127,5 +137,6 @@ public class PlayerBackdoor {
   public String getName() {
     return getDelegate().getName();
   }
+
 
 }

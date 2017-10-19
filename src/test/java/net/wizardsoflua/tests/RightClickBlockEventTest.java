@@ -19,8 +19,9 @@ public class RightClickBlockEventTest extends WolTestBase {
   @Test
   public void test() {
     // Given:
-    BlockPos playerPos = new BlockPos(0, 4, 0);
+    BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
+    mc().player().setRotationYaw(0);
     BlockPos clickPos = new BlockPos(0, 3, 0);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
     EnumFacing facing = EnumFacing.UP;
