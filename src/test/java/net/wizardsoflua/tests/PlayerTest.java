@@ -1,5 +1,7 @@
 package net.wizardsoflua.tests;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +9,6 @@ import org.junit.runner.RunWith;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class PlayerTest extends WolTestBase {
@@ -16,7 +17,7 @@ public class PlayerTest extends WolTestBase {
   private static final String SHAREDMODULE = "somewhere.sharedmodule";
 
   @After
-  public void after() {
+  public void after() throws IOException {
     mc().deleteTeams();
     mc().player().deleteModule(DEMOMODULE);
     mc().deleteSharedModule(SHAREDMODULE);

@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
 
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -37,6 +35,7 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.WizardConfig.Context;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.table.TableUtils;
@@ -52,7 +51,7 @@ public class WolConfig {
 
     File oldConfigFile = new File(wolConfigDir, configName + ".cfg");
     oldConfigFile.delete();
-    
+
     File wolConfigFile = new File(wolConfigDir, configName + ".luacfg");
     return new WolConfig(wolConfigFile);
   }
@@ -97,7 +96,12 @@ public class WolConfig {
     }
     generalConfig = new GeneralConfig(generalConfigContext);
 
-    if (!configFile.exists() || configFile.isDirectory()) {
+    // Fix for issue #73 - Server still crashing when config file is a directory
+    if (configFile.exists() && configFile.isDirectory()) {
+      configFile.delete();
+    }
+
+    if (!configFile.exists()) {
       saveSync();
     }
     String filename = configFile.getAbsolutePath();
@@ -121,7 +125,7 @@ public class WolConfig {
     return Collections.unmodifiableCollection(wizards.values());
   }
 
-  public void clearWizardConfigs() {
+  public void clearWizardConfigs() throws IOException {
     wizards.clear();
     saveSync();
   }
@@ -139,25 +143,28 @@ public class WolConfig {
     service.submit(new Runnable() {
       @Override
       public void run() {
-        saveSync();
+        try {
+          saveSync();
+        } catch (IOException e) {
+          WizardsOfLua.instance.logger.error("Can't save config file!", e);
+        }
       }
     });
   }
 
-  public void saveSync() {
-    try {
-      if (configFile.exists()) {
-        configFile.delete();
-      }
-      if (!configFile.getParentFile().exists()) {
-        configFile.getParentFile().mkdirs();
-      }
-      PrintWriter writer = new PrintWriter(configFile);
-      writeTo(writer);
-      writer.close();
-    } catch (FileNotFoundException e) {
-      throw new UndeclaredThrowableException(e);
+  public void saveSync() throws IOException {
+    int dotindex = configFile.getName().lastIndexOf('.');
+    String name = configFile.getName().substring(0, dotindex);
+    String ext = configFile.getName().substring(dotindex);
+    File tmpFile = File.createTempFile(name, ext);
+    System.out.println("tmpFile=" + tmpFile.getAbsolutePath());
+    PrintWriter writer = new PrintWriter(tmpFile);
+    writeTo(writer);
+    writer.close();
+    if (!configFile.getParentFile().exists()) {
+      configFile.getParentFile().mkdirs();
     }
+    tmpFile.renameTo(configFile);
   }
 
   private void writeTo(PrintWriter out) {

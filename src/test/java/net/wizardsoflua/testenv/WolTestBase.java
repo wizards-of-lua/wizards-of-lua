@@ -1,5 +1,7 @@
 package net.wizardsoflua.testenv;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 
@@ -19,7 +21,7 @@ public class WolTestBase extends TestDataFactory {
   private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);;
 
   @Before
-  public void beforeTest() {
+  public void beforeTest() throws IOException {
     testEnv.runAndWait(() -> testEnv.getEventRecorder().setEnabled(true));
 
     mc().resetClock();

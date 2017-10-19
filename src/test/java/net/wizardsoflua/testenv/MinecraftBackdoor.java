@@ -159,7 +159,7 @@ public class MinecraftBackdoor {
     }
   }
 
-  public void clearWizardConfigs() {
+  public void clearWizardConfigs() throws IOException {
     testEnv.getWol().getConfig().clearWizardConfigs();
   }
 
