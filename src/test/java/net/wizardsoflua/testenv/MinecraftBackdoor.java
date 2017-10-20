@@ -216,4 +216,8 @@ public class MinecraftBackdoor {
     return block.getPickBlock(state, target, world, pos, player().getDelegate());
   }
 
+  public void clearLuaFunctionCache() {
+    testEnv.getWol().clearLuaFunctionCache();
+  }
+
 }

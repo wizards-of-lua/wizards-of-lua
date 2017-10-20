@@ -38,6 +38,7 @@ public class WolTestBase extends TestDataFactory {
     mc().executeCommand("/gamerule doMobSpawning false");
     mc().executeCommand("/kill @e[type=!Player]");
     mc().clearEvents();
+    mc().clearLuaFunctionCache();
   }
 
   @After

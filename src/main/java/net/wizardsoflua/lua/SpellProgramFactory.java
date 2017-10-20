@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
+import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.profiles.Profiles;
 
@@ -28,6 +29,8 @@ public class SpellProgramFactory {
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
     LuaClasses getLuaClasses();
+
+    LuaFunctionBinaryCache getLuaFunctionBinaryCache();
 
   }
 
@@ -77,6 +80,11 @@ public class SpellProgramFactory {
       @Override
       public LuaClasses getLuaClasses() {
         return context.getLuaClasses();
+      }
+
+      @Override
+      public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
+        return context.getLuaFunctionBinaryCache();
       }
     };
   }

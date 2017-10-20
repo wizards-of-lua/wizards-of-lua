@@ -14,6 +14,7 @@ public class SpellRuntimeEnvironment implements RuntimeEnvironment {
   public interface Context {
     String getLuaPath();
   }
+
   private final Context context;
   private final RuntimeEnvironment delegate = RuntimeEnvironments.system();
 

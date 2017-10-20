@@ -2,6 +2,8 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.nio.file.FileSystem;
+
 import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -31,6 +33,8 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
+import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
+import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.lua.module.time.TimeModule;
@@ -49,6 +53,8 @@ public class SpellProgram {
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
     LuaClasses getLuaClasses();
+
+    LuaFunctionBinaryCache getLuaFunctionBinaryCache();
 
   }
 
@@ -69,6 +75,7 @@ public class SpellProgram {
   private Continuation continuation;
   private SpellEntity spellEntity;
   private Time time;
+  private final Context context;
 
   SpellProgram(String code, ModuleDependencies dependencies, ICommandSender owner,
       String defaultLuaPath, Time time, Context context) {
@@ -76,7 +83,7 @@ public class SpellProgram {
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     checkNotNull(owner, "source==null!");;
     this.time = checkNotNull(time, "time==null!");
-    checkNotNull(context, "context==null!");
+    this.context = checkNotNull(context, "context==null!");
 
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
@@ -210,15 +217,24 @@ public class SpellProgram {
 
   private void installSystemLibraries() {
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    FileSystem fileSystem = runtimeEnv.fileSystem();
+    LuaFunctionBinaryCache luaFunctionCache = context.getLuaFunctionBinaryCache();
 
     BasicLib.installInto(stateContext, env, runtimeEnv, loader);
-    ModuleLib.installInto(stateContext, env, runtimeEnv, /* modulesLoader */ loader, classLoader);
+
+    // We don't pass the loader to the ModuleLib in order to prevent the installation of the
+    // ChunkLoadPathSearcher
+    ModuleLib.installInto(stateContext, env, runtimeEnv, /* loader */ null, classLoader);
+    // Instead we install our own two searchers
+    ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache, classLoader);
+    PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader,
+        fileSystem);
+
     CoroutineLib.installInto(stateContext, env);
     StringLib.installInto(stateContext, env);
     MathLib.installInto(stateContext, env);
     TableLib.installInto(stateContext, env);
-    ClasspathResourceSearcher.installInto(env, loader, /* luaFunctionCache, */
-        classLoader);
+
   }
 
 }

@@ -26,45 +26,32 @@ import net.wizardsoflua.lua.compiler.LuaFunctionBinary;
  */
 public class ClasspathResourceSearcher {
 
-  // TODO (mk) Support caching of compiled modules
-
   public static void installInto(Table env, ExtendedChunkLoader loader,
-      /* LuaFunctionBinaryCache cache, */ ClassLoader classloader) {
-    Object function = getFunction(env, loader, /* cache, */ classloader);
+      LuaFunctionBinaryByUrlCache cache, ClassLoader classloader) {
+    Object function = getFunction(env, loader, cache, classloader);
     Table pkg = (Table) env.rawget("package");
     Table searchers = (Table) pkg.rawget("searchers");
     long len = searchers.rawlen();
-    // add this function right after the preload searcher so that we search the classpath
-    // prior to searching the file system in order to ensure that our standard
-    // modules are found first.
-    long preloadSearcherIndex = 1;
-    rawinsert(searchers, preloadSearcherIndex + 1, len, function);
-  }
-
-  private static void rawinsert(Table t, long pos, long len, Object value) {
-    for (long k = len + 1; k > pos; k--) {
-      t.rawset(k, t.rawget(k - 1));
-    }
-    t.rawset(pos, value);
+    searchers.rawset(len + 1, function);
   }
 
   private static Object getFunction(Table env, ExtendedChunkLoader loader,
-      /* LuaFunctionBinaryCache cache, */ ClassLoader classloader) {
-    return new LoaderFunction(env, loader, /* cache, */ classloader);
+      LuaFunctionBinaryByUrlCache cache, ClassLoader classloader) {
+    return new LoaderFunction(env, loader, cache, classloader);
   }
 
   private static class LoaderFunction extends AbstractFunction1 {
 
     private final Table env;
     private ExtendedChunkLoader loader;
-    // private LuaFunctionBinaryCache cache;
+    private LuaFunctionBinaryByUrlCache cache;
     private ClassLoader classloader;
 
-    public LoaderFunction(Table env, ExtendedChunkLoader loader,
-        /* LuaFunctionBinaryCache cache, */ClassLoader classloader) {
+    public LoaderFunction(Table env, ExtendedChunkLoader loader, LuaFunctionBinaryByUrlCache cache,
+        ClassLoader classloader) {
       this.env = env;
       this.loader = loader;
-      // this.cache = cache;
+      this.cache = cache;
       this.classloader = classloader;
     }
 
@@ -76,23 +63,21 @@ public class ClasspathResourceSearcher {
             String.format("Expected module name, but got: %s", moduleName));
       }
       try {
-        // LuaFunctionBinary fnBin = cache.get(moduleName);
-        LuaFunctionBinary fnBin = null;
+        if (moduleName.endsWith(".lua")) {
+          throw new IllegalArgumentException("Illegal module '" + moduleName
+              + "': module must be specified without '.lua' extension!");
+        }
+        String name = moduleName.replaceAll("\\.", "/") + ".lua";
+        URL resource = classloader.getResource(name);
+        if (resource == null) {
+          context.getReturnBuffer().setTo("no module with name '" + name + "' found in classpath");
+          return;
+        }
+        LuaFunctionBinary fnBin = cache.get(resource);
         if (fnBin == null) {
-          if (moduleName.endsWith(".lua")) {
-            throw new IllegalArgumentException("Illegal module '" + moduleName
-                + "': module must be specified without '.lua' extension!");
-          }
-          String name = moduleName.replaceAll("\\.", "/") + ".lua";
-          URL resource = classloader.getResource(name);
-          if (resource == null) {
-            context.getReturnBuffer()
-                .setTo("no module with name '" + name + "' found in classpath");
-            return;
-          }
           String src = IOUtils.toString(resource);
           fnBin = loader.compile(moduleName, src);
-          // cache.put(moduleName, fnBin);
+          cache.put(resource, fnBin);
         }
         LuaFunction fn = fnBin.loadInto(new Variable(env));
         context.getReturnBuffer().setTo(fn, moduleName);

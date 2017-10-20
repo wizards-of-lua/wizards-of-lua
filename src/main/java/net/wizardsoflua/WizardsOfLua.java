@@ -35,6 +35,7 @@ import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
+import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
@@ -58,6 +59,7 @@ public class WizardsOfLua {
   public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final LuaClasses luaClasses = new LuaClasses();
+  private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
 
   // TODO move these lazy instances into a new state class
   private WolConfig config;
@@ -152,6 +154,11 @@ public class WizardsOfLua {
       public LuaClasses getLuaClasses() {
         return luaClasses;
       }
+
+      @Override
+      public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
+        return luaFunctionCache;
+      }
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {
@@ -237,6 +244,10 @@ public class WizardsOfLua {
 
   public Clock getDefaultClock() {
     return Clock.systemDefaultZone();
+  }
+
+  public void clearLuaFunctionCache() {
+    luaFunctionCache.clear();
   }
 
 }
