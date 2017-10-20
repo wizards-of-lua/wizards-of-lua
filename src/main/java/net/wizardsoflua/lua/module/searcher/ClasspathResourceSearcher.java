@@ -22,8 +22,7 @@ import net.wizardsoflua.lua.compiler.LuaFunctionBinary;
  * <p>
  * Please note, that according to the Lua conventions, the required module must be specified using
  * the dotted package notation but without the '.lua' extension, for example the resource
- * 'wol/Globals.lua' must be specified as
- * 'wol.Globals'.
+ * 'wol/Globals.lua' must be specified as 'wol.Globals'.
  */
 public class ClasspathResourceSearcher {
 
@@ -31,10 +30,22 @@ public class ClasspathResourceSearcher {
 
   public static void installInto(Table env, ExtendedChunkLoader loader,
       /* LuaFunctionBinaryCache cache, */ ClassLoader classloader) {
+    Object function = getFunction(env, loader, /* cache, */ classloader);
     Table pkg = (Table) env.rawget("package");
     Table searchers = (Table) pkg.rawget("searchers");
     long len = searchers.rawlen();
-    searchers.rawset(len + 1, getFunction(env, loader, /* cache, */ classloader));
+    // add this function right after the preload searcher so that we search the classpath
+    // prior to searching the file system in order to ensure that our standard
+    // modules are found first.
+    long preloadSearcherIndex = 1;
+    rawinsert(searchers, preloadSearcherIndex + 1, len, function);
+  }
+
+  private static void rawinsert(Table t, long pos, long len, Object value) {
+    for (long k = len + 1; k > pos; k--) {
+      t.rawset(k, t.rawget(k - 1));
+    }
+    t.rawset(pos, value);
   }
 
   private static Object getFunction(Table env, ExtendedChunkLoader loader,
