@@ -151,7 +151,7 @@ public class TestEnvironmentTest extends WolTestBase {
     // Given:
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    ItemStack item = mc().getItem(Blocks.PLANKS);
+    ItemStack item = mc().getItemStack(Blocks.PLANKS);
     mc().player().setMainHandItem(item);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
 

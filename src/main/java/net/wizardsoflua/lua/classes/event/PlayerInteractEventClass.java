@@ -46,7 +46,7 @@ public class PlayerInteractEventClass extends LuaClass<PlayerInteractEvent> {
       addImmutableNullable("face", getConverters().toLuaNullable(delegate.getFace()));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));
       addImmutable("pos", getConverters().toLua(new Vec3d(delegate.getPos())));
-      addImmutable("itemStack", getConverters().toLua(delegate.getItemStack()));
+      addImmutable("item", getConverters().toLua(delegate.getItemStack()));
     }
 
   }

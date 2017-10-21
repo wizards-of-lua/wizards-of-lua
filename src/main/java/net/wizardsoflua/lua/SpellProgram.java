@@ -30,6 +30,7 @@ import net.wizardsoflua.lua.module.blocks.BlocksModule;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
+import net.wizardsoflua.lua.module.items.ItemsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
@@ -109,6 +110,7 @@ public class SpellProgram {
     });
     TimeModule.installInto(env, converters, time);
     BlocksModule.installInto(env, converters);
+    ItemsModule.installInto(env, converters);
     eventHandlers = new EventHandlers(converters, createEventHandlersContext());
     EventsModule.installInto(env, converters, eventHandlers);
 

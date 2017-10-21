@@ -10,10 +10,13 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -78,8 +81,10 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
       addReadOnly("eyeHeight", () -> delegate.getEyeHeight());
       add("motion", this::getMotion, this::setMotion);
       add("tags", this::getTags, this::setTags);
+
+      // addReadOnly("world", this::getWorld);
     }
-    
+
     @Override
     public boolean isTransferable() {
       return true;
@@ -233,6 +238,11 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
       return delegate.removeTag(tag);
     }
 
+    // public Object getWorld() {
+    // World world = delegate.getEntityWorld();
+    // return getConverters().toLua(world);
+    // }
+
   }
 
   public static class EntityLivingBaseProxy extends EntityProxy {
@@ -243,12 +253,47 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
         EntityLivingBase delegate) {
       super(converters, metatable, delegate);
       this.delegate = delegate;
+
+      add("mainhand", this::getMainhand, this::setMainhand);
+      add("offhand", this::getOffhand, this::setOffhand);
     }
 
     @Override
     public float getRotationYaw() {
       float v = delegate.renderYawOffset;
       return MathHelper.wrapDegrees(v);
+    }
+
+    public @Nullable Object getMainhand() {
+      ItemStack itemStack = delegate.getHeldItemMainhand();
+      if (itemStack.isEmpty()) {
+        return null;
+      }
+      return getConverters().toLuaNullable(itemStack);
+    }
+
+    public void setMainhand(@Nullable Object luaObj) {
+      ItemStack itemStack = getConverters().toJavaNullable(ItemStack.class, luaObj);
+      if (itemStack == null) {
+        itemStack = ItemStack.EMPTY;
+      }
+      delegate.setHeldItem(EnumHand.MAIN_HAND, itemStack);
+    }
+
+    public @Nullable Object getOffhand() {
+      ItemStack itemStack = delegate.getHeldItemOffhand();
+      if (itemStack.isEmpty()) {
+        return null;
+      }
+      return getConverters().toLuaNullable(itemStack);
+    }
+
+    public void setOffhand(@Nullable Object luaObj) {
+      ItemStack itemStack = getConverters().toJavaNullable(ItemStack.class, luaObj);
+      if (itemStack == null) {
+        itemStack = ItemStack.EMPTY;
+      }
+      delegate.setHeldItem(EnumHand.OFF_HAND, itemStack);
     }
   }
 

@@ -11,11 +11,11 @@ import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
-@DeclareLuaClass(name = ItemStackClass.METATABLE_NAME)
-public class ItemStackClass extends InstanceCachingLuaClass<ItemStack> {
-  public static final String METATABLE_NAME = "ItemStack";
+@DeclareLuaClass(name = ItemClass.METATABLE_NAME)
+public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
+  public static final String METATABLE_NAME = "Item";
 
-  public ItemStackClass() {
+  public ItemClass() {
     super(ItemStack.class);
   }
 

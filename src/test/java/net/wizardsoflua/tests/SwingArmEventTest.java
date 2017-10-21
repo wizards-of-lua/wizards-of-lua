@@ -35,7 +35,7 @@ public class SwingArmEventTest extends WolTestBase {
   public void test_rightclick() {
     // Given:
     mc().player().setPosition(playerPos);
-    ItemStack item = mc().getItem(Blocks.SAND);
+    ItemStack item = mc().getItemStack(Blocks.SAND);
     mc().player().setMainHandItem(item);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
     EnumHand hand = EnumHand.MAIN_HAND;

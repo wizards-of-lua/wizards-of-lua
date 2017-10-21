@@ -36,7 +36,7 @@ public class RightClickBlockEventTest extends WolTestBase {
     BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    mc().player().setMainHandItem(mc().getItem(Blocks.SAND));
+    mc().player().setMainHandItem(mc().getItemStack(Blocks.SAND));
     BlockPos clickPos = new BlockPos(0, 3, 0);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
     EnumFacing facing = EnumFacing.WEST;

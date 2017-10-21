@@ -482,5 +482,24 @@ public class EntityTest extends WolTestBase {
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
     assertThat(actPos).isEqualTo(expectedPos);
   }
-  
+
+//  // /test net.wizardsoflua.tests.EntityTest test_world_is_readable
+//  @Test
+//  public void test_world_is_readable() throws Exception {
+//    // Given
+//    BlockPos pos = mc().getWorldSpawnPoint();
+//    String expected = mc().getWorldName();
+//
+//    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
+//        pos.getY(), pos.getZ());
+//    mc().clearEvents();
+//
+//    // When:
+//    mc().executeCommand(
+//        "/lua p=Entities.find('@e[name=testpig]')[1]; w=p.world; print(w.name)");
+//
+//    // Then:
+//    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+//    assertThat(act.getMessage()).isEqualTo(expected);
+//  }
 }

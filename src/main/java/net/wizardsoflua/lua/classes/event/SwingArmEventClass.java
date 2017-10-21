@@ -42,7 +42,7 @@ public class SwingArmEventClass extends LuaClass<SwingArmEvent> {
       this.delegate = checkNotNull(delegate, "delegate==null!");
       addImmutable("player", getConverters().toLua(delegate.getPlayer()));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));
-      addImmutable("itemStack", getConverters().toLua(delegate.getItemStack()));
+      addImmutable("item", getConverters().toLua(delegate.getItemStack()));
     }
 
   }

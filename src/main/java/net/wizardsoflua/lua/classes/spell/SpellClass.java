@@ -80,6 +80,26 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
       wolBlock.setBlock(world, pos);
     }
 
+    // public ItemStack getItemFromBlock() {
+    // BlockPos pos = new BlockPos(delegate.getPositionVector());
+    // IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
+    // World world = delegate.getEntityWorld();
+    // NBTTagCompound nbt = getNbt(world.getTileEntity(pos));
+    // return ItemUtil.getItemStackFromBlock(blockState, nbt);
+    // }
+    //
+    // private @Nullable NBTTagCompound getNbt(@Nullable TileEntity te) {
+    // if (te != null) {
+    // NBTTagCompound nbt = new NBTTagCompound();
+    // te.writeToNBT(nbt);
+    // nbt.removeTag("x");
+    // nbt.removeTag("y");
+    // nbt.removeTag("z");
+    // return nbt;
+    // }
+    // return null;
+    // }
+
     public void setVisible(Object luaObj) {
       boolean value = getConverters().toJava(Boolean.class, luaObj);
       delegate.setVisible(value);
@@ -91,13 +111,9 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
 
     public int execute(String command) {
       World world = delegate.getEntityWorld();
-      // int length = command.getBytes().length;
-      // if (length > 4000) {
-      // throw new IllegalArgumentException(String.format(
-      // "Can't execute command! String is to long (max is %s, but was %s)", 4000, length));
-      // }
       return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
     }
+
   }
 
   private class ExecuteFunction extends AbstractFunctionAnyArg {
@@ -122,4 +138,5 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
       throw new NonsuspendableFunctionException();
     }
   }
+
 }

@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
@@ -159,4 +161,57 @@ public class BlockTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("z");
   }
+
+  // /test net.wizardsoflua.tests.BlockTest test_asItem_from_dirt
+  @Test
+  public void test_asItem_from_dirt() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.DIRT);
+    String expected = "Dirt";
+
+    // When:
+    mc().player().chat(
+        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print(i.displayName)",
+        posP.getX(), posP.getY(), posP.getZ());
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.BlockTest test_asItem_from_empty_chest
+  @Test
+  public void test_asItem_from_empty_chest() throws Exception {
+    // Given:
+    mc().setBlock(posP, Blocks.CHEST);
+    String expected = "{}";
+
+    // When:
+    mc().player().chat(
+        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print( str(i.nbt.BlockEntityTag.Items))",
+        posP.getX(), posP.getY(), posP.getZ());
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.BlockTest test_asItem_from_filled_chest
+  @Test
+  public void test_asItem_from_filled_chest() throws Exception {
+    // Given:
+    ItemStack itemStack = mc().getItemStack(Items.APPLE);
+    mc().setChest(posP, itemStack);
+    String expected = itemStack.getItem().getRegistryName().toString();
+
+    // When:
+    mc().player().chat(
+        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print( i.nbt.BlockEntityTag.Items[1].id)",
+        posP.getX(), posP.getY(), posP.getZ());
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
 }

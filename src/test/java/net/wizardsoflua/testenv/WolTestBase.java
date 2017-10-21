@@ -39,6 +39,8 @@ public class WolTestBase extends TestDataFactory {
     mc().executeCommand("/kill @e[type=!Player]");
     mc().clearEvents();
     mc().clearLuaFunctionCache();
+    mc().player().setMainHandItem(null);
+    mc().player().setOffHandItem(null);
   }
 
   @After

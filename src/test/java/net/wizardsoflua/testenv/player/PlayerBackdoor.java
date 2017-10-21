@@ -1,6 +1,10 @@
 package net.wizardsoflua.testenv.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Optional.ofNullable;
+import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
+import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
+import static net.minecraft.item.ItemStack.EMPTY;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +16,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
@@ -141,11 +144,22 @@ public class PlayerBackdoor {
   }
 
   public void setMainHandItem(ItemStack item) {
-    testEnv.runAndWait(() -> getDelegate().setItemStackToSlot(EntityEquipmentSlot.MAINHAND, item));
+    testEnv.runAndWait(
+        () -> getDelegate().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY)));
   }
 
   public ItemStack getMainHandItem() {
     return getDelegate().getHeldItemMainhand();
   }
+
+  public void setOffHandItem(ItemStack item) {
+    testEnv.runAndWait(
+        () -> getDelegate().setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY)));
+  }
+
+  public ItemStack getOffHandItem() {
+    return getDelegate().getHeldItemOffhand();
+  }
+
 
 }

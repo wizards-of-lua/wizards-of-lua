@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.net.ChatAction;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class BlocksTest extends WolTestBase {
@@ -27,10 +26,9 @@ public class BlocksTest extends WolTestBase {
     mc().setBlock(posP, Blocks.AIR);
 
     // When:
-    mc().player()
-        .chat(
-            "/lua b=Blocks.get('dirt'); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.name)",
-            posP.getX(), posP.getY(), posP.getZ());
+    mc().player().chat(
+        "/lua b=Blocks.get('dirt'); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.name)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

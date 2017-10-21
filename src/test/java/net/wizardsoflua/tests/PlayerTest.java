@@ -6,6 +6,9 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -23,6 +26,8 @@ public class PlayerTest extends WolTestBase {
     mc().deleteSharedModule(SHAREDMODULE);
     mc().clearWizardConfigs();
     mc().clearSharedAutoRequire();
+    mc().player().setMainHandItem(null);
+    mc().player().setOffHandItem(null);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported
@@ -126,6 +131,68 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("world!");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_mainhand_is_readable
+  @Test
+  public void test_mainhand_is_readable() throws Exception {
+    // Given:
+    ItemStack item = mc().getItemStack(Items.DIAMOND_AXE);
+    mc().player().setMainHandItem(item);
+    String expected = item.getDisplayName();
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.mainhand.displayName)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_mainhand_is_writable
+  @Test
+  public void test_mainhand_is_writable() throws Exception {
+    // Given:
+    Item expected = mc().getItemStack(Items.DIAMOND_AXE).getItem();
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.mainhand=i; print('ok')");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().player().getMainHandItem().getItem()).isEqualTo(expected);
+  }
+
+  /// test net.wizardsoflua.tests.PlayerTest test_offhand_is_readable
+  @Test
+  public void test_offhand_is_readable() throws Exception {
+    // Given:
+    ItemStack item = mc().getItemStack(Items.DIAMOND_AXE);
+    mc().player().setOffHandItem(item);
+    String expected = item.getDisplayName();
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.offhand.displayName)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_offhand_is_writable
+  @Test
+  public void test_offhand_is_writable() throws Exception {
+    // Given:
+    Item expected = mc().getItemStack(Items.DIAMOND_AXE).getItem();
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.offhand=i; print('ok')");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().player().getOffHandItem().getItem()).isEqualTo(expected);
   }
 
 }

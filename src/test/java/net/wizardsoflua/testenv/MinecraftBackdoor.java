@@ -22,10 +22,13 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -48,6 +51,10 @@ public class MinecraftBackdoor {
 
   public String getName() {
     return testEnv.getServer().getName();
+  }
+
+  public String getWorldName() {
+    return testEnv.getServer().getEntityWorld().getWorldInfo().getWorldName();
   }
 
   public void post(Event event) {
@@ -121,6 +128,15 @@ public class MinecraftBackdoor {
   public IBlockState getBlock(BlockPos pos) {
     World world = testEnv.getTestPlayer().getEntityWorld();
     return world.getBlockState(pos);
+  }
+
+  public void setChest(BlockPos pos, ItemStack itemStack) {
+    World world = testEnv.getTestPlayer().getEntityWorld();
+    testEnv.runAndWait(() -> {
+      world.setBlockState(pos, Blocks.CHEST.getDefaultState());
+      TileEntityChest chest = (TileEntityChest) world.getTileEntity(pos);
+      chest.setInventorySlotContents(0, itemStack);
+    });
   }
 
   public BlockPos getWorldSpawnPoint() {
@@ -208,12 +224,16 @@ public class MinecraftBackdoor {
     return testEnv.getWol().getConfig().getGeneralConfig().getSharedAutoRequire();
   }
 
-  public ItemStack getItem(Block block) {
+  public ItemStack getItemStack(Block block) {
     IBlockState state = block.getDefaultState();
     RayTraceResult target = null; // unused
     World world = player().getDelegate().getEntityWorld();
     BlockPos pos = null; // unused
     return block.getPickBlock(state, target, world, pos, player().getDelegate());
+  }
+
+  public ItemStack getItemStack(Item item) {
+    return new ItemStack(item);
   }
 
   public void clearLuaFunctionCache() {

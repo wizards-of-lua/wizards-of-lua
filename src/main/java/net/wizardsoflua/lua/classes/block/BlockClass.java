@@ -5,10 +5,12 @@ import java.util.Collection;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
@@ -29,6 +31,7 @@ public class BlockClass extends LuaClass<WolBlock> {
     super(WolBlock.class);
     add("withData", new WithDataFunction());
     add("withNbt", new WithNbtFunction());
+    add("asItem", new AsItemFunction());
   }
 
   @Override
@@ -153,6 +156,23 @@ public class BlockClass extends LuaClass<WolBlock> {
 
       WolBlock newWolBlock = new WolBlock(oldWolBlock.getBlockState(), newNbt);
       Object result = getConverters().toLua(newWolBlock);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class AsItemFunction extends AbstractFunction1 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      WolBlock wolBlock = getConverters().toJava(WolBlock.class, arg1);
+
+      ItemStack itemStack = wolBlock.asItemStack();
+      Object result = getConverters().toLua(itemStack);
       context.getReturnBuffer().setTo(result);
     }
 
