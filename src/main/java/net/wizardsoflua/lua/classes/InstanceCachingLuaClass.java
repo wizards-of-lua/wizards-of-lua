@@ -1,26 +1,23 @@
 package net.wizardsoflua.lua.classes;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.classes.common.WeakKeySoftValueMap;
 
 public abstract class InstanceCachingLuaClass<J> extends LuaClass<J> {
-
-  public static class Cache extends WeakKeySoftValueMap<Table> {
-  }
-
-  private final Cache cache = new Cache();
+  private final Cache<J, Table> cache = CacheBuilder.newBuilder().weakKeys().softValues().build();
 
   public InstanceCachingLuaClass(Class<J> type) {
     super(type);
   }
 
-  public Cache getCache() {
+  public Cache<J, Table> getCache() {
     return cache;
   }
 
   @Override
   public final Table getLuaInstance(J delegate) {
-    return getCache().computeIfAbsent(delegate, () -> super.getLuaInstance(delegate));
+    return getCache().asMap().computeIfAbsent(delegate, super::getLuaInstance);
   }
-
 }
