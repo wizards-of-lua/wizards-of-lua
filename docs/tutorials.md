@@ -2,7 +2,8 @@
 title: Tutorials
 ---
 <ul>
-{% for tutorial in site.tutorials reversed limit:7 %}
+{% assign tutorials = site.tutorials | sort: 'level' %}
+{% for tutorial in tutorials %}
   <li>
     <a href="{{ tutorial.url }}">{{ tutorial.title }}</a>&nbsp;&nbsp;&nbsp;
     {{ tutorial.excerpt | strip_html }} <a href="{{ tutorial.url }}"> Read&nbsp;more...</a>

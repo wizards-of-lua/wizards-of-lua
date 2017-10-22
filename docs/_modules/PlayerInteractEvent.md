@@ -1,7 +1,7 @@
 ---
 name: PlayerInteractEvent
 title: PlayerInteractEvent
-subtitle: 
+subtitle:
 type: event
 extends: Event
 layout: module
@@ -27,6 +27,11 @@ properties:
     type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r
     description: "The block's position.
+    "
+  - name: item
+    type: "[Item](!SITE_URL!/modules/Item/)"
+    access: r
+    description: "The item in the player's hand.
     "
 functions:
 ---

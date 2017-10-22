@@ -1,7 +1,8 @@
 <div id="naviLeft">
 <h2>Tutorials</h2>
 <ul>
-{% for tutorial in site.tutorials limit:7 %}
+{% assign tutorials = site.tutorials | sort: 'level' %}
+{% for tutorial in tutorials limit:7 %}
   <li>
     <a href="{{ tutorial.url }}">{{ tutorial.title }}</a>
   </li>
