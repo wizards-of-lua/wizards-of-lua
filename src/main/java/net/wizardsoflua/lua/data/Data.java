@@ -50,7 +50,7 @@ public class Data {
       return converters.toJava(String.class, luaObj);
     }
     if (luaObj instanceof CustomEventClass.Proxy) {
-      CustomEventClass.Proxy proxy = (CustomEventClass.Proxy)luaObj;
+      CustomEventClass.Proxy<?> proxy = (CustomEventClass.Proxy<?>)luaObj;
       CustomLuaEvent delegate = proxy.getDelegate();
       Data data = Data.createData(proxy.rawget("data"), converters);
       // return a new event object with the (modified) data
@@ -59,14 +59,14 @@ public class Data {
       return result;
     }
     if (luaObj instanceof DelegatingProxy) {
-      DelegatingProxy proxy = (DelegatingProxy) luaObj;
+      DelegatingProxy<?> proxy = (DelegatingProxy<?>) luaObj;
       if (!proxy.isTransferable()) {
         throw new IllegalArgumentException(String.format(
             "Can't transfer Lua object. Unsupported data type: %s", luaObj.getClass().getName()));
       }
       String classname = converters.getTypes().getClassname((Table) luaObj);
       if (classname != null) {
-        return ((DelegatingProxy) luaObj).getDelegate();
+        return ((DelegatingProxy<?>) luaObj).getDelegate();
       } else {
         throw new IllegalArgumentException(String.format(
             "Can't transfer Lua object. Unsupported data type: %s", luaObj.getClass().getName()));

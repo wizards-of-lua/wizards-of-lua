@@ -10,44 +10,32 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @DeclareLuaClass(name = ItemClass.METATABLE_NAME)
-public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
+public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> {
   public static final String METATABLE_NAME = "Item";
 
   public ItemClass() {
-    super(ItemStack.class);
     add("putNbt", new PutNbtFunction());
   }
 
   @Override
-  public Table toLua(ItemStack delegate) {
-    return new Proxy(getConverters(), getMetatable(), delegate);
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public ItemStack toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
+  public Proxy toLua(ItemStack delegate) {
+    return new Proxy(getConverters(), getMetatable(), delegate);
   }
 
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public static class Proxy extends DelegatingProxy {
-
-    private final ItemStack delegate;
-
+  public static class Proxy extends DelegatingProxy<ItemStack> {
     public Proxy(Converters converters, Table metatable, ItemStack delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
-
       addReadOnly("id", this::getId);
       add("displayName", delegate::getDisplayName, this::setDisplayName);
       add("damage", delegate::getItemDamage, this::setItemDamage);
@@ -105,7 +93,7 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
     }
 
     public void putNbt(Object luaObj) {
-      Table nbtTable = getConverters().castToTable(luaObj); 
+      Table nbtTable = getConverters().castToTable(luaObj);
       NBTTagCompound oldNbt = delegate.serializeNBT();
       delegate.writeToNBT(oldNbt);
       NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
@@ -116,7 +104,7 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
   private class PutNbtFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getProxy(arg1);
+      Proxy proxy = castToProxy(arg1);
       proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
     }

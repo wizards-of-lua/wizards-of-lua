@@ -4,39 +4,25 @@ import net.minecraft.entity.EntityLiving;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 
 @DeclareLuaClass(name = MobClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
-public class MobClass extends InstanceCachingLuaClass<EntityLiving> {
+public class MobClass extends ProxyCachingLuaClass<EntityLiving, MobClass.Proxy<EntityLiving>> {
   public static final String METATABLE_NAME = "Mob";
 
-  public MobClass() {
-    super(EntityLiving.class);
+  @Override
+  public String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public Table toLua(EntityLiving delegate) {
-    return new Proxy(getConverters(), getMetatable(), delegate);
+  public MobClass.Proxy<EntityLiving> toLua(EntityLiving delegate) {
+    return new Proxy<>(getConverters(), getMetatable(), delegate);
   }
 
-  @Override
-  public EntityLiving toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
-  }
-
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public static class Proxy extends EntityClass.EntityLivingBaseProxy {
-
-    private final EntityLiving delegate;
-
-    public Proxy(Converters converters, Table metatable, EntityLiving delegate) {
+  public static class Proxy<D extends EntityLiving> extends EntityClass.EntityLivingBaseProxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
       add("ai", this::getAi, this::setAi);
     }
 
@@ -49,5 +35,4 @@ public class MobClass extends InstanceCachingLuaClass<EntityLiving> {
       delegate.setNoAI(!enabled);
     }
   }
-
 }

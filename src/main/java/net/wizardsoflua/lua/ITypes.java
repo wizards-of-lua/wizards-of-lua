@@ -17,5 +17,4 @@ public interface ITypes {
   String getClassname(Table table);
 
   String getTypename(Object luaObj);
-
 }
