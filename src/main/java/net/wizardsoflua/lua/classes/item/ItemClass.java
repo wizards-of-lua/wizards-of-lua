@@ -4,6 +4,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.runtime.AbstractFunction2;
+import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
@@ -17,6 +21,7 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
 
   public ItemClass() {
     super(ItemStack.class);
+    add("putNbt", new PutNbtFunction());
   }
 
   @Override
@@ -46,7 +51,7 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
       addReadOnly("id", this::getId);
       add("displayName", delegate::getDisplayName, this::setDisplayName);
       add("damage", delegate::getItemDamage, this::setItemDamage);
-      add("repairCost", delegate::getRepairCost, this::setRepairCost);
+      add("repairCost", this::getRepairCost, this::setRepairCost);
       add("count", delegate::getCount, this::setStackSize);
       addReadOnly("nbt", this::getNbt);
     }
@@ -66,7 +71,7 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
     }
 
     private Object getNbt() {
-      NBTTagCompound data = delegate.getTagCompound();
+      NBTTagCompound data = delegate.serializeNBT();
       if (data == null) {
         return null;
       }
@@ -89,10 +94,37 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack> {
       delegate.setRepairCost(value);
     }
 
+    private Object getRepairCost() {
+      int cost = delegate.getRepairCost();
+      return getConverters().toLua(cost);
+    }
+
     private void setStackSize(Object luaObj) {
       int value = getConverters().toJava(Integer.class, luaObj);
       delegate.setCount(value);
     }
+
+    public void putNbt(Object luaObj) {
+      Table nbtTable = getConverters().castToTable(luaObj); 
+      NBTTagCompound oldNbt = delegate.serializeNBT();
+      delegate.writeToNBT(oldNbt);
+      NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
+      delegate.deserializeNBT(newNbt);
+    }
   }
 
+  private class PutNbtFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+      Proxy proxy = getProxy(arg1);
+      proxy.putNbt(arg2);
+      context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
 }

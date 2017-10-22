@@ -30,8 +30,8 @@ public class GeneralConfig {
 
   private String luaLibDirHome = "libs";
   private final File luaLibDirHomeFile;
-  private String shardLibDir = "shared";
-  private final File shardLibDirFile;
+  private String sharedLibDir = "shared";
+  private final File sharedLibDirFile;
 
   private String sharedAutoRequire = "";
 
@@ -40,7 +40,7 @@ public class GeneralConfig {
   public GeneralConfig(Context context) {
     this.context = checkNotNull(context, "context==null!");
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
-    shardLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, shardLibDir));
+    sharedLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, sharedLibDir));
     sharedAutoRequire = "";
   }
 
@@ -52,19 +52,19 @@ public class GeneralConfig {
     showAboutMessage = getAsOptional(Boolean.class, table, "showAboutMessage")
         .orElse(showAboutMessage).booleanValue();
     luaLibDirHome = getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
-    shardLibDir = getAsOptional(String.class, table, "shardLibDir").orElse(shardLibDir);
+    sharedLibDir = getAsOptional(String.class, table, "sharedLibDir").orElse(sharedLibDir);
     sharedAutoRequire =
         getAsOptional(String.class, table, "sharedAutoRequire").orElse(sharedAutoRequire);
 
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
-    shardLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, shardLibDir));
+    sharedLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, sharedLibDir));
   }
 
   public Table writeTo(Table table) {
     table.rawset("luaTicksLimit", luaTicksLimit);
     table.rawset("showAboutMessage", showAboutMessage);
     table.rawset("luaLibDirHome", luaLibDirHome);
-    table.rawset("shardLibDir", shardLibDir);
+    table.rawset("sharedLibDir", sharedLibDir);
     table.rawset("sharedAutoRequire", sharedAutoRequire);
     return table;
   }
@@ -103,7 +103,7 @@ public class GeneralConfig {
   }
 
   public File getSharedLibDir() {
-    return shardLibDirFile;
+    return sharedLibDirFile;
   }
 
   private File tryToCreateDir(File dir) {

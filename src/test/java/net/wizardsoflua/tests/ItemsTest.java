@@ -10,7 +10,7 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 @RunWith(MinecraftJUnitRunner.class)
 public class ItemsTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.BlocksTest test_get_dirt
+  // /test net.wizardsoflua.tests.ItemsTest test_get_diamond_axe
   @Test
   public void test_get_diamond_axe() throws Exception {
     // Given:
