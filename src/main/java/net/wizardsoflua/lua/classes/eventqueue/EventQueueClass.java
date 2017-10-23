@@ -9,46 +9,36 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
 @DeclareLuaClass(name = EventQueueClass.METATABLE_NAME)
-public class EventQueueClass extends LuaClass<EventQueue> {
+public class EventQueueClass
+    extends ProxyingLuaClass<EventQueue, EventQueueClass.Proxy<EventQueue>> {
   public static final String METATABLE_NAME = "EventQueue";
 
   public EventQueueClass() {
-    super(EventQueue.class);
     add("isEmpty", new IsEmptyFunction());
     add("pop", new PopFunction());
     add("disconnect", new DisconnectFunction());
   }
 
   @Override
-  public Table toLua(EventQueue javaObj) {
-    return new Proxy(getConverters(), getMetatable(), javaObj);
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public EventQueue toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
+  public Proxy<EventQueue> toLua(EventQueue javaObj) {
+    return new Proxy<>(getConverters(), getMetatable(), javaObj);
   }
 
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public static class Proxy extends DelegatingProxy {
-
-    private final EventQueue delegate;
-
-    public Proxy(Converters converters, Table metatable, EventQueue delegate) {
+  public static class Proxy<D extends EventQueue> extends DelegatingProxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
       addReadOnly("names", this::getNames);
     }
-    
+
     @Override
     public boolean isTransferable() {
       return false;
@@ -123,5 +113,4 @@ public class EventQueueClass extends LuaClass<EventQueue> {
       throw new NonsuspendableFunctionException();
     }
   }
-
 }

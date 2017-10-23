@@ -1,14 +1,12 @@
 package net.wizardsoflua.lua.module.events;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.String.format;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
-import net.sandius.rembulan.Table;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;

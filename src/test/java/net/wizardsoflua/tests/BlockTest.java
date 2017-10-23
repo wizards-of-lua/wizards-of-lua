@@ -188,7 +188,7 @@ public class BlockTest extends WolTestBase {
 
     // When:
     mc().player().chat(
-        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print( str(i.nbt.BlockEntityTag.Items))",
+        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print( str(i.nbt.tag.BlockEntityTag.Items))",
         posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
@@ -206,7 +206,7 @@ public class BlockTest extends WolTestBase {
 
     // When:
     mc().player().chat(
-        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print( i.nbt.BlockEntityTag.Items[1].id)",
+        "/lua spell.pos=Vec3.from(%s,%s,%s); i=spell.block:asItem(); print( i.nbt.tag.BlockEntityTag.Items[1].id)",
         posP.getX(), posP.getY(), posP.getZ());
 
     // Then:

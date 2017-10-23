@@ -7,41 +7,30 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 
 @DeclareLuaClass(name = PlayerClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
-public class PlayerClass extends InstanceCachingLuaClass<EntityPlayer> {
+public class PlayerClass
+    extends ProxyCachingLuaClass<EntityPlayer, PlayerClass.Proxy<EntityPlayer>> {
   public static final String METATABLE_NAME = "Player";
 
   public PlayerClass() {
-    super(EntityPlayer.class);
     add("putNbt", new UnsupportedFunction("putNbt", METATABLE_NAME));
   }
 
   @Override
-  public Table toLua(EntityPlayer delegate) {
-    return new Proxy(getConverters(), getMetatable(), delegate);
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public EntityPlayer toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
+  public Proxy<EntityPlayer> toLua(EntityPlayer delegate) {
+    return new Proxy<>(getConverters(), getMetatable(), delegate);
   }
 
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public class Proxy extends EntityClass.EntityLivingBaseProxy {
-
-    private final EntityPlayer delegate;
-
-    public Proxy(Converters converters, Table metatable, EntityPlayer delegate) {
+  public class Proxy<D extends EntityPlayer> extends EntityClass.EntityLivingBaseProxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
-
       // Overwrite name, since player names can't be changed
       addReadOnly("name", this::getName);
       add("team", this::getTeam, this::setTeam);

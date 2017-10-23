@@ -49,7 +49,7 @@ public class LuaClasses {
 
   private Class<?> getGenericTypeArgument(Class<?> cls) {
     @SuppressWarnings("serial")
-    TypeToken<LuaClass<?>> token = new TypeToken<LuaClass<?>>(cls) {};
+    TypeToken<LuaClass<?, ?>> token = new TypeToken<LuaClass<?, ?>>(cls) {};
     TypeToken<?> resolveType = token.resolveType(cls.getGenericSuperclass());
     Type type = resolveType.getType();
     ParameterizedType ptype = (ParameterizedType) type;
@@ -67,12 +67,12 @@ public class LuaClasses {
     return luaClassByJavaClass.containsKey(javaClass);
   }
 
-  public Set<LuaClass<?>> load(Converters converters) {
+  public Set<LuaClass<?, ?>> load(Converters converters) {
     Map<String, Table> metatables = declareMetatables(converters.getTypes());
 
-    Set<LuaClass<?>> result = new HashSet<>();
+    Set<LuaClass<?, ?>> result = new HashSet<>();
     for (Class<?> cls : luaClasses) {
-      LuaClass<?> elem = load(cls, converters, metatables);
+      LuaClass<?, ?> elem = load(cls, converters, metatables);
       result.add(elem);
     }
     return result;
@@ -122,12 +122,12 @@ public class LuaClasses {
     return Joiner.on(", ").join(Iterables.transform(list, (e) -> e.getName()));
   }
 
-  private LuaClass<?> load(Class<?> cls, Converters converters, Map<String, Table> metatables) {
+  private LuaClass<?, ?> load(Class<?> cls, Converters converters, Map<String, Table> metatables) {
     try {
       DeclareLuaClass anno = cls.getAnnotation(DeclareLuaClass.class);
       Table metatable = metatables.get(anno.name());
       Object obj = cls.newInstance();
-      LuaClass<?> result = (LuaClass<?>) obj;
+      LuaClass<?, ?> result = (LuaClass<?, ?>) obj;
       result.setConverters(converters);
       result.setMetatable(metatable);
       return result;

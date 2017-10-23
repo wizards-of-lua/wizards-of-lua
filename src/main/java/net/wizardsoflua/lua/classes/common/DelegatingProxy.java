@@ -5,18 +5,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 
-public abstract class DelegatingProxy extends DelegatingTable {
-
-  private final Object delegate;
+public abstract class DelegatingProxy<D> extends DelegatingTable {
+  protected final D delegate;
   private final Converters converters;
 
-  public DelegatingProxy(Converters converters, Table metatable, Object delegate) {
+  public DelegatingProxy(Converters converters, Table metatable, D delegate) {
     super(metatable);
     this.delegate = checkNotNull(delegate, "delegate==null!");
     this.converters = checkNotNull(converters, "converters==null!");
   }
 
-  public Object getDelegate() {
+  public D getDelegate() {
     return delegate;
   }
 

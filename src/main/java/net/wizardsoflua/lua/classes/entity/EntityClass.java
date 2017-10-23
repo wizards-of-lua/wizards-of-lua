@@ -16,7 +16,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -25,16 +24,15 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 @DeclareLuaClass(name = EntityClass.METATABLE_NAME)
-public class EntityClass extends InstanceCachingLuaClass<Entity> {
+public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<?>> {
   public static final String METATABLE_NAME = "Entity";
 
   public EntityClass() {
-    super(Entity.class);
     add("move", new MoveFunction());
     add("putNbt", new PutNbtFunction());
     add("addTag", new AddTagFunction());
@@ -42,32 +40,22 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   }
 
   @Override
-  public Table toLua(Entity delegate) {
-    if (delegate instanceof EntityLivingBase) {
-      return new EntityLivingBaseProxy(getConverters(), getMetatable(),
-          (EntityLivingBase) delegate);
-    }
-    return new EntityProxy(getConverters(), getMetatable(), delegate);
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public Entity toJava(Table luaObj) {
-    EntityProxy proxy = getProxy(luaObj);
-    return proxy.delegate;
+  public Proxy<?> toLua(Entity delegate) {
+    if (delegate instanceof EntityLivingBase) {
+      return new EntityLivingBaseProxy<>(getConverters(), getMetatable(),
+          (EntityLivingBase) delegate);
+    }
+    return new Proxy<>(getConverters(), getMetatable(), delegate);
   }
 
-  protected EntityProxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (EntityProxy) luaObj;
-  }
-
-  public static class EntityProxy extends DelegatingProxy {
-
-    private final Entity delegate;
-
-    public EntityProxy(Converters converters, Table metatable, Entity delegate) {
+  public static class Proxy<D extends Entity> extends DelegatingProxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
       addReadOnly("dimension", () -> delegate.dimension);
       addReadOnly("uuid", this::getUuid);
       add("name", this::getName, this::setName);
@@ -115,7 +103,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
 
     /**
      * Sets the rotation yaw (rot-y) value.
-     * 
+     *
      * @param luaObj
      * @see Entity#readFromNBT(NBTTagCompound)
      */
@@ -245,15 +233,9 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
 
   }
 
-  public static class EntityLivingBaseProxy extends EntityProxy {
-
-    private final EntityLivingBase delegate;
-
-    public EntityLivingBaseProxy(Converters converters, Table metatable,
-        EntityLivingBase delegate) {
+  public static class EntityLivingBaseProxy<D extends EntityLivingBase> extends Proxy<D> {
+    public EntityLivingBaseProxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
-
       add("mainhand", this::getMainhand, this::setMainhand);
       add("offhand", this::getOffhand, this::setOffhand);
     }
@@ -301,7 +283,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
         throws ResolvedControlThrowable {
-      EntityProxy proxy = getProxy(arg1);
+      Proxy<?> proxy = castToProxy(arg1);
       String direction = getConverters().toJava(String.class, arg2);
       Number distance = getConverters().toJavaNullable(Number.class, arg3);
       proxy.move(direction, distance);
@@ -318,7 +300,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   private class PutNbtFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      EntityProxy proxy = getProxy(arg1);
+      Proxy<?> proxy = castToProxy(arg1);
       proxy.putNbt(arg2);
       context.getReturnBuffer().setTo();
     }
@@ -333,7 +315,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   private class AddTagFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      EntityProxy proxy = getProxy(arg1);
+      Proxy<?> proxy = castToProxy(arg1);
       boolean result = proxy.addTag(arg2);
       context.getReturnBuffer().setTo(result);
     }
@@ -348,7 +330,7 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
   private class RemoveTagFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      EntityProxy proxy = getProxy(arg1);
+      Proxy<?> proxy = castToProxy(arg1);
       boolean result = proxy.removeTag(arg2);
       context.getReturnBuffer().setTo(result);
     }
@@ -359,5 +341,4 @@ public class EntityClass extends InstanceCachingLuaClass<Entity> {
       throw new NonsuspendableFunctionException();
     }
   }
-
 }

@@ -9,19 +9,15 @@ import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-public class TimeModule extends DelegatingProxy {
-
+public class TimeModule extends DelegatingProxy<Time> {
   public static TimeModule installInto(Table env, Converters converters, Time time) {
     TimeModule result = new TimeModule(converters, time);
     env.rawset("Time", result);
     return result;
   }
 
-  private final Time delegate;
-
   public TimeModule(Converters converters, Time delegate) {
     super(converters, null, delegate);
-    this.delegate = delegate;
     add("autosleep", () -> delegate.isAutoSleep(), this::setAutoSleep);
     addReadOnly("allowance", () -> delegate.getAllowance());
     addReadOnly("luatime", () -> delegate.getLuaTicks());
@@ -31,7 +27,7 @@ public class TimeModule extends DelegatingProxy {
     addImmutable("sleep", new SleepFunction());
     addImmutable("getDate", new GetDateFunction());
   }
-  
+
   @Override
   public boolean isTransferable() {
     return false;
@@ -43,7 +39,6 @@ public class TimeModule extends DelegatingProxy {
   }
 
   private class GetDateFunction extends AbstractFunction1 {
-
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       String pattern = arg1 == null ? null : String.valueOf(arg1);
@@ -59,7 +54,6 @@ public class TimeModule extends DelegatingProxy {
   }
 
   private class SleepFunction extends AbstractFunction1 {
-
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       // System.out.println("sleep: " + arg1);
@@ -94,5 +88,4 @@ public class TimeModule extends DelegatingProxy {
       context.getReturnBuffer().setTo();
     }
   }
-
 }

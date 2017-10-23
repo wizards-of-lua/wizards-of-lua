@@ -38,7 +38,7 @@ public class Types implements ITypes {
   /**
    * Returns the metatable of the Lua class with the given classname, of <code>null</code>, if no
    * such class has been declared.
-   * 
+   *
    * @param classname
    * @return the metatable of the Lua class with the given classname
    */
@@ -57,10 +57,12 @@ public class Types implements ITypes {
     return null;
   }
 
+  @Override
   public Table declare(String classname) {
     return declare(classname, (Table) null);
   }
 
+  @Override
   public Table declare(String classname, @Nullable String superclassname) {
     Table superclassMT = null;
     if (superclassname != null) {
@@ -72,7 +74,7 @@ public class Types implements ITypes {
 
   /**
    * Declares a new Lua class with the given name and the optionally given superclass metatable.
-   * 
+   *
    * @param classname
    * @param superclassMT
    * @return the new class metatable
@@ -99,7 +101,7 @@ public class Types implements ITypes {
   /**
    * Returns the classname of the given table, or <code>null</code> if this table is not an instance
    * belonging to a class.
-   * 
+   *
    * @param table
    * @return the classname
    */
@@ -115,7 +117,7 @@ public class Types implements ITypes {
   /**
    * Returns <code>true</code> if the given Lua object is an instance of the Lua class represented
    * by the given class metatable.
-   * 
+   *
    * @param classMT
    * @param luaObj
    * @return <code>true</code> if the given Lua object is an instance of the Lua class represented
@@ -135,7 +137,7 @@ public class Types implements ITypes {
   /**
    * Returns the Lua type name of the given Lua object, of <code>null</code>, it the name is
    * unknown.
-   * 
+   *
    * @param luaObj
    * @return the Lua type name of the given Lua object
    */
@@ -167,6 +169,7 @@ public class Types implements ITypes {
     return null;
   }
 
+  @Override
   public void checkAssignable(String expectedMetatableName, Object luaObj)
       throws IllegalArgumentException {
     checkAssignable(expectedMetatableName, luaObj, Terms.MANDATORY);
