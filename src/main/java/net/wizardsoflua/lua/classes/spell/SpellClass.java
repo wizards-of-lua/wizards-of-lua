@@ -17,43 +17,32 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.spell.SpellEntity;
 
 @DeclareLuaClass(name = SpellClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
-public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
-
+public class SpellClass
+    extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String METATABLE_NAME = "Spell";
 
   public SpellClass() {
-    super(SpellEntity.class);
     add("execute", new ExecuteFunction());
   }
 
   @Override
-  public Table toLua(SpellEntity delegate) {
-    return new Proxy(getConverters(), getMetatable(), delegate);
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public SpellEntity toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
+  public Proxy<SpellEntity> toLua(SpellEntity delegate) {
+    return new Proxy<>(getConverters(), getMetatable(), delegate);
   }
 
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public static class Proxy extends EntityClass.EntityProxy {
-
-    private final SpellEntity delegate;
-
-    public Proxy(Converters converters, Table metatable, SpellEntity delegate) {
+  public static class Proxy<D extends SpellEntity> extends EntityClass.Proxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
       addReadOnly("owner", this::getOwner);
       add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);
@@ -113,14 +102,13 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
       World world = delegate.getEntityWorld();
       return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
     }
-
   }
 
   private class ExecuteFunction extends AbstractFunctionAnyArg {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      Proxy proxy = getProxy(arg0);
+      Proxy<SpellEntity> proxy = castToProxy(arg0);
 
       LuaFunction formatFunc = StringLib.format();
       Object[] argArray = new Object[args.length - 1];
@@ -138,5 +126,4 @@ public class SpellClass extends InstanceCachingLuaClass<SpellEntity> {
       throw new NonsuspendableFunctionException();
     }
   }
-
 }

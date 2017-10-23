@@ -1,54 +1,36 @@
 package net.wizardsoflua.lua.classes.event;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @DeclareLuaClass(name = PlayerInteractEventClass.METATABLE_NAME,
     superclassname = EventClass.METATABLE_NAME)
-public class PlayerInteractEventClass extends LuaClass<PlayerInteractEvent> {
+public class PlayerInteractEventClass extends
+    ProxyingLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Proxy<PlayerInteractEvent>> {
   public static final String METATABLE_NAME = "PlayerInteractEvent";
 
-  public PlayerInteractEventClass() {
-    super(PlayerInteractEvent.class);
+  @Override
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public Table toLua(PlayerInteractEvent javaObj) {
-    return new Proxy(getConverters(), getMetatable(), javaObj, METATABLE_NAME);
+  public Proxy<PlayerInteractEvent> toLua(PlayerInteractEvent javaObj) {
+    return new Proxy<>(getConverters(), getMetatable(), javaObj);
   }
 
-  @Override
-  public PlayerInteractEvent toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
-  }
-
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public static class Proxy extends EventClass.Proxy {
-
-    private final PlayerInteractEvent delegate;
-
-    public Proxy(Converters converters, Table metatable, PlayerInteractEvent delegate,
-        String name) {
-      super(converters, metatable, delegate, name);
-      this.delegate = checkNotNull(delegate, "delegate==null!");
+  public static class Proxy<D extends PlayerInteractEvent> extends EventClass.Proxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
+      super(converters, metatable, delegate);
       addImmutable("player", getConverters().toLua(delegate.getEntityPlayer()));
       addImmutableNullable("face", getConverters().toLuaNullable(delegate.getFace()));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));
       addImmutable("pos", getConverters().toLua(new Vec3d(delegate.getPos())));
       addImmutable("item", getConverters().toLua(delegate.getItemStack()));
     }
-
   }
-
 }

@@ -17,46 +17,35 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.nbt.NbtPrimitiveConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @DeclareLuaClass(name = BlockClass.METATABLE_NAME)
-public class BlockClass extends LuaClass<WolBlock> {
+public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
   public static final String METATABLE_NAME = "Block";
 
   public BlockClass() {
-    super(WolBlock.class);
     add("withData", new WithDataFunction());
     add("withNbt", new WithNbtFunction());
     add("asItem", new AsItemFunction());
   }
 
   @Override
-  public Table toLua(WolBlock javaObj) {
-    return new Proxy(getConverters(), getMetatable(), javaObj);
+  public String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
-  public WolBlock toJava(Table luaObj) {
-    Proxy proxy = getProxy(luaObj);
-    return proxy.delegate;
+  public Proxy<WolBlock> toLua(WolBlock javaObj) {
+    return new Proxy<>(getConverters(), getMetatable(), javaObj);
   }
 
-  protected Proxy getProxy(Object luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    return (Proxy) luaObj;
-  }
-
-  public static class Proxy extends DelegatingProxy {
-
-    private final WolBlock delegate;
-
-    public Proxy(Converters converters, Table metatable, WolBlock delegate) {
+  public static class Proxy<D extends WolBlock> extends DelegatingProxy<D> {
+    public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
-      this.delegate = delegate;
       addReadOnly("name", this::getName);
       addReadOnly("material", this::getMaterial);
       addImmutable("data", getData());
@@ -182,5 +171,4 @@ public class BlockClass extends LuaClass<WolBlock> {
       throw new NonsuspendableFunctionException();
     }
   }
-
 }

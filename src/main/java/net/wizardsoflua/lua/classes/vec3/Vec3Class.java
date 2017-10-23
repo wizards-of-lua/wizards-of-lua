@@ -8,11 +8,12 @@ import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
 @DeclareLuaClass(name = Vec3Class.METATABLE_NAME)
-public class Vec3Class extends LuaClass<Vec3d> {
+public class Vec3Class extends LuaClass<Vec3d, Table> {
   public static final String METATABLE_NAME = "Vec3";
 
-  public Vec3Class() {
-    super(Vec3d.class);
+  @Override
+  protected String getMetatableName() {
+    return METATABLE_NAME;
   }
 
   @Override
@@ -27,13 +28,9 @@ public class Vec3Class extends LuaClass<Vec3d> {
 
   @Override
   public Vec3d toJava(Table luaObj) {
-    getConverters().getTypes().checkAssignable(METATABLE_NAME, luaObj);
-    Table luaTable = getConverters().castToTable(luaObj);
-    double x = Conversions.floatValueOf(luaTable.rawget("x"));
-    double y = Conversions.floatValueOf(luaTable.rawget("y"));
-    double z = Conversions.floatValueOf(luaTable.rawget("z"));
+    double x = Conversions.floatValueOf(luaObj.rawget("x"));
+    double y = Conversions.floatValueOf(luaObj.rawget("y"));
+    double z = Conversions.floatValueOf(luaObj.rawget("z"));
     return new Vec3d(x, y, z);
   }
-
-
 }

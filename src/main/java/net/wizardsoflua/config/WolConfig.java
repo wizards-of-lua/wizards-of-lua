@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
 
+import com.google.common.io.Files;
+
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -174,11 +176,7 @@ public class WolConfig {
                 configFile.getParentFile().getAbsolutePath()));
       }
     }
-    if (!tmpFile.renameTo(configFile)) {
-      throw new IOException(
-          format("Couldn't save configuration to %s because of an unknown reason!",
-              configFile.getAbsolutePath()));
-    }
+    Files.move(tmpFile, configFile);
   }
 
   private void writeTo(PrintWriter out) {

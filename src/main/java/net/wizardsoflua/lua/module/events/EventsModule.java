@@ -10,8 +10,7 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 
-public class EventsModule extends DelegatingProxy {
-
+public class EventsModule extends DelegatingProxy<EventHandlers> {
   public static EventsModule installInto(Table env, Converters converters,
       EventHandlers eventHandlers) {
     EventsModule result = new EventsModule(converters, eventHandlers);
@@ -19,12 +18,8 @@ public class EventsModule extends DelegatingProxy {
     return result;
   }
 
-  private final EventHandlers delegate;
-
   public EventsModule(Converters converters, EventHandlers delegate) {
     super(converters, null, delegate);
-    this.delegate = delegate;
-
     addImmutable("connect", new ConnectFunction());
     addImmutable("fire", new FireFunction());
   }
@@ -35,7 +30,6 @@ public class EventsModule extends DelegatingProxy {
   }
 
   private class ConnectFunction extends AbstractFunctionAnyArg {
-
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Iterable<String> eventNames = getConverters().toJavaIterableFromArray(String.class, args);
@@ -49,11 +43,9 @@ public class EventsModule extends DelegatingProxy {
         throws ResolvedControlThrowable {
       throw new NonsuspendableFunctionException();
     }
-
   }
 
   private class FireFunction extends AbstractFunction2 {
-
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
       String eventName = getConverters().toJava(String.class, arg1, "eventName");
@@ -67,5 +59,4 @@ public class EventsModule extends DelegatingProxy {
       throw new NonsuspendableFunctionException();
     }
   }
-
 }

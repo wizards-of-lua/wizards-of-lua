@@ -16,7 +16,7 @@ import net.wizardsoflua.lua.data.TableDataConverter;
 public class Converters extends WolConversions {
 
   private final ITypes types;
-  private final Set<LuaClass<?>> classInstances;
+  private final Set<LuaClass<?, ?>> classInstances;
   private final TableDataConverter tableDataConverter = new TableDataConverter(this);
 
   public Converters(ITypes types, LuaClasses luaClasses) {
@@ -28,23 +28,24 @@ public class Converters extends WolConversions {
     return types;
   }
 
+  @Override
   public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
     checkNotNull(luaObj, "luaObj==null!");
-    LuaClass<T> cls = getByJavaClass(type);
+    LuaClass<T, ?> cls = getByJavaClass(type);
     if (cls != null) {
-      return cls.toJava(castToTable(luaObj));
+      return cls.getJavaInstance(castToTable(luaObj));
     }
     return super.toJava(type, luaObj);
   }
 
   @SuppressWarnings("unchecked")
-  private <T extends ST, ST> LuaClass<T> getByJavaClass(Class<ST> type) {
+  private <T extends ST, ST> LuaClass<T, ?> getByJavaClass(Class<ST> type) {
     if (type == null) {
       return null;
     }
-    for (LuaClass<?> classBase : classInstances) {
-      if (classBase.getType().equals(type)) {
-        return (LuaClass<T>) classBase;
+    for (LuaClass<?, ?> classBase : classInstances) {
+      if (classBase.getJavaClass().equals(type)) {
+        return (LuaClass<T, ?>) classBase;
       }
     }
     Class<? super ST> superClass = type.getSuperclass();
@@ -62,7 +63,7 @@ public class Converters extends WolConversions {
 
     @SuppressWarnings("unchecked")
     Class<T> javaClass = (Class<T>) value.getClass();
-    LuaClass<T> cls = getByJavaClass(javaClass);
+    LuaClass<T, ?> cls = getByJavaClass(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(value);
     }
