@@ -44,7 +44,7 @@ correct, and then it will call the actual [rocket()](/examples/rocket-thrower#ro
 player object passed in as argument.
 
 What we want to do next, is to disassemble this spell into two parts.
-One part will responsible for providing the the wand-specific command.
+One part will responsible for providing the wand-specific command.
 The other part will become the new, centralized observer spell, that can handle all magic
 wands together in one place.
 
@@ -74,23 +74,22 @@ end
 Essentially, this spell adds a custom named attribute called "OnSwingArmEvent"
 to the item's tag list, with the given command as its value.
 
-For example, to bind the rocket thrower spell to an item, we just need to take
+For example, to bind the rocket spell to an item, we just need to take
 that item into our main hand and call:
 ```lua
 /lua bind("/lua rocket()", spell.owner.mainhand)
 ```
 
-At this point, we have defined what should be done, when the
+We just have defined what should be done when the
 [SwingArmEvent](/modules/SwingArmEvent) occurs.
-
 But this is not enough, is it?
 We still need another spell that observes the events and handles them by
-executing the commands that are bound to the items.
+executing the commands.
 
 ## A Centralized Observer Spell for Magic Wands
 The centralized observer spell is resposible for handling all
 swing arm events by calling the item-specific command that has been stored inside
-the swung item.
+the item.
 
 It looks like this:
 ```lua
@@ -107,16 +106,16 @@ function magicWandObserver()
   end
 end
 ```
-As you can see, this spell extracts the item-specific spell from the item's
-nbt data, and passes it into a new vanialla "/execute" command.
-This ensures, that the new spell will be casted in behalf of the actual player,
-who waved the magic wand.
+As you can see, this spell extracts the item-specific command from the item's
+nbt data and passes it into a new vanialla "/execute" command.
+This ensures, that the new spell will be casted in behalf of the correct player,
+which is the player who waved the magic wand.
 
-Of course that means, that the player must be able to access all modules and
-functions used by the spell.
+Of course that implies, that the new spell must be able to access all modules and
+functions that are referenced by its code.
 To ensure this, you must import these modules into the spell's environment by
 using the <tt>require</tt> function.
-For that to work you either need to place the modules into the shared library directory,
+For that to work, you either need to place the modules into the shared library directory,
 or, if the module is inside a player-specific library, you need to extend the
 Lua search path by using the <tt>addpath()</tt> function.
 If you are unfamiliar with this, please have a look into our
