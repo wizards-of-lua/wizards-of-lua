@@ -31,7 +31,7 @@ function rocket(player)
   spell.pos      = player.pos + Vec3(0,player.eyeHeight,0)
                               + player.lookVec*1.5
   local velocity = player.lookVec * 0.1
-  spell:execute("/playsound entity.firework.shoot master @a[r=10] ~ ~ ~ 0.5")
+  spell:execute("/playsound entity.firework.shoot master @a ~ ~ ~ 0.5")
   for i=1,1000 do
     spell.pos = spell.pos+velocity
     spell:execute("particle smoke ~ ~ ~ 0 0 0 0 2 force")
@@ -45,7 +45,7 @@ function rocket(player)
       sleep(1)
     end
     if i%100==0 then
-      spell:execute("/playsound entity.generic.burn master @a[r=20] ~ ~ ~ 10")
+      spell:execute("/playsound entity.generic.burn master @a ~ ~ ~ 2")
     end
   end
 end
