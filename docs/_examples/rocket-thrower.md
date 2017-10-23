@@ -15,9 +15,13 @@ I've already prepared such an item. Here is a picture of it:
 
 ![The Rocket-Firing Magic Wand](/images/magic-wand-rocket-arrow-in-frame.jpg)
 
-## How To Create a Rocket
+Here is, how you can create this nice rocket thrower:
+```lua
+/lua i=Items.get("arrow"); i:putNbt({tag= { display= {Name="Rocket Thrower", Lore={"Lauches an explosive rocket"}}, ench= {{id=999, lvl=1}}}}); spell.owner.mainhand=i
+```
 
-To start, we need a spell that can create a flying rocket.
+## How To Create a Rocket
+Next, we need a spell that can create a flying rocket.
 
 This can be done in a lot of different ways.
 We just choose a simple one that creates a beam of smoke until it hits
