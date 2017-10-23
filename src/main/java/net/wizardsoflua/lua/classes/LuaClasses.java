@@ -125,7 +125,8 @@ public class LuaClasses {
   private LuaClass<?, ?> load(Class<?> cls, Converters converters, Map<String, Table> metatables) {
     try {
       DeclareLuaClass anno = cls.getAnnotation(DeclareLuaClass.class);
-      Table metatable = metatables.get(anno.name());
+      String metatableName = anno.name();
+      Table metatable = metatables.get(metatableName);
       Object obj = cls.newInstance();
       LuaClass<?, ?> result = (LuaClass<?, ?>) obj;
       result.setConverters(converters);

@@ -14,7 +14,7 @@ public interface ITypes {
   @Nullable
   Table getClassMetatable(String classname);
 
-  String getClassname(Table table);
+  String getClassname(Table luaObj);
 
   String getTypename(Object luaObj);
 }

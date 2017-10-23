@@ -99,19 +99,26 @@ public class Types implements ITypes {
   }
 
   /**
-   * Returns the classname of the given table, or <code>null</code> if this table is not an instance
-   * belonging to a class.
+   * Returns the classname of the given Lua object, or <code>null</code> if the object is not an
+   * instance belonging to a class.
    *
-   * @param table
+   * @param luaObj
    * @return the classname
    */
   @Override
-  public @Nullable String getClassname(Table table) {
-    Table mt = table.getMetatable();
+  public @Nullable String getClassname(Table luaObj) {
+    if (isMetatable(luaObj)) {
+      return null;
+    }
+    Table mt = luaObj.getMetatable();
     if (mt != null) {
       return classes.get(mt);
     }
     return null;
+  }
+
+  private boolean isMetatable(Table table) {
+    return classes.containsKey(table);
   }
 
   /**

@@ -35,7 +35,7 @@ public class EventClass extends ProxyingLuaClass<Event, EventClass.Proxy<Event>>
     }
 
     public String getName() {
-      return getConverters().getTypes().getTypename(getMetatable());
+      return getConverters().getTypes().getTypename(this);
     }
   }
 }
