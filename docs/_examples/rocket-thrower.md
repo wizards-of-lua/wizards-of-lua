@@ -17,10 +17,12 @@ I've already prepared such an item. Here is a picture of it:
 
 Here is, how you can create this nice little rocket thrower:
 ```lua
-/lua i=Items.get("arrow"); i:putNbt({tag= {
-  display= {Name="Rocket Thrower",
-  Lore={"Lauches an explosive rocket"} },
-  ench= { {id=999, lvl=1} }
+/lua i = Items.get("arrow"); i:putNbt({tag= {
+  display = {
+    Name = "Rocket Thrower",
+    Lore = {"Lauches an explosive rocket"}
+  },
+  ench = { {id=999, lvl=1} }
 }});
 spell.owner.mainhand=i
 ```
