@@ -228,14 +228,20 @@ public class WolConversions {
           format("Can't convert value! Number expected, but got: %s", luaObj.getClass().getName()));
     }
     if (String.class == type) {
-      ByteString byteStrV = Conversions.stringValueOf(luaObj);
-      if (byteStrV != null) {
-        return (T) byteStrV.toString();
-      }
-      throw new ConversionException(
-          format("Can't convert value! String expected, but got: %s", luaObj.getClass().getName()));
+      return (T) toString(luaObj);
     }
     throw new IllegalArgumentException(String.format("Unsupported type %s!", type));
   }
 
+  public static boolean isString(Object luaObject) {
+    return luaObject instanceof ByteString || luaObject instanceof String;
+  }
+
+  public static String toString(Object luaObject) {
+    if (isString(luaObject)) {
+      return luaObject.toString();
+    }
+    throw new ConversionException(format("Can't convert value! String expected, but got %s",
+        luaObject.getClass().getSimpleName()));
+  }
 }

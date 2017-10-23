@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.nbt;
+package net.wizardsoflua.lua.classes.block;
 
 import javax.annotation.Nullable;
 
@@ -8,9 +8,8 @@ import com.google.common.primitives.Ints;
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.Conversions;
 
-public class NbtPrimitiveConverter {
-
-  public static Object toLua(Object obj) {
+public class BlockPropertyConverter {
+  public static Object toLua(Comparable<?> obj) {
     if (obj instanceof IStringSerializable) {
       IStringSerializable s = (IStringSerializable) obj;
       return s.getName();
@@ -40,7 +39,7 @@ public class NbtPrimitiveConverter {
   }
 
   @SuppressWarnings("unchecked")
-  public static @Nullable <T extends Comparable<T>> T toJava(Class<?> valueClass,
+  public static @Nullable <T extends Comparable<T>> T toJava(Class<T> valueClass,
       @Nullable Object luaValue) {
     if (luaValue == null) {
       return null;

@@ -20,7 +20,6 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
-import net.wizardsoflua.lua.nbt.NbtPrimitiveConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @DeclareLuaClass(name = BlockClass.METATABLE_NAME)
@@ -78,21 +77,19 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       PatchedImmutableTable.Builder b = new PatchedImmutableTable.Builder();
       Collection<IProperty<?>> names = blockState.getPropertyKeys();
       for (IProperty<?> name : names) {
-        Object value = blockState.getValue(name);
-        Object luaValue = NbtPrimitiveConverter.toLua(value);
+        Comparable<?> value = blockState.getValue(name);
+        Object luaValue = BlockPropertyConverter.toLua(value);
         b.add(name.getName(), luaValue);
       }
       return b.build();
     }
 
     private Object getNbt() {
-      NBTTagCompound data = delegate.getNbt();
-      if (data == null) {
+      NBTTagCompound nbt = delegate.getNbt();
+      if (nbt == null) {
         return null;
       }
-      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
-      NbtConverter.insertValues(builder, data);
-      return builder.build();
+      return NbtConverter.toLua(nbt);
     }
   }
 
@@ -108,8 +105,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       for (IProperty<?> key : state.getPropertyKeys()) {
         Object luaValue = dataTable.rawget(key.getName());
         if (luaValue != null) {
-          Class<?> vc = key.getValueClass();
-          Comparable javaValue = NbtPrimitiveConverter.toJava(vc, luaValue);
+          Comparable javaValue = BlockPropertyConverter.toJava(key.getValueClass(), luaValue);
           state = state.withProperty((IProperty) key, javaValue);
         }
       }

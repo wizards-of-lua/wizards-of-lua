@@ -26,22 +26,22 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
   }
 
   @Override
-  public NBTTagList merge(NBTTagList origTagList, Table data) {
-    NBTTagList resultTagList = origTagList.copy();
+  public NBTTagList merge(NBTTagList nbt, Table data, String path) {
+    NBTTagList result = nbt.copy();
     for (Entry<Object, Object> entry : new TableIterable(data)) {
       Table luaValue = (Table) entry.getValue();
       Object keyValue = luaValue.rawget(key);
       checkNotNull(keyValue, "Expected each value to contain the key: '" + key + "'");
-      NBTTagCompound oldValue = getCompoundByValueKey(origTagList, keyValue);
+      NBTTagCompound oldValue = getCompoundByValueKey(nbt, keyValue);
       if (oldValue != null) {
-        NBTBase newValue = NbtConverter.merge(oldValue, luaValue);
-        resultTagList.appendTag(newValue);
+        NBTBase newValue = NbtConverter.merge(oldValue, luaValue, path + "[" + keyValue + "]");
+        result.appendTag(newValue);
       } else {
         NBTBase newValue = NbtConverter.toNbtCompound(luaValue);
-        resultTagList.appendTag(newValue);
+        result.appendTag(newValue);
       }
     }
-    return resultTagList;
+    return result;
   }
 
   private @Nullable NBTTagCompound getCompoundByValueKey(NBTTagList compoundList, Object keyValue) {
