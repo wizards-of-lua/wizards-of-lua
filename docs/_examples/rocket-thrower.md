@@ -28,7 +28,10 @@ spell.owner.mainhand=i
 ```
 
 ## How To Create a Rocket
-Next, we need a spell that can create a flying rocket.
+Since we will have to create 2 functions, please make sure that you are familiar with
+[importing Lua files](/tutorials/importing_lua_files) into your spells.
+
+To start, we need a function that can create a flying rocket.
 
 This can be done in a lot of different ways.
 We just choose a simple one that creates a beam of smoke until it hits
@@ -62,7 +65,7 @@ function rocket(player)
 end
 ```
 
-We can experiment with this spell from the command line.
+We can experiment with this function from the command line.
 Just find some place with a good view onto something you want to blow up.
 Make sure to look at it directly.
 Then cast the following spell:
