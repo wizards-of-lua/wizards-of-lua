@@ -15,8 +15,8 @@ import net.wizardsoflua.lua.Converters;
 
 public abstract class LuaClass<J, L extends Table> {
   private final Map<String, LuaFunction> functions = new HashMap<>();
-  private Converters converters;
   private Table metatable;
+  protected Converters converters;
 
   private @Nullable Class<J> javaClass;
 

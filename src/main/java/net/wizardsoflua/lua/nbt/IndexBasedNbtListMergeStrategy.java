@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.nbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
@@ -10,6 +12,12 @@ import net.sandius.rembulan.Table;
  * @author Adrodoc55
  */
 public class IndexBasedNbtListMergeStrategy implements NbtListMergeStrategy {
+  private final NbtConverter converter;
+
+  public IndexBasedNbtListMergeStrategy(NbtConverter converter) {
+    this.converter = checkNotNull(converter, "converter == null!");
+  }
+
   @Override
   public NBTTagList merge(NBTTagList nbt, Table data, String path) {
     NBTTagList result = nbt.copy();
@@ -18,8 +26,7 @@ public class IndexBasedNbtListMergeStrategy implements NbtListMergeStrategy {
       Object newLuaValue = data.rawget(i + 1);
       if (newLuaValue != null) {
         String key = String.valueOf(i);
-        NBTBase newNbtValue =
-            NbtConverter.merge(oldNbtValue, newLuaValue, key, path + "[" + i + "]");
+        NBTBase newNbtValue = converter.merge(oldNbtValue, newLuaValue, key, path + "[" + i + "]");
         result.set(i, newNbtValue);
       }
     }

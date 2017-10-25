@@ -20,9 +20,11 @@ import net.wizardsoflua.lua.table.TableIterable;
  */
 public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
   private final String key;
+  private final NbtConverter converter;
 
-  public ValueBasedNbtListMergeStrategy(String key) {
+  public ValueBasedNbtListMergeStrategy(String key,NbtConverter converter) {
     this.key = checkNotNull(key, "key == null!");
+    this.converter = checkNotNull(converter, "converter == null!");
   }
 
   @Override
@@ -34,10 +36,10 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
       checkNotNull(keyValue, "Expected each value to contain the key: '" + key + "'");
       NBTTagCompound oldValue = getCompoundByValueKey(nbt, keyValue);
       if (oldValue != null) {
-        NBTBase newValue = NbtConverter.merge(oldValue, luaValue, path + "[" + keyValue + "]");
+        NBTBase newValue = converter.merge(oldValue, luaValue, path + "[" + keyValue + "]");
         result.appendTag(newValue);
       } else {
-        NBTBase newValue = NbtConverter.toNbtCompound(luaValue);
+        NBTBase newValue = converter.toNbtCompound(luaValue);
         result.appendTag(newValue);
       }
     }

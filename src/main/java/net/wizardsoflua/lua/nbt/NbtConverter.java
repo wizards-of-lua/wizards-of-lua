@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
@@ -22,58 +24,90 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.wizardsoflua.config.WolConversions;
+import net.wizardsoflua.config.ConversionException;
+import net.wizardsoflua.lua.ITypes;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
-  private static Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> MERGER =
-      new HashMap<>();
+  private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
+  private final ITypes types;
 
-  static {
-    registerMerger(NBTTagByte.class, new NbtByteMerger());
-    registerMerger(NBTTagCompound.class, new NbtCompoundMerger());
-    registerMerger(NBTTagDouble.class, new NbtDoubleMerger());
-    registerMerger(NBTTagFloat.class, new NbtFloatMerger());
-    registerMerger(NBTTagInt.class, new NbtIntMerger());
-    registerMerger(NBTTagList.class, new NbtListMerger());
-    registerMerger(NBTTagLong.class, new NbtLongMerger());
-    registerMerger(NBTTagShort.class, new NbtShortMerger());
-    registerMerger(NBTTagString.class, new NbtStringMerger());
+  public NbtConverter(ITypes types) {
+    this.types = checkNotNull(types, "types == null!");
   }
 
-  private static <NBT extends NBTBase> void registerMerger(Class<NBT> cls,
-      NbtMerger<NBT> converter) {
-    if (MERGER.containsKey(cls)) {
+  private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
+    if (mergers == null) {
+      mergers = new HashMap<>();
+      registerMerger(NBTTagByte.class, new NbtByteMerger(this));
+      registerMerger(NBTTagCompound.class, new NbtCompoundMerger(this));
+      registerMerger(NBTTagDouble.class, new NbtDoubleMerger(this));
+      registerMerger(NBTTagFloat.class, new NbtFloatMerger(this));
+      registerMerger(NBTTagInt.class, new NbtIntMerger(this));
+      registerMerger(NBTTagList.class, new NbtListMerger(this));
+      registerMerger(NBTTagLong.class, new NbtLongMerger(this));
+      registerMerger(NBTTagShort.class, new NbtShortMerger(this));
+      registerMerger(NBTTagString.class, new NbtStringMerger(this));
+    }
+    return mergers;
+  }
+
+  private <NBT extends NBTBase> void registerMerger(Class<NBT> cls, NbtMerger<NBT> merger) {
+    if (getMergers().containsKey(cls)) {
       throw new IllegalArgumentException("Duplicate merger for " + cls);
     }
-    MERGER.put(cls, converter);
+    getMergers().put(cls, merger);
   }
 
-  private static <NBT extends NBTBase> NbtMerger<NBT> getMerger(Class<NBT> nbtType) {
+  private <NBT extends NBTBase> NbtMerger<NBT> getMerger(Class<NBT> nbtType) {
     @SuppressWarnings("unchecked")
-    NbtMerger<NBT> result = (NbtMerger<NBT>) MERGER.get(nbtType);
+    NbtMerger<NBT> result = (NbtMerger<NBT>) getMergers().get(nbtType);
     checkArgument(result != null, "Unsupported NBT type", nbtType.getSimpleName());
     return result;
   }
 
-  public static NBTTagCompound merge(NBTTagCompound nbt, Table luaData) {
-    return merge(nbt, luaData, DEFAULT_PATH);
+  private String keyToString(Object luaKey, int index, String path) {
+    ByteString result = Conversions.stringValueOf(luaKey);
+    if (result == null) {
+      String actualType = getTypeOrClassName(luaKey);
+      throw new ConversionException("Can't convert key " + index + " in " + path
+          + "! string/number expected, but got " + actualType);
+    }
+    return result.toString();
   }
 
-  static NBTTagCompound merge(NBTTagCompound nbt, Table luaData, String path) {
+  ConversionException conversionException(String path, Object actual, String expected) {
+    return new ConversionException("Can't convert " + path + "! " + expected + " expected, but got "
+        + getTypeOrClassName(actual));
+  }
+
+  private String getTypeOrClassName(Object luaObject) {
+    String actualType = types.getTypename(luaObject);
+    if (actualType == null) {
+      actualType = luaObject.getClass().getName();
+    }
+    return actualType;
+  }
+
+  public NBTTagCompound merge(NBTTagCompound nbt, Table data) {
+    return merge(nbt, data, DEFAULT_PATH);
+  }
+
+  NBTTagCompound merge(NBTTagCompound nbt, Table data, String path) {
     NBTTagCompound result = nbt.copy();
-    insert(result, luaData, path);
+    insert(result, data, path);
     return result;
   }
 
-  public static void insert(NBTTagCompound nbt, Table data) {
+  public void insert(NBTTagCompound nbt, Table data) {
     insert(nbt, data, DEFAULT_PATH);
   }
 
-  static void insert(NBTTagCompound nbt, Table data, String path) {
+  void insert(NBTTagCompound nbt, Table data, String path) {
+    int i = 0;
     for (Entry<Object, Object> entry : new TableIterable(data)) {
-      String key = WolConversions.toString(entry.getKey());
+      String key = keyToString(entry.getKey(), ++i, path);
       Object newLuaValue = entry.getValue();
 
       String entryPath = path + "." + key;
@@ -88,7 +122,7 @@ public class NbtConverter {
     }
   }
 
-  static <NBT extends NBTBase> NBT merge(NBT nbt, Object data, String key, String path) {
+  <NBT extends NBTBase> NBT merge(NBT nbt, Object data, String key, String path) {
     checkNotNull(key, "key == null!");
     checkNotNull(nbt, "nbt == null!");
     checkNotNull(data, "data == null!");
@@ -148,7 +182,11 @@ public class NbtConverter {
     return result;
   }
 
-  public static NBTBase toNbt(Object data) {
+  public NBTBase toNbt(Object data) {
+    return toNbt(data, DEFAULT_PATH);
+  }
+
+  private NBTBase toNbt(Object data, String path) {
     checkNotNull(data, "data == null!");
     if (data instanceof Boolean)
       return toNbt((Boolean) data);
@@ -169,7 +207,7 @@ public class NbtConverter {
     if (data instanceof String)
       return toNbt((String) data);
     if (data instanceof Table)
-      return toNbt((Table) data);
+      return toNbt((Table) data, path);
     throw new IllegalArgumentException(
         "Unsupported type for NBT conversion: " + data.getClass().getName());
   }
@@ -238,12 +276,16 @@ public class NbtConverter {
     return new NBTTagString(data);
   }
 
-  public static NBTBase toNbt(Table data) {
+  public NBTBase toNbt(Table data) {
+    return toNbt(data, DEFAULT_PATH);
+  }
+
+  private NBTBase toNbt(Table data, String path) {
     Table table = (Table) data;
     if (isArray(table)) {
-      return toNbtList(table);
+      return toNbtList(table, path);
     } else {
-      return toNbtCompound(table);
+      return toNbtCompound(table, path);
     }
   }
 
@@ -269,24 +311,33 @@ public class NbtConverter {
     return count > 0;
   }
 
-  public static NBTTagList toNbtList(Table data) {
+  public NBTTagList toNbtList(Table data) {
+    return toNbtList(data, DEFAULT_PATH);
+  }
+
+  private NBTTagList toNbtList(Table data, String path) {
     NBTTagList result = new NBTTagList();
+    int i = 0;
     for (Entry<Object, Object> entry : new TableIterable(data)) {
       Object value = entry.getValue();
-      NBTBase nbtValue = toNbt(value);
+      NBTBase nbtValue = toNbt(value, path + '[' + (++i) + ']');
       result.appendTag(nbtValue);
     }
     return result;
   }
 
-  public static NBTTagCompound toNbtCompound(Table data) {
+  public NBTTagCompound toNbtCompound(Table data) {
+    return toNbtCompound(data, DEFAULT_PATH);
+  }
+
+  private NBTTagCompound toNbtCompound(Table data, String path) {
     NBTTagCompound result = new NBTTagCompound();
+    int i = 0;
     for (Entry<Object, Object> entry : new TableIterable(data)) {
-      Object key = entry.getKey();
-      String nbtKey = WolConversions.toString(key);
+      String key = keyToString(entry.getKey(), ++i, path);
       Object value = entry.getValue();
-      NBTBase nbtValue = toNbt(value);
-      result.setTag(nbtKey, nbtValue);
+      NBTBase nbtValue = toNbt(value, path + '.' + key);
+      result.setTag(key, nbtValue);
     }
     return result;
   }

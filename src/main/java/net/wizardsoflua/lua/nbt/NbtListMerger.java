@@ -1,9 +1,17 @@
 package net.wizardsoflua.lua.nbt;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
 
 public class NbtListMerger implements NbtMerger<NBTTagList> {
+  private final NbtConverter converter;
+
+  public NbtListMerger(NbtConverter converter) {
+    this.converter = checkNotNull(converter, "converter == null!");
+  }
+
   @Override
   public NBTTagList merge(NBTTagList nbt, Object data, String key, String path) {
     if (data instanceof Table) {
@@ -11,13 +19,13 @@ public class NbtListMerger implements NbtMerger<NBTTagList> {
       switch (key) {
         case "Items":
         case "Inventory":
-          return new ValueBasedNbtListMergeStrategy("Slot").merge(nbt, table, path);
+          return new ValueBasedNbtListMergeStrategy("Slot", converter).merge(nbt, table, path);
         case "Tags":
-          return NbtConverter.toNbtList(table);
+          return converter.toNbtList(table);
         default:
-          return new IndexBasedNbtListMergeStrategy().merge(nbt, table, path);
+          return new IndexBasedNbtListMergeStrategy(converter).merge(nbt, table, path);
       }
     }
-    throw NbtMerger.conversionException(path, data, "Table");
+    throw converter.conversionException(path, data, "table");
   }
 }

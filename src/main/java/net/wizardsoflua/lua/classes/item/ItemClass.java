@@ -93,7 +93,7 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
       Table nbtTable = getConverters().castToTable(luaObj);
       NBTTagCompound oldNbt = delegate.serializeNBT();
       delegate.writeToNBT(oldNbt);
-      NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
+      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbtTable);
       delegate.deserializeNBT(newNbt);
     }
   }

@@ -196,7 +196,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       // UUID origUuid = delegate.getUniqueID();
       NBTTagCompound oldNbt = new NBTTagCompound();
       delegate.writeToNBT(oldNbt);
-      NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
+      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbtTable);
       // TODO (mk) we don't need to merge them again, do we?
       // oldNbt.merge(newNbt);
       delegate.readFromNBT(newNbt);
