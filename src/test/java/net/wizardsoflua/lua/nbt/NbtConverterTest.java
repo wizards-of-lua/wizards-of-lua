@@ -19,7 +19,7 @@ public class NbtConverterTest extends AssertionsFactory {
   private final NbtConverter underTest = new NbtConverter(new Types(new DefaultTable()));
 
   @Test
-  public void test_merge__Nutzt_NbtTyp_von_bestehendem_Tag() {
+  public void test_merge__Uses_NbtType_of_existing_Tag() {
     // Given:
     NBTTagCompound nbt = new NBTTagCompound();
     String key = "my_key";
@@ -39,7 +39,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_merge__Kann_neuen_Tag_erzeugen() {
+  public void test_merge__Can_create_new_Tag() {
     // Given:
     NBTTagCompound nbt = new NBTTagCompound();
 
@@ -57,7 +57,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Mit_einem_StringEntry() {
+  public void test_toNbtCompound__With_one_StringEntry() {
     // Given:
     Table data = new DefaultTable();
     String key = "my_key";
@@ -73,7 +73,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Mit_zwei_StringEntries() {
+  public void test_toNbtCompound__With_two_StringEntries() {
     // Given:
     Table data = new DefaultTable();
     String key1 = "my_key1";
@@ -93,7 +93,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Mit_numerischem_Key() {
+  public void test_toNbtCompound__With_numeric_Key() {
     // Given:
     Table data = new DefaultTable();
     int key = 42;
@@ -110,7 +110,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Mit_numerischer_Value() {
+  public void test_toNbtCompound__With_numeric_Value() {
     // Given:
     Table data = new DefaultTable();
     String key = "my_key";
@@ -127,7 +127,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Mit_List_Value() {
+  public void test_toNbtCompound__With_List_Value() {
     // Given:
     Table data = new DefaultTable();
     String key = "my_key";
@@ -151,7 +151,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Mit_Compound_Value() {
+  public void test_toNbtCompound__With_Compound_Value() {
     // Given:
     Table data = new DefaultTable();
     String key = "my_key";
@@ -173,7 +173,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Wirft_Exception_bei_Table_Key() {
+  public void test_toNbtCompound__With_Table_Key_throws_Exception() {
     // Given:
     Table data = new DefaultTable();
     Table key = new DefaultTable();
@@ -194,7 +194,7 @@ public class NbtConverterTest extends AssertionsFactory {
   }
 
   @Test
-  public void test_toNbtCompound__Wirft_Exception_bei_nested_Table_Key() {
+  public void test_toNbtCompound__With_nested_Table_Key_throws_Exception() {
     // Given:
     Table data = new DefaultTable();
     String key1 = "my_key";
