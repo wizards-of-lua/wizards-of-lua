@@ -2,10 +2,19 @@
 title: Features
 ---
 *The Wizards of Lua modification adds the /lua command to Minecraft, which
-gives you the power to cast a magical spell in Minecraft.
-A spell is in fact a little Lua program.*
+gives you the power to cast a magical spell in Minecraft, which actually is
+a little Lua program.*
 
-With a spell you can do the follwing:
+With a spell you can, for example, do the following:
+
+* Create magical items.
+* Create mini games.
+* Create procedural structures.
+
+To do this, you just need to learn [Lua](http://www.lua.org), the language of magic, and use some
+magic words documented in the secretive [spell book library](/spellbooklibrary).
+
+Then you have access to all of the following features:
 
 * Use all Lua language features, e.g. variables, loops, conditional bocks, and functions.
 * [Access and change any block](/modules/Blocks) in the Minecraft world, including data values and NBT values.
