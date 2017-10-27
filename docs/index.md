@@ -8,7 +8,7 @@ who want to give gamers and artists the ability to create their own interactive 
 
 And of course, "Wizards of Lua" is the name of a Minecraft
 modification that gives players the power to casts spells written in Lua.
-[Read more...](/introduction)
+[Read more...](/features)
 
 # News
 {% include news.md %}

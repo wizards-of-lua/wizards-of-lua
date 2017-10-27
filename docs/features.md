@@ -11,12 +11,14 @@ With a spell you can, for example, do the following:
 * Create mini games.
 * Create procedural structures.
 
-To do this, you just need to learn [Lua](http://www.lua.org), the language of magic, and use some
-magic words documented in the secretive [spell book library](/spellbooklibrary).
+To do all this, you just need to learn how to cast spells.
 
-Then you have access to all of the following features:
+Actually you need to become a Wizard of Lua.
+That means getting familiar with [Lua](http://www.lua.org), the language of magic,
+and studying magic words documented in the secretive [spell book library](/spellbooklibrary).
 
-* Use all Lua language features, e.g. variables, loops, conditional bocks, and functions.
+As a wizard, you will know how to execute the following great magical powers:
+
 * [Access and change any block](/modules/Blocks) in the Minecraft world, including data values and NBT values.
 * [Query](/modules/Entities) and manipulate [players](/modules/Player), [creatures](/modules/Entity), and [items](/modules/Items).
 * [Receive](/modules/Events/#connect) in-game events like [left-click-block](/modules/LeftClickBlockEvent), [swing-arm](/modules/SwingArmEvent), and many others.
@@ -24,5 +26,6 @@ Then you have access to all of the following features:
 * [Execute](/modules/Spell/#execute) any vanilla Minecraft command and commands from other mods.
 * [Access](/tutorials/importing_lua_files/) self-made Lua modules from the server's file system.
 * Run multiple spells simultaneously.
+* Use all Lua language features, e.g. variables, loops, conditional bocks, and functions.
 
-For a detailed and more technical list of features please have a look at the [roadmap](/roadmap).
+If you want to start right now, please read the [introduction](/introduction).
