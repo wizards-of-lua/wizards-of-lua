@@ -5,8 +5,8 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
@@ -48,6 +48,7 @@ public class ChunkLoaderTicketSupport {
       throw new IllegalStateException("Could not get a ChunkLoading ticket for Wizards of Lua!");
     }
     chunkLoaderTicket.bindEntity(entity);
+    loadChunkProximity(chunkPos);
     ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
   }
 
@@ -67,17 +68,50 @@ public class ChunkLoaderTicketSupport {
    */
   public void updatePosition() {
     if (chunkLoaderTicket != null) {
-      Vec3d pos = entity.getPositionVector();
+      BlockPos pos = entity.getPosition();
       if (!isInside(chunkPos, pos)) {
         ForgeChunkManager.unforceChunk(chunkLoaderTicket, chunkPos);
-        chunkPos = new ChunkPos(new BlockPos(pos));
+        chunkPos = new ChunkPos(pos);
+        loadChunkProximity(chunkPos);
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
       }
     }
   }
 
-  private boolean isInside(ChunkPos cPos, Vec3d pos) {
-    return cPos.getXStart() <= pos.xCoord && pos.xCoord <= cPos.getXEnd()
-        && cPos.getZStart() <= pos.zCoord && pos.zCoord <= cPos.getZEnd();
+  private boolean isInside(ChunkPos cPos, BlockPos pos) {
+    int xmin = cPos.getXStart();
+    int xmax = cPos.getXEnd();
+    int zmin = cPos.getZStart();
+    int zmax = cPos.getZEnd();
+    boolean result =
+        xmin <= pos.getX() && pos.getX() <= xmax && zmin <= pos.getZ() && pos.getZ() <= zmax;
+    return result;
+  }
+
+  /**
+   * This loads the neighborhood of the chunk at the given position. This ensures that the
+   * decoration elements of the world generation process are added to the chunk in the center.
+   * 
+   * @param center
+   * @see https://www.reddit.com/r/feedthebeast/comments/5x0twz/investigating_extreme_worldgen_lag/
+   */
+  private void loadChunkProximity(ChunkPos center) {
+    IChunkProvider p = entity.getEntityWorld().getChunkProvider();
+    loadChunk(p, new ChunkPos(center.chunkXPos + 1, center.chunkZPos + 1));
+    loadChunk(p, new ChunkPos(center.chunkXPos + 1, center.chunkZPos));
+    loadChunk(p, new ChunkPos(center.chunkXPos, center.chunkZPos + 1));
+    loadChunk(p, new ChunkPos(center.chunkXPos - 1, center.chunkZPos + 1));
+    loadChunk(p, new ChunkPos(center.chunkXPos + 1, center.chunkZPos - 1));
+    loadChunk(p, new ChunkPos(center.chunkXPos, center.chunkZPos - 1));
+    loadChunk(p, new ChunkPos(center.chunkXPos - 1, center.chunkZPos - 1));
+    loadChunk(p, new ChunkPos(center.chunkXPos - 1, center.chunkZPos));
+  }
+
+  private void loadChunk(IChunkProvider p, ChunkPos pos) {
+    int x = chunkPos.chunkXPos;
+    int z = chunkPos.chunkZPos;
+    if (p.getLoadedChunk(x, z) == null) {
+      p.provideChunk(x, z);
+    }
   }
 }
