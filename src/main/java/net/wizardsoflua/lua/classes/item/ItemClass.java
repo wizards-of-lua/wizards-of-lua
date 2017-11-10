@@ -13,7 +13,6 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
-import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @DeclareLuaClass(name = ItemClass.METATABLE_NAME)
 public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> {
@@ -59,13 +58,11 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
     }
 
     private Object getNbt() {
-      NBTTagCompound data = delegate.serializeNBT();
-      if (data == null) {
+      NBTTagCompound nbt = delegate.serializeNBT();
+      if (nbt == null) {
         return null;
       }
-      PatchedImmutableTable.Builder builder = new PatchedImmutableTable.Builder();
-      NbtConverter.insertValues(builder, data);
-      return builder.build();
+      return NbtConverter.toLua(nbt);
     }
 
     private void setDisplayName(Object luaObj) {
@@ -96,7 +93,7 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
       Table nbtTable = getConverters().castToTable(luaObj);
       NBTTagCompound oldNbt = delegate.serializeNBT();
       delegate.writeToNBT(oldNbt);
-      NBTTagCompound newNbt = NbtConverter.merge(oldNbt, nbtTable);
+      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbtTable);
       delegate.deserializeNBT(newNbt);
     }
   }

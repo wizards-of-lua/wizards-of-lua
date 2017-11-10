@@ -4,5 +4,5 @@ import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
 
 public interface NbtListMergeStrategy {
-  NBTTagList merge(NBTTagList origTagList, Table data);
+  NBTTagList merge(NBTTagList nbt, Table data, String path);
 }

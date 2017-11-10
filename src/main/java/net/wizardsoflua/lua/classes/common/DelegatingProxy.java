@@ -7,7 +7,7 @@ import net.wizardsoflua.lua.Converters;
 
 public abstract class DelegatingProxy<D> extends DelegatingTable {
   protected final D delegate;
-  private final Converters converters;
+  protected final Converters converters;
 
   public DelegatingProxy(Converters converters, Table metatable, D delegate) {
     super(metatable);

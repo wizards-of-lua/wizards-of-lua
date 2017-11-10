@@ -237,5 +237,4 @@ public class WolConversions {
     }
     throw new IllegalArgumentException(String.format("Unsupported type %s!", type));
   }
-
 }

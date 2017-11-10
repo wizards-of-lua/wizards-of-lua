@@ -12,20 +12,26 @@ import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
+import net.wizardsoflua.lua.nbt.NbtConverter;
 
 public class Converters extends WolConversions {
-
   private final ITypes types;
+  private final NbtConverter nbtConverter;
   private final Set<LuaClass<?, ?>> classInstances;
   private final TableDataConverter tableDataConverter = new TableDataConverter(this);
 
   public Converters(ITypes types, LuaClasses luaClasses) {
     this.types = checkNotNull(types, "types==null!");
+    nbtConverter = new NbtConverter(types);
     classInstances = luaClasses.load(this);
   }
 
   public ITypes getTypes() {
     return types;
+  }
+
+  public NbtConverter getNbtConverter() {
+    return nbtConverter;
   }
 
   @Override
