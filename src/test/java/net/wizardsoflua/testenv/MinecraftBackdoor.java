@@ -1,5 +1,7 @@
 package net.wizardsoflua.testenv;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -29,6 +31,7 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -82,12 +85,6 @@ public class MinecraftBackdoor {
     }
     ICommandSender sender = testEnv.getServer();
     MinecraftServer server = testEnv.getServer();
-    // server.addScheduledTask(new Runnable() {
-    // @Override
-    // public void run() {
-    // server.getCommandManager().executeCommand(sender, command);
-    // }
-    // });
     testEnv.runAndWait(() -> server.getCommandManager().executeCommand(sender, command));
   }
 
@@ -239,5 +236,14 @@ public class MinecraftBackdoor {
   public void clearLuaFunctionCache() {
     testEnv.getWol().clearLuaFunctionCache();
   }
+
+  public void bar(BlockPos startPos, EnumFacing direction, int meter, Block blockType) {
+    checkArgument(meter >= 1, "meter must be greater than or equal to 1, but was %s!", meter);
+    for (int i = 0; i < meter; ++i) {
+      BlockPos pos = startPos.offset(direction, i);
+      setBlock(pos, blockType);
+    }
+  }
+
 
 }

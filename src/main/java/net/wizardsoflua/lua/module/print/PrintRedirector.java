@@ -3,22 +3,24 @@ package net.wizardsoflua.lua.module.print;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.LuaFunction;
 
 public class PrintRedirector {
 
-  public static PrintRedirector installInto(Table env, ICommandSender owner) {
-    return new PrintRedirector(env, owner);
+  public interface Context {
+    public void send(String message);
   }
 
-  private final ICommandSender owner;
+  public static PrintRedirector installInto(Table env, Context context) {
+    return new PrintRedirector(env, context);
+  }
 
-  public PrintRedirector(Table env, ICommandSender owner) {
-    this.owner = owner;
+  private final Context context;
+
+  public PrintRedirector(Table env, Context context) {
+    this.context = context;
     OutputStream out = new ChatOutputStream();
     LuaFunction printFunc = BasicLib.print(out, env);
     env.rawset("print", printFunc);
@@ -38,6 +40,6 @@ public class PrintRedirector {
   }
 
   private void print(String message) {
-    owner.sendMessage(new TextComponentString(TabEncoder.encode(message)));
+    context.send(TabEncoder.encode(message));
   }
 }

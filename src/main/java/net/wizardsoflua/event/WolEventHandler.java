@@ -40,8 +40,7 @@ public class WolEventHandler {
       return;
     }
     if (context.isSupportedLuaEvent(event)) {
-      Iterable<SpellEntity> spells = context.getSpells();
-      for (SpellEntity spellEntity : spells) {
+      for (SpellEntity spellEntity : context.getSpells()) {
         String eventName = context.getEventName(event);
         spellEntity.getProgram().getEventHandlers().onEvent(eventName, event);
       }
@@ -55,6 +54,10 @@ public class WolEventHandler {
     }
     EntityPlayerMP player = (EntityPlayerMP) evt.player;
     addWolPacketHandler(player);
+
+    for (SpellEntity spellEntity : context.getSpells()) {
+      spellEntity.replacePlayerInstance(player);
+    }
   }
 
   @SubscribeEvent
@@ -64,6 +67,10 @@ public class WolEventHandler {
     }
     EntityPlayerMP player = (EntityPlayerMP) evt.player;
     addWolPacketHandler(player);
+
+    for (SpellEntity spellEntity : context.getSpells()) {
+      spellEntity.replacePlayerInstance(player);
+    }
   }
 
   private void addWolPacketHandler(EntityPlayerMP player) {

@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.nio.file.FileSystem;
 
-import net.minecraft.command.ICommandSender;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -49,7 +48,7 @@ public class SpellProgram {
   private enum State {
     NEW, PAUSED, FINISHED
   }
-  public interface Context {
+  public interface Context extends PrintRedirector.Context {
 
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
@@ -78,11 +77,10 @@ public class SpellProgram {
   private Time time;
   private final Context context;
 
-  SpellProgram(String code, ModuleDependencies dependencies, ICommandSender owner,
-      String defaultLuaPath, Time time, Context context) {
+  SpellProgram(String code, ModuleDependencies dependencies, String defaultLuaPath, Time time,
+      Context context) {
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
-    checkNotNull(owner, "source==null!");;
     this.time = checkNotNull(time, "time==null!");
     this.context = checkNotNull(context, "context==null!");
 
@@ -101,7 +99,7 @@ public class SpellProgram {
     installSystemLibraries();
     converters = new Converters(types, context.getLuaClasses());
     TypesModule.installInto(env, types, converters);
-    PrintRedirector.installInto(env, owner);
+    PrintRedirector.installInto(env, context);
     AddPathFunction.installInto(env, converters, new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
@@ -160,6 +158,10 @@ public class SpellProgram {
 
   public EventHandlers getEventHandlers() {
     return eventHandlers;
+  }
+
+  public Converters getConverters() {
+    return converters;
   }
 
   public boolean isTerminated() {
@@ -236,7 +238,6 @@ public class SpellProgram {
     StringLib.installInto(stateContext, env);
     MathLib.installInto(stateContext, env);
     TableLib.installInto(stateContext, env);
-
   }
 
 }

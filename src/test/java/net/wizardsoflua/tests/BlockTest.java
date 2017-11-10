@@ -1,6 +1,7 @@
 package net.wizardsoflua.tests;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -14,8 +15,14 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class BlockTest extends WolTestBase {
+  BlockPos playerPos = new BlockPos(0, 4, 0);
   private BlockPos posP = new BlockPos(1, 4, 1);
 
+  @Before
+  public void setPlayerPos() {
+    mc().player().setPosition(playerPos);
+  }
+  
   @After
   public void clearBlock() {
     mc().setBlock(posP, Blocks.AIR);

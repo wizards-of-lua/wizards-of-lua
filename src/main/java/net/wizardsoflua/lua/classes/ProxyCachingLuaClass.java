@@ -13,4 +13,9 @@ public abstract class ProxyCachingLuaClass<J, P extends DelegatingProxy<? extend
   public final P getLuaInstance(J delegate) {
     return cache.asMap().computeIfAbsent(delegate, super::getLuaInstance);
   }
+
+  protected Cache<J,P> getCache() {
+    return cache;
+  }
+  
 }

@@ -55,7 +55,7 @@ public class WolTestEnvironment {
   public final Logger logger = LogManager.getLogger(WolTestEnvironment.class.getName());
   private final EventRecorder eventRecorder = new EventRecorder();
   private PacketDispatcher packetDispatcher;
-  private @Nullable EntityPlayerMP testPlayer;
+  private AtomicReference<EntityPlayerMP> testPlayer = new AtomicReference<>();
 
   private MinecraftServer server;
 
@@ -73,12 +73,17 @@ public class WolTestEnvironment {
     return WizardsOfLua.instance;
   }
 
-  public EntityPlayerMP getTestPlayer() {
-    return testPlayer;
+  public @Nullable EntityPlayerMP getTestPlayer() {
+    return testPlayer.get();
   }
 
   public void setTestPlayer(EntityPlayerMP player) {
-    testPlayer = player;
+    if ( player != null) {
+      logger.info("Setting testPlayer to Player: "+player.getName());
+    } else {
+      logger.info("Setting testPlayer to null");
+    }
+    testPlayer.set(player);
   }
 
   public EventRecorder getEventRecorder() {
@@ -113,7 +118,9 @@ public class WolTestEnvironment {
 
   @CalledByReflection("Called by MinecraftJUnitRunner")
   public static Throwable runTest(String classname, String methodName) {
-    final TestMethodExecutor executor = new TestMethodExecutor(instance.logger);
+    MinecraftServer server = null;
+    String playerName = null;
+    final TestMethodExecutor executor = new TestMethodExecutor(instance.logger, server, playerName);
     try {
       ClassLoader cl = WolTestEnvironment.class.getClassLoader();
       Class<?> testClass = cl.loadClass(classname);
@@ -147,7 +154,8 @@ public class WolTestEnvironment {
 
   public TestResults runTestMethod(Class<?> testClass, String methodName)
       throws InitializationError {
-    TestMethodExecutor executor = new TestMethodExecutor(logger);
+    String playerName = getTestPlayer().getName();
+    TestMethodExecutor executor = new TestMethodExecutor(logger, server, playerName);
     TestResults result = executor.runTest(testClass, methodName);
     return result;
   }
@@ -155,7 +163,8 @@ public class WolTestEnvironment {
   public Iterable<TestResults> runAllTests() throws InitializationError {
     List<TestResults> result = new ArrayList<>();
     Iterable<Class<?>> testClasses = findTestClasses();
-    TestClassExecutor executor = new TestClassExecutor(logger);
+    String playerName = getTestPlayer().getName();
+    TestClassExecutor executor = new TestClassExecutor(logger, server, playerName);
     for (Class<?> testClass : testClasses) {
       result.add(executor.runTests(testClass));
     }
@@ -163,7 +172,8 @@ public class WolTestEnvironment {
   }
 
   public TestResults runTests(Class<?> testClass) throws InitializationError {
-    TestClassExecutor executor = new TestClassExecutor(logger);
+    String playerName = getTestPlayer().getName();
+    TestClassExecutor executor = new TestClassExecutor(logger, server, playerName);
     return executor.runTests(testClass);
   }
 

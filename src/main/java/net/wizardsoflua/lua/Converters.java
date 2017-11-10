@@ -4,12 +4,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Set;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClasses;
+import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.nbt.NbtConverter;
@@ -32,6 +34,18 @@ public class Converters extends WolConversions {
 
   public NbtConverter getNbtConverter() {
     return nbtConverter;
+  }
+
+  public void replacePlayerInstance(EntityPlayerMP player) {
+    Object luaClass = getByJavaClass(EntityPlayerMP.class);
+    // TODO can we replace this ugly casting stuff with something more elegant?
+    if (luaClass instanceof PlayerClass) {
+      PlayerClass pc = (PlayerClass) luaClass;
+      pc.replaceDelegate(player);
+    } else {
+      throw new IllegalStateException(String.format(
+          "Expected luaClass to be instanceof %s, but was %s", PlayerClass.class, luaClass));
+    }
   }
 
   @Override
@@ -85,5 +99,7 @@ public class Converters extends WolConversions {
     }
     return super.toLua(value);
   }
+
+
 
 }

@@ -11,12 +11,18 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
+import net.minecraft.server.MinecraftServer;
+
 public class TestMethodExecutor {
 
   private final Logger logger;
+  private final MinecraftServer server;
+  private final String playerName;
 
-  public TestMethodExecutor(Logger logger) {
+  public TestMethodExecutor(Logger logger, MinecraftServer server, String playerName) {
     this.logger = checkNotNull(logger,"logger==null!");
+    this.server = server;
+    this.playerName = playerName;
   }
 
   public TestResults runTest(final Class<?> testClazz, final String methodName)
@@ -33,7 +39,7 @@ public class TestMethodExecutor {
         }
       }
     };
-    TestResults res = new TestResults(logger);
+    TestResults res = new TestResults(logger, server, playerName);
     runner.run(res);
     return res;
   }

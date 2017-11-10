@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
@@ -158,6 +160,15 @@ public class SpellEntity extends Entity {
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
+  }
+
+  public void replacePlayerInstance(EntityPlayerMP player) {
+    if (this.owner.getCommandSenderEntity() instanceof EntityPlayer) {
+      if (this.owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
+        this.owner = player;
+      }
+    }
+    getProgram().getConverters().replacePlayerInstance(player);
   }
 
 }

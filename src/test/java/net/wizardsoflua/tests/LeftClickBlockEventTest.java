@@ -13,7 +13,7 @@ import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
-public class LeftClickBlockEventsTest extends WolTestBase {
+public class LeftClickBlockEventTest extends WolTestBase {
 
   BlockPos playerPos = new BlockPos(0, 4, 0);
   BlockPos clickPos = new BlockPos(2, 5, 0);
@@ -27,7 +27,7 @@ public class LeftClickBlockEventsTest extends WolTestBase {
     mc().setBlock(blockPos, Blocks.AIR);
   }
 
-  // /test net.wizardsoflua.tests.LeftClickBlockEventsTest test
+  // /test net.wizardsoflua.tests.LeftClickBlockEventTest test
   @Test
   public void test() {
     // Given:

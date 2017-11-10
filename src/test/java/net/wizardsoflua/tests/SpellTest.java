@@ -15,7 +15,7 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class SpellTest extends WolTestBase {
-
+  private BlockPos playerPos = new BlockPos(0, 4, 0);
   private BlockPos posP1 = new BlockPos(1, 4, 1);
   private BlockPos posP2 = new BlockPos(1, 5, 1);
 
@@ -79,11 +79,13 @@ public class SpellTest extends WolTestBase {
   @Test
   public void test_spell_pos_when_casted_by_player() throws Exception {
     // Given:
+    mc().player().setPosition(playerPos);
     Vec3d lookPoint = mc().player().getPositionLookingAt();
     String expected = format(lookPoint);
 
     // When:
     mc().player().chat("/lua p=spell.pos; print(p)");
+    
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

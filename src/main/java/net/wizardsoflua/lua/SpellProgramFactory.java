@@ -3,10 +3,13 @@ package net.wizardsoflua.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.Clock;
+import java.util.UUID;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
@@ -40,12 +43,12 @@ public class SpellProgramFactory {
     this.context = checkNotNull(context, "context==null!");
   }
 
-  public SpellProgram create(World world, ICommandSender owner, String code) {
+  public SpellProgram create(World world, ICommandSender owner, String code) {    
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
     Time time = createTime(world);
-    SpellProgram.Context context = createSpellProgramContext(world);
-    return new SpellProgram(code, dependencies, owner, defaultLuaPath, time, context);
+    SpellProgram.Context context = createSpellProgramContext(world, owner);
+    return new SpellProgram(code, dependencies, defaultLuaPath, time, context);
   }
 
   private String getDefaultLuaPath(ICommandSender owner) {
@@ -68,7 +71,7 @@ public class SpellProgramFactory {
     return new Time(world, luaTicksLimit, timeContext);
   }
 
-  private SpellProgram.Context createSpellProgramContext(World world) {
+  private SpellProgram.Context createSpellProgramContext(World world, ICommandSender owner) {
     checkNotNull(world, "world==null!");
 
     return new SpellProgram.Context() {
@@ -85,6 +88,17 @@ public class SpellProgramFactory {
       @Override
       public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
         return context.getLuaFunctionBinaryCache();
+      }
+
+      @Override
+      public void send(String message) {
+        if ( owner.getCommandSenderEntity() instanceof EntityPlayer) {
+          UUID uuid = owner.getCommandSenderEntity().getUniqueID();
+          EntityPlayerMP receiver = world.getMinecraftServer().getPlayerList().getPlayerByUUID(uuid);
+          receiver.sendMessage(new TextComponentString(message));
+        } else {
+          owner.sendMessage(new TextComponentString(message));
+        }
       }
     };
   }

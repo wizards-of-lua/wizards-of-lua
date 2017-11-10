@@ -3,22 +3,30 @@ package net.wizardsoflua.tests;
 import java.io.IOException;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class PlayerTest extends WolTestBase {
-
   private static final String DEMOMODULE = "my.demomodule";
   private static final String SHAREDMODULE = "somewhere.sharedmodule";
+  BlockPos playerPos = new BlockPos(0, 4, 0);
 
+  @Before
+  public void setPlayerPos() {
+    mc().player().setPosition(playerPos);
+  }
+  
   @After
   public void after() throws IOException {
     mc().deleteTeams();
@@ -140,7 +148,7 @@ public class PlayerTest extends WolTestBase {
     ItemStack item = mc().getItemStack(Items.DIAMOND_AXE);
     mc().player().setMainHandItem(item);
     String expected = item.getDisplayName();
-
+    
     // When:
     mc().player().chat("/lua p=spell.owner; print(p.mainhand.displayName)");
 
@@ -153,7 +161,7 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_mainhand_is_writable() throws Exception {
     // Given:
-    Item expected = mc().getItemStack(Items.DIAMOND_AXE).getItem();
+    ResourceLocation expected = mc().getItemStack(Items.DIAMOND_AXE).getItem().getRegistryName();
 
     // When:
     mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.mainhand=i; print('ok')");
@@ -161,7 +169,7 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    assertThat(mc().player().getMainHandItem().getItem()).isEqualTo(expected);
+    assertThat(mc().player().getMainHandItem().getItem().getRegistryName()).isEqualTo(expected);
   }
 
   /// test net.wizardsoflua.tests.PlayerTest test_offhand_is_readable
@@ -184,7 +192,7 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_offhand_is_writable() throws Exception {
     // Given:
-    Item expected = mc().getItemStack(Items.DIAMOND_AXE).getItem();
+    ResourceLocation expected = mc().getItemStack(Items.DIAMOND_AXE).getItem().getRegistryName();
 
     // When:
     mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.offhand=i; print('ok')");
@@ -192,7 +200,7 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    assertThat(mc().player().getOffHandItem().getItem()).isEqualTo(expected);
+    assertThat(mc().player().getOffHandItem().getItem().getRegistryName()).isEqualTo(expected);
   }
 
 }

@@ -76,7 +76,15 @@ public class WolTestBase extends TestDataFactory {
   }
 
   protected String formatPos(double x, double y, double z) {
-    return "{" + x + ", " + y + ", " + z + "}";
+    return ("{" + x + ", " + y + ", " + z + "}").replace('E', 'e');
+  }
+
+  protected void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -55,23 +56,37 @@ public class TestCommand extends CommandBase {
             if (methodName != null) {
               sender.sendMessage(new TestEnvMessage("Running test"));
               TestResults result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
-              sender.sendMessage(toTestEnvMessage(result));
+              sendResult(server, sender.getName(), toTestEnvMessage(result));
             } else {
               sender.sendMessage(new TestEnvMessage("Running tests"));
               TestResults result = WolTestEnvironment.instance.runTests(testClass);
-              sender.sendMessage(toTestEnvMessage(result));
+              sendResult(server, sender.getName(), toTestEnvMessage(result));
             }
           } else {
             sender.sendMessage(new TestEnvMessage("Running all tests"));
             Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
-            sender.sendMessage(toTestEnvMessage(result));
+            sendResult(server, sender.getName(), toTestEnvMessage(result));
           }
         } catch (InitializationError | ClassNotFoundException e) {
-          sender.sendMessage(new TextComponentString(e.getMessage()));
+          sendResult(server, sender.getName(), new TextComponentString(e.getMessage()));
         }
       }
+
     }, "test-command-thread");
     t.start();
+  }
+
+  // Send a message to the player with the given name.
+  // This ensures that the player gets the message even when he or she has logged out during the
+  // test execution
+  private void sendResult(MinecraftServer server, String name, ITextComponent message) {
+    EntityPlayerMP player = getPlayerByName(server, name);
+    player.sendMessage(message);
+  }
+
+  private EntityPlayerMP getPlayerByName(MinecraftServer server, String name) {
+    EntityPlayerMP player = server.getPlayerList().getPlayerByUsername(name);
+    return player;
   }
 
   private ITextComponent toTestEnvMessage(TestResults result) {

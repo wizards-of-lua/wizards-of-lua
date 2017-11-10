@@ -1,5 +1,10 @@
 package net.wizardsoflua.lua.classes.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.google.common.cache.Cache;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
@@ -26,6 +31,23 @@ public class PlayerClass
   @Override
   public Proxy<EntityPlayer> toLua(EntityPlayer delegate) {
     return new Proxy<>(getConverters(), getMetatable(), delegate);
+  }
+
+  public void replaceDelegate(EntityPlayerMP newPlayer) {
+    Cache<EntityPlayer, Proxy<EntityPlayer>> cache = getCache();
+
+    Set<EntityPlayer> found = new HashSet<>();
+    for (EntityPlayer key : cache.asMap().keySet()) {
+      if (key.getUniqueID().equals(newPlayer.getUniqueID())) {
+        found.add(key);
+      }
+    }
+
+    for (EntityPlayer entityPlayer : found) {
+      Proxy<EntityPlayer> oldValue = cache.asMap().remove(entityPlayer);
+      cache.put(newPlayer, oldValue);
+      oldValue.setDelegate(newPlayer);
+    }
   }
 
   public class Proxy<D extends EntityPlayer> extends EntityClass.EntityLivingBaseProxy<D> {
@@ -76,4 +98,6 @@ public class PlayerClass
       }
     }
   }
+
+
 }

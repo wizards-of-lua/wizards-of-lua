@@ -27,6 +27,8 @@ import net.wizardsoflua.testenv.WolTestEnvironment;
 import net.wizardsoflua.testenv.net.ChatAction;
 import net.wizardsoflua.testenv.net.ClientAction;
 import net.wizardsoflua.testenv.net.LeftClickAction;
+import net.wizardsoflua.testenv.net.ReconnectAction;
+import net.wizardsoflua.testenv.net.RespawnAction;
 import net.wizardsoflua.testenv.net.RightClickAction;
 
 public class PlayerBackdoor {
@@ -144,8 +146,13 @@ public class PlayerBackdoor {
   }
 
   public void setMainHandItem(ItemStack item) {
-    testEnv.runAndWait(
-        () -> getDelegate().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY)));
+    testEnv.runAndWait(() -> {
+      getDelegate().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
+    });
+    testEnv.runAndWait(() -> {
+      getDelegate().inventoryContainer.detectAndSendChanges();
+    });
+    sleep(200);
   }
 
   public ItemStack getMainHandItem() {
@@ -153,12 +160,51 @@ public class PlayerBackdoor {
   }
 
   public void setOffHandItem(ItemStack item) {
-    testEnv.runAndWait(
-        () -> getDelegate().setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY)));
+    testEnv.runAndWait(() -> {
+      getDelegate().setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY));
+    });
+    testEnv.runAndWait(() -> {
+      getDelegate().inventoryContainer.detectAndSendChanges();
+    });
+    sleep(200);
   }
 
   public ItemStack getOffHandItem() {
     return getDelegate().getHeldItemOffhand();
+  }
+
+  public void changeDimension(int dim) {
+    testEnv.runAndWait(() -> {
+      getDelegate().getEntityWorld().getMinecraftServer().getPlayerList()
+          .changePlayerDimension(getDelegate(), dim);
+    });
+  }
+
+  public void reconnect() {
+    perform(new ReconnectAction());
+  }
+
+  public void respawn() {
+    perform(new RespawnAction());
+  }
+
+  public void waitForPlayer(long duration) {
+    long started = System.currentTimeMillis();
+    while (testEnv.getTestPlayer() == null) {
+      if (started + duration > System.currentTimeMillis()) {
+        sleep(100);
+      } else {
+        throw new RuntimeException("Timeout! Testplayer not available within " + duration + " ms");
+      }
+    }
+  }
+
+  private void sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 
