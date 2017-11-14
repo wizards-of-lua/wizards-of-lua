@@ -89,6 +89,7 @@ public class WolConfig {
   private final File configFile;
 
   private GeneralConfig generalConfig;
+  private PermissionsConfig permissionsConfig;
   private final Map<UUID, WizardConfig> wizards = new HashMap<>();
 
   public WolConfig(File configFile) throws LoaderException, CallException, CallPausedException,
@@ -102,6 +103,7 @@ public class WolConfig {
       }
     }
     generalConfig = new GeneralConfig(generalConfigContext);
+    permissionsConfig = new PermissionsConfig();
 
     // Fix for issue #73 - Server still crashing when config file is a directory
     if (configFile.exists() && configFile.isDirectory()) {
@@ -118,15 +120,21 @@ public class WolConfig {
     Table env = state.newTable();
     env.rawset("General", new GeneralFunction());
     env.rawset("Wizard", new WizardFunction());
+    env.rawset("Permissions", new PermissionsFunction());
 
     ChunkLoader loader = CompilerChunkLoader.of("WolConfigFile");
     LuaFunction main = loader.loadTextChunk(new Variable(env), filename, content);
     DirectCallExecutor.newExecutor().call(state, main);
 
+    saveSync();
   }
 
   public GeneralConfig getGeneralConfig() {
     return generalConfig;
+  }
+  
+  public PermissionsConfig getPermissionsConfig() {
+    return permissionsConfig;
   }
 
   public Collection<WizardConfig> getWizards() {
@@ -183,6 +191,11 @@ public class WolConfig {
     out.write("General ");
     TableUtils.writeTo(out, generalConfig.writeTo(new DefaultTable()));
     out.write("\n");
+    
+    out.write("Permissions ");
+    TableUtils.writeTo(out, permissionsConfig.writeTo(new DefaultTable()));
+    out.write("\n");
+    
     for (WizardConfig wizardConfig : wizards.values()) {
       out.write("Wizard ");
       TableUtils.writeTo(out, wizardConfig.writeTo(new DefaultTable()));
@@ -202,6 +215,23 @@ public class WolConfig {
       checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
       Table table = (Table) arg1;
       generalConfig = new GeneralConfig(table, generalConfigContext);
+      context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState) {}
+  }
+
+  private class PermissionsFunction extends AbstractFunction1 {
+
+    public PermissionsFunction() {}
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) {
+      checkNotNull(arg1, "arg1==null!");
+      checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
+      Table table = (Table) arg1;
+      permissionsConfig = new PermissionsConfig(table);
       context.getReturnBuffer().setTo();
     }
 

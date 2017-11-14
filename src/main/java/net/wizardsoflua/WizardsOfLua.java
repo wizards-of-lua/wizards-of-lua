@@ -36,6 +36,7 @@ import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
+import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
@@ -65,6 +66,7 @@ public class WizardsOfLua {
   private WolConfig config;
   private AboutMessage aboutMessage;
   private WolEventHandler eventHandler;
+  private Permissions permissions;
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
   private Profiles profiles;
@@ -193,6 +195,8 @@ public class WizardsOfLua {
         return luaClasses.getLuaClassnameOf(event.getClass());
       }
     });
+    permissions = new Permissions(getConfig().getPermissionsConfig().getRestrictedCommands(),
+        getConfig().getPermissionsConfig().getWizardGameModes());
   }
 
   @EventHandler
@@ -200,6 +204,7 @@ public class WizardsOfLua {
     logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
     MinecraftForge.EVENT_BUS.register(getSpellRegistry());
     MinecraftForge.EVENT_BUS.register(aboutMessage);
+    MinecraftForge.EVENT_BUS.register(permissions);
     MinecraftForge.EVENT_BUS.register(eventHandler);
     SpellEntity.register();
   }
@@ -224,6 +229,10 @@ public class WizardsOfLua {
 
   public Profiles getProfiles() {
     return profiles;
+  }
+
+  public Permissions getPermissions() {
+    return permissions;
   }
 
   public SpellEntityFactory getSpellEntityFactory() {

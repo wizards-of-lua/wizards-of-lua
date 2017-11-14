@@ -116,6 +116,10 @@ public class WolConversions {
     if (value instanceof Boolean) {
       return value;
     }
+    if (value instanceof Enum) {
+      Enum<?> vEnum = (Enum<?>) value;
+      return ByteString.of(vEnum.name());
+    }
     throw new ConversionException(
         format("Can't convert value! Unsupported type: %s", value.getClass().getName()));
   }
@@ -193,7 +197,7 @@ public class WolConversions {
     return result;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
     checkNotNull(luaObj, "luaObj==null!");
     if (Boolean.class == type) {
@@ -234,6 +238,14 @@ public class WolConversions {
       }
       throw new ConversionException(
           format("Can't convert value! String expected, but got: %s", luaObj.getClass().getName()));
+    }
+    if (Enum.class.isAssignableFrom(type)) {
+      ByteString byteStrV = Conversions.stringValueOf(luaObj);
+      if (byteStrV != null) {
+        String value = byteStrV.toString();
+        // TODO how to cast this without warning?
+        return (T) Enum.valueOf((Class<Enum>) type, value);
+      }
     }
     throw new IllegalArgumentException(String.format("Unsupported type %s!", type));
   }

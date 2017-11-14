@@ -1,6 +1,9 @@
 package net.wizardsoflua.lua.table;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -8,7 +11,9 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
 
 public class TableUtils {
@@ -18,6 +23,16 @@ public class TableUtils {
   private static final WolConversions CONVERSION = new WolConversions();
 
   private TableUtils() {}
+
+  public static final <T, I extends Iterable<? super T>> I toJavaIterable(Class<T> type,
+      Object luaObj) throws ConversionException {
+    return CONVERSION.toJavaIterable(type, luaObj);
+  }
+
+  public static final <T, I extends Iterable<? extends T>> Table toLuaIterable(I values)
+      throws ConversionException {
+    return CONVERSION.toLuaIterable(values);
+  }
 
   public static <T> T getAs(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
@@ -39,6 +54,7 @@ public class TableUtils {
   }
 
   public static void writeTo(PrintWriter out, Table table, String indent) {
+    boolean isArray = isArray(table);
     String lineIndent = indent + "  ";
     out.write("{ ");
     TableIterable it = new TableIterable(table);
@@ -46,9 +62,11 @@ public class TableUtils {
     for (Map.Entry<Object, Object> entry : it) {
       out.write(delimitter);
       out.write(lineIndent);
-      Object key = entry.getKey();
-      out.write(toOutKey(key));
-      out.write("=");
+      if (!isArray) {
+        Object key = entry.getKey();
+        out.write(toOutKey(key));
+        out.write("=");
+      }
       Object value = entry.getValue();
       if (value instanceof Table) {
         writeTo(out, (Table) value, lineIndent);
@@ -60,6 +78,29 @@ public class TableUtils {
     out.write(indent);
     out.write(" }");
   }
+
+  private static boolean isArray(Table table) {
+    List<Long> keys = new ArrayList<>();
+    TableIterable it = new TableIterable(table);
+    for (Map.Entry<Object, Object> entry : it) {
+      Object key = entry.getKey();
+      Number xx = Conversions.numericalValueOf(key);
+      if (xx != null) {
+        keys.add(Conversions.integerValueOf(key));
+      } else {
+        return false;
+      }
+    }
+    Collections.sort(keys);
+
+    long index = 1;
+    while (keys.remove(index)) {
+      index++;
+    } ;
+    return keys.isEmpty();
+  }
+
+
 
   private static String toOutKey(Object key) {
     if (key instanceof Long) {
@@ -98,6 +139,14 @@ public class TableUtils {
 
   private static boolean isLuaIdentifier(String text) {
     return LUA_IDENTIFIER.matcher(text).matches();
+  }
+
+  public static <T> Object toLua(T value) throws ConversionException {
+    return CONVERSION.toLua(value);
+  }
+
+  public static <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
+    return CONVERSION.toJava(type, luaObj);
   }
 
 }

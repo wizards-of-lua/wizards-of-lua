@@ -39,12 +39,9 @@ public class LuaCommand extends CommandBase {
     return "";
   }
 
-  /**
-   * Return the required permission level for this command.
-   */
-  public int getRequiredPermissionLevel() {
-    // TODO add real permission checking somewhere
-    return 2;
+  @Override
+  public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+    return wol.getPermissions().checkPermissionToCastASpell(sender);
   }
 
   @Override

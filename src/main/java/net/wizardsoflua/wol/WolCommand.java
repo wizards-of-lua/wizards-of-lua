@@ -14,6 +14,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.wol.autorequire.PrintAutoRequireAction;
 import net.wizardsoflua.wol.autorequire.SetAutoRequireAction;
 import net.wizardsoflua.wol.autorequire.UnsetAutoRequireAction;
@@ -29,6 +30,7 @@ import net.wizardsoflua.wol.spell.SpellListAction;
 
 public class WolCommand extends CommandBase {
   private static final String CMD_NAME = "wol";
+  private final WizardsOfLua wol = WizardsOfLua.instance;
 
   /**
    * Re-Tokenize the arguments by taking quoted strings into account.
@@ -95,12 +97,10 @@ public class WolCommand extends CommandBase {
     return menu.getTabCompletions(server, sender, newArrayDeque(args), targetPos);
   }
 
-  /**
-   * Return the required permission level for this command.
-   */
-  public int getRequiredPermissionLevel() {
-    // TODO add real permission checking somewhere
-    return 2;
+
+  @Override
+  public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+    return wol.getPermissions().checkPermissionToCastASpell(sender);
   }
 
   @Override
