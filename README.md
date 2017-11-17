@@ -49,6 +49,6 @@ As a result you will find the mod JAR file in `build/libs`.
 * Start Minecraft using the Forge profile
 
 ## License
-Wizards of Lua is licensed under the GNU General Public License v3.0. See the file [LICENSE](LICENSE) file for details.
+Wizards of Lua is licensed under the GNU Lesser General Public License v3.0. See the file [LICENSE](LICENSE) file for details.
 
 Wizards of Lua uses the great [Rembulan](https://github.com/mjanicek/rembulan) implementation of [Lua](https://www.lua.org) 5.3 for Java, which is licensed under the [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). 
