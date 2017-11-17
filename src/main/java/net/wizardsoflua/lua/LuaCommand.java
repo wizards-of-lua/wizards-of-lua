@@ -41,7 +41,7 @@ public class LuaCommand extends CommandBase {
 
   @Override
   public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-    return wol.getPermissions().checkPermissionToCastASpell(sender);
+    return wol.getPermissions().checkPermissionForLuaCommand(sender);
   }
 
   @Override

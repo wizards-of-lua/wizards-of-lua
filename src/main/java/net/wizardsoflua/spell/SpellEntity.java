@@ -15,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
+import net.wizardsoflua.permissions.Permissions;
 
 public class SpellEntity extends Entity {
   public static final String NAME = "Spell";
@@ -36,6 +37,7 @@ public class SpellEntity extends Entity {
   private long sid; // immutable spell id
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
   private boolean visible = false;
+  private boolean lastCommandWasDenied = false;
 
   public SpellEntity(World world) {
     // Used by MC when loading this entity from persistent data
@@ -53,6 +55,16 @@ public class SpellEntity extends Entity {
     setCustomNameTag(name);
     chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
+  }
+
+  /**
+   * Calleb by {@link Permissions}. This is a work around that informs this spell if the command it
+   * sent lately had been canceled.
+   * 
+   * @param value
+   */
+  public void setLastCommandWasDenied(boolean value) {
+    this.lastCommandWasDenied = value;
   }
 
   public PositionAndRotation getPositionAndRotation() {
@@ -158,6 +170,21 @@ public class SpellEntity extends Entity {
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
+  }
+
+  public int execute(String command) {
+    // We only want to accept this call when it is done by this spell's program.
+    if (program.isRunning()) {
+      World world = getEntityWorld();
+      int result = world.getMinecraftServer().getCommandManager().executeCommand(this, command);
+      // Since forge would not return 0 for canceled commands, we must work around this.
+      if (result == 1 && lastCommandWasDenied) {
+        return 0;
+      } else {
+        return result;
+      }
+    }
+    return 0;
   }
 
 }

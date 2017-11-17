@@ -72,6 +72,7 @@ public class SpellProgram {
   private final Converters converters;
   private final EventHandlers eventHandlers;
   private State state;
+  private boolean running = false;
 
   private Continuation continuation;
   private SpellEntity spellEntity;
@@ -115,6 +116,10 @@ public class SpellProgram {
     EventsModule.installInto(env, converters, eventHandlers);
 
     state = State.NEW;
+  }
+  
+  public boolean isRunning() {
+    return running;
   }
 
   private EventHandlers.Context createEventHandlersContext() {
@@ -175,6 +180,7 @@ public class SpellProgram {
       switch (state) {
         case NEW:
           try {
+            running = true;
             compileAndRun();
             state = State.FINISHED;
           } catch (CallPausedException e) {
@@ -183,10 +189,13 @@ public class SpellProgram {
           } catch (Exception e) {
             state = State.FINISHED;
             throw e;
+          } finally {
+            running = false;
           }
           break;
         case PAUSED:
           try {
+            running = true;
             executor.resume(continuation);
             state = State.FINISHED;
           } catch (CallPausedException e) {
@@ -195,6 +204,8 @@ public class SpellProgram {
           } catch (Exception e) {
             state = State.FINISHED;
             throw e;
+          } finally {
+            running = false;
           }
           break;
         default:

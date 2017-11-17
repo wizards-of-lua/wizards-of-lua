@@ -100,7 +100,7 @@ public class WolCommand extends CommandBase {
 
   @Override
   public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-    return wol.getPermissions().checkPermissionToCastASpell(sender);
+    return wol.getPermissions().checkPermissionForWolCommand(sender);
   }
 
   @Override

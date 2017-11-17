@@ -99,8 +99,11 @@ public class SpellClass
     }
 
     public int execute(String command) {
-      World world = delegate.getEntityWorld();
-      return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
+//      World world = delegate.getEntityWorld();
+//      return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
+      
+      return delegate.execute(command);
+      
     }
   }
 
