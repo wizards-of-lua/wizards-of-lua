@@ -49,7 +49,7 @@ public class Permissions {
 
   /**
    * This method intercepts all server-side commands and cancels those, that are not allowed. This
-   * should onyl affect commands that are sent by spells.
+   * should onyl affect commands that are sent by spells and those send by command blocks.
    * 
    * @param event
    */
@@ -58,41 +58,41 @@ public class Permissions {
     if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
       return;
     }
-    SpellEntity spell = getAsSpell(event.getSender());
-    if (spell != null) {
-      boolean denied = false;
-      if (!hasOperatorPrivileges(spell)) {
-        // we will restrict certain commands from no-op senders
-        boolean isCmdDenied = isDenied(event.getCommand().getName());
-        boolean isAliasDenied = isDenied(event.getCommand().getAliases());
-        if (isCmdDenied || isAliasDenied) {
-          String message = String.format("Command %s is denied for sender %s.",
-              event.getCommand().getName(), event.getSender().getName());
-          event.setCanceled(true);
-          // event.setException(new RuntimeException(message));
-          WizardsOfLua.instance.logger.warn(message);
-          denied = true;
-        } else if (isExecuteCommandAndTargetHasOperatorPrivileges(event)) {
-          String message = String.format(
-              "Command %s is denied for sender %s because target has operator privileges.",
-              event.getCommand().getName(), event.getSender().getName());
-          event.setCanceled(true);
-          // event.setException(new RuntimeException(message));
-          WizardsOfLua.instance.logger.warn(message);
-          denied = true;
-        }
+    boolean commandWasDenied = false;
+    if (!hasOperatorPrivileges(event.getSender())) {
+      // we will restrict certain commands from no-op senders
+      boolean isCmdDenied = isDenied(event.getCommand().getName());
+      boolean isAliasDenied = isDenied(event.getCommand().getAliases());
+      if (isCmdDenied || isAliasDenied) {
+        String message = String.format("Command %s is denied for sender %s.",
+            event.getCommand().getName(), event.getSender().getName());
+        event.setCanceled(true);
+        // event.setException(new RuntimeException(message));
+        WizardsOfLua.instance.logger.warn(message);
+        commandWasDenied = true;
+      } else if (isExecuteCommandAndTargetHasOperatorPrivileges(event)) {
+        String message = String.format(
+            "Command %s is denied for sender %s because target has operator privileges.",
+            event.getCommand().getName(), event.getSender().getName());
+        event.setCanceled(true);
+        // event.setException(new RuntimeException(message));
+        WizardsOfLua.instance.logger.warn(message);
+        commandWasDenied = true;
       }
-      spell.setLastCommandWasDenied(denied);
+    }
+    SpellEntity spell = getSpell(event.getSender());
+    if (spell != null) {
+      spell.setLastCommandWasDenied(commandWasDenied);
     }
   }
 
   /**
-   * Returns the {@link SpellEntity} assigned to the sender if any, <code>null</code> otherwise.
+   * Returns the {@link SpellEntity}
    * 
    * @param sender
-   * @return the {@link SpellEntity} assigned to the sender if any, <code>null</code> otherwise
+   * @return
    */
-  private @Nullable SpellEntity getAsSpell(ICommandSender sender) {
+  private @Nullable SpellEntity getSpell(ICommandSender sender) {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof SpellEntity) {
       return (SpellEntity) entity;
@@ -100,6 +100,19 @@ public class Permissions {
     return null;
   }
 
+  /**
+   * Returns <code>true</code> if the given sender is a spell.
+   * 
+   * @param sender
+   * @return <code>true</code> if the given sender is a spell
+   */
+  private boolean senderIsSpell(ICommandSender sender) {
+    Entity entity = sender.getCommandSenderEntity();
+    if (entity instanceof SpellEntity) {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * Returns <code>true</code> if this event is about a {@link CommandExecuteAt} and if the
