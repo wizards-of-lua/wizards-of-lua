@@ -18,7 +18,9 @@ Here is an example of the <tt>wizards-of-lua.luacfg</tt>:
 General {
   luaTicksLimit=10000,
   showAboutMessage=true,
-  luaLibDirHome="libs" }
+  luaLibDirHome="libs",
+  sharedLibDir="shared",
+  sharedAutoRequire="" }
 Wizard {
   id="0c77f1a8-943b-4f7b-aa09-f2b1737d4f03",
   libDir="0c77f1a8-943b-4f7b-aa09-f2b1737d4f03",
@@ -42,13 +44,19 @@ Please note, that until the next server restart the about message is only shown 
 * **luaLibDirHome**: defines the relative or absolute location of the home of all Lua library directories.
 This directory is parent to the shared lib and all user-specific library directories.
 For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
+* **sharedLibDir**: defines the relative or absolute location of the shared library directory.
+This directory is parent of all Lua modules that can be used by all spell.
+For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
+* **sharedAutoRequire**: defines the optional name of the module that should be required automatically when a new spell is casted by anobody or anything. Default is empty.
+This value can be modified from within the game by [/wol sharedAutoRequire](/wol-command.html#Shared-Default-Dependencies).
 
 ### Wizard
 This function adds a player-specific configuration.
 New entries are added automatically when a new player uses the [/lua command](/lua-command.html) or the [/wol command](/wol-command.html) the first time.
 * **id**: is the UUID of the player this configuration belongs to.
 * **libDir**: defines the relative or absolute location of the player-specific Lua library directory.
+This directory is parent of all Lua modules that can be used by the player.
 If defined as relative, it will be located inside the directory defined by <tt>General.luaLibDirHome</tt>.
 For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
 * **autoRequire**: defines the optional name of the module that should be required automatically when a new spell is casted by this player. Default is empty.
-This value can be modified from within the game by [/wol autoRequire](/wol-command.html#Automatic-Requirements).
+This value can be modified from within the game by [/wol autoRequire](/wol-command.html#Default-Dependencies).

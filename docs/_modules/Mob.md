@@ -13,6 +13,16 @@ properties:
     If set to false this creature becomes dumb and just stands around. It even won't react to physical forces.
     Default is true.
     "
+  - name: mainhand
+    type: "[Item](!SITE_URL!/modules/Item/)"
+    access: r/w
+    description: "This is the [item](!SITE_URL!/modules/Item/) this creature is holding in its main hand.    
+    "
+  - name: offhand
+    type: "[Item](!SITE_URL!/modules/Item/)"
+    access: r/w
+    description: "This is the [item](!SITE_URL!/modules/Item/) this creature is holding in its off hand.    
+    "
 functions:
 ---
 

@@ -1,28 +1,31 @@
 ---
 title: Features
 ---
-*The Wizards of Lua modification adds the spell entity and two new commands to Minecraft,
-the lua command and the wol command.
-For more information please read the [introduction](/introduction).*
+*The Wizards of Lua modification adds the /lua command to Minecraft, which
+gives you the power to cast a magical spell in Minecraft, which actually is
+a little Lua program.*
 
-The following features are already implemented:
+With a spell you can, for example, do the following:
 
-### Commands
-* The [/lua command](/lua-command) casts a spell.
-* The [/wol command](/wol-command) can list all active spells.
-* The [/wol command](/wol-command) can break active spells.
-* The [/wol command](/wol-command) configure the maximum number of Lua ticks a spell can use per game tick.
+* Create magical items.
+* Create mini games.
+* Create procedural structures.
 
-### API
-* A spell can create any available block using the [Blocks module](/modules/Blocks/).
-* A spell can read and modify all block properties using the [Block class](/modules/Block/).
-* A spell can copy and paste blocks using the [Spell.block](/modules/Spell/#block) property.
-* A spell can read and modify a small portion of entity properties using the [Entity class](/modules/Entity/).
-* A spell can be [moved](/modules/Entity/#move) around in absolute and relative directions.
-* A spell can be made [visible](/modules/Spell/#visible).
-* A spell can [execute](/modules/Spell/#execute) any Minecraft command. This includes casting other spells.
-* A spell can be sent to [sleep](/modules/Time/#sleep) for a certain amount of game ticks.
-* A spell can read and write entity NBT data using [Entity.nbt](/modules/Entity/#nbt) and [Entity.putNbt()](/modules/Entity/#putNbt)
-* A spell can query for entities using [Entities.find()](/modules/Entities/#find).
+To do all this, you just need to learn how to cast spells.
 
-For a list of upcoming features please have a look at the [roadmap](/roadmap).
+Actually you need to become a Wizard of Lua.
+That means getting familiar with [Lua](http://www.lua.org), the language of magic,
+and studying magic words documented in the secretive [spell book library](/spellbooklibrary).
+
+As a wizard, you will know how to execute the following great magical powers:
+
+* [Access and change any block](/modules/Blocks) in the Minecraft world, including data values and NBT values.
+* [Query](/modules/Entities) and manipulate [players](/modules/Player), [creatures](/modules/Entity), and [items](/modules/Items).
+* [Receive](/modules/Events/#connect) in-game events like [left-click-block](/modules/LeftClickBlockEvent), [swing-arm](/modules/SwingArmEvent), and many others.
+* [Fire](/modules/Events/#fire) and handle [custom events](/modules/CustomEvent).
+* [Execute](/modules/Spell/#execute) any vanilla Minecraft command and commands from other mods.
+* [Access](/tutorials/importing_lua_files/) self-made Lua modules from the server's file system.
+* Run multiple spells simultaneously.
+* Use all Lua language features, e.g. variables, loops, conditional bocks, and functions.
+
+If you want to start right now, please read the [introduction](/introduction).

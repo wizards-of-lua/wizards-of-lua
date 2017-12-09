@@ -2,6 +2,7 @@
 title: Importing Lua Files from the File System
 excerpt_separator: <!--more-->
 author: mickkay
+level: 2
 ---
 This tutorial shows how you can import external Lua files into your spells.
 <!--more-->

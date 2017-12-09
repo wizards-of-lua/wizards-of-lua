@@ -49,6 +49,13 @@ functions:
     "
     examples:
       - url: Block/withNbt.md
+  - name: asItem
+    parameters:
+    results: "[Item](!SITE_URL!/modules/Item/)"
+    description: "The 'asItem' function returns a new [item](!SITE_URL!/modules/Item/) that represents the given block.
+    "
+    examples:
+      - url: Block/asItem.md
 ---
 
 The Block class is a basic unit of structure in Minecraft.

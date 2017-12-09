@@ -7,11 +7,11 @@ docs:
 - title: News
   url: /news
 
-- title: Introduction
-  url: /introduction
-
 - title: Features
   url: /features
+
+- title: Introduction
+  url: /introduction
 
 - title: Download & Installation
   url: /installation

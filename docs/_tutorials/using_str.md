@@ -2,6 +2,7 @@
 title: Using the str() function
 excerpt_separator: <!--more-->
 author: mickkay
+level: 1
 ---
 This tutorial shows how you can use the <tt>str()</tt> function to get
 a glance of the internal structure of an object.

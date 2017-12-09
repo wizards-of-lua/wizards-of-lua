@@ -12,7 +12,17 @@ properties:
     "
     examples:
       - url: Player/team.md
+  - name: mainhand
+    type: "[Item](!SITE_URL!/modules/Item/)"
+    access: r/w
+    description: "This is the [item](!SITE_URL!/modules/Item/) this player is holding in his main hand.    
+    "
+  - name: offhand
+    type: "[Item](!SITE_URL!/modules/Item/)"
+    access: r/w
+    description: "This is the [item](!SITE_URL!/modules/Item/) this player is holding in his off hand.    
+    "
 functions:
 ---
 
-The Player class represents a specific player who is currently logged into your world.
+An instance of the Player class represents a specific player who is currently logged into the world.

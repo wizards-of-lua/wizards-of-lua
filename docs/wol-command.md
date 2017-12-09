@@ -51,8 +51,38 @@ This will break all spells owned by player mickkay.
 
 <br/>
 
-<a name="Automatic-Requirements" style="position:relative; top:-70px; display:block;"></a>
-## Automatic Requirements
+<a name="Shared-Default-Dependencies" style="position:relative; top:-70px; display:block;"></a>
+## Shared Default Dependencies
+The <tt>sharedAutoRequire</tt> value is a global value that defines which Lua module will be loaded
+automatically into a new spell's environment.
+The respective module must be available within the [shared library](/configuration-file.html) (or all
+of the player's libraries).
+
+### Showing the sharedAutoRequire value
+```
+/wol sharedAutoRequire
+```
+This prints the value of the "sharedAutoRequire" setting.
+
+### Setting the sharedAutoRequire value
+Lets assume that there is a file called "shared-profile.lua" inside the
+sharred library directory.
+```
+/wol sharedAutoRequire set shared-profile
+```
+This sets the "shared-profile" module as the automatic requirement for all spells.
+This is equivalent to prefixing a new spell's code with <tt>require "shared-profile"</tt>.
+
+### Unsetting the sharedAutoRequire value
+```
+/wol sharedAutoRequire unset
+```
+This sets the value of the "sharedAutoRequire" setting to none.
+
+<br/>
+
+<a name="Default-Dependencies" style="position:relative; top:-70px; display:block;"></a>
+## Player-specific Default Dependencies
 The <tt>autoRequire</tt> value is a player-specific value that defines which Lua module will be loaded
 automatically into a new spell's environment.
 The respective module must be available within the [player's Lua path](/configuration-file.html).
