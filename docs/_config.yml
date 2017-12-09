@@ -6,6 +6,7 @@ show_header: true
 github:
   project_url: https://github.com/wizards-of-lua/wizards-of-lua
 show_dir_listing: false
+google_translate: true
 defaults:
   - scope:
       path: "images"
