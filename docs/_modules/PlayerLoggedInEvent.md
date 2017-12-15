@@ -15,4 +15,4 @@ functions:
 ---
 
 The PlayerLoggedInEvent is fired whenever a [Player](/modules/Player) joins the
-world.
+world (server).
