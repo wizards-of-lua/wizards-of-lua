@@ -54,10 +54,7 @@ public class WolEventHandler {
     }
     EntityPlayerMP player = (EntityPlayerMP) evt.player;
     addWolPacketHandler(player);
-
-    for (SpellEntity spellEntity : context.getSpells()) {
-      spellEntity.replacePlayerInstance(player);
-    }
+    replacePlayerInstance(player);
   }
 
   @SubscribeEvent
@@ -67,7 +64,10 @@ public class WolEventHandler {
     }
     EntityPlayerMP player = (EntityPlayerMP) evt.player;
     addWolPacketHandler(player);
+    replacePlayerInstance(player);
+  }
 
+  private void replacePlayerInstance(EntityPlayerMP player) {
     for (SpellEntity spellEntity : context.getSpells()) {
       spellEntity.replacePlayerInstance(player);
     }
@@ -79,8 +79,13 @@ public class WolEventHandler {
     ChannelPipeline pipeline = channel.pipeline();
     WolChannelInboundHandlerAdapter handler = pipeline.get(WolChannelInboundHandlerAdapter.class);
     if (handler == null) {
-      handler = new WolChannelInboundHandlerAdapter(player);
-      pipeline.addBefore(VANILLA_PACKET_HANDLER_NAME, WOL_PACKET_HANDLER_NAME, handler);
+      if (pipeline.get(VANILLA_PACKET_HANDLER_NAME) != null) {
+        handler = new WolChannelInboundHandlerAdapter(player);
+        pipeline.addBefore(VANILLA_PACKET_HANDLER_NAME, WOL_PACKET_HANDLER_NAME, handler);
+      } else {
+        WizardsOfLua.instance.logger.error("Can't add WolPacketHandler: vanilla packet handler '"+VANILLA_PACKET_HANDLER_NAME+"' not found!");
+        throw new RuntimeException("Can't add WolPacketHandler!");
+      }
     } else {
       // This is essential when a player respawns.
       handler.setPlayer(player);

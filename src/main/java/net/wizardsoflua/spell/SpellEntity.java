@@ -168,7 +168,7 @@ public class SpellEntity extends Entity {
         this.owner = player;
       }
     }
-    getProgram().getConverters().replacePlayerInstance(player);
+    getProgram().replacePlayerInstance(player);
   }
 
 }

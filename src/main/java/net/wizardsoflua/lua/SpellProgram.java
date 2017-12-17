@@ -4,6 +4,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.nio.file.FileSystem;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -22,6 +26,7 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
@@ -48,7 +53,7 @@ public class SpellProgram {
   private enum State {
     NEW, PAUSED, FINISHED
   }
-  public interface Context extends PrintRedirector.Context {
+  public interface Context {
 
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
@@ -70,6 +75,7 @@ public class SpellProgram {
   private final Types types;
   private final Converters converters;
   private final EventHandlers eventHandlers;
+  private ICommandSender owner;
   private State state;
 
   private Continuation continuation;
@@ -77,8 +83,9 @@ public class SpellProgram {
   private Time time;
   private final Context context;
 
-  SpellProgram(String code, ModuleDependencies dependencies, String defaultLuaPath, Time time,
-      Context context) {
+  SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
+      String defaultLuaPath, Time time, Context context) {
+    this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     this.time = checkNotNull(time, "time==null!");
@@ -99,7 +106,12 @@ public class SpellProgram {
     installSystemLibraries();
     converters = new Converters(types, context.getLuaClasses());
     TypesModule.installInto(env, types, converters);
-    PrintRedirector.installInto(env, context);
+    PrintRedirector.installInto(env, new PrintRedirector.Context() {
+      @Override
+      public void send(String message) {
+        SpellProgram.this.owner.sendMessage(new TextComponentString(message));
+      }
+    });
     AddPathFunction.installInto(env, converters, new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
@@ -158,10 +170,6 @@ public class SpellProgram {
 
   public EventHandlers getEventHandlers() {
     return eventHandlers;
-  }
-
-  public Converters getConverters() {
-    return converters;
   }
 
   public boolean isTerminated() {
@@ -238,6 +246,15 @@ public class SpellProgram {
     StringLib.installInto(stateContext, env);
     MathLib.installInto(stateContext, env);
     TableLib.installInto(stateContext, env);
+  }
+
+  public void replacePlayerInstance(EntityPlayerMP player) {
+    if (this.owner.getCommandSenderEntity() instanceof EntityPlayer) {
+      if (this.owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
+        this.owner = player;
+      }
+    }
+    converters.replacePlayerInstance(player);
   }
 
 }

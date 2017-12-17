@@ -148,11 +148,8 @@ public class PlayerBackdoor {
   public void setMainHandItem(ItemStack item) {
     testEnv.runAndWait(() -> {
       getDelegate().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
-    });
-    testEnv.runAndWait(() -> {
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
-    sleep(200);
   }
 
   public ItemStack getMainHandItem() {
@@ -162,11 +159,8 @@ public class PlayerBackdoor {
   public void setOffHandItem(ItemStack item) {
     testEnv.runAndWait(() -> {
       getDelegate().setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY));
-    });
-    testEnv.runAndWait(() -> {
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
-    sleep(200);
   }
 
   public ItemStack getOffHandItem() {
