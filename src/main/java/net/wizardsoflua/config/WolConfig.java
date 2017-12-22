@@ -39,12 +39,10 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.config.WizardConfig.Context;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.table.TableUtils;
 
 public class WolConfig {
-  private static final String SHARED_HOME = "shared";
 
   public static WolConfig create(FMLPreInitializationEvent event, String configName)
       throws FileNotFoundException, LoaderException, CallException, CallPausedException,
@@ -59,8 +57,8 @@ public class WolConfig {
     return new WolConfig(wolConfigFile);
   }
 
-  private final ExecutorService service = Executors.newFixedThreadPool(1);
-  private final GeneralConfig.Context generalConfigContext = new GeneralConfig.Context() {
+  private class SubContextImpl
+      implements RestConfig.Context, GeneralConfig.Context, WizardConfig.Context {
 
     @Override
     public void save() {
@@ -72,23 +70,19 @@ public class WolConfig {
     public File getWolConfigDir() {
       return configFile.getParentFile();
     }
-  };
-  private final Context wizardConfigContext = new WizardConfig.Context() {
 
     @Override
     public File getLuaLibDirHome() {
       return getGeneralConfig().getLuaLibDirHome();
     }
+  }
 
-    @Override
-    public void save() {
-      WolConfig.this.saveAsync();
-    }
-  };
-
+  private final SubContextImpl subContextImpl = new SubContextImpl();
+  private final ExecutorService service = Executors.newFixedThreadPool(1);
   private final File configFile;
 
   private GeneralConfig generalConfig;
+  private RestConfig restConfig;
   private final Map<UUID, WizardConfig> wizards = new HashMap<>();
 
   public WolConfig(File configFile) throws LoaderException, CallException, CallPausedException,
@@ -101,8 +95,9 @@ public class WolConfig {
                 configFile.getParentFile().getAbsolutePath()));
       }
     }
-    generalConfig = new GeneralConfig(generalConfigContext);
-
+    generalConfig = new GeneralConfig(subContextImpl);
+    restConfig = new RestConfig(subContextImpl);
+    
     // Fix for issue #73 - Server still crashing when config file is a directory
     if (configFile.exists() && configFile.isDirectory()) {
       configFile.delete();
@@ -117,16 +112,22 @@ public class WolConfig {
     StateContext state = StateContexts.newDefaultInstance();
     Table env = state.newTable();
     env.rawset("General", new GeneralFunction());
+    env.rawset("Rest", new RestFunction());
     env.rawset("Wizard", new WizardFunction());
 
     ChunkLoader loader = CompilerChunkLoader.of("WolConfigFile");
     LuaFunction main = loader.loadTextChunk(new Variable(env), filename, content);
     DirectCallExecutor.newExecutor().call(state, main);
-
+    
+    saveSync();
   }
 
   public GeneralConfig getGeneralConfig() {
     return generalConfig;
+  }
+
+  public RestConfig getRestConfig() {
+    return restConfig;
   }
 
   public Collection<WizardConfig> getWizards() {
@@ -183,6 +184,11 @@ public class WolConfig {
     out.write("General ");
     TableUtils.writeTo(out, generalConfig.writeTo(new DefaultTable()));
     out.write("\n");
+
+    out.write("Rest ");
+    TableUtils.writeTo(out, restConfig.writeTo(new DefaultTable()));
+    out.write("\n");
+
     for (WizardConfig wizardConfig : wizards.values()) {
       out.write("Wizard ");
       TableUtils.writeTo(out, wizardConfig.writeTo(new DefaultTable()));
@@ -201,7 +207,25 @@ public class WolConfig {
       checkNotNull(arg1, "arg1==null!");
       checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
       Table table = (Table) arg1;
-      generalConfig = new GeneralConfig(table, generalConfigContext);
+      generalConfig = new GeneralConfig(table, subContextImpl);
+      context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState) {}
+  }
+
+  private class RestFunction extends AbstractFunction1 {
+
+
+    public RestFunction() {}
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) {
+      checkNotNull(arg1, "arg1==null!");
+      checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
+      Table table = (Table) arg1;
+      restConfig = new RestConfig(table, subContextImpl);
       context.getReturnBuffer().setTo();
     }
 
@@ -219,7 +243,7 @@ public class WolConfig {
       checkNotNull(arg1, "arg1==null!");
       checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
       Table table = (Table) arg1;
-      WizardConfig wizardConfig = new WizardConfig(table, wizardConfigContext);
+      WizardConfig wizardConfig = new WizardConfig(table, subContextImpl);
       wizards.put(wizardConfig.getId(), wizardConfig);
       context.getReturnBuffer().setTo();
     }
@@ -242,7 +266,7 @@ public class WolConfig {
 
   private @Nullable WizardConfig createWizardConfig(UUID id) {
     checkArgument(getWizardConfig(id) == null, "Config for player with ID=%s already exists!", id);
-    WizardConfig result = new WizardConfig(id, wizardConfigContext);
+    WizardConfig result = new WizardConfig(id, subContextImpl);
     wizards.put(id, result);
     saveAsync();
     return result;

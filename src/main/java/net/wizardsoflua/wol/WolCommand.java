@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.wol.autorequire.PrintAutoRequireAction;
 import net.wizardsoflua.wol.autorequire.SetAutoRequireAction;
 import net.wizardsoflua.wol.autorequire.UnsetAutoRequireAction;
+import net.wizardsoflua.wol.file.FileEditAction;
 import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
@@ -46,9 +47,15 @@ public class WolCommand extends CommandBase {
   class WolMenu extends Menu {
     WolMenu() {
       put("spell", new SpellMenu());
+      put("file", new FileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
       put("autoRequire", new AutoRequireMenu());
       put("sharedAutoRequire", new SharedAutoRequireMenu());
+    }
+  }
+  class FileMenu extends Menu {
+    FileMenu() {
+      put("edit", new FileEditAction());
     }
   }
   class SpellMenu extends Menu {

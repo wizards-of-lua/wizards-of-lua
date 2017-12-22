@@ -2,7 +2,10 @@ package net.wizardsoflua;
 
 import static java.lang.String.format;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Clock;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -28,15 +31,19 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.config.GeneralConfig;
+import net.wizardsoflua.config.RestConfig;
 import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.event.WolEventHandler;
+import net.wizardsoflua.file.LuaFile;
+import net.wizardsoflua.file.LuaFileRegistry;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.profiles.Profiles;
+import net.wizardsoflua.rest.WolRestServer;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellEntityFactory;
@@ -68,6 +75,8 @@ public class WizardsOfLua {
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
   private Profiles profiles;
+  private LuaFileRegistry fileRegistry;
+  private WolRestServer restServer;
 
   private MinecraftServer server;
   private GameProfiles gameProfiles;
@@ -193,6 +202,34 @@ public class WizardsOfLua {
         return luaClasses.getLuaClassnameOf(event.getClass());
       }
     });
+    fileRegistry = new LuaFileRegistry(new LuaFileRegistry.Context() {
+      @Override
+      public File getPlayerLibDir(UUID playerId) {
+        return getConfig().getOrCreateWizardConfig(playerId).getLibDir();
+      }
+
+      @Override
+      public RestConfig getRestConfig() {
+        return getConfig().getRestConfig();
+      }
+    });
+
+    restServer = new WolRestServer(new WolRestServer.Context() {
+      @Override
+      public LuaFile getLuaFileByReference(String fileReference) {
+        return getFileRegistry().loadLuaFile(fileReference);
+      }
+
+      @Override
+      public RestConfig getRestConfig() {
+        return getConfig().getRestConfig();
+      }
+
+      @Override
+      public void saveLuaFileByReference(String fileReference, String content) {
+        getFileRegistry().saveLuaFile(fileReference, content);
+      }
+    });
   }
 
   @EventHandler
@@ -205,12 +242,13 @@ public class WizardsOfLua {
   }
 
   @EventHandler
-  public void serverLoad(FMLServerStartingEvent event) {
+  public void serverLoad(FMLServerStartingEvent event) throws IOException {
     server = event.getServer();
     gameProfiles = new GameProfiles(server);
     event.registerServerCommand(new WolCommand());
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
+    restServer.start();
   }
 
   @EventHandler
@@ -248,6 +286,14 @@ public class WizardsOfLua {
 
   public void clearLuaFunctionCache() {
     luaFunctionCache.clear();
+  }
+
+  public LuaFileRegistry getFileRegistry() {
+    return fileRegistry;
+  }
+
+  public WolRestServer getRestServer() {
+    return restServer;
   }
 
 }
