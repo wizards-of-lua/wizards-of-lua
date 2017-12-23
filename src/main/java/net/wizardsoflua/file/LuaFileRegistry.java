@@ -8,7 +8,6 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,7 +34,8 @@ public class LuaFileRegistry {
     try {
       Path playerLibDir = Paths.get(context.getPlayerLibDir(player.getUniqueID()).toURI());
       try (Stream<Path> files = Files.walk(playerLibDir, FileVisitOption.FOLLOW_LINKS)) {
-        return files.map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
+        return files.filter(p -> !Files.isDirectory(p))
+            .map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -55,13 +55,48 @@ public class LuaFileRegistry {
     }
   }
 
+  public void deleteFile(EntityPlayer player, String filepath) {
+    try {
+      UUID playerId = player.getUniqueID();
+      File file = new File(context.getPlayerLibDir(playerId), filepath);
+      Files.delete(Paths.get(file.toURI()));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void moveFile(EntityPlayer player, String filepath, String newFilepath) {
+    try {
+      UUID playerId = player.getUniqueID();
+      File oldFile = new File(context.getPlayerLibDir(playerId), filepath);
+      File newFile = new File(context.getPlayerLibDir(playerId), newFilepath);
+      if (!oldFile.exists()) {
+        throw new IllegalArgumentException(
+            "Can't move " + filepath + " to " + newFilepath + "! Source file does not exist!");
+      }
+      if (newFile.exists()) {
+        throw new IllegalArgumentException(
+            "Can't move " + filepath + " to " + newFilepath + "! Target file already exists!");
+      }
+      Files.move(Paths.get(oldFile.toURI()), Paths.get(newFile.toURI()));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
   public LuaFile loadLuaFile(String fileReference) {
     try {
       String filepath = getFilepathFor(fileReference);
       UUID playerId = getPlayerIdFor(fileReference);
       File file = new File(context.getPlayerLibDir(playerId), filepath);
       String name = file.getName();
-      String content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+      String content;
+      if (file.exists()) {
+        content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+      } else {
+        content = "";
+      }
       return new LuaFile(filepath, name, fileReference, content);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -73,6 +108,9 @@ public class LuaFileRegistry {
       String filepath = getFilepathFor(fileReference);
       UUID playerId = getPlayerIdFor(fileReference);
       File file = new File(context.getPlayerLibDir(playerId), filepath);
+      if (!file.getParentFile().exists()) {
+        Files.createDirectories(Paths.get(file.getParentFile().toURI()));
+      }
       byte[] bytes = content.getBytes();
       Files.write(Paths.get(file.toURI()), bytes);
     } catch (IOException e) {
@@ -96,5 +134,7 @@ public class LuaFileRegistry {
     UUID result = UUID.fromString(playerIdStr);
     return result;
   }
+
+
 
 }

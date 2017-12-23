@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -20,12 +19,10 @@ import org.apache.commons.io.IOUtils;
 
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.freeutils.httpserver.HTTPServer;
-import net.freeutils.httpserver.HTTPServer.Context;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
@@ -143,8 +140,8 @@ public class WolRestServer {
         LuaFile luaFile = context.getLuaFileByReference(fileref);
         resp.getHeaders().add("Content-Type", "application/json");
 
-        LuaFileJson luaFileJson = new LuaFileJson(luaFile.getPath(),
-            luaFile.getName(), luaFile.getFileReference(), luaFile.getContent());
+        LuaFileJson luaFileJson = new LuaFileJson(luaFile.getPath(), luaFile.getName(),
+            luaFile.getFileReference(), luaFile.getContent());
         Gson gson = new Gson();
         String content = gson.toJson(luaFileJson);
         InputStream body =
@@ -186,7 +183,6 @@ public class WolRestServer {
       }
       return false;
     }
-
   }
 
 }
