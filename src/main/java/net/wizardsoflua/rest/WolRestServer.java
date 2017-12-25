@@ -4,12 +4,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -23,9 +26,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.freeutils.httpserver.HTTPServer;
+import net.freeutils.httpserver.HTTPServer.FileContextHandler;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.RestConfig;
 import net.wizardsoflua.file.LuaFile;
 
@@ -46,17 +51,41 @@ public class WolRestServer {
   }
 
   public void start() throws IOException {
-    int port = context.getRestConfig().getPort();
     File contextRoot = context.getRestConfig().getWebDir();
+    int port = context.getRestConfig().getPort();
+    String hostname = context.getRestConfig().getHostname();
+
+    createEmptyContextRoot(contextRoot);
+    WizardsOfLua.instance.logger
+        .info("REST service will cache static files at " + contextRoot.getAbsolutePath());
+
     HTTPServer server = new HTTPServer(port);
-    VirtualHost host = server.getVirtualHost(null);
+    VirtualHost host = new VirtualHost(hostname);
 
-    // TODO remove debug output
-    System.out.println("Serving files from " + contextRoot.getAbsolutePath());
+    server.addVirtualHost(host);
 
-    host.addContext("/", new HTTPServer.FileContextHandler(contextRoot, "/"));
-    host.addContexts(new RestHandlers());
+    StaticResourceHandlers staticResourceHandlers =
+        new StaticResourceHandlers("/www", contextRoot, "/");
+    host.addContext("/", staticResourceHandlers);
+    host.addContexts(new RestHandlers(staticResourceHandlers));
+
+    WizardsOfLua.instance.logger.info("Starting REST service at http://" + hostname + ":" + port);
     server.start();
+  }
+
+  private void createEmptyContextRoot(File contextRoot) throws IOException {
+    Path dir = contextRoot.toPath();
+    if (Files.isDirectory(dir)) {
+      deleteDir(dir);
+    }
+    Files.createDirectories(dir);
+  }
+
+  private void deleteDir(Path dirPath) throws IOException {
+    Files.walk(dirPath) //
+        .map(Path::toFile) //
+        .sorted(Comparator.comparing(File::isDirectory)) //
+        .forEach(File::delete);
   }
 
   class LuaFileJson {
@@ -87,7 +116,51 @@ public class WolRestServer {
     }
   }
 
+  class StaticResourceHandlers implements HTTPServer.ContextHandler {
+
+    private final String resourcePath;
+    private final File contextRoot;
+    private final FileContextHandler cacheDirHandler;
+
+    public StaticResourceHandlers(String resourcePath, File contextRoot, String context)
+        throws IOException {
+      this.resourcePath = resourcePath;
+      this.contextRoot = contextRoot;
+      this.cacheDirHandler = new HTTPServer.FileContextHandler(contextRoot, context);
+    }
+
+    @Override
+    public int serve(Request req, Response resp) throws IOException {
+      String path = req.getPath();
+      if (!path.startsWith("/")) {
+        return 404;
+      }
+      Path cachedFilePath = Paths.get(contextRoot.getAbsolutePath(), path);
+      if (!Files.exists(cachedFilePath)) {
+        String resource = resourcePath + path;
+        URL url = WolRestServer.class.getResource(resource);
+        if (url == null) {
+          WizardsOfLua.instance.logger.warn("WolRestServer couldn't find resource at " + resource);
+          return 404;
+        }
+        File targetFile = new File(contextRoot, path);
+        if (!targetFile.getParentFile().exists()) {
+          Files.createDirectories(targetFile.getParentFile().toPath());
+        }
+        IOUtils.copy(url.openStream(), new FileOutputStream(targetFile));
+      }
+      cacheDirHandler.serve(req, resp);
+      return 0;
+    }
+  }
+
   class RestHandlers {
+
+    private final StaticResourceHandlers staticResourceHandlers;
+
+    public RestHandlers(StaticResourceHandlers staticResourceHandlers) {
+      this.staticResourceHandlers = staticResourceHandlers;
+    }
 
     @HTTPServer.Context(value = "/wol/lua", methods = {"GET"})
     public int get(Request req, Response resp) throws IOException {
@@ -156,14 +229,8 @@ public class WolRestServer {
     }
 
     private int sendEditor(Request req, Response resp) throws IOException {
-      Path webDir = Paths.get(new File(context.getRestConfig().getWebDir(), "editor.html").toURI());
-      String content = new String(Files.readAllBytes(webDir));
-
-      InputStream body = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8.name()));
-      long[] range = null;
-      resp.sendHeaders(200, content.length(), -1L, null, "text/html", range);
-      resp.sendBody(body, content.length(), null);
-      return 0;
+      req.setPath("/editor.html");
+      return staticResourceHandlers.serve(req, resp);
     }
 
     private boolean acceptsJson(Request req) {

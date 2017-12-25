@@ -43,6 +43,9 @@ public class LuaFileRegistry {
   }
 
   public URL getFileEditURL(EntityPlayer player, String filepath) {
+    if ( filepath.contains("..")) {
+      throw new IllegalArgumentException("Relative path syntax is not allowed!");
+    }
     String hostname = context.getRestConfig().getHostname();
     int port = context.getRestConfig().getPort();
 
@@ -57,6 +60,9 @@ public class LuaFileRegistry {
 
   public void deleteFile(EntityPlayer player, String filepath) {
     try {
+      if ( filepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
       UUID playerId = player.getUniqueID();
       File file = new File(context.getPlayerLibDir(playerId), filepath);
       Files.delete(Paths.get(file.toURI()));
@@ -67,6 +73,12 @@ public class LuaFileRegistry {
 
   public void moveFile(EntityPlayer player, String filepath, String newFilepath) {
     try {
+      if ( filepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
+      if ( newFilepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
       UUID playerId = player.getUniqueID();
       File oldFile = new File(context.getPlayerLibDir(playerId), filepath);
       File newFile = new File(context.getPlayerLibDir(playerId), newFilepath);
@@ -88,6 +100,9 @@ public class LuaFileRegistry {
   public LuaFile loadLuaFile(String fileReference) {
     try {
       String filepath = getFilepathFor(fileReference);
+      if ( filepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
       UUID playerId = getPlayerIdFor(fileReference);
       File file = new File(context.getPlayerLibDir(playerId), filepath);
       String name = file.getName();
@@ -106,6 +121,9 @@ public class LuaFileRegistry {
   public void saveLuaFile(String fileReference, String content) {
     try {
       String filepath = getFilepathFor(fileReference);
+      if ( filepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
       UUID playerId = getPlayerIdFor(fileReference);
       File file = new File(context.getPlayerLibDir(playerId), filepath);
       if (!file.getParentFile().exists()) {

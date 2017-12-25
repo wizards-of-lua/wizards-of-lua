@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ACE in Action</title>
+<script src="/jquery/jquery-3.2.1.js"></script>
+<script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css" media="screen">
+#editor {
+	position: absolute;
+	top: 20px;
+    	right: 0px;
+	bottom: 0px;
+	left: 10px;
+}
+body {
+    background-color: #252525;
+}
+.logo {
+   position:absolute;
+   right: 35px;
+   top:10px;
+}
+.hints {
+   position:absolute;
+   right: 135px;
+   top:2px;
+   color: #686868;
+   font-family: Verdana, Geneva, sans-serif;
+   font-size: 12px;
+    font-style: normal;
+}
+</style>
+</head>
+<body>
+ <div class="hints" id="hints">--- Save: CTRL-S --- Reload: CTRL-R --- Find: CTRL-F ---</div>
+ <div id="editor"></div>
+ <a href="http://www.wizards-of-lua.net/spellbooklibrary" target='wol-api-docs'><img class="logo" 
+    src="http://www.wizards-of-lua.net/images/steven-with-magic-wand-glowing.png"
+    height="70"
+    ></a>
+ <script>
+		var loaded = false;
+		var doMarkClean = false;
+		var filename = window.location.href;
+		var filepath = "";
+		var editor = ace.edit("editor");
+		editor.getSession().setTabSize(2);
+		editor.$blockScrolling = Infinity;
+		editor.getSession().setMode("ace/mode/lua");
+		//editor.setTheme("ace/theme/dracula");
+		editor.setTheme("ace/theme/twilight");
+		editor.setHighlightActiveLine(true);
+		editor.commands.addCommand({
+		    name: 'save',
+		    bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
+		    exec: function(editor) {
+		        document.title = "saving "+filepath;
+		        var value = editor.getValue();
+		        var json =  JSON.stringify({ path : filename, content : value});
+		        $.post(filename, json, function(response) {
+		        	   document.title = filepath;
+		        	   setModified(false);
+		        })
+		        .fail(function(response) {
+		            alert('Error: ' + response.status + response.responseText);
+		            document.title = filepath;
+		        });
+		    }
+		})
+		
+		function setModified(modified) {
+            if ( modified) {
+                document.title = "\u25CF "+filepath;
+            } else {
+                editor.session.getUndoManager().markClean();
+            	   document.title = filepath;
+            }
+		}
+		
+		editor.on("input", function() {
+            // input is async event, which fires after any change events
+            if ( doMarkClean) {
+            	   setModified(false);
+            	   doMarkClean = false;
+            } else {
+               setModified( ! editor.session.getUndoManager().isClean()); 
+            }
+         });
+
+		function reload(aFilename) {
+			loaded = false;
+			if (aFilename == undefined) {
+				aFilename = filename;
+			}
+			$.getJSON(aFilename).done(
+					function(data) {
+						editor.setValue(data.content);
+						editor.clearSelection();
+						editor.focus();
+						setModified(false);
+						document.title = data.path;
+						filepath = data.path;
+					    loaded = true;
+					    doMarkClean = true;
+			}).fail(function(data) {
+				alert('Error: ' + data);
+                document.title = filepath;
+			});
+		}
+
+		$(document).ready(function() {
+			if (!loaded) {
+				reload();
+			}
+		});
+	</script>
+</body>
+</html>
