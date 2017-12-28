@@ -1,6 +1,5 @@
-package net.freeutils.httpserver;
 /*
- *  Copyright © 2005-2016 Amichai Rothman
+ *  Copyright © 2005-2017 Amichai Rothman
  *
  *  This file is part of JLHTTP - the Java Lightweight HTTP Server.
  *
@@ -20,7 +19,7 @@ package net.freeutils.httpserver;
  *  For additional info see http://www.freeutils.net/source/jlhttp/
  */
 
-
+package net.freeutils.httpserver;
 
 import java.io.*;
 import java.lang.annotation.*;
@@ -34,6 +33,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 
 /**
  * The {@code HTTPServer} class implements a light-weight HTTP server.
@@ -784,8 +784,27 @@ public class HTTPServer {
          */
         public class ContextInfo {
 
+            protected final String path;
             protected final Map<String, ContextHandler> handlers =
                 new ConcurrentHashMap<String, ContextHandler>(2);
+
+            /**
+             * Constructs a ContextInfo with the given context path.
+             *
+             * @param path the context path (without trailing slash)
+             */
+            public ContextInfo(String path) {
+                this.path = path;
+            }
+
+            /**
+             * Returns the context path.
+             *
+             * @return the context path, or null if there is none
+             */
+            public String getPath() {
+                return path;
+            }
 
             /**
              * Returns the map of supported HTTP methods and their corresponding handlers.
@@ -817,7 +836,7 @@ public class HTTPServer {
         protected volatile String directoryIndex = "index.html";
         protected volatile boolean allowGeneratedIndex;
         protected final Set<String> methods = new CopyOnWriteArraySet<String>();
-        protected final ContextInfo emptyContext = new ContextInfo();
+        protected final ContextInfo emptyContext = new ContextInfo(null);
         protected final ConcurrentMap<String, ContextInfo> contexts =
             new ConcurrentHashMap<String, ContextInfo>();
 
@@ -828,7 +847,7 @@ public class HTTPServer {
          */
         public VirtualHost(String name) {
             this.name = name;
-            contexts.put("*", new ContextInfo()); // for "OPTIONS *"
+            contexts.put("*", new ContextInfo(null)); // for "OPTIONS *"
         }
 
         /**
@@ -923,13 +942,13 @@ public class HTTPServer {
          * @return the context info for the given path, or an empty context if none exists
          */
         public ContextInfo getContext(String path) {
-            path = trimRight(path, '/'); // remove trailing slash
-            ContextInfo info = null;
-            while (info == null && path != null) {
-                info = contexts.get(path);
-                path = getParentPath(path);
+            // all context paths are without trailing slash
+            for (path = trimRight(path, '/'); path != null; path = getParentPath(path)) {
+                ContextInfo info = contexts.get(path);
+                if (info != null)
+                    return info;
             }
-            return info != null ? info : emptyContext;
+            return emptyContext;
         }
 
         /**
@@ -944,8 +963,8 @@ public class HTTPServer {
         public void addContext(String path, ContextHandler handler, String... methods) {
             if (path == null || !path.startsWith("/") && !path.equals("*"))
                 throw new IllegalArgumentException("invalid path: " + path);
-            path = trimRight(path, '/');
-            ContextInfo info = new ContextInfo();
+            path = trimRight(path, '/'); // remove trailing slash
+            ContextInfo info = new ContextInfo(path);
             ContextInfo existing = contexts.putIfAbsent(path, info);
             info = existing != null ? existing : info;
             info.addHandler(handler, methods);
@@ -1003,8 +1022,7 @@ public class HTTPServer {
     }
 
     /**
-     * A {@code ContextHandler} is capable of serving content for
-     * resources within its context.
+     * A {@code ContextHandler} serves the content of resources within a context.
      *
      * @see VirtualHost#addContext
      */
@@ -1032,15 +1050,13 @@ public class HTTPServer {
     public static class FileContextHandler implements ContextHandler {
 
         protected final File base;
-        protected final String context;
 
-        public FileContextHandler(File dir, String context) throws IOException {
+        public FileContextHandler(File dir) throws IOException {
             this.base = dir.getCanonicalFile();
-            this.context = trimRight(context, '/'); // remove trailing slash;
         }
 
         public int serve(Request req, Response resp) throws IOException {
-            return serveFile(base, context, req, resp);
+            return serveFile(base, req.getContext().getPath(), req, resp);
         }
     }
 
@@ -1307,6 +1323,8 @@ public class HTTPServer {
         protected Headers headers;
         protected InputStream body;
         protected Map<String, String> params; // cached value
+        protected VirtualHost host; // cached value
+        protected VirtualHost.ContextInfo context; // cached value
 
         /**
          * Constructs a Request from the data in the given input stream.
@@ -1529,9 +1547,18 @@ public class HTTPServer {
          *         or the default virtual host
          */
         public VirtualHost getVirtualHost() {
-            String name = getBaseURL().getHost();
-            VirtualHost host = HTTPServer.this.getVirtualHost(name);
-            return host != null ? host : HTTPServer.this.getVirtualHost(null);
+            return host != null ? host
+                : (host = HTTPServer.this.getVirtualHost(getBaseURL().getHost())) != null ? host
+                : (host = HTTPServer.this.getVirtualHost(null));
+        }
+
+        /**
+         * Returns the info of the context handling this request.
+         *
+         * @return the info of the context handling this request, or an empty context
+         */
+        public VirtualHost.ContextInfo getContext() {
+            return context != null ? context : (context = getVirtualHost().getContext(getPath()));
         }
     }
 
@@ -1660,7 +1687,7 @@ public class HTTPServer {
                 throw new IOException("headers were already sent");
             if (!headers.contains("Date"))
                 headers.add("Date", formatDate(System.currentTimeMillis()));
-            headers.add("Server", "JLHTTP/2.2");
+            headers.add("Server", "JLHTTP/2.3");
             out.write(getBytes("HTTP/1.1 ", Integer.toString(status), " ", statuses[status]));
             out.write(CRLF);
             headers.writeTo(out);
@@ -1849,8 +1876,11 @@ public class HTTPServer {
                                     handleConnection(sock.getInputStream(), sock.getOutputStream());
                                 } finally {
                                     try {
-                                        // RFC7230#6.6 - close socket gracefully
-                                        sock.shutdownOutput(); // half-close socket (only output)
+                                        // Patched by mkarneim, 2017-12-28: half-closing sockets are not supported by ssl
+                                        if (!(sock instanceof SSLSocket)) {
+                                            // RFC7230#6.6 - close socket gracefully
+                                            sock.shutdownOutput(); // half-close socket (only output)
+                                        }
                                         transfer(sock.getInputStream(), null, -1); // consume input
                                     } finally {
                                         sock.close(); // and finally close socket fully
@@ -2133,8 +2163,7 @@ public class HTTPServer {
      */
     protected void handleMethod(Request req, Response resp) throws IOException {
         String method = req.getMethod();
-        VirtualHost host = req.getVirtualHost();
-        Map<String, ContextHandler> handlers = host.getContext(req.getPath()).getHandlers();
+        Map<String, ContextHandler> handlers = req.getContext().getHandlers();
         // RFC 2616#5.1.1 - GET and HEAD must be supported
         if (method.equals("GET") || handlers.containsKey(method)) {
             serve(req, resp); // method is handled by context handler (or 404)
@@ -2149,12 +2178,12 @@ public class HTTPServer {
             methods.addAll(Arrays.asList("GET", "HEAD", "TRACE", "OPTIONS")); // built-in methods
             // "*" is a special server-wide (no-context) request supported by OPTIONS
             boolean isServerOptions = req.getPath().equals("*") && method.equals("OPTIONS");
-            methods.addAll(isServerOptions ? host.getMethods() : handlers.keySet());
+            methods.addAll(isServerOptions ? req.getVirtualHost().getMethods() : handlers.keySet());
             resp.getHeaders().add("Allow", join(", ", methods));
             if (method.equals("OPTIONS")) { // default OPTIONS handler
                 resp.getHeaders().add("Content-Length", "0"); // RFC2616#9.2
                 resp.sendHeaders(200);
-            } else if (host.getMethods().contains(method)) {
+            } else if (req.getVirtualHost().getMethods().contains(method)) {
                 resp.sendHeaders(405); // supported by server, but not this context (nor built-in)
             } else {
                 resp.sendError(501); // unsupported method
@@ -2190,9 +2219,7 @@ public class HTTPServer {
      */
     protected void serve(Request req, Response resp) throws IOException {
         // get context handler to handle request
-        String path = req.getPath();
-        VirtualHost.ContextInfo info = req.getVirtualHost().getContext(path);
-        ContextHandler handler = info.getHandlers().get(req.getMethod());
+        ContextHandler handler = req.getContext().getHandlers().get(req.getMethod());
         if (handler == null) {
             resp.sendError(404);
             return;
@@ -2200,6 +2227,7 @@ public class HTTPServer {
         // serve request
         int status = 404;
         // add directory index if necessary
+        String path = req.getPath();
         if (path.endsWith("/")) {
             String index = req.getVirtualHost().getDirectoryIndex();
             if (index != null) {
@@ -2873,7 +2901,7 @@ public class HTTPServer {
         } else if (!file.canRead() || !file.getPath().startsWith(base.getPath())) { // validate
             return 403;
         } else if (file.isDirectory()) {
-            if (relativePath.endsWith("/") || relativePath.length() == 0) {
+            if (relativePath.endsWith("/")) {
                 if (!req.getVirtualHost().isAllowGeneratedIndex())
                     return 403;
                 resp.send(200, createIndex(file, req.getPath()));
@@ -3025,7 +3053,7 @@ public class HTTPServer {
             HTTPServer server = new HTTPServer(port);
             VirtualHost host = server.getVirtualHost(null); // default host
             host.setAllowGeneratedIndex(true); // with directory index pages
-            host.addContext("/", new FileContextHandler(dir, "/"));
+            host.addContext("/", new FileContextHandler(dir));
             host.addContext("/api/time", new ContextHandler() {
                 public int serve(Request req, Response resp) throws IOException {
                     long now = System.currentTimeMillis();

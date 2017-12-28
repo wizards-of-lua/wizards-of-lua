@@ -4,19 +4,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.commons.io.IOUtils;
 
@@ -26,7 +40,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.freeutils.httpserver.HTTPServer;
-import net.freeutils.httpserver.HTTPServer.FileContextHandler;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
@@ -53,15 +66,35 @@ public class WolRestServer {
   public void start() throws IOException {
     File contextRoot = context.getRestConfig().getWebDir();
     int port = context.getRestConfig().getPort();
+    boolean secure = context.getRestConfig().isSecure();
     String hostname = context.getRestConfig().getHostname();
+    String protocol = context.getRestConfig().getProtocol();
+    final String keystore = context.getRestConfig().getKeyStore();
+    if (secure) {
+      checkNotNull(keystore,
+          "Missing keystore! Please configure path to keystore file in WoL config!");
+    }
+    final char[] keystorePassword = context.getRestConfig().getKeyStorePassword();
+    final char[] keyPassword = context.getRestConfig().getKeyPassword();
 
     createEmptyContextRoot(contextRoot);
+
     WizardsOfLua.instance.logger
         .info("REST service will cache static files at " + contextRoot.getAbsolutePath());
 
-    HTTPServer server = new HTTPServer(port);
+    HTTPServer server = new HTTPServer(port) {
+      protected ServerSocket createServerSocket() throws IOException {
+        ServerSocketFactory factory =
+            this.secure ? createSSLServerSocketFactory(keystore, keystorePassword, keyPassword)
+                : ServerSocketFactory.getDefault();
+        ServerSocket serv = factory.createServerSocket();
+        serv.setReuseAddress(true);
+        serv.bind(new InetSocketAddress(port));
+        return serv;
+      }
+    };
+    server.setSecure(secure);
     VirtualHost host = new VirtualHost(hostname);
-
     server.addVirtualHost(host);
 
     StaticResourceHandlers staticResourceHandlers =
@@ -69,8 +102,28 @@ public class WolRestServer {
     host.addContext("/", staticResourceHandlers);
     host.addContexts(new RestHandlers(staticResourceHandlers));
 
-    WizardsOfLua.instance.logger.info("Starting REST service at http://" + hostname + ":" + port);
+    WizardsOfLua.instance.logger
+        .info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
     server.start();
+  }
+
+  private SSLServerSocketFactory createSSLServerSocketFactory(String keystore,
+      char[] keystorePassword, char[] keyPassword) {
+    try {
+      SSLContext sslContext = SSLContext.getInstance("TLS");
+      KeyStore ks = KeyStore.getInstance("JKS");
+      try (InputStream in = new FileInputStream(new File(keystore))) {
+        ks.load(in, keystorePassword);
+      }
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      kmf.init(ks, keyPassword);
+      sslContext.init(kmf.getKeyManagers(), null, null);
+
+      return sslContext.getServerSocketFactory();
+    } catch (UnrecoverableKeyException | KeyManagementException | NoSuchAlgorithmException
+        | KeyStoreException | CertificateException | IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void createEmptyContextRoot(File contextRoot) throws IOException {
@@ -120,13 +173,13 @@ public class WolRestServer {
 
     private final String resourcePath;
     private final File contextRoot;
-    private final FileContextHandler cacheDirHandler;
+    private final HTTPServer.FileContextHandler cacheDirHandler;
 
     public StaticResourceHandlers(String resourcePath, File contextRoot, String context)
         throws IOException {
       this.resourcePath = resourcePath;
       this.contextRoot = contextRoot;
-      this.cacheDirHandler = new HTTPServer.FileContextHandler(contextRoot, context);
+      this.cacheDirHandler = new HTTPServer.FileContextHandler(contextRoot);
     }
 
     @Override
@@ -149,8 +202,8 @@ public class WolRestServer {
         }
         IOUtils.copy(url.openStream(), new FileOutputStream(targetFile));
       }
-      cacheDirHandler.serve(req, resp);
-      return 0;
+      // return cacheDirHandler.serve(req, resp);
+      return HTTPServer.serveFile(contextRoot, "", req, resp);
     }
   }
 
@@ -187,10 +240,7 @@ public class WolRestServer {
       try {
         JsonParser parser = new JsonParser();
         String content = IOUtils.toString(req.getBody(), StandardCharsets.UTF_8.name());
-        WizardsOfLua.instance.logger.info(content);
-        JsonObject root =
-            parser.parse(content)
-                .getAsJsonObject();
+        JsonObject root = parser.parse(content).getAsJsonObject();
         Pattern pattern = Pattern.compile("/wol/lua/(.+)");
         Matcher matcher = pattern.matcher(req.getPath());
         if (matcher.matches()) {
@@ -233,7 +283,9 @@ public class WolRestServer {
     }
 
     private int sendEditor(Request req, Response resp) throws IOException {
+
       req.setPath("/editor.html");
+
       return staticResourceHandlers.serve(req, resp);
     }
 

@@ -85,8 +85,8 @@ public class WolConfig {
   private RestConfig restConfig;
   private final Map<UUID, WizardConfig> wizards = new HashMap<>();
 
-  public WolConfig(File configFile) throws LoaderException, CallException, CallPausedException,
-      InterruptedException, FileNotFoundException, IOException {
+  public WolConfig(File configFile)
+      throws InterruptedException, FileNotFoundException, IOException {
     this.configFile = checkNotNull(configFile, "configFile==null!");
     if (!configFile.getParentFile().exists()) {
       if (!configFile.getParentFile().mkdirs()) {
@@ -97,7 +97,7 @@ public class WolConfig {
     }
     generalConfig = new GeneralConfig(subContextImpl);
     restConfig = new RestConfig(subContextImpl);
-    
+
     // Fix for issue #73 - Server still crashing when config file is a directory
     if (configFile.exists() && configFile.isDirectory()) {
       configFile.delete();
@@ -116,9 +116,12 @@ public class WolConfig {
     env.rawset("Wizard", new WizardFunction());
 
     ChunkLoader loader = CompilerChunkLoader.of("WolConfigFile");
-    LuaFunction main = loader.loadTextChunk(new Variable(env), filename, content);
-    DirectCallExecutor.newExecutor().call(state, main);
-    
+    try {
+      LuaFunction main = loader.loadTextChunk(new Variable(env), filename, content);
+      DirectCallExecutor.newExecutor().call(state, main);
+    } catch (LoaderException | CallException | CallPausedException e) {
+      throw new RuntimeException("Error while reading config file at " + filename, e);
+    }
     saveSync();
   }
 

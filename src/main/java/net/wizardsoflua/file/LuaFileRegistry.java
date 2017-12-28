@@ -61,11 +61,12 @@ public class LuaFileRegistry {
       throw new IllegalArgumentException("Relative path syntax is not allowed!");
     }
     String hostname = context.getRestConfig().getHostname();
+    String protocol = context.getRestConfig().getProtocol();
     int port = context.getRestConfig().getPort();
 
     String fileReference = getFileReferenceFor(player, filepath);
     try {
-      URL result = new URL("http://" + hostname + ":" + port + "/wol/lua/" + fileReference);
+      URL result = new URL(protocol+"://" + hostname + ":" + port + "/wol/lua/" + fileReference);
       return result;
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
