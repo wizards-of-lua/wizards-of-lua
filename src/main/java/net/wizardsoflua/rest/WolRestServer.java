@@ -165,10 +165,10 @@ public class WolRestServer {
     @HTTPServer.Context(value = "/wol/lua", methods = {"GET"})
     public int get(Request req, Response resp) throws IOException {
       try {
-        if (acceptsHtml(req)) {
-          return sendEditor(req, resp);
-        } else if (acceptsJson(req)) {
+        if (acceptsJson(req)) {
           return sendLuaFile(req, resp);
+        } else if (acceptsHtml(req)) {
+          return sendEditor(req, resp);
         } else {
           String accepts = req.getHeaders().get("Accept");
           resp.sendError(503,
@@ -186,7 +186,11 @@ public class WolRestServer {
     public int postWizard(Request req, Response resp) throws IOException {
       try {
         JsonParser parser = new JsonParser();
-        JsonObject root = parser.parse(IOUtils.toString(req.getBody())).getAsJsonObject();
+        String content = IOUtils.toString(req.getBody(), StandardCharsets.UTF_8.name());
+        WizardsOfLua.instance.logger.info(content);
+        JsonObject root =
+            parser.parse(content)
+                .getAsJsonObject();
         Pattern pattern = Pattern.compile("/wol/lua/(.+)");
         Matcher matcher = pattern.matcher(req.getPath());
         if (matcher.matches()) {
@@ -233,7 +237,7 @@ public class WolRestServer {
       return staticResourceHandlers.serve(req, resp);
     }
 
-    private boolean acceptsJson(Request req) {
+    private boolean acceptsJson(Request req) throws IOException {
       return acceptsMimetype(req, Sets.newHashSet("application/json", "json"));
     }
 
