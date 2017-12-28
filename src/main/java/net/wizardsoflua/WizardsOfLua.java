@@ -48,6 +48,7 @@ import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellEntityFactory;
 import net.wizardsoflua.spell.SpellRegistry;
+import net.wizardsoflua.startup.Startup;
 import net.wizardsoflua.wol.WolCommand;
 import util.GameProfiles;
 
@@ -80,6 +81,7 @@ public class WizardsOfLua {
 
   private MinecraftServer server;
   private GameProfiles gameProfiles;
+  private Startup startup;
 
   /**
    * Clock used for RuntimeModule
@@ -212,6 +214,11 @@ public class WizardsOfLua {
       public RestConfig getRestConfig() {
         return getConfig().getRestConfig();
       }
+
+      @Override
+      public File getSharedLibDir() {
+        return getConfig().getSharedLibDir();
+      }
     });
 
     restServer = new WolRestServer(new WolRestServer.Context() {
@@ -228,6 +235,17 @@ public class WizardsOfLua {
       @Override
       public void saveLuaFileByReference(String fileReference, String content) {
         getFileRegistry().saveLuaFile(fileReference, content);
+      }
+    });
+    startup = new Startup(new Startup.Context() {
+      @Override
+      public File getSharedLibDir() {
+        return getConfig().getSharedLibDir();
+      }
+
+      @Override
+      public MinecraftServer getMinecraftServer() {
+        return WizardsOfLua.this.server;
       }
     });
   }
@@ -254,6 +272,7 @@ public class WizardsOfLua {
   @EventHandler
   public void serverStarted(FMLServerStartedEvent event) {
     logger.info(aboutMessage);
+    startup.execute();
   }
 
   public WolConfig getConfig() {

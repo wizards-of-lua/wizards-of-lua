@@ -27,6 +27,9 @@ import net.wizardsoflua.wol.menu.Menu;
 import net.wizardsoflua.wol.sharedautorequire.PrintSharedAutoRequireAction;
 import net.wizardsoflua.wol.sharedautorequire.SetSharedAutoRequireAction;
 import net.wizardsoflua.wol.sharedautorequire.UnsetSharedAutoRequireAction;
+import net.wizardsoflua.wol.sharedfile.SharedFileDeleteAction;
+import net.wizardsoflua.wol.sharedfile.SharedFileEditAction;
+import net.wizardsoflua.wol.sharedfile.SharedFileMoveAction;
 import net.wizardsoflua.wol.spell.SpellBreakAction;
 import net.wizardsoflua.wol.spell.SpellListAction;
 
@@ -50,6 +53,7 @@ public class WolCommand extends CommandBase {
     WolMenu() {
       put("spell", new SpellMenu());
       put("file", new FileMenu());
+      put("shared-file", new SharedFileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
       put("autoRequire", new AutoRequireMenu());
       put("sharedAutoRequire", new SharedAutoRequireMenu());
@@ -60,6 +64,13 @@ public class WolCommand extends CommandBase {
       put("delete", new FileDeleteAction());
       put("edit", new FileEditAction());
       put("move", new FileMoveAction());
+    }
+  }
+  class SharedFileMenu extends Menu {
+    SharedFileMenu() {
+      put("delete", new SharedFileDeleteAction());
+      put("edit", new SharedFileEditAction());
+      put("move", new SharedFileMoveAction());
     }
   }
   class SpellMenu extends Menu {

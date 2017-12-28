@@ -22,6 +22,8 @@ public class LuaFileRegistry {
     File getPlayerLibDir(UUID playerId);
 
     RestConfig getRestConfig();
+
+    File getSharedLibDir();
   }
 
   private Context context;
@@ -32,7 +34,7 @@ public class LuaFileRegistry {
 
   public List<String> getLuaFilenames(EntityPlayer player) {
     try {
-      Path playerLibDir = Paths.get(context.getPlayerLibDir(player.getUniqueID()).toURI());
+      Path playerLibDir = context.getPlayerLibDir(player.getUniqueID()).toPath();
       try (Stream<Path> files = Files.walk(playerLibDir, FileVisitOption.FOLLOW_LINKS)) {
         return files.filter(p -> !Files.isDirectory(p))
             .map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
@@ -42,8 +44,20 @@ public class LuaFileRegistry {
     }
   }
 
+  public List<String> getSharedLuaFilenames() {
+    try {
+      Path sharedLibDir = context.getSharedLibDir().toPath();
+      try (Stream<Path> files = Files.walk(sharedLibDir, FileVisitOption.FOLLOW_LINKS)) {
+        return files.filter(p -> !Files.isDirectory(p))
+            .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public URL getFileEditURL(EntityPlayer player, String filepath) {
-    if ( filepath.contains("..")) {
+    if (filepath.contains("..")) {
       throw new IllegalArgumentException("Relative path syntax is not allowed!");
     }
     String hostname = context.getRestConfig().getHostname();
@@ -58,9 +72,25 @@ public class LuaFileRegistry {
     }
   }
 
+  public URL getSharedFileEditURL(String filepath) {
+    if (filepath.contains("..")) {
+      throw new IllegalArgumentException("Relative path syntax is not allowed!");
+    }
+    String hostname = context.getRestConfig().getHostname();
+    int port = context.getRestConfig().getPort();
+
+    String fileReference = getSharedFileReferenceFor(filepath);
+    try {
+      URL result = new URL("http://" + hostname + ":" + port + "/wol/lua/" + fileReference);
+      return result;
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public void deleteFile(EntityPlayer player, String filepath) {
     try {
-      if ( filepath.contains("..")) {
+      if (filepath.contains("..")) {
         throw new IllegalArgumentException("Relative path syntax is not allowed!");
       }
       UUID playerId = player.getUniqueID();
@@ -71,12 +101,25 @@ public class LuaFileRegistry {
     }
   }
 
-  public void moveFile(EntityPlayer player, String filepath, String newFilepath) {
+  public void deleteSharedFile(String filepath) {
     try {
-      if ( filepath.contains("..")) {
+      if (filepath.contains("..")) {
         throw new IllegalArgumentException("Relative path syntax is not allowed!");
       }
-      if ( newFilepath.contains("..")) {
+      File file = new File(context.getSharedLibDir(), filepath);
+      Files.delete(Paths.get(file.toURI()));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+
+  public void moveFile(EntityPlayer player, String filepath, String newFilepath) {
+    try {
+      if (filepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
+      if (newFilepath.contains("..")) {
         throw new IllegalArgumentException("Relative path syntax is not allowed!");
       }
       UUID playerId = player.getUniqueID();
@@ -96,15 +139,37 @@ public class LuaFileRegistry {
     }
   }
 
+  public void moveSharedFile(String filepath, String newFilepath) {
+    try {
+      if (filepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
+      if (newFilepath.contains("..")) {
+        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      }
+      File oldFile = new File(context.getSharedLibDir(), filepath);
+      File newFile = new File(context.getSharedLibDir(), newFilepath);
+      if (!oldFile.exists()) {
+        throw new IllegalArgumentException(
+            "Can't move " + filepath + " to " + newFilepath + "! Source file does not exist!");
+      }
+      if (newFile.exists()) {
+        throw new IllegalArgumentException(
+            "Can't move " + filepath + " to " + newFilepath + "! Target file already exists!");
+      }
+      Files.move(Paths.get(oldFile.toURI()), Paths.get(newFile.toURI()));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   public LuaFile loadLuaFile(String fileReference) {
     try {
       String filepath = getFilepathFor(fileReference);
-      if ( filepath.contains("..")) {
+      if (filepath.contains("..")) {
         throw new IllegalArgumentException("Relative path syntax is not allowed!");
       }
-      UUID playerId = getPlayerIdFor(fileReference);
-      File file = new File(context.getPlayerLibDir(playerId), filepath);
+      File file = getFile(fileReference, filepath);
       String name = file.getName();
       String content;
       if (file.exists()) {
@@ -121,11 +186,10 @@ public class LuaFileRegistry {
   public void saveLuaFile(String fileReference, String content) {
     try {
       String filepath = getFilepathFor(fileReference);
-      if ( filepath.contains("..")) {
+      if (filepath.contains("..")) {
         throw new IllegalArgumentException("Relative path syntax is not allowed!");
       }
-      UUID playerId = getPlayerIdFor(fileReference);
-      File file = new File(context.getPlayerLibDir(playerId), filepath);
+      File file = getFile(fileReference, filepath);
       if (!file.getParentFile().exists()) {
         Files.createDirectories(Paths.get(file.getParentFile().toURI()));
       }
@@ -136,8 +200,21 @@ public class LuaFileRegistry {
     }
   }
 
+  private File getFile(String fileReference, String filepath) {
+    if (fileReference.startsWith("shared")) {
+      return new File(context.getSharedLibDir(), filepath);
+    } else {
+      UUID playerId = getPlayerIdFor(fileReference);
+      return new File(context.getPlayerLibDir(playerId), filepath);
+    }
+  }
+
   private String getFileReferenceFor(EntityPlayer player, String filepath) {
     return player.getUniqueID().toString() + "/" + filepath;
+  }
+
+  private String getSharedFileReferenceFor(String filepath) {
+    return "shared/" + filepath;
   }
 
   private String getFilepathFor(String fileReference) {
@@ -152,7 +229,5 @@ public class LuaFileRegistry {
     UUID result = UUID.fromString(playerIdStr);
     return result;
   }
-
-
 
 }
