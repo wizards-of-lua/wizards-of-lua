@@ -214,6 +214,25 @@ public class Vec3Test extends WolTestBase {
     assertThat(actValue).isEqualTo(expected, Offset.offset(0.01));
   }
 
+  // /test net.wizardsoflua.tests.Vec3Test test_normalize
+  @Test
+  public void test_normalize() throws Exception {
+    // Given:
+    int x = 1;
+    int y = 1;
+    int z = 1;
+    String expected = "true";
+
+    // When:
+    mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:normalize()==v*(1/v:magnitude()))", x, y,
+        z);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    String actValue = act.getMessage();
+    assertThat(actValue).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.Vec3Test test_dotProduct
   @Test
   public void test_dotProduct() throws Exception {

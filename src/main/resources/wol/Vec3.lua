@@ -111,9 +111,22 @@ function Vec3.__concat(a,b)
   return tostring(a)..tostring(b)
 end
 
+function Vec3.__eq(a,b)
+  return a.x==b.x and a.y==b.y and a.z==b.z
+end
+
+function Vec3:normalize()
+  local len=self:magnitude()
+  if len==0 then
+    error("Can't normalize the null vector!")
+  end
+  local result=self*(1/len)
+  return result
+end
+
 -- Here is some example code of how you could create a subclass of Vec3
 --[[
-class("Vec3n",Vec3)
+declare("Vec3n",Vec3)
 
 function Vec3n.new(o)
   o = Vec3.new(o)
