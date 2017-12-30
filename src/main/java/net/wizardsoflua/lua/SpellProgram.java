@@ -93,7 +93,6 @@ public class SpellProgram {
 
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
-    types = new Types(env);
     this.executor = DirectCallExecutor.newExecutor(createSchedulingContextFactory());
     runtimeEnv = new SpellRuntimeEnvironment(new SpellRuntimeEnvironment.Context() {
       @Override
@@ -104,6 +103,7 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
+    types = new Types(env);
     converters = new Converters(types, context.getLuaClasses());
     TypesModule.installInto(env, types, converters);
     PrintRedirector.installInto(env, new PrintRedirector.Context() {

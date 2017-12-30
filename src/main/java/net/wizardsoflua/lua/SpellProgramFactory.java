@@ -94,6 +94,7 @@ public class SpellProgramFactory {
     result.add(new ModuleDependency("wol.Globals"));
     result.add(new ModuleDependency("wol.inspect"));
     result.add(new ModuleDependency("wol.Check"));
+    result.add(new ModuleDependency("wol.Object"));
     result.add(new ModuleDependency("wol.Vec3"));
     result.add(new ModuleDependency("wol.Material"));
     result.add(new ModuleDependency("wol.Block"));

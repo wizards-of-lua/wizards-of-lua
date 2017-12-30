@@ -29,6 +29,7 @@ public class Types implements ITypes {
 
   public Types(Table env) {
     this.env = env;
+    declare(ObjectClass.METATABLE_NAME, (Table) null);
   }
 
   public Table getEnv() {
@@ -59,7 +60,7 @@ public class Types implements ITypes {
 
   @Override
   public Table declare(String classname) {
-    return declare(classname, (Table) null);
+    return declare(classname, ObjectClass.METATABLE_NAME);
   }
 
   @Override

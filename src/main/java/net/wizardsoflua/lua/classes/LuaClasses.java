@@ -154,6 +154,4 @@ public class LuaClasses {
     return LuaClass.class.isAssignableFrom(cls) && cls.getAnnotation(DeclareLuaClass.class) != null;
   }
 
-
-
 }
