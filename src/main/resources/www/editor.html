@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <title>ACE in Action</title>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script src="/jquery/jquery-3.2.1.js"></script>
 <script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <style type="text/css" media="screen">
@@ -35,7 +37,7 @@ body {
  <div class="hints" id="hints">--- Save: CTRL-S --- Reload: CTRL-R --- Find: CTRL-F ---</div>
  <div id="editor"></div>
  <a href="http://www.wizards-of-lua.net/spellbooklibrary" target='wol-api-docs'><img class="logo" 
-    src="http://www.wizards-of-lua.net/images/steven-with-magic-wand-glowing.png"
+    src="/steven-with-magic-wand-glowing.png"
     height="70"
     ></a>
  <script>
@@ -56,7 +58,8 @@ body {
             exec: function(editor) {
                 document.title = "saving "+filepath;
                 var value = editor.getValue();
-                var json =  JSON.stringify({ path : filename, content : value});        
+                var json =  JSON.stringify({ path : filename, content : value});
+                console.log("POST "+filename)
                 $.ajax({
                     type: "POST",
                     url: filename,
@@ -68,7 +71,9 @@ body {
                     }
                 })
                 .fail(function(response) {
-                    alert('Error: ' + response.status + response.responseText);
+                    alert('Received an unexpected error while saving file!\n'
+                    		+ 'status=' + response.status + '\n' 
+                    		+ 'responseText=' + response.responseText);
                     document.title = filepath;
                 });
             }
@@ -98,7 +103,9 @@ body {
             if (aFilename == undefined) {
                 aFilename = filename;
             }
-            $.getJSON(aFilename+"?").done(
+            var target = aFilename+"?"
+            console.log("GET "+target)
+            $.getJSON(target).done(
                     function(data) {
                         editor.setValue(data.content);
                         editor.clearSelection();

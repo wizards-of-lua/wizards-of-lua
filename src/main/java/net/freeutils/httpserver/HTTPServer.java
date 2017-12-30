@@ -1880,8 +1880,8 @@ public class HTTPServer {
                                         if (!(sock instanceof SSLSocket)) {
                                             // RFC7230#6.6 - close socket gracefully
                                             sock.shutdownOutput(); // half-close socket (only output)
+                                            transfer(sock.getInputStream(), null, -1); // consume input
                                         }
-                                        transfer(sock.getInputStream(), null, -1); // consume input
                                     } finally {
                                         sock.close(); // and finally close socket fully
                                     }

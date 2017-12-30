@@ -64,7 +64,9 @@ public class WizardsOfLua {
   @Instance(MODID)
   public static WizardsOfLua instance;
 
-  public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
+  //public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
+  public Logger logger;
+  
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final LuaClasses luaClasses = new LuaClasses();
   private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
@@ -92,6 +94,7 @@ public class WizardsOfLua {
 
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) throws Exception {
+    logger = event.getModLog();
     config = WolConfig.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 

@@ -33,6 +33,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -57,13 +58,17 @@ public class WolRestServer {
     void saveLuaFileByReference(String fileref, String content);
   }
 
-  private Context context;
+  private final Context context;
+  private final Logger logger;
+
 
   public WolRestServer(Context context) {
     this.context = checkNotNull(context, "context==null!");
+    this.logger = WizardsOfLua.instance.logger;
   }
 
   public void start() throws IOException {
+    logger.debug("[REST] starting WoL REST service");
     File contextRoot = context.getRestConfig().getWebDir();
     int port = context.getRestConfig().getPort();
     boolean secure = context.getRestConfig().isSecure();
@@ -79,8 +84,7 @@ public class WolRestServer {
 
     createEmptyContextRoot(contextRoot);
 
-    WizardsOfLua.instance.logger
-        .info("REST service will cache static files at " + contextRoot.getAbsolutePath());
+    logger.info("[REST] REST service will cache static files at " + contextRoot.getAbsolutePath());
 
     HTTPServer server = new HTTPServer(port) {
       protected ServerSocket createServerSocket() throws IOException {
@@ -102,8 +106,7 @@ public class WolRestServer {
     host.addContext("/", staticResourceHandlers);
     host.addContexts(new RestHandlers(staticResourceHandlers));
 
-    WizardsOfLua.instance.logger
-        .info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
+    logger.info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
     server.start();
   }
 
@@ -173,13 +176,13 @@ public class WolRestServer {
 
     private final String resourcePath;
     private final File contextRoot;
-    private final HTTPServer.FileContextHandler cacheDirHandler;
+    // private final HTTPServer.FileContextHandler cacheDirHandler;
 
     public StaticResourceHandlers(String resourcePath, File contextRoot, String context)
         throws IOException {
       this.resourcePath = resourcePath;
       this.contextRoot = contextRoot;
-      this.cacheDirHandler = new HTTPServer.FileContextHandler(contextRoot);
+      // this.cacheDirHandler = new HTTPServer.FileContextHandler(contextRoot);
     }
 
     @Override
@@ -218,6 +221,7 @@ public class WolRestServer {
     @HTTPServer.Context(value = "/wol/lua", methods = {"GET"})
     public int get(Request req, Response resp) throws IOException {
       try {
+        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
         if (acceptsJson(req)) {
           return sendLuaFile(req, resp);
         } else if (acceptsHtml(req)) {
@@ -229,23 +233,24 @@ public class WolRestServer {
           return 0;
         }
       } catch (Exception e) {
-        e.printStackTrace();
-        resp.sendError(500, e.getMessage());
+        logger.error("Error handling GET: " + req.getPath(), e);
+        resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
+            + "\n See fml-server-latest.log for more info!");
         return 0;
       }
     }
 
     @HTTPServer.Context(value = "/wol/lua", methods = {"POST"})
-    public int postWizard(Request req, Response resp) throws IOException {
+    public int post(Request req, Response resp) throws IOException {
       try {
+        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
         JsonParser parser = new JsonParser();
-        String content = IOUtils.toString(req.getBody(), StandardCharsets.UTF_8.name());
-        JsonObject root = parser.parse(content).getAsJsonObject();
+        String body = IOUtils.toString(req.getBody(), StandardCharsets.UTF_8.name());
+        JsonObject root = parser.parse(body).getAsJsonObject();
         Pattern pattern = Pattern.compile("/wol/lua/(.+)");
         Matcher matcher = pattern.matcher(req.getPath());
         if (matcher.matches()) {
           String fileref = matcher.group(1);
-
           context.saveLuaFileByReference(fileref, root.get("content").getAsString());
           resp.send(200, "OK");
           return 0;
@@ -253,8 +258,9 @@ public class WolRestServer {
           throw new RuntimeException("Unexpected path: '" + req.getPath() + "'");
         }
       } catch (Exception e) {
-        e.printStackTrace();
-        resp.sendError(500, e.getMessage());
+        logger.error("Error handling POST: " + req.getPath(), e);
+        resp.sendError(500, "Couldn't process POST method! e=" + e.getMessage()
+            + "\n See fml-server-latest.log for more info!");
         return 0;
       }
     }
