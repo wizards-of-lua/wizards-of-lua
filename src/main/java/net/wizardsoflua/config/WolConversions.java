@@ -161,6 +161,9 @@ public class WolConversions {
       return toJava(type, luaObj);
     } catch (ConversionException e) {
       throw new ConversionException(format("Can't convert '%s' argument!", name), e);
+    } catch (NullPointerException e) {
+      throw new ConversionException(
+          format("Can't convert '%s' argument: value is nil!", name), e);
     }
   }
 
