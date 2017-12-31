@@ -22,8 +22,7 @@ import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.spell.SpellEntity;
 
 @DeclareLuaClass(name = SpellClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
-public class SpellClass
-    extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
+public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String METATABLE_NAME = "Spell";
 
   public SpellClass() {
@@ -109,15 +108,25 @@ public class SpellClass
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
       Proxy<SpellEntity> proxy = castToProxy(arg0);
+      if (args.length < 2) {
+        throw new IllegalArgumentException("Expected command, but got nil");
+      }
+      if (args.length == 2) {
+        Object arg1 = args[1];
+        String command = getConverters().toJava(String.class, arg1, "command");
+        int result = proxy.execute(command);
+        context.getReturnBuffer().setTo(result);
+      } else if (args.length > 2) {
+        // format the command
+        LuaFunction formatFunc = StringLib.format();
+        Object[] argArray = new Object[args.length - 1];
+        System.arraycopy(args, 1, argArray, 0, args.length - 1);
+        formatFunc.invoke(context, argArray);
+        String command = String.valueOf(context.getReturnBuffer().get(0));
 
-      LuaFunction formatFunc = StringLib.format();
-      Object[] argArray = new Object[args.length - 1];
-      System.arraycopy(args, 1, argArray, 0, args.length - 1);
-      formatFunc.invoke(context, argArray);
-      String command = String.valueOf(context.getReturnBuffer().get(0));
-
-      int result = proxy.execute(command);
-      context.getReturnBuffer().setTo(result);
+        int result = proxy.execute(command);
+        context.getReturnBuffer().setTo(result);
+      }
     }
 
     @Override
