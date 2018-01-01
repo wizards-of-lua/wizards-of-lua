@@ -50,9 +50,9 @@ functions:
     examples:
       - url: Block/withNbt.md
   - name: asItem
-    parameters:
+    parameters: amount
     results: "[Item](!SITE_URL!/modules/Item/)"
-    description: "The 'asItem' function returns a new [item](!SITE_URL!/modules/Item/) that represents the given block.
+    description: "The 'asItem' function returns this block as an [item](!SITE_URL!/modules/Item/) of the given amount.
     "
     examples:
       - url: Block/asItem.md
