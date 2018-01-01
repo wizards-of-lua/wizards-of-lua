@@ -47,7 +47,7 @@ properties:
     "
   - name: lookVec
     type: "[Vec3](!SITE_URL!/modules/Vec3/)"
-    access: r
+    access: r/w
     description: "The 'lookVec' is a 3-dimensional vector that points into the direction this entity is looking at, or nil, if it
     is not looking anywhere, for example, if it has no eyes.
     "
