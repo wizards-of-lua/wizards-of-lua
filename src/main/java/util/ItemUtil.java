@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 public class ItemUtil {
 
   public static ItemStack getItemStackFromBlock(IBlockState blockState,
-      @Nullable NBTTagCompound nbt) {
+      @Nullable NBTTagCompound nbt, int amount) {
     Block block = blockState.getBlock();
     int meta = block.getMetaFromState(blockState);
     Item item = Item.getItemFromBlock(block);
@@ -28,10 +28,10 @@ public class ItemUtil {
         item = Item.REGISTRY.getObject(new ResourceLocation("sign"));
       }
     }
-    if ( !item.getHasSubtypes()) {
+    if (!item.getHasSubtypes()) {
       meta = 0;
     }
-    ItemStack stack = new ItemStack(item, 1, meta);
+    ItemStack stack = new ItemStack(item, amount, meta);
     if (nbt == null) {
       return stack;
     } else {

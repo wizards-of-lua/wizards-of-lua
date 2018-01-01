@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
+import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
@@ -31,17 +31,19 @@ public class ItemsModule {
     return luaTable;
   }
 
-  public @Nullable ItemStack get(String itemId) {
-    Item item = Item.getByNameOrId(itemId);
-    return new ItemStack(item);
+  public @Nullable Object get(Object argItemId, Object argAmount) {
+    String id = converters.toJava(String.class, argItemId, "id");
+    int amount = converters.toJavaOptional(Number.class, argAmount, "amount").orElse(1).intValue();
+    Item item = Item.getByNameOrId(id);
+    ItemStack result = new ItemStack(item, amount);
+    return converters.toLuaNullable(result);
   }
 
-  private class GetFunction extends AbstractFunction1 {
+  private class GetFunction extends AbstractFunction2 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String id = converters.toJava(String.class, arg1, "id");
-      ItemStack item = get(id);
-      Object result = converters.toLua(item);
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
+      Object result = get(arg1, arg2);
       context.getReturnBuffer().setTo(result);
     }
 
