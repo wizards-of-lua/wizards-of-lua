@@ -13,7 +13,7 @@ print(found.pos)
 ```
 
 #### Example
-Printing the positions of all cows loaded in this world.
+Printing the positions of all cows in the (loaded part of the) world.
 ```lua
 found = Entities.find("@e[type=cow]")
 for _,cow in pairs(found) do
@@ -22,12 +22,10 @@ end
 ```
 
 #### Example
-Printing the names of all dropped items loaded in this world.
+Printing the names of all dropped items in the (loaded part of the) world.
 ```lua
-found = Entities.find("@e")
-for _,e in pairs(found) do
-  if e.name:match("item%.item%.") then
-    print(e.name)
-  end
+found = Entities.find("@e[type=item]")
+for _,e in pairs(found) do  
+  print(e.name)
 end
 ```
