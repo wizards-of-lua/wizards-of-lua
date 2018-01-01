@@ -85,8 +85,8 @@ public class WolBlock {
     }
   }
 
-  public ItemStack asItemStack() {
-    return ItemUtil.getItemStackFromBlock(blockState, nbt);
+  public ItemStack asItemStack(int amount) {
+    return ItemUtil.getItemStackFromBlock(blockState, nbt, amount);
   }
 
 }

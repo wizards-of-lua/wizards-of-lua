@@ -151,12 +151,14 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     }
   }
 
-  private class AsItemFunction extends AbstractFunction1 {
+  private class AsItemFunction extends AbstractFunction2 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
+        throws ResolvedControlThrowable {
       WolBlock wolBlock = getConverters().toJava(WolBlock.class, arg1);
-
-      ItemStack itemStack = wolBlock.asItemStack();
+      int amount =
+          getConverters().toJavaOptional(Number.class, arg2, "amount").orElse(1).intValue();
+      ItemStack itemStack = wolBlock.asItemStack(amount);
       Object result = getConverters().toLua(itemStack);
       context.getReturnBuffer().setTo(result);
     }
