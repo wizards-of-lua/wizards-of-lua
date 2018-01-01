@@ -29,4 +29,20 @@ public class ItemTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.ItemTest test_putNbt_set_lore
+  @Test
+  public void test_putNbt_set_lore() throws Exception {
+    // Given:
+    String lore = "my-lore";
+
+    // When:
+    mc().player().chat(
+        "/lua i=Items.get('diamond_axe'); i:putNbt({tag={display={Lore={\"%s\"}}}}); print( i.nbt.tag.display.Lore[1])",
+        lore);
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(lore);
+  }
+
 }
