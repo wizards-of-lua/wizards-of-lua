@@ -120,6 +120,15 @@ functions:
     description: "The 'removeTag' function removes the given tag from the set of [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
     This function returns true if the tag has been removed successfully, and false if there was no such tag.
     "
+  - name: scanView
+    parameters: distance
+    results: "[BlockHit](!SITE_URL!/modules/BlockHit/)"
+    description: "The 'scanView' function scans the view of this entity for the next
+    (non-liquid) block. On success it returns a [BlockHit](!SITE_URL!/modules/BlockHit/), otherwise nil.
+    It scans the view with a line-of-sight-range of up to the given distance (meter).
+    "
+    examples:
+      - url: Entity/scanView.md
 ---
 
 The Entity class is the base class of all entities that populate the world.
