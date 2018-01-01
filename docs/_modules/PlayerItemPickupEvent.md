@@ -12,7 +12,7 @@ properties:
     description: "The player that triggered this event.
     "
   - name: item
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[DroppedItem](!SITE_URL!/modules/DroppedItem/)"
     access: r
     description: "The item that has been collected.
     "
