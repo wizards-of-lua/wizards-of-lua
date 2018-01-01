@@ -8,6 +8,7 @@ import com.google.common.cache.Cache;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.util.math.MathHelper;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
@@ -59,6 +60,12 @@ public class PlayerClass
     }
 
     @Override
+    public float getRotationYaw() {
+      float v = delegate.rotationYaw;
+      return MathHelper.wrapDegrees(v);
+    }
+    
+    @Override
     public void setRotationYaw(Object luaObj) {
       super.setRotationYaw(luaObj);
       if (delegate instanceof EntityPlayerMP) {
@@ -70,6 +77,15 @@ public class PlayerClass
     @Override
     public void setRotationPitch(Object luaObj) {
       super.setRotationPitch(luaObj);
+      if (delegate instanceof EntityPlayerMP) {
+        ((EntityPlayerMP) delegate).connection.setPlayerLocation(delegate.posX, delegate.posY,
+            delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
+      }
+    }
+    
+    @Override
+    public void setRotationYawAndPitch(float yaw, float pitch) {
+      super.setRotationYawAndPitch(yaw, pitch);
       if (delegate instanceof EntityPlayerMP) {
         ((EntityPlayerMP) delegate).connection.setPlayerLocation(delegate.posX, delegate.posY,
             delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
