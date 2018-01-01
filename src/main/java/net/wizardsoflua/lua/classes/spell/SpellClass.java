@@ -27,6 +27,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
 
   public SpellClass() {
     add("execute", new ExecuteFunction());
+
   }
 
   @Override

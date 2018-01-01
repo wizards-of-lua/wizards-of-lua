@@ -10,11 +10,13 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -37,6 +39,8 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     add("putNbt", new PutNbtFunction());
     add("addTag", new AddTagFunction());
     add("removeTag", new RemoveTagFunction());
+    add("scanView", new ScanViewFunction());
+    add("dropItem", new DropItemFunction());
   }
 
   @Override
@@ -63,7 +67,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       addReadOnly("nbt", this::getNbt);
 
       addReadOnly("orientation", this::getOrientation);
-      addReadOnly("lookVec", this::getLookVector);
+      add("lookVec", this::getLookVector, this::setLookVector);
       add("rotationYaw", this::getRotationYaw, this::setRotationYaw);
       add("rotationPitch", this::getRotationPitch, this::setRotationPitch);
       addReadOnly("eyeHeight", () -> delegate.getEyeHeight());
@@ -97,6 +101,13 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       return getConverters().toLuaNullable(result);
     }
 
+    public void setLookVector(Object luaObj) {
+      Vec3d vec = getConverters().toJava(Vec3d.class, luaObj);
+      double pitch = Math.toDegrees(Math.asin(-vec.yCoord));
+      double yaw = Math.toDegrees(MathHelper.atan2(-vec.xCoord, vec.zCoord));
+      setRotationYawAndPitch((float) yaw, (float) pitch);
+    }
+
     public float getRotationYaw() {
       return MathHelper.wrapDegrees(delegate.rotationYaw);
     }
@@ -123,6 +134,12 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       float pitch = getConverters().toJava(Number.class, luaObj).floatValue();
       delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ,
           delegate.rotationYaw, pitch);
+    }
+
+    public void setRotationYawAndPitch(float yaw, float pitch) {
+      delegate.setRotationYawHead(yaw);
+      delegate.setRenderYawOffset(yaw);
+      delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw, pitch);
     }
 
     public Object getMotion() {
@@ -226,6 +243,26 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       return delegate.removeTag(tag);
     }
 
+    public Object scanView(Object luaObj) {
+      float distance = getConverters().toJava(Number.class, luaObj, "distance").floatValue();
+      Vec3d start = delegate.getPositionEyes(0);
+      Vec3d end = start.add(delegate.getLookVec().scale(distance));
+      RayTraceResult hit = delegate.getEntityWorld().rayTraceBlocks(start, end, false);
+      Object result = getConverters().toLuaNullable(hit);
+      return result;
+    }
+
+    public Object dropItem(Object itemLuaObj, Object offsetYLuaObj) {
+      ItemStack item = getConverters().toJava(ItemStack.class, itemLuaObj, "item");
+      if ( item.getCount()==0) {
+        throw new IllegalArgumentException("Can't drop an item with count==0");
+      }
+      float offsetY = getConverters().toJavaOptional(Number.class, offsetYLuaObj, "offsetY")
+          .orElse(0f).floatValue();
+      EntityItem result = delegate.entityDropItem(item, offsetY);
+      return getConverters().toLuaNullable(result);
+    }
+
     // public Object getWorld() {
     // World world = delegate.getEntityWorld();
     // return getConverters().toLua(world);
@@ -277,6 +314,8 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       }
       delegate.setHeldItem(EnumHand.OFF_HAND, itemStack);
     }
+
+
   }
 
   private class MoveFunction extends AbstractFunction3 {
@@ -332,6 +371,36 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
       Proxy<?> proxy = castToProxy(arg1);
       boolean result = proxy.removeTag(arg2);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class ScanViewFunction extends AbstractFunction2 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+      Proxy<?> proxy = castToProxy(arg1);
+      Object result = proxy.scanView(arg2);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class DropItemFunction extends AbstractFunction3 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3) {
+      Proxy<?> proxy = castToProxy(arg1);
+      Object result = proxy.dropItem(arg2, arg3);
       context.getReturnBuffer().setTo(result);
     }
 
