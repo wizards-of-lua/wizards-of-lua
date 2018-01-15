@@ -80,7 +80,7 @@ that item into our main hand and call:
 /lua bind("/lua rocket()", spell.owner.mainhand)
 ```
 
-We just have defined what should be done when the
+We have just defined what should be done when the
 [SwingArmEvent](/modules/SwingArmEvent) occurs.
 But this is not enough, is it?
 We still need another spell that observes the events and handles them by
