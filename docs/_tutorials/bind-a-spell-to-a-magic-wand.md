@@ -107,7 +107,7 @@ function magicWandObserver()
 end
 ```
 As you can see, this spell extracts the item-specific command from the item's
-nbt data and passes it into a new vanialla "/execute" command.
+nbt data and passes it into a new vanilla "/execute" command.
 This ensures, that the new spell will be casted in behalf of the correct player,
 which is the player who waved the magic wand.
 
