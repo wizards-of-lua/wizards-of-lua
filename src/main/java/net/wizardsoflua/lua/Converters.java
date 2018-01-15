@@ -5,8 +5,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.world.GameType;
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Conversions;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
 import net.wizardsoflua.lua.classes.LuaClass;
@@ -21,6 +24,7 @@ public class Converters extends WolConversions {
   private final NbtConverter nbtConverter;
   private final Set<LuaClass<?, ?>> classInstances;
   private final TableDataConverter tableDataConverter = new TableDataConverter(this);
+  private final EnumConverter enumConverter = new EnumConverter();
 
   public Converters(ITypes types, LuaClasses luaClasses) {
     this.types = checkNotNull(types, "types==null!");
@@ -54,6 +58,14 @@ public class Converters extends WolConversions {
     LuaClass<T, ?> cls = getByJavaClass(type);
     if (cls != null) {
       return cls.getJavaInstance(castToTable(luaObj));
+    }
+    if (Enum.class.isAssignableFrom(type)) {
+      ByteString byteStrV = Conversions.stringValueOf(luaObj);
+      String name = byteStrV.toString();
+      T result = enumConverter.toJava(type, name);
+      if ( result != null) {
+        return (T)result;
+      }       
     }
     return super.toJava(type, luaObj);
   }
@@ -91,6 +103,10 @@ public class Converters extends WolConversions {
       Enum<?> vEnum = (Enum<?>) value;
       if (vEnum instanceof IStringSerializable) {
         return ByteString.of(((IStringSerializable) vEnum).getName());
+      }
+      Object result = enumConverter.toLua(vEnum);
+      if ( result != null) {
+        return result;
       }
       return ByteString.of(vEnum.name());
     }

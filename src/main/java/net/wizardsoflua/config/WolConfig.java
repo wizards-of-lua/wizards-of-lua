@@ -58,7 +58,7 @@ public class WolConfig {
   }
 
   private class SubContextImpl
-      implements RestConfig.Context, GeneralConfig.Context, WizardConfig.Context {
+      implements RestApiConfig.Context, GeneralConfig.Context, WizardConfig.Context {
 
     @Override
     public void save() {
@@ -82,7 +82,7 @@ public class WolConfig {
   private final File configFile;
 
   private GeneralConfig generalConfig;
-  private RestConfig restConfig;
+  private RestApiConfig restApiConfig;
   private final Map<UUID, WizardConfig> wizards = new HashMap<>();
 
   public WolConfig(File configFile)
@@ -96,7 +96,7 @@ public class WolConfig {
       }
     }
     generalConfig = new GeneralConfig(subContextImpl);
-    restConfig = new RestConfig(subContextImpl);
+    restApiConfig = new RestApiConfig(subContextImpl);
 
     // Fix for issue #73 - Server still crashing when config file is a directory
     if (configFile.exists() && configFile.isDirectory()) {
@@ -112,7 +112,7 @@ public class WolConfig {
     StateContext state = StateContexts.newDefaultInstance();
     Table env = state.newTable();
     env.rawset("General", new GeneralFunction());
-    env.rawset("Rest", new RestFunction());
+    env.rawset("RestApi", new RestFunction());
     env.rawset("Wizard", new WizardFunction());
 
     ChunkLoader loader = CompilerChunkLoader.of("WolConfigFile");
@@ -129,8 +129,8 @@ public class WolConfig {
     return generalConfig;
   }
 
-  public RestConfig getRestConfig() {
-    return restConfig;
+  public RestApiConfig getRestApiConfig() {
+    return restApiConfig;
   }
 
   public Collection<WizardConfig> getWizards() {
@@ -188,8 +188,8 @@ public class WolConfig {
     TableUtils.writeTo(out, generalConfig.writeTo(new DefaultTable()));
     out.write("\n");
 
-    out.write("Rest ");
-    TableUtils.writeTo(out, restConfig.writeTo(new DefaultTable()));
+    out.write("RestApi ");
+    TableUtils.writeTo(out, restApiConfig.writeTo(new DefaultTable()));
     out.write("\n");
 
     for (WizardConfig wizardConfig : wizards.values()) {
@@ -228,7 +228,7 @@ public class WolConfig {
       checkNotNull(arg1, "arg1==null!");
       checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
       Table table = (Table) arg1;
-      restConfig = new RestConfig(table, subContextImpl);
+      restApiConfig = new RestApiConfig(table, subContextImpl);
       context.getReturnBuffer().setTo();
     }
 

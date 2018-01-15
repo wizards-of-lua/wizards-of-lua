@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
@@ -142,6 +143,8 @@ public class NbtConverter {
       return toLua((NBTTagList) nbt);
     if (nbt instanceof NBTTagCompound)
       return toLua((NBTTagCompound) nbt);
+    if (nbt instanceof NBTTagIntArray)
+      return toLua((NBTTagIntArray) nbt);
     throw new IllegalArgumentException(
         "Unsupported NBT type for conversion: " + nbt.getClass().getName());
   }
@@ -178,6 +181,18 @@ public class NbtConverter {
       NBTBase nbtValue = nbt.getTag(key);
       Object luaValue = toLua(nbtValue);
       result.rawset(key, luaValue);
+    }
+    return result;
+  }
+  
+  public static Table toLua(NBTTagIntArray nbt) {
+    checkNotNull(nbt, "nbt == null!");
+    Table result = new DefaultTable();
+    int[] arr = nbt.getIntArray();
+    for ( int i=0; i<arr.length; ++i) {
+      long key = i+1;
+      Object value = arr[i];
+      result.rawset(key, value);
     }
     return result;
   }

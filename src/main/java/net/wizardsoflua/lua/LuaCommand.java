@@ -54,8 +54,8 @@ public class LuaCommand extends CommandBase {
       World world = sender.getEntityWorld();
       SpellEntity spell = wol.getSpellEntityFactory().create(world, sender, concat(args));
       world.spawnEntity(spell);
-    } catch (Exception ex) {
-      handleException(ex, sender);
+    } catch (Throwable t) {
+      handleException(t, sender);
     }
   }
 
@@ -63,11 +63,11 @@ public class LuaCommand extends CommandBase {
     return Joiner.on(" ").join(args);
   }
 
-  private void handleException(Exception ex, ICommandSender sender) {
+  private void handleException(Throwable t, ICommandSender sender) {
     String message = String.format("An unexpected error occured during lua command execution: %s",
-        ex.getMessage());
-    wol.logger.error(message, ex);
-    String stackTrace = getStackTrace(ex);
+        t.getMessage());
+    wol.logger.error(message, t);
+    String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));

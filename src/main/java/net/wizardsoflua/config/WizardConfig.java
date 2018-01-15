@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.file.Crypto;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 
 public class WizardConfig {
@@ -25,12 +26,14 @@ public class WizardConfig {
   private UUID id;
   private String libDir;
   private String autoRequire = "";
+  private String apiKey = new Crypto().createRandomPassword();
   private final Context context;
 
   public WizardConfig(Table table, Context context) {
     this.id = UUID.fromString(getAs(String.class, table, "id"));
     this.libDir = getAsOptional(String.class, table, "libDir").orElse(id.toString());
     this.autoRequire = getAsOptional(String.class, table, "autoRequire").orElse(autoRequire);
+    this.apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
     this.context = checkNotNull(context, "context==null!");
   }
 
@@ -79,11 +82,21 @@ public class WizardConfig {
     table.rawset("id", id.toString());
     table.rawset("libDir", libDir);
     table.rawset("autoRequire", autoRequire);
+    table.rawset("apiKey", apiKey);
     return table;
   }
 
   public String getLibDirPathElement() {
     return getLibDir().getAbsolutePath() + File.separator + AddPathFunction.LUA_EXTENSION_WILDCARD;
+  }
+
+  public String getRestApiKey() {
+    return apiKey;
+  }
+
+  public void setRestApiKey(String apiKey) {
+    this.apiKey = checkNotNull(apiKey, "apiKey==null!");
+    context.save();
   }
 
 }

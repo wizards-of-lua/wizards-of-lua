@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.mojang.authlib.GameProfile;
@@ -31,7 +30,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.config.GeneralConfig;
-import net.wizardsoflua.config.RestConfig;
+import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.event.CustomLuaEvent;
@@ -43,14 +42,13 @@ import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.profiles.Profiles;
-import net.wizardsoflua.rest.WolRestServer;
+import net.wizardsoflua.rest.WolRestApiServer;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellEntityFactory;
 import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.startup.Startup;
 import net.wizardsoflua.wol.WolCommand;
-import util.GameProfiles;
 
 @Mod(modid = WizardsOfLua.MODID, version = WizardsOfLua.VERSION, acceptableRemoteVersions = "*",
     updateJSON = "https://raw.githubusercontent.com/wizards-of-lua/wizards-of-lua/master/versions.json")
@@ -64,9 +62,9 @@ public class WizardsOfLua {
   @Instance(MODID)
   public static WizardsOfLua instance;
 
-  //public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
+  // public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
   public Logger logger;
-  
+
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final LuaClasses luaClasses = new LuaClasses();
   private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
@@ -79,7 +77,7 @@ public class WizardsOfLua {
   private SpellProgramFactory spellProgramFactory;
   private Profiles profiles;
   private LuaFileRegistry fileRegistry;
-  private WolRestServer restServer;
+  private WolRestApiServer restApiServer;
 
   private MinecraftServer server;
   private GameProfiles gameProfiles;
@@ -214,30 +212,46 @@ public class WizardsOfLua {
       }
 
       @Override
-      public RestConfig getRestConfig() {
-        return getConfig().getRestConfig();
+      public RestApiConfig getRestApiConfig() {
+        return getConfig().getRestApiConfig();
       }
 
       @Override
       public File getSharedLibDir() {
         return getConfig().getSharedLibDir();
       }
+
+      @Override
+      public String getPlayerRestApiKey(UUID playerId) {
+        return getConfig().getOrCreateWizardConfig(playerId).getRestApiKey();
+      }
+
     });
 
-    restServer = new WolRestServer(new WolRestServer.Context() {
+    restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
       @Override
       public LuaFile getLuaFileByReference(String fileReference) {
         return getFileRegistry().loadLuaFile(fileReference);
       }
 
       @Override
-      public RestConfig getRestConfig() {
-        return getConfig().getRestConfig();
+      public RestApiConfig getRestApiConfig() {
+        return getConfig().getRestApiConfig();
       }
 
       @Override
       public void saveLuaFileByReference(String fileReference, String content) {
         getFileRegistry().saveLuaFile(fileReference, content);
+      }
+
+      @Override
+      public boolean isValidLoginToken(UUID playerId, String token) {
+        return getFileRegistry().isValidLoginToken(playerId, token);
+      }
+
+      @Override
+      public String getLoginToken(UUID playerId) {
+        return getFileRegistry().getLoginToken(playerId);
       }
     });
     startup = new Startup(new Startup.Context() {
@@ -269,7 +283,7 @@ public class WizardsOfLua {
     event.registerServerCommand(new WolCommand());
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
-    restServer.start();
+    restApiServer.start();
   }
 
   @EventHandler
@@ -314,8 +328,8 @@ public class WizardsOfLua {
     return fileRegistry;
   }
 
-  public WolRestServer getRestServer() {
-    return restServer;
+  public WolRestApiServer getRestServer() {
+    return restApiServer;
   }
 
 }

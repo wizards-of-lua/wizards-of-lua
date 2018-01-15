@@ -1,4 +1,4 @@
-package util;
+package net.wizardsoflua.block;
 
 import javax.annotation.Nullable;
 

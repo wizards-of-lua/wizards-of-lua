@@ -1,4 +1,4 @@
-package util;
+package net.wizardsoflua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

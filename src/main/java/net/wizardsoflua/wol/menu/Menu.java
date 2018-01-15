@@ -62,13 +62,13 @@ public class Menu extends MenuEntry {
         throw new IllegalStateException("Unexpected entry type: " + entry.getClass());
       }
       // TODO I18n
-      throw new CommandException("Unexpected token! Expected one of %s, but got '%s'",
+      throw new CommandException("Unexpected element! Expected one of %s, but got '%s'",
           sort(entries.keySet()), arg);
     } else if (rootAction != null) {
       return rootAction;
     }
     // TODO I18n
-    throw new CommandException("Missing token! Expected one of %s!", sort(entries.keySet()));
+    throw new CommandException("Missing element! Expected one of %s!", sort(entries.keySet()));
   }
 
 }

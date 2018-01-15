@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.GameType;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
@@ -17,7 +18,7 @@ import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 
 @DeclareLuaClass(name = PlayerClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
 public class PlayerClass
-    extends ProxyCachingLuaClass<EntityPlayer, PlayerClass.Proxy<EntityPlayer>> {
+    extends ProxyCachingLuaClass<EntityPlayerMP, PlayerClass.Proxy<EntityPlayerMP>> {
   public static final String METATABLE_NAME = "Player";
 
   public PlayerClass() {
@@ -30,12 +31,12 @@ public class PlayerClass
   }
 
   @Override
-  public Proxy<EntityPlayer> toLua(EntityPlayer delegate) {
+  public Proxy<EntityPlayerMP> toLua(EntityPlayerMP delegate) {
     return new Proxy<>(getConverters(), getMetatable(), delegate);
   }
 
   public void replaceDelegate(EntityPlayerMP newPlayer) {
-    Cache<EntityPlayer, Proxy<EntityPlayer>> cache = getCache();
+    Cache<EntityPlayerMP, Proxy<EntityPlayerMP>> cache = getCache();
 
     Set<EntityPlayer> found = new HashSet<>();
     for (EntityPlayer key : cache.asMap().keySet()) {
@@ -45,18 +46,29 @@ public class PlayerClass
     }
 
     for (EntityPlayer entityPlayer : found) {
-      Proxy<EntityPlayer> oldValue = cache.asMap().remove(entityPlayer);
+      Proxy<EntityPlayerMP> oldValue = cache.asMap().remove(entityPlayer);
       cache.put(newPlayer, oldValue);
       oldValue.setDelegate(newPlayer);
     }
   }
 
-  public class Proxy<D extends EntityPlayer> extends EntityClass.EntityLivingBaseProxy<D> {
+  public class Proxy<D extends EntityPlayerMP> extends EntityClass.EntityLivingBaseProxy<D> {
     public Proxy(Converters converters, Table metatable, D delegate) {
       super(converters, metatable, delegate);
       // Overwrite name, since player names can't be changed
       addReadOnly("name", this::getName);
       add("team", this::getTeam, this::setTeam);
+      add("gamemode", this::getGamemode, this::setGamemode);
+    }
+
+    public Object getGamemode() {
+      GameType result = delegate.interactionManager.getGameType();
+      return getConverters().toLua(result);
+    }
+
+    public void setGamemode(Object modeObj) {
+      GameType mode = getConverters().toJava(GameType.class, modeObj);
+      delegate.setGameType(mode);
     }
 
     @Override
@@ -64,7 +76,7 @@ public class PlayerClass
       float v = delegate.rotationYaw;
       return MathHelper.wrapDegrees(v);
     }
-    
+
     @Override
     public void setRotationYaw(Object luaObj) {
       super.setRotationYaw(luaObj);
@@ -82,7 +94,7 @@ public class PlayerClass
             delegate.posZ, delegate.rotationYaw, delegate.rotationPitch);
       }
     }
-    
+
     @Override
     public void setRotationYawAndPitch(float yaw, float pitch) {
       super.setRotationYawAndPitch(yaw, pitch);

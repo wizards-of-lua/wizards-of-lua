@@ -24,6 +24,8 @@ import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
+import net.wizardsoflua.wol.password.GenerateKeyAction;
+import net.wizardsoflua.wol.password.LoginAction;
 import net.wizardsoflua.wol.sharedautorequire.PrintSharedAutoRequireAction;
 import net.wizardsoflua.wol.sharedautorequire.SetSharedAutoRequireAction;
 import net.wizardsoflua.wol.sharedautorequire.UnsetSharedAutoRequireAction;
@@ -53,6 +55,7 @@ public class WolCommand extends CommandBase {
     WolMenu() {
       put("spell", new SpellMenu());
       put("file", new FileMenu());
+      put("key", new KeyMenu());
       put("shared-file", new SharedFileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
       put("autoRequire", new AutoRequireMenu());
@@ -83,6 +86,12 @@ public class WolCommand extends CommandBase {
     LuaTicksLimitMenu() {
       put(new PrintLuaTicksLimitAction());
       put("set", new SetLuaTicksLimitAction());
+    }
+  }
+  class KeyMenu extends Menu {
+    KeyMenu() {
+      put("login", new LoginAction());
+      put("generate", new GenerateKeyAction());
     }
   }
   class AutoRequireMenu extends Menu {

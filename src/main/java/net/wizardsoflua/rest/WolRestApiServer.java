@@ -22,11 +22,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -45,42 +49,47 @@ import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.config.RestConfig;
+import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.file.LuaFile;
 
-public class WolRestServer {
+public class WolRestApiServer {
+
+  private static final String LOGIN_COOKIE_KEY_PREFIX = "__HOST-Login-";
 
   public interface Context {
     LuaFile getLuaFileByReference(String fileref);
 
-    RestConfig getRestConfig();
+    RestApiConfig getRestApiConfig();
 
     void saveLuaFileByReference(String fileref, String content);
+
+    boolean isValidLoginToken(UUID uuid, String token);
+
+    String getLoginToken(UUID playerId);
   }
 
   private final Context context;
   private final Logger logger;
 
-
-  public WolRestServer(Context context) {
+  public WolRestApiServer(Context context) {
     this.context = checkNotNull(context, "context==null!");
     this.logger = WizardsOfLua.instance.logger;
   }
 
   public void start() throws IOException {
     logger.debug("[REST] starting WoL REST service");
-    File contextRoot = context.getRestConfig().getWebDir();
-    int port = context.getRestConfig().getPort();
-    boolean secure = context.getRestConfig().isSecure();
-    String hostname = context.getRestConfig().getHostname();
-    String protocol = context.getRestConfig().getProtocol();
-    final String keystore = context.getRestConfig().getKeyStore();
+    File contextRoot = context.getRestApiConfig().getWebDir();
+    int port = context.getRestApiConfig().getPort();
+    boolean secure = context.getRestApiConfig().isSecure();
+    String hostname = context.getRestApiConfig().getHostname();
+    String protocol = context.getRestApiConfig().getProtocol();
+    final String keystore = context.getRestApiConfig().getKeyStore();
     if (secure) {
       checkNotNull(keystore,
           "Missing keystore! Please configure path to keystore file in WoL config!");
     }
-    final char[] keystorePassword = context.getRestConfig().getKeyStorePassword();
-    final char[] keyPassword = context.getRestConfig().getKeyPassword();
+    final char[] keystorePassword = context.getRestApiConfig().getKeyStorePassword();
+    final char[] keyPassword = context.getRestApiConfig().getKeyPassword();
 
     createEmptyContextRoot(contextRoot);
 
@@ -194,7 +203,7 @@ public class WolRestServer {
       Path cachedFilePath = Paths.get(contextRoot.getAbsolutePath(), path);
       if (!Files.exists(cachedFilePath)) {
         String resource = resourcePath + path;
-        URL url = WolRestServer.class.getResource(resource);
+        URL url = WolRestApiServer.class.getResource(resource);
         if (url == null) {
           WizardsOfLua.instance.logger.warn("WolRestServer couldn't find resource at " + resource);
           return 404;
@@ -218,13 +227,45 @@ public class WolRestServer {
       this.staticResourceHandlers = staticResourceHandlers;
     }
 
+    @HTTPServer.Context(value = "/wol/login", methods = {"GET"})
+    public int login(Request req, Response resp) throws IOException {
+      try {
+        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        if (isValidLoginToken(req)) {
+          String loginToken = getLoginToken(req);
+          UUID playerUuid = getPlayerUuid(req);
+          addLoginCookie(resp, new LoginCookie(playerUuid, loginToken));
+          return sendLoginSucceeded(req, resp);
+        } else {
+          deleteLoginCookie(req, resp);
+          return sendLoginFailed(req, resp);
+        }
+      } catch (Exception e) {
+        logger.error("Error handling GET: " + req.getPath(), e);
+        resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
+            + "\n See fml-server-latest.log for more info!");
+        return 0;
+      }
+    }
+
     @HTTPServer.Context(value = "/wol/lua", methods = {"GET"})
     public int get(Request req, Response resp) throws IOException {
       try {
         logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LoginCookie loginCookie = getLoginCookie(req);
+        if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
+          resp.sendError(401,
+              "Missing correct login token! Please login first by executing '/wol key login' in Minecraft.");
+          return 0;
+        }
+        if (!isAuthorized(loginCookie.getPlayerUuid(), req.getPath())) {
+          resp.sendError(401, "Not authorized for resource!");
+          return 0;
+        }
         if (acceptsJson(req)) {
           return sendLuaFile(req, resp);
         } else if (acceptsHtml(req)) {
+          addLoginCookie(resp, loginCookie);
           return sendEditor(req, resp);
         } else {
           String accepts = req.getHeaders().get("Accept");
@@ -244,6 +285,19 @@ public class WolRestServer {
     public int post(Request req, Response resp) throws IOException {
       try {
         logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+
+        LoginCookie loginCookie = getLoginCookie(req);
+        if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
+          resp.sendError(401,
+              "Missing correct login token! Please login first by executing '/wol key login' in Minecraft.");
+          return 0;
+        }
+        if (!isAuthorized(loginCookie.getPlayerUuid(), req.getPath())) {
+          resp.sendError(401, "Not authorized for resource!");
+          return 0;
+        }
+
+
         JsonParser parser = new JsonParser();
         String body = IOUtils.toString(req.getBody(), StandardCharsets.UTF_8.name());
         JsonObject root = parser.parse(body).getAsJsonObject();
@@ -271,17 +325,15 @@ public class WolRestServer {
       if (matcher.matches()) {
         String fileref = matcher.group(1);
         LuaFile luaFile = context.getLuaFileByReference(fileref);
-        resp.getHeaders().add("Content-Type", "application/json");
-
         LuaFileJson luaFileJson = new LuaFileJson(luaFile.getPath(), luaFile.getName(),
             luaFile.getFileReference(), luaFile.getContent());
         Gson gson = new Gson();
         String content = gson.toJson(luaFileJson);
-        InputStream body =
-            new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8.name()));
+        byte[] bytes = content.getBytes(StandardCharsets.UTF_8.name());
+        InputStream body = new ByteArrayInputStream(bytes);
         long[] range = null;
-        resp.sendHeaders(200, content.length(), -1L, null, "application/json", range);
-        resp.sendBody(body, content.length(), null);
+        resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
+        resp.sendBody(body, bytes.length, null);
         return 0;
       } else {
         throw new RuntimeException("Unexpected path: '" + req.getPath() + "'");
@@ -289,9 +341,17 @@ public class WolRestServer {
     }
 
     private int sendEditor(Request req, Response resp) throws IOException {
-
       req.setPath("/editor.html");
+      return staticResourceHandlers.serve(req, resp);
+    }
 
+    private int sendLoginSucceeded(Request req, Response resp) throws IOException {
+      req.setPath("/loginSucceeded.html");
+      return staticResourceHandlers.serve(req, resp);
+    }
+
+    private int sendLoginFailed(Request req, Response resp) throws IOException {
+      req.setPath("/loginFailed.html");
       return staticResourceHandlers.serve(req, resp);
     }
 
@@ -312,6 +372,128 @@ public class WolRestServer {
       }
       return false;
     }
+
+  }
+
+  private boolean isValidLoginToken(Request req) {
+    Pattern pattern = Pattern.compile("/wol/login/([^/]+)/([^/]+)");
+    Matcher matcher = pattern.matcher(req.getPath());
+    if (matcher.matches()) {
+      String playerUuidStr = matcher.group(1);
+      String token = matcher.group(2);
+      return context.isValidLoginToken(UUID.fromString(playerUuidStr), token);
+    }
+    return false;
+  }
+
+  public boolean isAuthorized(UUID playerUuid, String path) {
+    if (path.startsWith("/wol/lua/shared/")) {
+      return true;
+    }
+    Pattern pattern = Pattern.compile("/wol/lua/([^/]+)/.*");
+    Matcher matcher = pattern.matcher(path);
+    if (matcher.matches()) {
+      String uuidStr = matcher.group(1);
+      UUID uuid = UUID.fromString(uuidStr);
+      return playerUuid.equals(uuid);
+    } else {
+      throw new IllegalArgumentException("Request does not match pattern! req.path=" + path);
+    }
+  }
+
+  public UUID getPlayerUuid(Request req) {
+    Pattern pattern = Pattern.compile("/wol/login/([^/]+)/([^/]+)");
+    Matcher matcher = pattern.matcher(req.getPath());
+    if (matcher.matches()) {
+      String uuid = matcher.group(1);
+      return UUID.fromString(uuid);
+    } else {
+      throw new IllegalArgumentException(
+          "Request does not match pattern! req.path=" + req.getPath());
+    }
+  }
+
+  public String getLoginToken(Request req) {
+    Pattern pattern = Pattern.compile("/wol/login/([^/]+)/([^/]+)");
+    Matcher matcher = pattern.matcher(req.getPath());
+    if (matcher.matches()) {
+      String token = matcher.group(2);
+      return token;
+    } else {
+      throw new IllegalArgumentException(
+          "Request does not match pattern! req.path=" + req.getPath());
+    }
+  }
+
+  public void addLoginCookie(Response resp, LoginCookie loginCookie) {
+    addCookie(resp, getLoginCookieKey(), loginCookie.getPlayerUuid() + "/" + loginCookie.getToken(),
+        3600 * 24 * 365);
+  }
+
+  public @Nullable LoginCookie getLoginCookie(Request req) {
+    String text = req.getHeaders().get("Cookie");
+    Map<String, String> entries = parseCookies(text);
+    String loginCookieKey = getLoginCookieKey();
+    String cookieValue = entries.get(loginCookieKey);
+    if (cookieValue != null) {
+      int index = cookieValue.indexOf('/');
+      if (index != -1) {
+        String playerUuidStr = cookieValue.substring(0, index);
+        if (cookieValue.length() > index + 1) {
+          String token = cookieValue.substring(index + 1);
+
+          return new LoginCookie(UUID.fromString(playerUuidStr), token);
+        }
+      }
+    }
+    return null;
+  }
+
+  public UUID getPlayerUuidFromRequestPath(Request req) {
+    Pattern pattern = Pattern.compile("/wol/[^/]+/([^/]+)/.+");
+    Matcher matcher = pattern.matcher(req.getPath());
+    if (matcher.matches()) {
+      String playerUuidStr = matcher.group(1);
+      return UUID.fromString(playerUuidStr);
+    } else {
+      throw new IllegalArgumentException(
+          "Request does not match pattern! req.path=" + req.getPath());
+    }
+  }
+
+  public boolean isValidLoginCookie(LoginCookie loginCookie) {
+    String token = context.getLoginToken(loginCookie.getPlayerUuid());
+    return token.equals(loginCookie.getToken());
+  }
+
+  public void deleteLoginCookie(Request req, Response resp) {
+    addCookie(resp, getLoginCookieKey(), "---", 0);
+  }
+
+  private void addCookie(Response resp, String key, String value, int maxAge) {
+    resp.getHeaders().add("Set-Cookie",
+        String.format("%s=%s; Max-Age=%s; Secure; Path=/", key, value, maxAge));
+  }
+
+  private Map<String, String> parseCookies(String text) {
+    Map<String, String> result = new HashMap<>();
+    if (text != null && !text.trim().isEmpty()) {
+      String[] tokens = text.split(";");
+      for (String token : tokens) {
+        int idx = token.indexOf('=');
+        String key = token.substring(0, idx).trim();
+        String value = token.substring(idx + 1).trim();
+        result.put(key, value);
+      }
+    }
+    return result;
+  }
+
+  private String getLoginCookieKey() {
+    String hostname = context.getRestApiConfig().getHostname();
+    int port = context.getRestApiConfig().getPort();
+    String server = hostname + ":" + port;
+    return LOGIN_COOKIE_KEY_PREFIX + server;
   }
 
 }

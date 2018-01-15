@@ -190,9 +190,9 @@ public class SpellProgram {
           } catch (CallPausedException e) {
             continuation = e.getContinuation();
             state = State.PAUSED;
-          } catch (Exception e) {
+          } catch (Throwable t) {
             state = State.FINISHED;
-            throw e;
+            throw t;
           }
           break;
         case PAUSED:
@@ -202,16 +202,16 @@ public class SpellProgram {
           } catch (CallPausedException e) {
             continuation = e.getContinuation();
             state = State.PAUSED;
-          } catch (Exception e) {
+          } catch (Throwable t) {
             state = State.FINISHED;
-            throw e;
+            throw t;
           }
           break;
         default:
           break;
       }
-    } catch (Exception ex) {
-      throw exceptionFactory.create(ex);
+    } catch (Throwable t) {
+      throw exceptionFactory.create(t);
     }
   }
 

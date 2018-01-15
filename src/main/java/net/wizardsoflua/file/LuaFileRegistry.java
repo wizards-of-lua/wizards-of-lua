@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,19 +15,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.wizardsoflua.config.RestConfig;
+import net.wizardsoflua.config.RestApiConfig;
 
 public class LuaFileRegistry {
 
   public interface Context {
     File getPlayerLibDir(UUID playerId);
 
-    RestConfig getRestConfig();
-
     File getSharedLibDir();
+
+    String getPlayerRestApiKey(UUID playerId);
+
+    RestApiConfig getRestApiConfig();
   }
 
-  private Context context;
+  private final Crypto crypto = new Crypto();
+  private final Context context;
 
   public LuaFileRegistry(Context context) {
     this.context = context;
@@ -60,9 +64,9 @@ public class LuaFileRegistry {
     if (filepath.contains("..")) {
       throw new IllegalArgumentException("Relative path syntax is not allowed!");
     }
-    String hostname = context.getRestConfig().getHostname();
-    String protocol = context.getRestConfig().getProtocol();
-    int port = context.getRestConfig().getPort();
+    String hostname = context.getRestApiConfig().getHostname();
+    String protocol = context.getRestApiConfig().getProtocol();
+    int port = context.getRestApiConfig().getPort();
 
     String fileReference = getFileReferenceFor(player, filepath);
     try {
@@ -77,9 +81,9 @@ public class LuaFileRegistry {
     if (filepath.contains("..")) {
       throw new IllegalArgumentException("Relative path syntax is not allowed!");
     }
-    String hostname = context.getRestConfig().getHostname();
-    String protocol = context.getRestConfig().getProtocol();
-    int port = context.getRestConfig().getPort();
+    String hostname = context.getRestApiConfig().getHostname();
+    String protocol = context.getRestApiConfig().getProtocol();
+    int port = context.getRestApiConfig().getPort();
 
     String fileReference = getSharedFileReferenceFor(filepath);
     try {
@@ -167,19 +171,16 @@ public class LuaFileRegistry {
 
   public LuaFile loadLuaFile(String fileReference) {
     try {
-      String filepath = getFilepathFor(fileReference);
-      if (filepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
-      }
-      File file = getFile(fileReference, filepath);
+      File file = getFile(fileReference);
       String name = file.getName();
       String content;
       if (file.exists()) {
-        content = new String(Files.readAllBytes(Paths.get(file.toURI())));
+        Charset cs = Charset.defaultCharset();
+        content = new String(Files.readAllBytes(Paths.get(file.toURI())), cs);
       } else {
         content = "";
       }
-      return new LuaFile(filepath, name, fileReference, content);
+      return new LuaFile(getFilepathFor(fileReference), name, fileReference, content);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -187,27 +188,28 @@ public class LuaFileRegistry {
 
   public void saveLuaFile(String fileReference, String content) {
     try {
-      String filepath = getFilepathFor(fileReference);
-      if (filepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
-      }
-      File file = getFile(fileReference, filepath);
+      File file = getFile(fileReference);
       if (!file.getParentFile().exists()) {
         Files.createDirectories(Paths.get(file.getParentFile().toURI()));
       }
-      byte[] bytes = content.getBytes();
+      Charset cs = Charset.defaultCharset();
+      byte[] bytes = content.getBytes(cs.name());
       Files.write(Paths.get(file.toURI()), bytes);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private File getFile(String fileReference, String filepath) {
-    if (fileReference.startsWith("shared")) {
+  private File getFile(String fileReference) {
+    String filepath = getFilepathFor(fileReference);
+    if (filepath.contains("..")) {
+      throw new IllegalArgumentException("Filepath must not contain '..' elements!");
+    }
+    if (fileReference.startsWith("shared/")) {
       return new File(context.getSharedLibDir(), filepath);
     } else {
-      UUID playerId = getPlayerIdFor(fileReference);
-      return new File(context.getPlayerLibDir(playerId), filepath);
+      UUID ownerId = getOwnerIdFor(fileReference);
+      return new File(context.getPlayerLibDir(ownerId), filepath);
     }
   }
 
@@ -216,20 +218,54 @@ public class LuaFileRegistry {
   }
 
   private String getSharedFileReferenceFor(String filepath) {
-    return "shared/" + filepath;
+    return "shared" + "/" + filepath;
   }
 
   private String getFilepathFor(String fileReference) {
     int index = fileReference.indexOf('/');
-    String result = fileReference.substring(index + 1);
-    return result;
+    return fileReference.substring(index + 1);
   }
 
-  private UUID getPlayerIdFor(String fileReference) {
+  private UUID getOwnerIdFor(String fileReference) {
     int index = fileReference.indexOf('/');
     String playerIdStr = fileReference.substring(0, index);
     UUID result = UUID.fromString(playerIdStr);
     return result;
+  }
+
+  public URL getPasswordTokenUrl(EntityPlayer player) {
+    String hostname = context.getRestApiConfig().getHostname();
+    String protocol = context.getRestApiConfig().getProtocol();
+    int port = context.getRestApiConfig().getPort();
+    String uuid = player.getUniqueID().toString();
+    String token = getLoginToken(player);
+    try {
+      URL result =
+          new URL(protocol + "://" + hostname + ":" + port + "/wol/login/" + uuid + "/" + token);
+      return result;
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public String getLoginToken(UUID playerId) {
+    String playerPassword = context.getPlayerRestApiKey(playerId);
+    String serverPassword = context.getRestApiConfig().getApiKey();
+    String encryptedPlayerPassword = crypto.encrypt(playerId, serverPassword, playerPassword);
+    return encryptedPlayerPassword;
+  }
+
+  private String getLoginToken(EntityPlayer player) {
+    return getLoginToken(player.getUniqueID());
+  }
+
+  public boolean isValidLoginToken(UUID playerId, String token) {
+    int index = token.indexOf('/');
+    String encryptedPlayerPassword = token.substring(index + 1);
+    String serverPassword = context.getRestApiConfig().getApiKey();
+    String playerPassword = crypto.decrypt(playerId, serverPassword, encryptedPlayerPassword);
+    String expectedPlayerPassword = context.getPlayerRestApiKey(playerId);
+    return expectedPlayerPassword.equals(playerPassword);
   }
 
 }

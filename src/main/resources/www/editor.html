@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>ACE in Action</title>
+<title>Loading Lua File ...</title>
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script src="/jquery/jquery-3.2.1.js"></script>
@@ -64,7 +64,7 @@ body {
                     type: "POST",
                     url: filename,
                     data: json,
-                    contentType: "application/json; charset=utf-8",
+                    contentType: "application/json",
                     success: function(response) {
                         document.title = filepath;
                         setModified(false);
@@ -105,19 +105,23 @@ body {
             }
             var target = aFilename+"?"
             console.log("GET "+target)
-            $.getJSON(target).done(
-                    function(data) {
-                        editor.setValue(data.content);
-                        editor.clearSelection();
-                        editor.focus();
-                        setModified(false);
-                        document.title = data.path;
-                        filepath = data.path;
-                        loaded = true;
-                        doMarkClean = true;
-            }).fail(function(data) {
-                alert('Error: ' + JSON.stringify(data));
-                document.title = filepath;
+            $.ajax({
+                dataType: "json",
+                url: target,
+                success: function(data) {
+                    editor.setValue(data.content);
+                    editor.clearSelection();
+                    editor.focus();
+                    setModified(false);
+                    document.title = data.path;
+                    filepath = data.path;
+                    loaded = true;
+                    doMarkClean = true;
+                },
+                error: function(data) {
+                    alert('Error: ' + JSON.stringify(data));
+                    document.title = filepath;
+                } 
             });
         }
 

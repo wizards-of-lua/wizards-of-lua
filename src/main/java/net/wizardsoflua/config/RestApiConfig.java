@@ -5,11 +5,13 @@ import static java.lang.String.format;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
+import java.util.UUID;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.file.Crypto;
 
-public class RestConfig {
+public class RestApiConfig {
 
   public interface Context {
     File getWolConfigDir();
@@ -21,18 +23,19 @@ public class RestConfig {
   private String keystore = "";
   private String keystorePassword = "";
   private String keyPassword = "";
-
+  private UUID uuid = UUID.randomUUID();
+  private String apiKey = new Crypto().createRandomPassword();
   private String webDir = "www";
   private final File webDirFile;
 
   private final Context context;
 
-  public RestConfig(Context context) {
+  public RestApiConfig(Context context) {
     this.context = checkNotNull(context, "context==null!");
     webDirFile = tryToCreateDir(new File(this.context.getWolConfigDir(), webDir));
   }
 
-  public RestConfig(Table table, Context context) {
+  public RestApiConfig(Table table, Context context) {
     this.context = checkNotNull(context, "context==null!");
     hostname = getAsOptional(String.class, table, "hostname").orElse(hostname);
     port = getAsOptional(Integer.class, table, "port").orElse(port);
@@ -43,6 +46,9 @@ public class RestConfig {
     keyPassword = getAsOptional(String.class, table, "keyPassword").orElse(keyPassword);
     webDir = getAsOptional(String.class, table, "webDir").orElse(webDir);
     webDirFile = tryToCreateDir(new File(context.getWolConfigDir(), webDir));
+    uuid = UUID
+        .fromString(getAsOptional(String.class, table, "uuid").orElse(uuid.toString()));
+    apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
   }
 
   public Table writeTo(Table table) {
@@ -53,6 +59,8 @@ public class RestConfig {
     table.rawset("keystorePassword", keystorePassword);
     table.rawset("keyPassword", keyPassword);
     table.rawset("webDir", webDir);
+    table.rawset("uuid", uuid.toString());
+    table.rawset("apiKey", apiKey);
     return table;
   }
 
@@ -101,6 +109,14 @@ public class RestConfig {
 
   public char[] getKeyPassword() {
     return keyPassword.toCharArray();
+  }
+
+  public UUID getUuid() {
+    return uuid;
+  }
+
+  public String getApiKey() {
+    return apiKey;
   }
 
 }
