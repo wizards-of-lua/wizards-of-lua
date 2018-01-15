@@ -48,7 +48,7 @@ One part will be responsible for providing the wand-specific command.
 The other part will become the new, centralized observer spell, that can handle all magic
 wands together in one place.
 
-For this to work, we need a place where we can lookup the wand-specific command, as
+For this to work, we need a place where we can look up the wand-specific command, as
 we want to cast different spells for different wands.
 A very nice solution is to store the wand's specific spell into the
 item's nbt data.
