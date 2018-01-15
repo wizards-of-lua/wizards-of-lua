@@ -44,7 +44,7 @@ correct, and then it will call the actual [rocket()](/examples/rocket-thrower#ro
 player object passed in as argument.
 
 What we want to do next, is to disassemble this spell into two parts.
-One part will responsible for providing the wand-specific command.
+One part will be responsible for providing the wand-specific command.
 The other part will become the new, centralized observer spell, that can handle all magic
 wands together in one place.
 
