@@ -5,7 +5,7 @@ title: Introduction
 By using it you can change the nature of the game.*
 
 The Wizards of Lua modification adds a new entity, called the Spell entity, to Minecraft.
-A spell is a (normally) invisible entity that can be casted by a player using the
+A spell is a (normally) invisible entity that can be cast by a player using the
 [/lua command](/lua-command).
 Like any other entity each spell exists at a certain location
 (defined by a 3-dimensional [vector](/modules/Vec3/)) inside a specific dimension
