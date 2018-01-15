@@ -25,7 +25,7 @@ This API is documentend by a bunch of small books which are collected inside the
 
 By studying the [examples](/examples.html) and [tutorials](/tutorials.html),
 players can gain a deep knowledge about how the linuga magica works and become
-themselves great wizards.
+great wizards themselves.
 
 ## Casting a Spell
 A wizard can cast a spell using the [/lua command](/lua-command).
