@@ -51,16 +51,70 @@ This will break all spells owned by player mickkay.
 
 <br/>
 
-<a name="Files" style="position:relative; top:-70px; display:block;"></a>
-## Files
-To make reusing spells simpler, wizards can store their spells inside player-specific Lua files.
+
+<a name="Browser" style="position:relative; top:-70px; display:block;"></a>
+## Browser
+### Login
+If you want to edit your Lua files with your web browser, your have to log in first.
+
+*Example:*
+```
+/wol browser login
+```
+This will print a web link into the chat.
+Just press T and click on it.
+Minecraft will open your web browser and load an authentication token.
+After that you can edit your files with your browser.
+
+### Logout
+If you don't want to edit your Lua files with your web browser anymore, your can log out.
+
+*Example:*
+```
+/wol browser logout
+```
+This will generate a new authentication token for your.
+After that you can not edit your files with your browser anymore, unless of course, you log in again.
+
+<br/>
+
+
+<a name="Personal-Files" style="position:relative; top:-70px; display:block;"></a>
+## Personal Files
+In order to store your spells for later use, you can create a file and save it into
+your personal directory.
+Then you can load your spells any time after by calling ```require```.
+
+*Example:*
+
+To load the contents of the file ```myfile.lua``` into the current spell and
+call the function ```myFunc()``` which is declared in that file, just execute the following
+command:
+
+```lua
+/lua require("myfile"); myFunc()
+```
+
+Per default, a personal file is only visible to the owner.
+In order to access it from outside, e.g. from within a command block, you have to call ```addpath```.
+
+*Example:*
+
+```lua
+/lua addpath("mickkay"); require("myfile"); myFunc()
+```
+This spell adds mickkay's personal directory to the spell's Lua search path.
+After that, the spell can load any of mickkay's files.
 
 ### Creating a New File
-To create a new file just send the following command:
+To create a new file in your personal directory just send the following command:
 ```
 /wol file edit <newfilename>
 ```
 where *&lt;newfilename&gt;* will be the name of the new file.
+This will print the web link of the new file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your new file in your web browser.
 
 For example, to create a file with the name "profile.lua", just type:
 ```
@@ -68,76 +122,107 @@ For example, to create a file with the name "profile.lua", just type:
 ```
 
 ### Editing an Existing File
-To edit an existing file send the following command:
+To edit an existing file from your personal directory send the following command:
 ```
 /wol file edit <filename>
 ```
-where *&lt;filename&gt;* is be the name of the file.
+where *&lt;filename&gt;* is the name of the file.
+This will print the web link of the file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your file in your web browser.
 
 For example, to edit a file with the name "magic/rocket.lua", just type:
 ```
 /wol file edit magic/rocket.lua
 ```
 
+### Moving an Existing File
+To move an existing file from your personal directory to some new location send the following command:
+```
+/wol file move <filename> <newfilename>
+```
+where *&lt;filename&gt;* is the old name of the file and
+*&lt;newfilename&gt;* is the new name of the file.
+
+For example, to move a file with the name "magic/rocket.lua" to "items/rocket.lua", just type:
+```
+/wol file move magic/rocket.lua items/rocket.lua
+```
+
+### Deleting an Existing File
+To delete an existing file from your personal directory send the following command:
+```
+/wol file delete <filename>
+```
+where *&lt;filename&gt;* is the name of the file.
+
+For example, to delete a file with the name "magic/rocket.lua", just type:
+```
+/wol file delete magic/rocket.lua
+```
 
 <br/>
 
-<a name="Shared-Default-Dependencies" style="position:relative; top:-70px; display:block;"></a>
-## Shared Default Dependencies
-The <tt>sharedAutoRequire</tt> value is a global value that defines which Lua module will be loaded
-automatically into a new spell's environment.
-The respective module must be available within the [shared library](/configuration-file.html) (or all
-of the player's libraries).
+<a name="Shared-Files" style="position:relative; top:-70px; display:block;"></a>
+## Shared Files
+Files inside the shared directory are called shared files.
+They are visible to all wizards and have no specific owner.
+Anybody with operator privileges can use, view, and edit these files.
 
-### Showing the sharedAutoRequire value
+### Creating a New Shared File
+To create a new shared file just send the following command:
 ```
-/wol sharedAutoRequire
+/wol shared-file edit <newfilename>
 ```
-This prints the value of the "sharedAutoRequire" setting.
+where *&lt;newfilename&gt;* will be the name of the new file.
+This will print the web link of the new file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your new file in your web browser.
 
-### Setting the sharedAutoRequire value
-Lets assume that there is a file called "shared-profile.lua" inside the
-sharred library directory.
+For example, to create a shared file with the name "shared-profile.lua", just type:
 ```
-/wol sharedAutoRequire set shared-profile
+/wol shared-file edit shared-profile.lua
 ```
-This sets the "shared-profile" module as the automatic requirement for all spells.
-This is equivalent to prefixing a new spell's code with <tt>require "shared-profile"</tt>.
 
-### Unsetting the sharedAutoRequire value
+### Editing an Existing Shared File
+To edit an existing shared file send the following command:
 ```
-/wol sharedAutoRequire unset
+/wol shared-file edit <filename>
 ```
-This sets the value of the "sharedAutoRequire" setting to none.
+where *&lt;filename&gt;* is the name of the file.
+This will print the web link of the new file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your new file in your web browser.
 
-<br/>
+For example, to edit a shared file with the name "magic/rocket.lua", just type:
+```
+/wol shared-file edit magic/rocket.lua
+```
 
-<a name="Default-Dependencies" style="position:relative; top:-70px; display:block;"></a>
-## Player-specific Default Dependencies
-The <tt>autoRequire</tt> value is a player-specific value that defines which Lua module will be loaded
-automatically into a new spell's environment.
-The respective module must be available within the [player's Lua path](/configuration-file.html).
+### Moving an Existing Shared File
+To move an existing shared file to some new location send the following command:
+```
+/wol shared-file move <filename> <newfilename>
+```
+where *&lt;filename&gt;* is the old name of the file and
+*&lt;newfilename&gt;* is the new name of the file.
 
-### Showing the autoRequire value
+For example, to move a file with the name "magic/rocket.lua" to "items/rocket.lua", just type:
 ```
-/wol autoRequire
+/wol shared-file move magic/rocket.lua items/rocket.lua
 ```
-This prints the value of the "autoRequire" setting.
 
-### Setting the autoRequire value
-Lets assume that the current player has a file called "myprofile.lua" in his
-Lua library directory.
+### Deleting an Existing Shared File
+To delete an existing shared file just send the following command:
 ```
-/wol autoRequire set myprofile
+/wol shared-file delete <filename>
 ```
-This sets the "myprofile" module as the automatic requirement for the current player.
-This is equivalent to prefixing a new spell's code with <tt>require "myprofile"</tt>.
+where *&lt;filename&gt;* is the name of the file.
 
-### Unsetting the autoRequire value
+For example, to delete a file with the name "magic/rocket.lua", just type:
 ```
-/wol autoRequire unset
+/wol shared-file delete magic/rocket.lua
 ```
-This sets the value of the "autoRequire" setting to none.
 
 <br/>
 
