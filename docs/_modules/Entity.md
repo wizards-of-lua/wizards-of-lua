@@ -130,7 +130,7 @@ functions:
     examples:
       - url: Entity/scanView.md
   - name: dropItem
-    parameters: "[Item](!SITE_URL!/modules/Item/)", verticalOffset
+    parameters: "[Item](!SITE_URL!/modules/Item/), verticalOffset"
     results: "[DroppedItem](!SITE_URL!/modules/DroppedItem/)"
     description: "The 'dropItem' function drops the given item at this entity's position modified by the optionally given vertical offset.
     "
