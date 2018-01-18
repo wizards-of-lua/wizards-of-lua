@@ -51,6 +51,37 @@ This will break all spells owned by player mickkay.
 
 <br/>
 
+<a name="Files" style="position:relative; top:-70px; display:block;"></a>
+## Files
+To make reusing spells simpler, wizards can store their spells inside player-specific Lua files.
+
+### Creating a New File
+To create a new file just send the following command:
+```
+/wol file edit <newfilename>
+```
+where *&lt;newfilename&gt;* will be the name of the new file.
+
+For example, to create a file with the name "profile.lua", just type:
+```
+/wol file edit profile.lua
+```
+
+### Editing an Existing File
+To edit an existing file send the following command:
+```
+/wol file edit <filename>
+```
+where *&lt;filename&gt;* is be the name of the file.
+
+For example, to edit a file with the name "magic/rocket.lua", just type:
+```
+/wol file edit magic/rocket.lua
+```
+
+
+<br/>
+
 <a name="Shared-Default-Dependencies" style="position:relative; top:-70px; display:block;"></a>
 ## Shared Default Dependencies
 The <tt>sharedAutoRequire</tt> value is a global value that defines which Lua module will be loaded
