@@ -11,6 +11,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
+import net.sandius.rembulan.env.RuntimeEnvironment;
+import net.sandius.rembulan.env.RuntimeEnvironments;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
@@ -26,7 +28,6 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
@@ -70,7 +71,7 @@ public class SpellProgram {
   private final StateContext stateContext;
   private final Table env;
   private final PatchedCompilerChunkLoader loader;
-  private final SpellRuntimeEnvironment runtimeEnv;
+  private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
   private final Types types;
   private final Converters converters;
@@ -81,6 +82,7 @@ public class SpellProgram {
   private Continuation continuation;
   private SpellEntity spellEntity;
   private Time time;
+  private String defaultLuaPath;
   private final Context context;
 
   SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
@@ -88,18 +90,14 @@ public class SpellProgram {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
+    this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");;
     this.time = checkNotNull(time, "time==null!");
     this.context = checkNotNull(context, "context==null!");
 
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     this.executor = DirectCallExecutor.newExecutor(createSchedulingContextFactory());
-    runtimeEnv = new SpellRuntimeEnvironment(new SpellRuntimeEnvironment.Context() {
-      @Override
-      public String getLuaPath() {
-        return defaultLuaPath;
-      }
-    });
+    runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
@@ -116,6 +114,11 @@ public class SpellProgram {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
         return context.getLuaPathElementOfPlayer(nameOrUuid);
+      }
+
+      @Override
+      public void addPath(String pathelement) {
+        SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
     TimeModule.installInto(env, converters, time);
@@ -232,15 +235,21 @@ public class SpellProgram {
     FileSystem fileSystem = runtimeEnv.fileSystem();
     LuaFunctionBinaryCache luaFunctionCache = context.getLuaFunctionBinaryCache();
 
-    BasicLib.installInto(stateContext, env, runtimeEnv, loader);
+    BasicLib.installInto(stateContext, env, /* runtimeEnv */ null, loader);
 
     // We don't pass the loader to the ModuleLib in order to prevent the installation of the
     // ChunkLoadPathSearcher
-    ModuleLib.installInto(stateContext, env, runtimeEnv, /* loader */ null, classLoader);
+    ModuleLib.installInto(stateContext, env, /* runtimeEnv */ null, /* loader */ null,
+        /* classLoader */ null);
     // Instead we install our own two searchers
     ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache, classLoader);
-    PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader,
-        fileSystem);
+    PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader, fileSystem,
+        new PatchedChunkLoadPathSearcher.Context() {
+          @Override
+          public String getLuaPath() {
+            return defaultLuaPath;
+          }
+        });
 
     CoroutineLib.installInto(stateContext, env);
     StringLib.installInto(stateContext, env);

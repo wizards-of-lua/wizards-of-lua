@@ -13,20 +13,20 @@ public class AddPathFunction extends AbstractFunction1 {
 
   public interface Context {
     String getLuaPathElementOfPlayer(String nameOrUuid);
+
+    void addPath(String path);
   }
 
   public static AddPathFunction installInto(Table env, Converters converters, Context context) {
-    AddPathFunction result = new AddPathFunction(env, converters, context);
+    AddPathFunction result = new AddPathFunction(converters, context);
     env.rawset("addpath", result);
     return result;
   }
 
-  private Table env;
   private Converters converters;
   private Context context;
 
-  public AddPathFunction(Table env, Converters converters, Context context) {
-    this.env = env;
+  public AddPathFunction(Converters converters, Context context) {
     this.converters = converters;
     this.context = context;
   }
@@ -35,15 +35,7 @@ public class AddPathFunction extends AbstractFunction1 {
   public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
     String nameOrUuid = converters.toJava(String.class, arg1);
     String pathElement = this.context.getLuaPathElementOfPlayer(nameOrUuid);
-
-    Table pkg = (Table) env.rawget("package");
-    String path = converters.toJava(String.class, pkg.rawget("path"));
-
-    if (!path.contains(pathElement)) {
-      path += ";" + pathElement;
-      pkg.rawset("path", path);
-    }
-
+    this.context.addPath(pathElement);
     context.getReturnBuffer().setTo();
   }
 

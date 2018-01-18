@@ -27,10 +27,14 @@ import net.wizardsoflua.lua.compiler.LuaFunctionBinary;
 
 public class PatchedChunkLoadPathSearcher extends AbstractLibFunction {
 
+  public interface Context {
+    String getLuaPath();
+  }
+  
   public static void installInto(Table env, ExtendedChunkLoader loader,
-      LuaFunctionBinaryByPathCache cache, ClassLoader classloader, FileSystem fileSystem) {
+      LuaFunctionBinaryByPathCache cache, ClassLoader classloader, FileSystem fileSystem, Context context) {
+    Object function = new PatchedChunkLoadPathSearcher(fileSystem, loader, cache, env, context);
     Table pkg = (Table) env.rawget("package");
-    Object function = new PatchedChunkLoadPathSearcher(fileSystem, pkg, loader, cache, env);
     Table searchers = (Table) pkg.rawget("searchers");
     long len = searchers.rawlen();
     searchers.rawset(len + 1, function);
@@ -38,19 +42,19 @@ public class PatchedChunkLoadPathSearcher extends AbstractLibFunction {
 
   static final ByteString DEFAULT_MODE = ByteString.constOf("bt");
 
-  private final Table libTable;
   private final FileSystem fileSystem;
   private final ExtendedChunkLoader loader;
   private final LuaFunctionBinaryByPathCache cache;
   private final Object env;
+  private final Context context;
 
-  public PatchedChunkLoadPathSearcher(FileSystem fileSystem, Table libTable,
-      ExtendedChunkLoader loader, LuaFunctionBinaryByPathCache cache, Object env) {
+  public PatchedChunkLoadPathSearcher(FileSystem fileSystem,
+      ExtendedChunkLoader loader, LuaFunctionBinaryByPathCache cache, Object env, Context context) {
     this.fileSystem = Objects.requireNonNull(fileSystem);
-    this.libTable = Objects.requireNonNull(libTable);
     this.loader = Objects.requireNonNull(loader);
     this.cache = Objects.requireNonNull(cache);;
     this.env = env;
+    this.context = context;
   }
 
   @Override
@@ -67,11 +71,9 @@ public class PatchedChunkLoadPathSearcher extends AbstractLibFunction {
       throws ResolvedControlThrowable {
     ByteString modName = args.nextString();
 
-    // FIXME: it might be easier and more modular to just call package.searchpath and loadfile
-
-    ByteString path = Conversions.stringValueOf(libTable.rawget("path"));
+    ByteString path = Conversions.stringValueOf(this.context.getLuaPath());
     if (path == null) {
-      throw new IllegalStateException("'package.path' must be a string");
+      throw new IllegalStateException("Missing 'path'");
     }
 
     List<ByteString> paths = SearchPath.getPaths(modName, path, SearchPath.DEFAULT_SEP,
