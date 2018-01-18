@@ -1,4 +1,4 @@
-package net.wizardsoflua.wol.password;
+package net.wizardsoflua.wol.browser;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -16,12 +16,12 @@ import net.wizardsoflua.file.Crypto;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class GenerateKeyAction extends MenuEntry implements CommandAction {
+public class LogoutAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
   private final Crypto crypto = new Crypto();
 
-  public GenerateKeyAction() {
+  public LogoutAction() {
     wol = WizardsOfLua.instance;
   }
 
@@ -38,7 +38,7 @@ public class GenerateKeyAction extends MenuEntry implements CommandAction {
       EntityPlayer player = (EntityPlayer) entity;
       String password = crypto.createRandomPassword();
       wol.getConfig().getOrCreateWizardConfig(player.getUniqueID()).setRestApiKey(password);
-      WolAnnouncementMessage message = new WolAnnouncementMessage("New key generated.");
+      WolAnnouncementMessage message = new WolAnnouncementMessage("Your web browser is logged out.");
       sender.sendMessage(message);
     }
   }

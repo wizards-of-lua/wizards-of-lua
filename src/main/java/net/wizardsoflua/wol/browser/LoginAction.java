@@ -1,4 +1,4 @@
-package net.wizardsoflua.wol.password;
+package net.wizardsoflua.wol.browser;
 
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
 
@@ -38,7 +38,7 @@ public class LoginAction extends MenuEntry implements CommandAction {
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
       URL url = wol.getFileRegistry().getPasswordTokenUrl(player);
-      WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to login your web browser: ");
+      WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to log in with your web browser: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
       sender.sendMessage(message);
     }

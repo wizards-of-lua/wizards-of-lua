@@ -14,6 +14,8 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.wizardsoflua.wol.browser.LoginAction;
+import net.wizardsoflua.wol.browser.LogoutAction;
 import net.wizardsoflua.wol.file.FileDeleteAction;
 import net.wizardsoflua.wol.file.FileEditAction;
 import net.wizardsoflua.wol.file.FileMoveAction;
@@ -21,8 +23,6 @@ import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
-import net.wizardsoflua.wol.password.GenerateKeyAction;
-import net.wizardsoflua.wol.password.LoginAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileDeleteAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileEditAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileMoveAction;
@@ -49,7 +49,7 @@ public class WolCommand extends CommandBase {
     WolMenu() {
       put("spell", new SpellMenu());
       put("file", new FileMenu());
-      put("key", new KeyMenu());
+      put("browser", new BrowserMenu());
       put("shared-file", new SharedFileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
     }
@@ -80,10 +80,10 @@ public class WolCommand extends CommandBase {
       put("set", new SetLuaTicksLimitAction());
     }
   }
-  class KeyMenu extends Menu {
-    KeyMenu() {
+  class BrowserMenu extends Menu {
+    BrowserMenu() {
       put("login", new LoginAction());
-      put("generate", new GenerateKeyAction());
+      put("logout", new LogoutAction());
     }
   }
 

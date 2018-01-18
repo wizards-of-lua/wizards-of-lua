@@ -61,8 +61,8 @@ public class LuaFileRegistry {
   }
 
   public URL getFileEditURL(EntityPlayer player, String filepath) {
-    if (filepath.contains("..")) {
-      throw new IllegalArgumentException("Relative path syntax is not allowed!");
+    if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+      throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
     String hostname = context.getRestApiConfig().getHostname();
     String protocol = context.getRestApiConfig().getProtocol();
@@ -78,8 +78,8 @@ public class LuaFileRegistry {
   }
 
   public URL getSharedFileEditURL(String filepath) {
-    if (filepath.contains("..")) {
-      throw new IllegalArgumentException("Relative path syntax is not allowed!");
+    if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+      throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
     String hostname = context.getRestApiConfig().getHostname();
     String protocol = context.getRestApiConfig().getProtocol();
@@ -96,8 +96,8 @@ public class LuaFileRegistry {
 
   public void deleteFile(EntityPlayer player, String filepath) {
     try {
-      if (filepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
       UUID playerId = player.getUniqueID();
       File file = new File(context.getPlayerLibDir(playerId), filepath);
@@ -109,8 +109,8 @@ public class LuaFileRegistry {
 
   public void deleteSharedFile(String filepath) {
     try {
-      if (filepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
       File file = new File(context.getSharedLibDir(), filepath);
       Files.delete(Paths.get(file.toURI()));
@@ -122,11 +122,11 @@ public class LuaFileRegistry {
 
   public void moveFile(EntityPlayer player, String filepath, String newFilepath) {
     try {
-      if (filepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
-      if (newFilepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      if (newFilepath.contains("..") || newFilepath.startsWith("/") || newFilepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
       }
       UUID playerId = player.getUniqueID();
       File oldFile = new File(context.getPlayerLibDir(playerId), filepath);
@@ -139,7 +139,8 @@ public class LuaFileRegistry {
         throw new IllegalArgumentException(
             "Can't move " + filepath + " to " + newFilepath + "! Target file already exists!");
       }
-      Files.move(Paths.get(oldFile.toURI()), Paths.get(newFile.toURI()));
+      Files.createDirectories(newFile.getParentFile().toPath());
+      Files.move(oldFile.toPath(), newFile.toPath());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -147,11 +148,11 @@ public class LuaFileRegistry {
 
   public void moveSharedFile(String filepath, String newFilepath) {
     try {
-      if (filepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
-      if (newFilepath.contains("..")) {
-        throw new IllegalArgumentException("Relative path syntax is not allowed!");
+      if (newFilepath.contains("..") || newFilepath.startsWith("/") || newFilepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
       }
       File oldFile = new File(context.getSharedLibDir(), filepath);
       File newFile = new File(context.getSharedLibDir(), newFilepath);
@@ -163,6 +164,7 @@ public class LuaFileRegistry {
         throw new IllegalArgumentException(
             "Can't move " + filepath + " to " + newFilepath + "! Target file already exists!");
       }
+      Files.createDirectories(newFile.getParentFile().toPath());
       Files.move(Paths.get(oldFile.toURI()), Paths.get(newFile.toURI()));
     } catch (IOException e) {
       throw new RuntimeException(e);
