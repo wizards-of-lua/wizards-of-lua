@@ -14,9 +14,6 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.wol.autorequire.PrintAutoRequireAction;
-import net.wizardsoflua.wol.autorequire.SetAutoRequireAction;
-import net.wizardsoflua.wol.autorequire.UnsetAutoRequireAction;
 import net.wizardsoflua.wol.file.FileDeleteAction;
 import net.wizardsoflua.wol.file.FileEditAction;
 import net.wizardsoflua.wol.file.FileMoveAction;
@@ -26,9 +23,6 @@ import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
 import net.wizardsoflua.wol.password.GenerateKeyAction;
 import net.wizardsoflua.wol.password.LoginAction;
-import net.wizardsoflua.wol.sharedautorequire.PrintSharedAutoRequireAction;
-import net.wizardsoflua.wol.sharedautorequire.SetSharedAutoRequireAction;
-import net.wizardsoflua.wol.sharedautorequire.UnsetSharedAutoRequireAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileDeleteAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileEditAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileMoveAction;
@@ -58,8 +52,6 @@ public class WolCommand extends CommandBase {
       put("key", new KeyMenu());
       put("shared-file", new SharedFileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
-      put("autoRequire", new AutoRequireMenu());
-      put("sharedAutoRequire", new SharedAutoRequireMenu());
     }
   }
   class FileMenu extends Menu {
@@ -92,20 +84,6 @@ public class WolCommand extends CommandBase {
     KeyMenu() {
       put("login", new LoginAction());
       put("generate", new GenerateKeyAction());
-    }
-  }
-  class AutoRequireMenu extends Menu {
-    AutoRequireMenu() {
-      put(new PrintAutoRequireAction());
-      put("set", new SetAutoRequireAction());
-      put("unset", new UnsetAutoRequireAction());
-    }
-  }
-  class SharedAutoRequireMenu extends Menu {
-    SharedAutoRequireMenu() {
-      put(new PrintSharedAutoRequireAction());
-      put("set", new SetSharedAutoRequireAction());
-      put("unset", new UnsetSharedAutoRequireAction());
     }
   }
 

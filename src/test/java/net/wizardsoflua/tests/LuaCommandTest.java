@@ -14,12 +14,11 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 @RunWith(MinecraftJUnitRunner.class)
 public class LuaCommandTest extends WolTestBase {
 
-  private static final String SHAREDMODULE = "somewhere.sharedmodule";
+  private static final String SHARED_PROFILE = "shared-profile";
 
   @After
   public void after() throws IOException {
-    mc().deleteSharedModule(SHAREDMODULE);
-    mc().clearSharedAutoRequire();
+    mc().deleteSharedModule(SHARED_PROFILE);
   }
 
   // /test net.wizardsoflua.tests.LuaCommandTest test_player_can_print_some_text
@@ -79,12 +78,11 @@ public class LuaCommandTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(text);
   }
 
-  // /test net.wizardsoflua.tests.LuaCommandTest test_cast_spell_with_sharedAutoRequire_set
+  // /test net.wizardsoflua.tests.LuaCommandTest test_cast_spell_with_shared_profile
   @Test
-  public void test_cast_spell_with_sharedAutoRequire_set() throws Exception {
+  public void test_cast_spell_with_shared_profile() throws Exception {
     // Given:
-    mc().createSharedModule(SHAREDMODULE, "function shareddummy() print('world!') end");
-    mc().setSharedAutoRequire(SHAREDMODULE);
+    mc().createSharedModule(SHARED_PROFILE, "function shareddummy() print('world!') end");
 
     // When:
     mc().executeCommand("/lua shareddummy();");

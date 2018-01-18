@@ -32,7 +32,6 @@ public class WolTestBase extends TestDataFactory {
     assertThat(evt.getId()).isEqualTo(testId);
 
     mc().clearWizardConfigs();
-    mc().clearSharedAutoRequire();
     mc().executeCommand("/gamerule logAdminCommands false");
     mc().executeCommand("/gamerule sendCommandFeedback false");
     mc().executeCommand("/gamerule doMobSpawning false");

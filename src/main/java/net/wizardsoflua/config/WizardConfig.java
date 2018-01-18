@@ -8,8 +8,6 @@ import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 import java.io.File;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.file.Crypto;
@@ -25,14 +23,12 @@ public class WizardConfig {
 
   private UUID id;
   private String libDir;
-  private String autoRequire = "";
   private String apiKey = new Crypto().createRandomPassword();
   private final Context context;
 
   public WizardConfig(Table table, Context context) {
     this.id = UUID.fromString(getAs(String.class, table, "id"));
     this.libDir = getAsOptional(String.class, table, "libDir").orElse(id.toString());
-    this.autoRequire = getAsOptional(String.class, table, "autoRequire").orElse(autoRequire);
     this.apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
     this.context = checkNotNull(context, "context==null!");
   }
@@ -63,25 +59,9 @@ public class WizardConfig {
     return new File(context.getLuaLibDirHome(), libDir);
   }
 
-  public @Nullable String getAutoRequire() {
-    if ("".equals(autoRequire)) {
-      return null;
-    }
-    return autoRequire;
-  }
-
-  public void setAutoRequire(@Nullable String value) {
-    if (value == null) {
-      value = "";
-    }
-    this.autoRequire = value;
-    context.save();
-  }
-
   public Table writeTo(Table table) {
     table.rawset("id", id.toString());
     table.rawset("libDir", libDir);
-    table.rawset("autoRequire", autoRequire);
     table.rawset("apiKey", apiKey);
     return table;
   }

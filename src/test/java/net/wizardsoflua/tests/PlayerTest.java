@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -20,20 +19,25 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 public class PlayerTest extends WolTestBase {
   private static final String DEMOMODULE = "my.demomodule";
   private static final String SHAREDMODULE = "somewhere.sharedmodule";
+
+  private static final String PROFILE = "profile";
+  private static final String SHARED_PROFILE = "shared-profile";
+
   BlockPos playerPos = new BlockPos(0, 4, 0);
 
   @Before
   public void setPlayerPos() {
     mc().player().setPosition(playerPos);
   }
-  
+
   @After
   public void after() throws IOException {
     mc().deleteTeams();
     mc().player().deleteModule(DEMOMODULE);
+    mc().player().deleteModule(PROFILE);
     mc().deleteSharedModule(SHAREDMODULE);
+    mc().deleteSharedModule(SHARED_PROFILE);
     mc().clearWizardConfigs();
-    mc().clearSharedAutoRequire();
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
   }
@@ -111,27 +115,25 @@ public class PlayerTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("world!");
   }
 
-  // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_autoRequire_set
+  // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_profile
   @Test
-  public void test_cast_spell_with_autoRequire_set() throws Exception {
+  public void test_cast_spell_with_profile() throws Exception {
     // Given:
-    mc().player().createModule(DEMOMODULE, "function dummy() print('hello') end");
-    mc().player().setAutoRequire(DEMOMODULE);
+    mc().player().createModule(PROFILE, "function dummy() print('hello') end");
 
     // When:
-    mc().player().chat("/lua dummy();", DEMOMODULE);
+    mc().player().chat("/lua dummy();");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("hello");
   }
 
-  // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_sharedAutoRequire_set
+  // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_shared_profile
   @Test
-  public void test_cast_spell_with_sharedAutoRequire_set() throws Exception {
+  public void test_cast_spell_with_shared_profile() throws Exception {
     // Given:
-    mc().createSharedModule(SHAREDMODULE, "function shareddummy() print('world!') end");
-    mc().setSharedAutoRequire(SHAREDMODULE);
+    mc().createSharedModule(SHARED_PROFILE, "function shareddummy() print('world!') end");
 
     // When:
     mc().player().chat("/lua shareddummy();");
@@ -148,7 +150,7 @@ public class PlayerTest extends WolTestBase {
     ItemStack item = mc().getItemStack(Items.DIAMOND_AXE);
     mc().player().setMainHandItem(item);
     String expected = item.getDisplayName();
-    
+
     // When:
     mc().player().chat("/lua p=spell.owner; print(p.mainhand.displayName)");
 

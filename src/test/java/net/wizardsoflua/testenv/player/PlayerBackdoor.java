@@ -105,16 +105,6 @@ public class PlayerBackdoor {
     return getDelegate().getHorizontalFacing();
   }
 
-  public void setAutoRequire(String module) {
-    testEnv.getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID())
-        .setAutoRequire(module);
-  }
-
-  public String getAutoRequire() {
-    return testEnv.getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID())
-        .getAutoRequire();
-  }
-
   public void createModule(String moduleName, String content) {
     File moduleFile = getModuleFile(moduleName);
     if (moduleFile.exists()) {

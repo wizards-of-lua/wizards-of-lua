@@ -6,8 +6,6 @@ import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
 
-import javax.annotation.Nullable;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
 
@@ -33,15 +31,12 @@ public class GeneralConfig {
   private String sharedLibDir = "shared";
   private final File sharedLibDirFile;
 
-  private String sharedAutoRequire = "";
-
   private final Context context;
 
   public GeneralConfig(Context context) {
     this.context = checkNotNull(context, "context==null!");
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
     sharedLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, sharedLibDir));
-    sharedAutoRequire = "";
   }
 
   public GeneralConfig(Table table, Context context) {
@@ -53,9 +48,6 @@ public class GeneralConfig {
         .orElse(showAboutMessage).booleanValue();
     luaLibDirHome = getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
     sharedLibDir = getAsOptional(String.class, table, "sharedLibDir").orElse(sharedLibDir);
-    sharedAutoRequire =
-        getAsOptional(String.class, table, "sharedAutoRequire").orElse(sharedAutoRequire);
-
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
     sharedLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, sharedLibDir));
   }
@@ -65,7 +57,6 @@ public class GeneralConfig {
     table.rawset("showAboutMessage", showAboutMessage);
     table.rawset("luaLibDirHome", luaLibDirHome);
     table.rawset("sharedLibDir", sharedLibDir);
-    table.rawset("sharedAutoRequire", sharedAutoRequire);
     return table;
   }
 
@@ -115,21 +106,6 @@ public class GeneralConfig {
       }
     }
     return dir;
-  }
-
-  public @Nullable String getSharedAutoRequire() {
-    if ("".equals(sharedAutoRequire)) {
-      return null;
-    }
-    return sharedAutoRequire;
-  }
-
-  public void setSharedAutoRequire(@Nullable String value) {
-    if (value == null) {
-      value = "";
-    }
-    this.sharedAutoRequire = value;
-    context.save();
   }
 
 }
