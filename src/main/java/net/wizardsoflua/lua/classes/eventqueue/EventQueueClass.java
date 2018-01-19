@@ -18,9 +18,9 @@ public class EventQueueClass
   public static final String METATABLE_NAME = "EventQueue";
 
   public EventQueueClass() {
+    add("disconnect", new DisconnectFunction());
     add("isEmpty", new IsEmptyFunction());
     add("next", new NextFunction());
-    add("disconnect", new DisconnectFunction());
   }
 
   @Override
@@ -47,6 +47,20 @@ public class EventQueueClass
     private Table getNames() {
       Iterable<String> eventTypes = delegate.getNames();
       return getConverters().toLuaIterable(eventTypes);
+    }
+  }
+
+  private class DisconnectFunction extends AbstractFunction1 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) {
+      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
+      eventQueue.disconnect();
+      context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState) {
+      throw new NonsuspendableFunctionException();
     }
   }
 
@@ -97,20 +111,6 @@ public class EventQueueClass
       } else {
         context.getReturnBuffer().setTo();
       }
-    }
-  }
-
-  private class DisconnectFunction extends AbstractFunction1 {
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) {
-      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
-      eventQueue.disconnect();
-      context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState) {
-      throw new NonsuspendableFunctionException();
     }
   }
 }
