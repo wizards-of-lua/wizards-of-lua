@@ -20,6 +20,13 @@ functions:
     "
     examples:
       - url: EventQueue/disconnect.md
+  - name: isEmpty
+    parameters:
+    results: boolean
+    description: "The 'isEmpty' function returns true if this queue is empty, false otherwise.
+    "
+    examples:
+      - url: EventQueue/isEmpty.md
   - name: next
     parameters: timeout
     results: "[Event](!SITE_URL!/modules/Event/)"
@@ -29,13 +36,6 @@ functions:
     "
     examples:
       - url: EventQueue/next.md
-  - name: isEmpty
-    parameters:
-    results: boolean
-    description: "The 'isEmpty' function returns true if this queue is empty, false otherwise.
-    "
-    examples:
-      - url: EventQueue/isEmpty.md
 ---
 
 The EventQueue class collects [events](/modules/Event/) when it is connected to the event source.
