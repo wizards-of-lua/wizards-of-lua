@@ -10,10 +10,12 @@ This tutorial shows how you can import external Lua files into your spells.
 Writing programs into the command line or a command block is inconvenient for programs with more the a few statements.
 It is far better to use an external text editor to edit Lua files, and then import them into your spells using the <tt>require</tt> function.
 
+To view, create, and edit a file, you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
+
 ### Importing a Personal Module
 For each wizard there exists a directory where personal Lua files can be stored and which is automatically added to the Lua search path.
 
-Let's assume that inside your personal directory there exists a file called "<tt>utilities.lua</tt>" with the following contents:
+Let's assume that inside your personal directory there already exists a file called "<tt>utilities.lua</tt>" with the following contents:
 ```lua
 function particle(name)
   spell:execute("particle "..name.." ~ ~ ~ 0 0 0 0 1")
@@ -42,13 +44,10 @@ require "utilities"
 ```
 Here this profile "requires" the "utilities" module from the above example.
 
-Now you can call your <tt>particle</tt> function from your utilities module directly from any of your spells:
+Now you can call your <tt>particle</tt> function directly from any of your spells without the need to "require" it explicitly:
 ```lua
 /lua particle("smoke")
 ```
-
-## Editing a File
-To view, create, and edit a file, you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
 
 ## Location of your Personal Directory
 By default your personal directory is found inside the Wol configuration directory at
@@ -63,4 +62,5 @@ For example, on my Linux server the path to my player-specific Lua library is:
 
 Or, when playing single-player on my Mac, the path is:
 
-    ~/Library/Application Support/minecraft/config/wizards-of-lua/libs/0c77f1a8-943b-4f7b-aa09-f2b1737d4f03/
+    ~/Library/Application Support/minecraft/config/
+    wizards-of-lua/libs/0c77f1a8-943b-4f7b-aa09-f2b1737d4f03/
