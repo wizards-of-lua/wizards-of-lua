@@ -20,15 +20,15 @@ functions:
     "
     examples:
       - url: EventQueue/disconnect.md
-  - name: pop
+  - name: next
     parameters: timeout
     results: "[Event](!SITE_URL!/modules/Event/)"
-    description: "The 'pop' function returns the next event in this queue, if any.
-    This function blocks until an event is available but just until the given timeout (measured in game ticks) is reached.
+    description: "The 'next' function returns the next event in this queue, if any.
+    This function blocks until an event is available or the given timeout (measured in game ticks) is reached.
     If no timeout is specified, this function blocks forever.
     "
     examples:
-      - url: EventQueue/pop.md
+      - url: EventQueue/next.md
   - name: isEmpty
     parameters:
     results: boolean
