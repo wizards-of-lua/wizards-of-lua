@@ -19,7 +19,7 @@ public class EventQueueClass
 
   public EventQueueClass() {
     add("isEmpty", new IsEmptyFunction());
-    add("pop", new PopFunction());
+    add("next", new NextFunction());
     add("disconnect", new DisconnectFunction());
   }
 
@@ -65,7 +65,7 @@ public class EventQueueClass
     }
   }
 
-  private class PopFunction extends AbstractFunction2 {
+  private class NextFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
@@ -87,7 +87,7 @@ public class EventQueueClass
       try {
         context.pauseIfRequested();
       } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(PopFunction.this, eventQueue);
+        throw e.resolve(NextFunction.this, eventQueue);
       }
 
       if (!eventQueue.isEmpty()) {

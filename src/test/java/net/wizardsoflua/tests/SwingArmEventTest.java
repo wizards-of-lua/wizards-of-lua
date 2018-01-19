@@ -43,7 +43,7 @@ public class SwingArmEventTest extends WolTestBase {
     Vec3d hitvec = new Vec3d(clickPos);
     String expected = hand.name();
 
-    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:pop(); print(e.hand)");
+    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
     mc().player().rightclick(clickPos, facing, hitvec, hand);
@@ -65,7 +65,7 @@ public class SwingArmEventTest extends WolTestBase {
     EnumFacing facing = EnumFacing.UP;
     String expected = EnumHand.MAIN_HAND.name();
 
-    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:pop(); print(e.hand)");
+    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
     mc().player().leftclick(clickPos, facing);
