@@ -22,6 +22,13 @@ properties:
     access: r/w
     description: "This is the [item](!SITE_URL!/modules/Item/) this player is holding in his off hand.    
     "
+  - name: gamemode
+    type: string
+    access: r/w
+    description: "This is this player's game mode. It can be one of 'survival', 'adventure', 'creative', 'spectator'.    
+    "
+    examples:
+      - url: Player/gamemode.md
 functions:
 ---
 
