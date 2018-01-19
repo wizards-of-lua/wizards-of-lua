@@ -255,7 +255,7 @@ public class WolRestApiServer {
         LoginCookie loginCookie = getLoginCookie(req);
         if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
           resp.sendError(401,
-              "Missing correct login token! Please login first by executing '/wol key login' in Minecraft.");
+              "Missing correct login token! Please login first by executing '/wol browser login' in Minecraft.");
           return 0;
         }
         if (!isAuthorized(loginCookie.getPlayerUuid(), req.getPath())) {
@@ -289,7 +289,7 @@ public class WolRestApiServer {
         LoginCookie loginCookie = getLoginCookie(req);
         if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
           resp.sendError(401,
-              "Missing correct login token! Please login first by executing '/wol key login' in Minecraft.");
+              "Missing correct login token! Please login first by executing '/wol browser login' in Minecraft.");
           return 0;
         }
         if (!isAuthorized(loginCookie.getPlayerUuid(), req.getPath())) {
@@ -471,8 +471,10 @@ public class WolRestApiServer {
   }
 
   private void addCookie(Response resp, String key, String value, int maxAge) {
+    boolean secure = context.getRestApiConfig().isSecure();
+    String secureFlag = secure?" Secure;":"";
     resp.getHeaders().add("Set-Cookie",
-        String.format("%s=%s; Max-Age=%s; Secure; Path=/", key, value, maxAge));
+        String.format("%s=%s; Max-Age=%s;%s Path=/", key, value, maxAge, secureFlag));
   }
 
   private Map<String, String> parseCookies(String text) {
