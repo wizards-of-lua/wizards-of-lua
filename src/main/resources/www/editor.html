@@ -19,8 +19,13 @@ body {
 }
 .logo {
    position:absolute;
-   right: 35px;
+   right: 5px;
    top:10px;
+}
+.discord-logo {
+   position:absolute;
+   right: 15px;
+   top:100px;
 }
 .hints {
    position:absolute;
@@ -38,6 +43,12 @@ body {
  <div id="editor"></div>
  <a href="http://www.wizards-of-lua.net/spellbooklibrary" target='wol-api-docs'><img class="logo" 
     src="/steven-with-magic-wand-glowing.png"
+    alt="Open API docs at wizards-of-lua.net"
+    height="70"
+    ></a>
+ <a href="https://discord.gg/9En5Drt" target='wol-discord-channel'><img class="discord-logo" 
+    src="/discord-logo.png"
+    alt="Join our Discord channel"
     height="70"
     ></a>
  <script>
@@ -72,8 +83,8 @@ body {
                 })
                 .fail(function(response) {
                     alert('Received an unexpected error while saving file!\n'
-                    		+ 'status=' + response.status + '\n' 
-                    		+ 'responseText=' + response.responseText);
+                            + 'status=' + response.status + '\n' 
+                            + 'responseText=' + response.responseText);
                     document.title = filepath;
                 });
             }
