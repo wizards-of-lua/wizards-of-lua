@@ -8,7 +8,7 @@ properties:
   - name: names
     type: table
     access: r
-    description: "These are the [names](/modules/Event/#name) of those events
+    description: "These are the [names](/modules/Event/#name) of all events
     this queue is [connected](/modules/Events/#connect) to.
     "
 functions:
