@@ -1,6 +1,23 @@
 
+
       #header nav {
         max-width: initial;
+      }
+
+      #header nav li.discord {
+        float: right;
+        margin-left: 6px;
+        margin-right: -5px;
+        width: 50px;
+        background-image: url("/images/discord-logo.png");
+        background-size: 50px;
+        background-repeat: no-repeat;
+
+      }
+      #header nav li.discord a {
+        color: transparent; border: none;
+        background: none;
+        box-shadow: none;
       }
 
       #corner_banner {
