@@ -43,7 +43,7 @@ Wizard {
 ## Format
 The contents of <tt>wizards-of-lua.luacfg</tt> is valid Lua code which is loaded and executed by Wol at server startup.
 "General", "RestApi", and "Wizard" are internal functions that accept a Lua table as parameter.
-All values (with the exception of the wizard id) are optional - in that sense that you can omit the assignment, but Wol will choose a default value and store it into this file.
+All values (with the exception of the wizard id) are optional - in that sense that you can omit the assignment, but on the next startup Wol will choose sensible default values and store them into this file.
 
 ### General
 This function sets the mod's general configuration.
@@ -61,21 +61,28 @@ For more information about this value please have a look into the [tutorial abou
 ### RestApi
 This function sets the mod's REST server configuration.
 The REST server is running inside your Minecraft server and provides HTTP (or HTTPS) access to your Lua files.
-All read and write access is protected by a combination of the server's secret *apiKey* and the player's secret *apiKey*.
+All read and write access is protected by a combination of the server's and the player's secret *apiKey*.
+However, if you run Wol in a publicly accessible server environment, this is not sufficient in terms of security, since
+the key tokens are transmitted in plain text between web browser and REST server.
+To protect your keys in a server environment, you should set the *secure* property to "true".
 * **hostname**: defines the name of the REST server. This name will be used in the servers HTTP URL.
 For example, if you set the hostname to "wizards.example.com", the resulting URL will start with "http://wizards.example.com", or "https://wizards.example.com" respectively.
 To make the REST server only accessible from your local computer, set this to "127.0.0.1". Default is "127.0.0.1".
 * **port**: defines the port number of the REST server. This number will be used in the servers HTTP URL.
 Default is "60000".
-* **secure**: defines whether the REST server should use Transport Layer Security (TLS aka. SSL). If this is set to "true", the REST server is only accessible through HTTPS, and the following properties must also be defined: keystore, keystorePassword, keyPassword.
+* **secure**: defines whether the REST server should use Transport Layer Security (TLS aka. SSL).
+If this is set to "true", the REST server is only accessible through HTTPS, and the following properties must also be defined: keystore, keystorePassword, keyPassword.
+Setting this to "false" is totally OK in a single player environment.
+However, if you plan to run Wol in a server environment, you should really consider setting this to "true" since this will protect your Lua files from unwanted read and write access.
 Default is "false".
-* **keystore**: this is the filename of the keystore file that contains the server's SSL certificate. If provided, this file must be placed next to the "server.properties" file.
+* **keystore**: this is the filename of the keystore that contains the REST server's SSL certificate.
+If provided, the keystore file must be placed next to the "server.properties" file.
 This is only used if *secure* is set to "true".
 Default is "".
-* **keystorePassword**: this is the password that must be used to access the keystore.
+* **keystorePassword**: this is the password that the REST server should use to access the keystore.
 This is only used if *secure* is set to "true".
 Default is "".
-* **keyPassword**: this is the password that must be used to decrypt the server's SSL certificate from the keystore.
+* **keyPassword**: this is the password that the REST server should use to read the server's SSL certificate from the keystore.
 This is only used if *secure* is set to "true".
 Default is "".
 * **webDir**: this is the filesystem path to the directory where the REST server caches static files.
