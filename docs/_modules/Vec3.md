@@ -65,6 +65,15 @@ functions:
     description: Returns an inverted version of the current vector.
     examples:
       - url: Vec3/invert.md
+  - name: normalize
+    parameters:
+    results: Vec3
+    description: "Returns a normalize version of the current vector, which means
+    a vector with a magnitude of 1 meter and pointing
+    into the same direction as the original vector.
+    "
+    examples:
+      - url: Vec3/normalize.md
 ---
 
 'Vec3' is short for '3-dimensional Vector'.
