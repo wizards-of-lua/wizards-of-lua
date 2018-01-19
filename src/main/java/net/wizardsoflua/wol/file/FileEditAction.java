@@ -48,7 +48,12 @@ public class FileEditAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      URL url = wol.getFileRegistry().getFileEditURL(player, name);
+      URL url;
+      try {
+        url = wol.getFileRegistry().getFileEditURL(player, name);
+      } catch (IllegalArgumentException e) {
+        throw new CommandException(e.getMessage());
+      }
       WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to edit: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
       sender.sendMessage(message);

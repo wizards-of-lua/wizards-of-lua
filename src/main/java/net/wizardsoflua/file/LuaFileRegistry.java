@@ -60,7 +60,7 @@ public class LuaFileRegistry {
     }
   }
 
-  public URL getFileEditURL(EntityPlayer player, String filepath) {
+  public URL getFileEditURL(EntityPlayer player, String filepath) throws IllegalArgumentException {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
@@ -77,7 +77,7 @@ public class LuaFileRegistry {
     }
   }
 
-  public URL getSharedFileEditURL(String filepath) {
+  public URL getSharedFileEditURL(String filepath) throws IllegalArgumentException {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
@@ -94,7 +94,7 @@ public class LuaFileRegistry {
     }
   }
 
-  public void deleteFile(EntityPlayer player, String filepath) {
+  public void deleteFile(EntityPlayer player, String filepath) throws IllegalArgumentException {
     try {
       if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
@@ -107,7 +107,7 @@ public class LuaFileRegistry {
     }
   }
 
-  public void deleteSharedFile(String filepath) {
+  public void deleteSharedFile(String filepath) throws IllegalArgumentException {
     try {
       if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
@@ -120,12 +120,14 @@ public class LuaFileRegistry {
   }
 
 
-  public void moveFile(EntityPlayer player, String filepath, String newFilepath) {
+  public void moveFile(EntityPlayer player, String filepath, String newFilepath)
+      throws IllegalArgumentException {
     try {
       if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
-      if (newFilepath.contains("..") || newFilepath.startsWith("/") || newFilepath.startsWith("\\")) {
+      if (newFilepath.contains("..") || newFilepath.startsWith("/")
+          || newFilepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
       }
       UUID playerId = player.getUniqueID();
@@ -146,12 +148,13 @@ public class LuaFileRegistry {
     }
   }
 
-  public void moveSharedFile(String filepath, String newFilepath) {
+  public void moveSharedFile(String filepath, String newFilepath) throws IllegalArgumentException {
     try {
       if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
-      if (newFilepath.contains("..") || newFilepath.startsWith("/") || newFilepath.startsWith("\\")) {
+      if (newFilepath.contains("..") || newFilepath.startsWith("/")
+          || newFilepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
       }
       File oldFile = new File(context.getSharedLibDir(), filepath);

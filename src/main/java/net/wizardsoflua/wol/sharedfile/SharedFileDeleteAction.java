@@ -34,7 +34,11 @@ public class SharedFileDeleteAction extends MenuEntry implements CommandAction {
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     String name = argList.poll();
 
-    wol.getFileRegistry().deleteSharedFile(name);
+    try {
+      wol.getFileRegistry().deleteSharedFile(name);
+    } catch (IllegalArgumentException e) {
+      throw new CommandException(e.getMessage());
+    }
     WolAnnouncementMessage message = new WolAnnouncementMessage(name + " deleted.");
     sender.sendMessage(message);
   }

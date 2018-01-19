@@ -43,7 +43,11 @@ public class FileDeleteAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      wol.getFileRegistry().deleteFile(player, name);
+      try {
+        wol.getFileRegistry().deleteFile(player, name);
+      } catch (IllegalArgumentException e) {
+        throw new CommandException(e.getMessage());
+      }
       WolAnnouncementMessage message = new WolAnnouncementMessage(name + " deleted.");
       sender.sendMessage(message);
     }

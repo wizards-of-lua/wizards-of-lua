@@ -38,7 +38,11 @@ public class SharedFileMoveAction extends MenuEntry implements CommandAction {
     String name = argList.poll();
     String newName = argList.poll();
     if (name != null && newName != null) {
-      wol.getFileRegistry().moveSharedFile(name, newName);
+      try {
+        wol.getFileRegistry().moveSharedFile(name, newName);
+      } catch (IllegalArgumentException e) {
+        throw new CommandException(e.getMessage());
+      }
       WolAnnouncementMessage message = new WolAnnouncementMessage(name + " moved to " + newName);
       sender.sendMessage(message);
     } else {

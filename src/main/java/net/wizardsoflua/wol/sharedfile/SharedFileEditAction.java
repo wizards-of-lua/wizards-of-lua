@@ -37,7 +37,12 @@ public class SharedFileEditAction extends MenuEntry implements CommandAction {
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     String name = argList.poll();
 
-    URL url = wol.getFileRegistry().getSharedFileEditURL(name);
+    URL url;
+    try {
+      url = wol.getFileRegistry().getSharedFileEditURL(name);
+    } catch (IllegalArgumentException e) {
+      throw new CommandException(e.getMessage());
+    }
     WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to edit: ");
     message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
     sender.sendMessage(message);

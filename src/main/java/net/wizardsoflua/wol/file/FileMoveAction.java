@@ -47,7 +47,11 @@ public class FileMoveAction extends MenuEntry implements CommandAction {
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
       if (name != null && newName != null) {
-        wol.getFileRegistry().moveFile(player, name, newName);
+        try {
+          wol.getFileRegistry().moveFile(player, name, newName);
+        } catch (IllegalArgumentException e) {
+          throw new CommandException(e.getMessage());
+        }
         WolAnnouncementMessage message = new WolAnnouncementMessage(name + " moved to " + newName);
         sender.sendMessage(message);
       } else {
