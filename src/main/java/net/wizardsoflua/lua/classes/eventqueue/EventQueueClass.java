@@ -20,6 +20,7 @@ public class EventQueueClass
   public EventQueueClass() {
     add("disconnect", new DisconnectFunction());
     add("isEmpty", new IsEmptyFunction());
+    add("latest", new LatestFunction());
     add("next", new NextFunction());
   }
 
@@ -70,6 +71,22 @@ public class EventQueueClass
       EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
       boolean isEmpty = eventQueue.isEmpty();
       Object result = getConverters().toLua(isEmpty);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState) {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class LatestFunction extends AbstractFunction1 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
+      Object event = eventQueue.latest();
+      eventQueue.clear();
+      Object result = getConverters().toLuaNullable(event);
       context.getReturnBuffer().setTo(result);
     }
 

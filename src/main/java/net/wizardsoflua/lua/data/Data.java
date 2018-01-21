@@ -16,6 +16,13 @@ import net.wizardsoflua.lua.classes.event.CustomEventClass;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class Data {
+  public static Data empty() {
+    return new Data(null);
+  }
+
+  public static Data createData(Object javaObj) {
+    return new Data(javaObj);
+  }
 
   public static Data createData(Object luaObj, Converters converters) {
     return new Data(transferObj(luaObj, new IdentityHashMap<>(), converters));
@@ -23,7 +30,7 @@ public class Data {
 
   private final @Nullable Object content;
 
-  private Data(Object content) {
+  private Data(@Nullable Object content) {
     this.content = content;
   }
 
@@ -50,7 +57,7 @@ public class Data {
       return converters.toJava(String.class, luaObj);
     }
     if (luaObj instanceof CustomEventClass.Proxy) {
-      CustomEventClass.Proxy<?> proxy = (CustomEventClass.Proxy<?>)luaObj;
+      CustomEventClass.Proxy<?> proxy = (CustomEventClass.Proxy<?>) luaObj;
       CustomLuaEvent delegate = proxy.getDelegate();
       Data data = Data.createData(proxy.rawget("data"), converters);
       // return a new event object with the (modified) data
