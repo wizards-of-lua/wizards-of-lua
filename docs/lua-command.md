@@ -79,7 +79,7 @@ function myfunc()
   print("you just called myfunc")
 end
 ```
-If you want to call ```myfunc()``` in a spell you have to "require" this module before you can call the function:
+If you want to call ```myfunc()``` in a spell, you have to "require" this module before you can call the function:
 ```lua
 /lua require "my-module"; myfunc()
 ```
@@ -90,7 +90,7 @@ If it exists, and if you cast a spell from the chat, then your profile is automa
 
 For example, you can get rid of the "require" part above, if you put the following call into a file called "profile.lua" inside you personal directory:
 ```lua
-require "m-module"
+require "my-module"
 ```
 
 Then you can use ```myfunc()``` like this:
