@@ -5,6 +5,8 @@ local queue=Events.connect("LeftClickBlockEvent")
 while true do
   local event = queue:pop()
   local v = event.hitVec
-  spell:execute("/particle angryVillager %s %s %s 0 0 0 0 1 true", v.x, v.y, v.z)
+  spell:execute([[
+    /particle angryVillager %s %s %s 0 0 0 0 1 true
+  ]], v.x, v.y, v.z)
 end
 ```
