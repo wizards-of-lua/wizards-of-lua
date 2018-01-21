@@ -71,7 +71,7 @@ and the [tutorials](/tutorials.html).
 Since writing a Lua program into the chat is inconvenient and only works until the character limited of 256 is reached,
 it makes sense to put it into a file and load it later on request.
 Luckily WoL comes with a built-in Lua code editor to support file editing.
-To open the editor you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
+To open the editor you can use the [/wol file edit](/wol-command.html#File-Edit) command.
 
 Let's consider you have created a file called "my-module.lua" in your personal directory with the following contents:
 ```lua

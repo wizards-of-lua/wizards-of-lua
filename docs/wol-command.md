@@ -106,6 +106,7 @@ In order to access it from outside, e.g. from within a command block, you have t
 This spell adds mickkay's personal directory to the spell's Lua search path.
 After that, the spell can load any of mickkay's files.
 
+<a name="File-Edit" style="position:relative; top:-70px; display:block;"></a>
 ### Creating a New File
 To create a new file in your personal directory just send the following command:
 ```
