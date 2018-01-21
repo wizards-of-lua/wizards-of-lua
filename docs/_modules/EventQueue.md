@@ -27,6 +27,15 @@ functions:
     "
     examples:
       - url: EventQueue/isEmpty.md
+  - name: latest
+    parameters:
+    results: "[Event](!SITE_URL!/modules/Event/)"
+    description: "The 'latest' function returns the newest event in this queue and discards all older events.
+    If the queue [is empty](/modules/EventQueue/#isEmpty) then nil is returned.
+    This is useful for update events where you are only interested in the most recent change.
+    "
+    examples:
+      - url: EventQueue/latest.md
   - name: next
     parameters: timeout
     results: "[Event](!SITE_URL!/modules/Event/)"
