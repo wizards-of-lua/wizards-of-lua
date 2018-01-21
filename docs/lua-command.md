@@ -64,8 +64,36 @@ This will cast a spell that creates a pillar of stones directly in front of you,
 The base of the pillar is right at that location you where looking at when you
 submitted the command.
 
-
-
-
 For more examples please have a look at the [Spell Book Library](/spellbooklibrary.html)
 and the [tutorials](/tutorials.html).
+
+## Importing Lua Modules from the Filesystem
+Since writing a Lua program into the chat is inconvenient and only works until the character limited of 256 is reached,
+it makes sense to put it into a file and load it later on request.
+Luckily WoL comes with a built-in Lua code editor to support file editing.
+To open the editor you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
+
+Let's consider you have created a file called "my-module.lua" in your personal directory with the following contents:
+```lua
+function myfunc()
+  print("you just called myfunc")
+end
+```
+If you want to call ```myfunc()``` in a spell you have to "require" this module before you can call the function:
+```lua
+/lua require "my-module"; myfunc()
+```
+
+## Using a Personal Profile
+Your personal profile is a special file called "profile.lua" that exists in your personal directory.
+If it exists, and if you cast a spell from the chat, then your profile is automatically required by your spell.
+
+For example, you can get rid of the "require" part above, if you put the following call into a file called "profile.lua" inside you personal directory:
+```lua
+require "m-module"
+```
+
+Then you can use ```myfunc()``` like this:
+```lua
+/lua myfunc()
+```
