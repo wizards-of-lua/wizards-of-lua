@@ -1,14 +1,14 @@
 #### Example
 Printing the number of all [players](/module/Player) currently logged in.
 ```lua
-found = Entities.find("@e[type=player]")
+found = Entities.find("@a")
 print(#found)
 ```
 
 #### Example
 Printing the position of [player](/module/Player) mickkay:
 ```lua
-found = Entities.find("@e[type=Player,name=mickkay]")[1]
+found = Entities.find("@a[name=mickkay]")[1]
 print(found.pos)
 ```
 
@@ -27,5 +27,14 @@ Printing the names of all dropped items in the (loaded part of the) world.
 found = Entities.find("@e[type=item]")
 for _,e in pairs(found) do  
   print(e.name)
+end
+```
+
+#### Example
+Printing the spell ids of all running spells.
+```lua
+found = Entities.find("@e[type=wol:spell]")
+for _,spell in pairs(found) do  
+  print(spell.sid)
 end
 ```
