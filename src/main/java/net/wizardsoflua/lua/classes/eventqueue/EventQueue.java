@@ -49,6 +49,14 @@ public class EventQueue {
     return elements.isEmpty();
   }
 
+  public void clear() {
+    elements.clear();
+  }
+
+  public Object latest() {
+    return elements.peekLast();
+  }
+
   public Object pop() {
     Object result = elements.pop();
     stopWaitingForEvents();

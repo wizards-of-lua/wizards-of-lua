@@ -18,7 +18,7 @@ public class ChatEventTest extends WolTestBase {
     String expected1 = String.format("<%s> %s", mc().player().getName(), message);
     String expected2 = message;
 
-    mc().executeCommand("/lua q=Events.connect('ChatEvent'); e=q:pop(); print(e.message)");
+    mc().executeCommand("/lua q=Events.connect('ChatEvent'); e=q:next(); print(e.message)");
 
     // When:
     mc().player().chat(message);
