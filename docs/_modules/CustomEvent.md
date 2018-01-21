@@ -12,6 +12,8 @@ properties:
     description: "The data value that has been sended with this event.
     See [Events.fire()](!SITE_URL!/modules/Events/#fire) for more details on this.
     "
+    examples:
+      - url: CustomEvent/data.md
 functions:
 ---
 
