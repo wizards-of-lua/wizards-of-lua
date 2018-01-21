@@ -10,7 +10,9 @@ properties:
     type: "[Vec3](!SITE_URL!/modules/Vec3/)"
     access: r
     description: "The exact position the player clicked at.
-    "
+    "  
+    examples:
+      - url: LeftClickBlockEvent/hitVec.md
 functions:
 ---
 
