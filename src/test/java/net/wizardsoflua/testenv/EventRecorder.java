@@ -47,7 +47,7 @@ public class EventRecorder {
   /**
    * Blocks until an event of the specified type is received, and returns it. Removes the returned
    * event and any event that did occur before.
-   * 
+   *
    * @param eventType
    * @return the first event of the specified type
    * @throws InterruptedException
@@ -63,7 +63,7 @@ public class EventRecorder {
         while (true) {
           long now = System.currentTimeMillis();
           long durationLeft = timeUnit.toMillis(duration) - (now - startTimeMs);
-          if (durationLeft < 0) {
+          if (durationLeft <= 0) {
             throw new RuntimeException("Timeout! Event " + eventType.getSimpleName()
                 + " not occured within " + duration + " " + timeUnit);
           }
