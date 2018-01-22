@@ -14,6 +14,7 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.wizardsoflua.block.CopiedWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
@@ -29,6 +30,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
   public BlockClass() {
     add("withData", new WithDataFunction());
     add("withNbt", new WithNbtFunction());
+    add("copy", new CopyFunction());
     add("asItem", new AsItemFunction());
   }
 
@@ -47,10 +49,8 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       super(converters, metatable, delegate);
       addReadOnly("name", this::getName);
       addReadOnly("material", this::getMaterial);
-      addImmutable("data", getData());
-      if (delegate.getNbt() != null) {
-        addImmutable("nbt", getNbt());
-      }
+      addReadOnly("data", this::getData);
+      addReadOnly("nbt", this::getNbt);
     }
 
     @Override
@@ -93,6 +93,24 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     }
   }
 
+  private class CopyFunction extends AbstractFunction1 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
+
+      CopiedWolBlock newWolBlock =
+          new CopiedWolBlock(oldWolBlock.getBlockState(), oldWolBlock.getNbt());
+      Object result = getConverters().toLua(newWolBlock);
+      context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
   private class WithDataFunction extends AbstractFunction2 {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
@@ -110,7 +128,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
         }
       }
 
-      WolBlock newWolBlock = new WolBlock(state, oldWolBlock.getNbt());
+      CopiedWolBlock newWolBlock = new CopiedWolBlock(state, oldWolBlock.getNbt());
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
@@ -139,7 +157,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
             oldWolBlock.getBlockState().getBlock().getRegistryName().getResourcePath()));
       }
 
-      WolBlock newWolBlock = new WolBlock(oldWolBlock.getBlockState(), newNbt);
+      CopiedWolBlock newWolBlock = new CopiedWolBlock(oldWolBlock.getBlockState(), newNbt);
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
