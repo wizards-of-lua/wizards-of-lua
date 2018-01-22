@@ -2,9 +2,7 @@ package net.wizardsoflua.lua.classes.spell;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
@@ -14,6 +12,7 @@ import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.wizardsoflua.block.LiveWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
@@ -55,14 +54,22 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
     }
 
     public Object getBlock() {
+      // BlockPos pos = new BlockPos(delegate.getPositionVector());
+      // IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
+      // TileEntity tileEntity = delegate.getEntityWorld().getTileEntity(pos);
+      // WolBlock block = new WolBlock(blockState, tileEntity);
+      // return getConverters().toLua(block);
       BlockPos pos = new BlockPos(delegate.getPositionVector());
-      IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
-      TileEntity tileEntity = delegate.getEntityWorld().getTileEntity(pos);
-      WolBlock block = new WolBlock(blockState, tileEntity);
+      World world = delegate.getEntityWorld();
+      LiveWolBlock block = new LiveWolBlock(pos, world);
       return getConverters().toLua(block);
     }
 
     public void setBlock(Object luaObj) {
+      // WolBlock wolBlock = getConverters().toJava(WolBlock.class, luaObj);
+      // World world = delegate.getEntityWorld();
+      // BlockPos pos = new BlockPos(delegate.getPositionVector());
+      // wolBlock.setBlock(world, pos);
       WolBlock wolBlock = getConverters().toJava(WolBlock.class, luaObj);
       World world = delegate.getEntityWorld();
       BlockPos pos = new BlockPos(delegate.getPositionVector());

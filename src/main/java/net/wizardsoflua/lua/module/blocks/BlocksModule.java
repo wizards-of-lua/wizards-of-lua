@@ -14,7 +14,7 @@ import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.block.WolBlock;
+import net.wizardsoflua.block.CopiedWolBlock;
 import net.wizardsoflua.lua.Converters;
 
 public class BlocksModule {
@@ -64,7 +64,7 @@ public class BlocksModule {
         tileEntity.writeToNBT(nbt);
         patch(tileEntity, nbt);
       }
-      WolBlock wolBlock = new WolBlock(blockState, nbt);
+      CopiedWolBlock wolBlock = new CopiedWolBlock(blockState, nbt);
 
       Object result = converters.toLua(wolBlock);
       context.getReturnBuffer().setTo(result);
