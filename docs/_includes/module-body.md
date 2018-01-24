@@ -28,7 +28,7 @@ and some examples about how to use them in your spells.
 ---
 {% for prop in properties %}
 <a style="position:relative; top:-70px; display:block;" name="{{ prop.name }}"></a>
-### <span class="notranslate">{{ prop.name }}</span> : {{ prop.type | replace: '!SITE_URL!', site.url }}
+### <span class="notranslate">{{ prop.name }} : {{ prop.type | replace: '!SITE_URL!', site.url }}</span>
 
 {{ prop.description | replace: '!SITE_URL!', site.url}}
 {% for ex in prop.examples %}
@@ -47,7 +47,7 @@ and some examples about how to use them in your spells.
 ---
 {% for func in functions %}
 <a style="position:relative; top:-70px; display:block;" name="{{ func.name }}"></a>
-### <span class="notranslate">{{ func.name }}</span> ({{ func.parameters | replace: '!SITE_URL!', site.url }}) -> <span class="notranslate">{{ func.results | replace: '!SITE_URL!', site.url }}</span>
+### <span class="notranslate">{{ func.name }} ({{ func.parameters | replace: '!SITE_URL!', site.url }}) -> {{ func.results | replace: '!SITE_URL!', site.url }}</span>
 
 {{ func.description | replace: '!SITE_URL!', site.url}}
 {% for ex in func.examples %}
