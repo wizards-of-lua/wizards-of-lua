@@ -9,7 +9,7 @@
    {% else %}
    {% assign sub = "" %}
    {% endif %}
-   <li><a href="{{ module.url }}" alt="{{ module.title }}"><u>{{ module.title }}</u><i>{{ sub }}</i></a></li>
+   <li><a href="{{ module.url }}" alt="{{ module.title }}"><u><span class="notranslate">{{ module.title }}</span></u><i>{{ sub }}</i></a></li>
    {% endfor %}
 </ul>
 <h2>General Classes</h2>
@@ -22,7 +22,7 @@
    {% else %}
    {% assign sub = "" %}
    {% endif %}
-   <li><a href="{{ module.url }}" alt="{{ module.title }}"><u>{{ module.title }}</u><i>{{ sub }}</i></a></li>
+   <li><a href="{{ module.url }}" alt="{{ module.title }}"><u><span class="notranslate">{{ module.title }}</span></u><i>{{ sub }}</i></a></li>
    {% endfor %}
 </ul>
 <h2>Events</h2>
@@ -35,7 +35,7 @@
    {% else %}
    {% assign sub = "" %}
    {% endif %}
-   <li><a href="{{ module.url }}" alt="{{ module.title }}"><u>{{ module.title }}</u><i>{{ sub }}</i></a></li>
+   <li><a href="{{ module.url }}" alt="{{ module.title }}"><u><span class="notranslate">{{ module.title }}</span></u><i>{{ sub }}</i></a></li>
    {% endfor %}
 </ul>
 
