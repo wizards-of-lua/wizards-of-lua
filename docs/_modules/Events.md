@@ -6,7 +6,7 @@ layout: module
 properties:
 functions:
   - name: connect
-    parameters: string (...)
+    parameters: string...
     results: "[EventQueue](!SITE_URL!/modules/EventQueue/)"
     description: "The 'connect' function creates and returns an [EventQueue](!SITE_URL!/modules/EventQueue/)
     that is connected to the event source.
