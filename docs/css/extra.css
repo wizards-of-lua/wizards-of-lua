@@ -6,18 +6,33 @@
 
       #header nav li.discord {
         float: right;
-        margin-left: 6px;
-        margin-right: -5px;
-        width: 50px;
-        background-image: url("/images/discord-logo.png");
-        background-size: 50px;
-        background-repeat: no-repeat;
-
       }
       #header nav li.discord a {
         color: transparent; border: none;
         background: none;
         box-shadow: none;
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+        margin-top: 2px;
+        background-image: url("/images/discord-logo.png");
+        background-size: 45px;
+        background-repeat: no-repeat;
+      }
+      #header nav li.translate {
+        float: right;
+      }
+      #header nav li.translate a {
+        color: transparent; border: none;
+        background: none;
+        box-shadow: none;
+        width: 20px;
+        height: 20px;
+        margin-left: 6px;
+        margin-top: 2px;
+        background-image: url("/images/ic_g_translate_white_128px.png");
+        background-size: 40px;
+        background-repeat: no-repeat;
       }
 
       #corner_banner {
