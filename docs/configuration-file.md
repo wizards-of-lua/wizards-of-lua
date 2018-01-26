@@ -79,6 +79,7 @@ Default is "false".
 If provided, the keystore file must be placed next to the "server.properties" file.
 This is only used if *secure* is set to "true".
 Default is "".
+There is a brief description about [how to create a self-signed SSL certificate](/creating-a-self-signed-ssl-certificate.html) and how to use it with WoL.
 * **keystorePassword**: this is the password that the REST server should use to access the keystore.
 This is only used if *secure* is set to "true".
 Default is "".
