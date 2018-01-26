@@ -54,13 +54,13 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.SpellTest test_spell_orientation_casted_by_server
+  // /test net.wizardsoflua.tests.SpellTest test_spell_facing_casted_by_server
   @Test
-  public void test_spell_orientation_casted_by_server() throws Exception {
+  public void test_spell_facing_casted_by_server() throws Exception {
     // Given:
     String expected = EnumFacing.WEST.getName();
     int facing = 4; // west
-    String command = "/lua spell:execute('say '..spell.orientation)";
+    String command = "/lua spell:execute('say '..spell.facing)";
 
     mc().executeCommand("/setblock %s %s %s minecraft:command_block %s replace {Command:\"%s\"}",
         posP1.getX(), posP1.getY(), posP1.getZ(), facing, command);
@@ -92,15 +92,15 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.SpellTest test_spell_orientation_when_casted_by_player
+  // /test net.wizardsoflua.tests.SpellTest test_spell_facing_when_casted_by_player
   @Test
-  public void test_spell_orientation_when_casted_by_player() throws Exception {
+  public void test_spell_facing_when_casted_by_player() throws Exception {
     // Given:
-    EnumFacing orienation = mc().player().getOrientation();
+    EnumFacing orienation = mc().player().getFacing();
     String expected = orienation.getName();
 
     // When:
-    mc().player().chat("/lua o=spell.orientation; print(o)");
+    mc().player().chat("/lua o=spell.facing; print(o)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

@@ -101,7 +101,7 @@ public class PlayerBackdoor {
     }
   }
 
-  public EnumFacing getOrientation() {
+  public EnumFacing getFacing() {
     return getDelegate().getHorizontalFacing();
   }
 

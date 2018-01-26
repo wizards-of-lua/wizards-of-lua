@@ -66,7 +66,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       add("pos", this::getPos, this::setPos);
       addReadOnly("nbt", this::getNbt);
 
-      addReadOnly("orientation", this::getOrientation);
+      addReadOnly("facing", this::getFacing);
       add("lookVec", this::getLookVector, this::setLookVector);
       add("rotationYaw", this::getRotationYaw, this::setRotationYaw);
       add("rotationPitch", this::getRotationPitch, this::setRotationPitch);
@@ -91,7 +91,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       delegate.setPositionAndUpdate(pos.xCoord, pos.yCoord, pos.zCoord);
     }
 
-    public Object getOrientation() {
+    public Object getFacing() {
       EnumFacing result = delegate.getHorizontalFacing();
       return getConverters().toLua(result);
     }
