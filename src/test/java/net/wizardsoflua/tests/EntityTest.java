@@ -77,9 +77,9 @@ public class EntityTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.EntityTest test_orientation_is_readable
+  // /test net.wizardsoflua.tests.EntityTest test_facing_is_readable
   @Test
-  public void test_orientation_is_readable() throws Exception {
+  public void test_facing_is_readable() throws Exception {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 
@@ -88,7 +88,7 @@ public class EntityTest extends WolTestBase {
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.orientation)");
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.facing)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);

@@ -29,7 +29,7 @@ public class PlayerLoggedInEventTest extends WolTestBase {
     String expected4 = mc().player().getName() + " joined the game";
     String expected5 = "#" + mc().player().getName();
     mc().executeCommand(
-        "/lua q=Events.connect('PlayerLoggedInEvent'); e=q:pop(); print('#'..e.player.name)");
+        "/lua q=Events.connect('PlayerLoggedInEvent'); e=q:next(); print('#'..e.player.name)");
 
     // When:
     mc().player().reconnect();

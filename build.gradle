@@ -20,7 +20,7 @@ compileJava {
 }
 
 
-version = "1.11.2-1.10.0-alpha"
+version = "1.11.2-1.11.0-alpha"
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
