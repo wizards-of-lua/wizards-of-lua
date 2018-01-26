@@ -40,10 +40,10 @@ properties:
     "
     examples:
       - url: Entity/nbt.md
-  - name: orientation
+  - name: facing
     type: string
     access: r
-    description: "The 'orientation' is the compass direction this entity is facing. This is one of 'north', 'east', 'south', and 'west'.
+    description: "The 'facing' is the compass direction this entity is facing. This is one of 'north', 'east', 'south', and 'west'.
     "
   - name: lookVec
     type: "[Vec3](!SITE_URL!/modules/Vec3/)"
@@ -93,8 +93,8 @@ functions:
     If no distance is specified, 1 meter is taken as default distance.
     Valid direction values are absolute directions ('up', 'down', 'north', 'east',
     'south', and 'west'), as well as relative directions ('forward', 'back',
-    'left', and 'right'). Relative directions are interpreted relative to the entity's
-    [orientation](!SITE_URL!/modules/Entity/#orientation).
+    'left', and 'right'). Relative directions are interpreted relative to the direction the entity is
+    [facing](!SITE_URL!/modules/Entity/#facing).
     "
     examples:
       - url: Entity/move.md

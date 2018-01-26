@@ -12,7 +12,7 @@ Creating a wall sign showing the current time.
 ```lua
 spell:move("back")
 spell.rotationYaw=spell.rotationYaw+180
-spell.block=Blocks.get("wall_sign"):withData({facing=spell.orientation})
+spell.block=Blocks.get("wall_sign"):withData({facing=spell.facing})
 while true do
   local time=Time.getDate("HH:mm:ss")
   spell.block=spell.block:withNbt({Text1= '{"text":"'..time..'"}'})
