@@ -31,7 +31,7 @@ for example, the rocket thrower observer:
 function rocketThrowerObserver()
   local q = Events.connect("SwingArmEvent")
   while true do
-    local e = q:pop()
+    local e = q:next()
     if e.item.displayName == "Rocket Thrower" then
       local cmd = "/lua p=Entities.find('@p[name=%s]')[1]; rocket(p)"
       spell:execute(cmd, e.player.name)
@@ -96,7 +96,7 @@ It looks like this:
 function magicWandObserver()
   local q=Events.connect("SwingArmEvent")
   while true do
-    local   e = q:pop()
+    local   e = q:next()
     local nbt = e.item.nbt
     if nbt and nbt.tag and nbt.tag.OnSwingArmEvent then
       local pname = e.player.name

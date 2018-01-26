@@ -9,6 +9,6 @@ Events.fire("my-event", data)
 Accessing the data of a custom event.
 ```lua
 local q = Events.connect("my-event")
-local event = q:pop()
+local event = q:next()
 print("event.data", str(event.data))
 ```

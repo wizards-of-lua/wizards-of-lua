@@ -85,7 +85,7 @@ Whenever it occurs, a rocket should be fired.
 function rocketThrowerObserver()
   local q = Events.connect("SwingArmEvent")
   while true do
-    local e = q:pop()
+    local e = q:next()
     if e.item.displayName == "Rocket Thrower" then
       local cmd = "/lua p=Entities.find('@p[name=%s]')[1]; rocket(p)"
       spell:execute(cmd, e.player.name)
