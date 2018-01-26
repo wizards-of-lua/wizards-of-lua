@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
@@ -277,13 +278,18 @@ public class WizardsOfLua {
   }
 
   @EventHandler
-  public void serverLoad(FMLServerStartingEvent event) throws IOException {
+  public void serverStarting(FMLServerStartingEvent event) throws IOException {
     server = event.getServer();
     gameProfiles = new GameProfiles(server);
     event.registerServerCommand(new WolCommand());
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();
+  }
+  
+  @EventHandler
+  public void serverStopping(FMLServerStoppingEvent event) {
+    restApiServer.stop();
   }
 
   @EventHandler

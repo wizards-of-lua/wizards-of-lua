@@ -70,6 +70,7 @@ public class WolRestApiServer {
 
   private final Context context;
   private final Logger logger;
+  private HTTPServer server;
 
   public WolRestApiServer(Context context) {
     this.context = checkNotNull(context, "context==null!");
@@ -95,7 +96,7 @@ public class WolRestApiServer {
 
     logger.info("[REST] REST service will cache static files at " + contextRoot.getAbsolutePath());
 
-    HTTPServer server = new HTTPServer(port) {
+    server = new HTTPServer(port) {
       protected ServerSocket createServerSocket() throws IOException {
         ServerSocketFactory factory =
             this.secure ? createSSLServerSocketFactory(keystore, keystorePassword, keyPassword)
@@ -107,6 +108,7 @@ public class WolRestApiServer {
       }
     };
     server.setSecure(secure);
+    
     VirtualHost host = new VirtualHost(hostname);
     server.addVirtualHost(host);
 
@@ -117,6 +119,12 @@ public class WolRestApiServer {
 
     logger.info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
     server.start();
+  }
+  
+  public void stop() {
+    if (server != null) {
+      server.stop();
+    }
   }
 
   private SSLServerSocketFactory createSSLServerSocketFactory(String keystore,
@@ -497,5 +505,7 @@ public class WolRestApiServer {
     String server = hostname + ":" + port;
     return LOGIN_COOKIE_KEY_PREFIX + server;
   }
+
+  
 
 }
