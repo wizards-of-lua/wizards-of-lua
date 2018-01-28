@@ -52,3 +52,7 @@ As a result you will find the mod JAR file in `build/libs`.
 Wizards of Lua is licensed under the GNU General Public License v3.0. See the file [LICENSE](LICENSE) file for details.
 
 Wizards of Lua uses the great [Rembulan](https://github.com/mjanicek/rembulan) implementation of [Lua](https://www.lua.org) 5.3 for Java, which is licensed under the [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0). 
+
+Wizards of Lua uses JLHTTP, the minimalist's first choice HTTP server created by Amichai Rothman. JLHTTP is licensed under the GPL 2.0 license. For additional info see http://www.freeutils.net/source/jlhttp/.
+
+
