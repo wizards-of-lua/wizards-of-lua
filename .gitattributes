@@ -1,1 +1,2 @@
-src/main/resources/www linguist-vendored
+src/main/resources/www/ace linguist-vendored
+src/main/resources/www/jquery linguist-vendored
