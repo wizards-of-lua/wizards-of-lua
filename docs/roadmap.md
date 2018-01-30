@@ -11,7 +11,7 @@ This roadmap shows which features are planned to be included into the upcoming b
 * Fixed - [Issue #39](https://github.com/wizards-of-lua/wizards-of-lua/issues/39): Spells should be able to send and receive custom events
 * Fixed - [Issue #40](https://github.com/wizards-of-lua/wizards-of-lua/issues/40): Spells should support importing Lua files from the server’s file system
 * [Issue #41](https://github.com/wizards-of-lua/wizards-of-lua/issues/41): Spells should support importing Lua files from GitHub Gists
-* [Issue #42](https://github.com/wizards-of-lua/wizards-of-lua/issues/42): Spells should support sharing data using a player-specific clipboard
+* [Issue #42](https://github.com/wizards-of-lua/wizards-of-lua/issues/42): Spells should support sharing data using a spell-specific clipboard
 * Fixed - [Issue #43](https://github.com/wizards-of-lua/wizards-of-lua/issues/43): Wizards should be able to define a player-specific profile
 * [Issue #44](https://github.com/wizards-of-lua/wizards-of-lua/issues/44): Wizards should be able to list their own active spells
 * Fixed - [Issue #45](https://github.com/wizards-of-lua/wizards-of-lua/issues/45): Wizards should be able to break specific spells
