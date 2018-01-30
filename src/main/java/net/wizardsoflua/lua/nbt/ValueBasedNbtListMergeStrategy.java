@@ -22,7 +22,7 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
   private final String key;
   private final NbtConverter converter;
 
-  public ValueBasedNbtListMergeStrategy(String key,NbtConverter converter) {
+  public ValueBasedNbtListMergeStrategy(String key, NbtConverter converter) {
     this.key = checkNotNull(key, "key == null!");
     this.converter = checkNotNull(converter, "converter == null!");
   }
