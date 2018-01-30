@@ -10,7 +10,7 @@ import net.sandius.rembulan.Table;
  * @see
  *      <ul>
  *      <li><a href=
- *      "https://bugs.mojang.com/browse/MC-112253?filter=-2">https://bugs.mojang.com/browse/MC-112253?filter=-2</a></li>
+ *      "https://bugs.mojang.com/browse/MC-112253">https://bugs.mojang.com/browse/MC-112253</a></li>
  *      <li><a href=
  *      "http://skylinerw.com/compendium2/compendium.html">http://skylinerw.com/compendium2/compendium.html</a></li>
  *      <li><a href=
