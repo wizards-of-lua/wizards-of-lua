@@ -27,6 +27,8 @@ public class LuaFileRegistry {
     String getPlayerRestApiKey(UUID playerId);
 
     RestApiConfig getRestApiConfig();
+
+    boolean isOperator(UUID playerId);
   }
 
   private final Crypto crypto = new Crypto();
@@ -205,6 +207,44 @@ public class LuaFileRegistry {
     }
   }
 
+  public URL getPasswordTokenUrl(EntityPlayer player) {
+    String hostname = context.getRestApiConfig().getHostname();
+    String protocol = context.getRestApiConfig().getProtocol();
+    int port = context.getRestApiConfig().getPort();
+    String uuid = player.getUniqueID().toString();
+    String token = getLoginToken(player);
+    try {
+      URL result =
+          new URL(protocol + "://" + hostname + ":" + port + "/wol/login/" + uuid + "/" + token);
+      return result;
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public boolean isValidLoginToken(UUID playerId, String token) {
+    int index = token.indexOf('/');
+    if (!context.isOperator(playerId)) {
+      return false;
+    }
+    String encryptedPlayerPassword = token.substring(index + 1);
+    String serverPassword = context.getRestApiConfig().getApiKey();
+    String playerPassword = crypto.decrypt(playerId, serverPassword, encryptedPlayerPassword);
+    String expectedPlayerPassword = context.getPlayerRestApiKey(playerId);
+    return expectedPlayerPassword.equals(playerPassword);
+  }
+
+  private String getLoginToken(EntityPlayer player) {
+    return getLoginToken(player.getUniqueID());
+  }
+
+  private String getLoginToken(UUID playerId) {
+    String playerPassword = context.getPlayerRestApiKey(playerId);
+    String serverPassword = context.getRestApiConfig().getApiKey();
+    String encryptedPlayerPassword = crypto.encrypt(playerId, serverPassword, playerPassword);
+    return encryptedPlayerPassword;
+  }
+
   private File getFile(String fileReference) {
     String filepath = getFilepathFor(fileReference);
     if (filepath.contains("..")) {
@@ -236,41 +276,6 @@ public class LuaFileRegistry {
     String playerIdStr = fileReference.substring(0, index);
     UUID result = UUID.fromString(playerIdStr);
     return result;
-  }
-
-  public URL getPasswordTokenUrl(EntityPlayer player) {
-    String hostname = context.getRestApiConfig().getHostname();
-    String protocol = context.getRestApiConfig().getProtocol();
-    int port = context.getRestApiConfig().getPort();
-    String uuid = player.getUniqueID().toString();
-    String token = getLoginToken(player);
-    try {
-      URL result =
-          new URL(protocol + "://" + hostname + ":" + port + "/wol/login/" + uuid + "/" + token);
-      return result;
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public String getLoginToken(UUID playerId) {
-    String playerPassword = context.getPlayerRestApiKey(playerId);
-    String serverPassword = context.getRestApiConfig().getApiKey();
-    String encryptedPlayerPassword = crypto.encrypt(playerId, serverPassword, playerPassword);
-    return encryptedPlayerPassword;
-  }
-
-  private String getLoginToken(EntityPlayer player) {
-    return getLoginToken(player.getUniqueID());
-  }
-
-  public boolean isValidLoginToken(UUID playerId, String token) {
-    int index = token.indexOf('/');
-    String encryptedPlayerPassword = token.substring(index + 1);
-    String serverPassword = context.getRestApiConfig().getApiKey();
-    String playerPassword = crypto.decrypt(playerId, serverPassword, encryptedPlayerPassword);
-    String expectedPlayerPassword = context.getPlayerRestApiKey(playerId);
-    return expectedPlayerPassword.equals(playerPassword);
   }
 
 }

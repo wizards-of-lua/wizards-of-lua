@@ -42,6 +42,7 @@ import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
+import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.rest.WolRestApiServer;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
@@ -83,6 +84,7 @@ public class WizardsOfLua {
   private MinecraftServer server;
   private GameProfiles gameProfiles;
   private Startup startup;
+  private Permissions permissions;
 
   /**
    * Clock used for RuntimeModule
@@ -227,6 +229,10 @@ public class WizardsOfLua {
         return getConfig().getOrCreateWizardConfig(playerId).getRestApiKey();
       }
 
+      @Override
+      public boolean isOperator(UUID playerId) {
+        return permissions.hasOperatorPrivileges(playerId);
+      }
     });
 
     restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
@@ -250,10 +256,6 @@ public class WizardsOfLua {
         return getFileRegistry().isValidLoginToken(playerId, token);
       }
 
-      @Override
-      public String getLoginToken(UUID playerId) {
-        return getFileRegistry().getLoginToken(playerId);
-      }
     });
     startup = new Startup(new Startup.Context() {
       @Override
@@ -281,12 +283,13 @@ public class WizardsOfLua {
   public void serverStarting(FMLServerStartingEvent event) throws IOException {
     server = event.getServer();
     gameProfiles = new GameProfiles(server);
+    permissions = new Permissions(server);
     event.registerServerCommand(new WolCommand());
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();
   }
-  
+
   @EventHandler
   public void serverStopping(FMLServerStoppingEvent event) {
     restApiServer.stop();

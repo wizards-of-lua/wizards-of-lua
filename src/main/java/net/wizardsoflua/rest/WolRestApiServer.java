@@ -64,8 +64,6 @@ public class WolRestApiServer {
     void saveLuaFileByReference(String fileref, String content);
 
     boolean isValidLoginToken(UUID uuid, String token);
-
-    String getLoginToken(UUID playerId);
   }
 
   private final Context context;
@@ -305,7 +303,6 @@ public class WolRestApiServer {
           return 0;
         }
 
-
         JsonParser parser = new JsonParser();
         String body = IOUtils.toString(req.getBody(), StandardCharsets.UTF_8.name());
         JsonObject root = parser.parse(body).getAsJsonObject();
@@ -470,8 +467,9 @@ public class WolRestApiServer {
   }
 
   public boolean isValidLoginCookie(LoginCookie loginCookie) {
-    String token = context.getLoginToken(loginCookie.getPlayerUuid());
-    return token.equals(loginCookie.getToken());
+    String token = loginCookie.getToken();
+    UUID uuid = loginCookie.getPlayerUuid();
+    return context.isValidLoginToken(uuid, token);
   }
 
   public void deleteLoginCookie(Request req, Response resp) {
