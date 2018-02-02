@@ -8,7 +8,7 @@ This tutorial shows how you can import external Lua files into your spells.
 <!--more-->
 
 Writing programs into the command line or a command block is inconvenient for programs with more the a few statements.
-It is far better to use an external text editor to edit Lua files, and then import them into your spells using the <tt>require</tt> function.
+It is far better to use an text editor to edit Lua files, and then import them into your spells using the <tt>require</tt> function.
 
 To view, create, and edit a file, you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
 

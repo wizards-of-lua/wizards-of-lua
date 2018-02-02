@@ -58,3 +58,12 @@ But changing the world by adding (or removing) blocks is not the only thing
 you can do with Lua.
 To find out what can be done just have a look at the [Lua Spell Book Library](/spellbooklibrary),
 the [tutorials](/tutorials.html), and our [list of examples](/examples.html).
+
+<a name="Editor" style="position:relative; top:-70px; display:block;"></a>
+## Using the Built-in Editor to Create a Spell
+Typing spells into the command line is inconvenient for spells with more the a few statements.
+
+It is far better to use the built-in editor to edit Lua files. This is, how it looks like:
+![Built-In Editor](/images/wol-file-editor.jpg)
+
+To open the editor, you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
