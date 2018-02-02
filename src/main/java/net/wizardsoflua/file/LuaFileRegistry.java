@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -103,7 +104,11 @@ public class LuaFileRegistry {
       }
       UUID playerId = player.getUniqueID();
       File file = new File(context.getPlayerLibDir(playerId), filepath);
-      Files.delete(Paths.get(file.toURI()));
+      Files.delete(file.toPath());
+      Path parent = file.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -115,12 +120,15 @@ public class LuaFileRegistry {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
       File file = new File(context.getSharedLibDir(), filepath);
-      Files.delete(Paths.get(file.toURI()));
+      Files.delete(file.toPath());
+      Path parent = file.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-
 
   public void moveFile(EntityPlayer player, String filepath, String newFilepath)
       throws IllegalArgumentException {
@@ -145,6 +153,10 @@ public class LuaFileRegistry {
       }
       Files.createDirectories(newFile.getParentFile().toPath());
       Files.move(oldFile.toPath(), newFile.toPath());
+      Path parent = oldFile.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -170,7 +182,11 @@ public class LuaFileRegistry {
             "Can't move " + filepath + " to " + newFilepath + "! Target file already exists!");
       }
       Files.createDirectories(newFile.getParentFile().toPath());
-      Files.move(Paths.get(oldFile.toURI()), Paths.get(newFile.toURI()));
+      Files.move(oldFile.toPath(), newFile.toPath());
+      Path parent = oldFile.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -183,7 +199,7 @@ public class LuaFileRegistry {
       String content;
       if (file.exists()) {
         Charset cs = Charset.defaultCharset();
-        content = new String(Files.readAllBytes(Paths.get(file.toURI())), cs);
+        content = new String(Files.readAllBytes(file.toPath()), cs);
       } else {
         content = "";
       }
@@ -197,11 +213,11 @@ public class LuaFileRegistry {
     try {
       File file = getFile(fileReference);
       if (!file.getParentFile().exists()) {
-        Files.createDirectories(Paths.get(file.getParentFile().toURI()));
+        Files.createDirectories(file.getParentFile().toPath());
       }
       Charset cs = Charset.defaultCharset();
       byte[] bytes = content.getBytes(cs.name());
-      Files.write(Paths.get(file.toURI()), bytes);
+      Files.write(file.toPath(), bytes);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -278,4 +294,9 @@ public class LuaFileRegistry {
     return result;
   }
 
+  private boolean isEmpty(Path directory) throws IOException {
+    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+      return !dirStream.iterator().hasNext();
+    }
+  }
 }
