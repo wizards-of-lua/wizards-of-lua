@@ -1,7 +1,7 @@
 #### Example
 Creating some particle effect at the left-click hit position.
 ```lua
-local queue=Events.connect("LeftClickBlockEvent")
+local queue = Events.connect("LeftClickBlockEvent")
 while true do
   local event = queue:next()
   local v = event.hitVec
