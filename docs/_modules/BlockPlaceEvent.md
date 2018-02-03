@@ -16,6 +16,7 @@ properties:
     type: "[Block](!SITE_URL!/modules/Block/)"
     access: r
     description: "The block against which the new block was placed.
+    Unfortunately the NBT of the block placedAgainst is unavailable.
     "
   - name: player
     type: "[Player](!SITE_URL!/modules/Player/)"
