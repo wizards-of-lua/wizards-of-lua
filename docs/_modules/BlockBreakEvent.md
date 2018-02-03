@@ -1,7 +1,7 @@
 ---
 name: BlockBreakEvent
 title: BlockBreakEvent
-subtitle: When a [Player](!SITE_URL!/modules/Player/) breaks a [Block](!SITE_URL!/modules/Block/)
+subtitle: When a [Player](!SITE_URL!/modules/Player/) Breaks a [Block](!SITE_URL!/modules/Block/)
 type: event
 extends: BlockEvent
 layout: module

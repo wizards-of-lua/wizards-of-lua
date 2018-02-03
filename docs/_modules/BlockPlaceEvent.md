@@ -1,7 +1,7 @@
 ---
 name: BlockPlaceEvent
 title: BlockPlaceEvent
-subtitle: When a [Player](!SITE_URL!/modules/Player/) places a [Block](!SITE_URL!/modules/Block/)
+subtitle: When a [Player](!SITE_URL!/modules/Player/) Places a [Block](!SITE_URL!/modules/Block/)
 type: event
 extends: BlockEvent
 layout: module
