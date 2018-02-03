@@ -22,7 +22,7 @@ public class BlockTest extends WolTestBase {
   public void setPlayerPos() {
     mc().player().setPosition(playerPos);
   }
-  
+
   @After
   public void clearBlock() {
     mc().setBlock(posP, Blocks.AIR);
@@ -207,7 +207,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_asItem_from_filled_chest() throws Exception {
     // Given:
-    ItemStack itemStack = mc().getItemStack(Items.APPLE);
+    ItemStack itemStack = new ItemStack(Items.APPLE);
     mc().setChest(posP, itemStack);
     String expected = itemStack.getItem().getRegistryName().toString();
 

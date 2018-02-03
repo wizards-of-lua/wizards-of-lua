@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -19,15 +18,13 @@ public class RightClickAction extends ClientAction {
   private BlockPos pos;
   private EnumFacing face;
   private Vec3d vec;
-  private EnumHand hand;
 
   public RightClickAction() {}
 
-  public RightClickAction(BlockPos pos, EnumFacing face, Vec3d vec, EnumHand hand) {
+  public RightClickAction(BlockPos pos, EnumFacing face, Vec3d vec) {
     this.pos = pos;
     this.face = face;
     this.vec = vec;
-    this.hand = hand;
   }
 
   @Override
@@ -42,8 +39,6 @@ public class RightClickAction extends ClientAction {
     double vy = buffer.readDouble();
     double vz = buffer.readDouble();
     vec = new Vec3d(vx, vy, vz);
-    int ordHand = buffer.readInt();
-    hand = EnumHand.values()[ordHand];
   }
 
   @Override
@@ -55,7 +50,6 @@ public class RightClickAction extends ClientAction {
     buffer.writeDouble(vec.xCoord);
     buffer.writeDouble(vec.yCoord);
     buffer.writeDouble(vec.zCoord);
-    buffer.writeInt(hand.ordinal());
   }
 
   @Override

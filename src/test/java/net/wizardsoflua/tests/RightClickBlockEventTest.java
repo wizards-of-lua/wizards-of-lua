@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
@@ -36,18 +36,17 @@ public class RightClickBlockEventTest extends WolTestBase {
     BlockPos playerPos = new BlockPos(0, 4, -1);
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    mc().player().setMainHandItem(mc().getItemStack(Blocks.SAND));
+    mc().player().setMainHandItem(new ItemStack(Blocks.SAND));
     BlockPos clickPos = new BlockPos(0, 3, 0);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
     EnumFacing facing = EnumFacing.WEST;
     Vec3d hitvec = new Vec3d(clickPos);
-    EnumHand hand = EnumHand.MAIN_HAND;
     String expected = format(clickPos);
 
     mc().executeCommand("/lua q=Events.connect('RightClickBlockEvent'); e=q:next(); print(e.pos)");
 
     // When:
-    mc().player().rightclick(clickPos, facing, hitvec, hand);
+    mc().player().rightclick(clickPos, facing, hitvec);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);

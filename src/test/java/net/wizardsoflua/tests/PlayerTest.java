@@ -147,7 +147,7 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_mainhand_is_readable() throws Exception {
     // Given:
-    ItemStack item = mc().getItemStack(Items.DIAMOND_AXE);
+    ItemStack item = new ItemStack(Items.DIAMOND_AXE);
     mc().player().setMainHandItem(item);
     String expected = item.getDisplayName();
 
@@ -163,7 +163,7 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_mainhand_is_writable() throws Exception {
     // Given:
-    ResourceLocation expected = mc().getItemStack(Items.DIAMOND_AXE).getItem().getRegistryName();
+    ResourceLocation expected = Items.DIAMOND_AXE.getRegistryName();
 
     // When:
     mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.mainhand=i; print('ok')");
@@ -178,7 +178,7 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_offhand_is_readable() throws Exception {
     // Given:
-    ItemStack item = mc().getItemStack(Items.DIAMOND_AXE);
+    ItemStack item = new ItemStack(Items.DIAMOND_AXE);
     mc().player().setOffHandItem(item);
     String expected = item.getDisplayName();
 
@@ -194,7 +194,7 @@ public class PlayerTest extends WolTestBase {
   @Test
   public void test_offhand_is_writable() throws Exception {
     // Given:
-    ResourceLocation expected = mc().getItemStack(Items.DIAMOND_AXE).getItem().getRegistryName();
+    ResourceLocation expected = Items.DIAMOND_AXE.getRegistryName();
 
     // When:
     mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.offhand=i; print('ok')");

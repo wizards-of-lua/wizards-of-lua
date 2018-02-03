@@ -81,7 +81,9 @@ public class TestCommand extends CommandBase {
   // test execution
   private void sendResult(MinecraftServer server, String name, ITextComponent message) {
     EntityPlayerMP player = getPlayerByName(server, name);
-    player.sendMessage(message);
+    if (player != null) {
+      player.sendMessage(message);
+    }
   }
 
   private EntityPlayerMP getPlayerByName(MinecraftServer server, String name) {
