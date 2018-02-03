@@ -19,7 +19,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.spell.SpellUtil;
@@ -48,8 +47,12 @@ public class PlayerBackdoor {
     perform(new LeftClickAction(pos, face));
   }
 
-  public void rightclick(BlockPos pos, EnumFacing face, Vec3d vec, EnumHand hand) {
-    perform(new RightClickAction(pos, face, vec, hand));
+  public void rightclick(BlockPos pos, EnumFacing face) {
+    rightclick(pos, face, new Vec3d(pos));
+  }
+
+  public void rightclick(BlockPos pos, EnumFacing face, Vec3d vec) {
+    perform(new RightClickAction(pos, face, vec));
   }
 
   public void chat(String format, Object... args) {

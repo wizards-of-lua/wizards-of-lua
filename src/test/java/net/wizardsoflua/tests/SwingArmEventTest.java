@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
@@ -30,23 +29,44 @@ public class SwingArmEventTest extends WolTestBase {
     mc().setBlock(blockPos, Blocks.AIR);
   }
 
-  // /test net.wizardsoflua.tests.SwingArmEventTest test_rightclick
+  // /test net.wizardsoflua.tests.SwingArmEventTest test_rightclick_MAIN_HAND
   @Test
-  public void test_rightclick() {
+  public void test_rightclick_MAIN_HAND() {
     // Given:
     mc().player().setPosition(playerPos);
-    ItemStack item = mc().getItemStack(Blocks.SAND);
+    ItemStack item = new ItemStack(Blocks.SAND);
     mc().player().setMainHandItem(item);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
-    EnumHand hand = EnumHand.MAIN_HAND;
     EnumFacing facing = EnumFacing.WEST;
-    Vec3d hitvec = new Vec3d(clickPos);
-    String expected = hand.name();
+    String expected = EnumHand.MAIN_HAND.name();
 
     mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
-    mc().player().rightclick(clickPos, facing, hitvec, hand);
+    mc().player().rightclick(clickPos, facing);
+
+    // Then:
+    RightClickBlock act1 = mc().waitFor(RightClickBlock.class);
+    assertThat(act1.getPos()).isEqualTo(clickPos);
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.SwingArmEventTest test_rightclick_OFF_HAND
+  @Test
+  public void test_rightclick_OFF_HAND() {
+    // Given:
+    mc().player().setPosition(playerPos);
+    ItemStack item = new ItemStack(Blocks.SAND);
+    mc().player().setOffHandItem(item);
+    mc().setBlock(clickPos, Blocks.OBSIDIAN);
+    EnumFacing facing = EnumFacing.WEST;
+    String expected = EnumHand.OFF_HAND.name();
+
+    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
+
+    // When:
+    mc().player().rightclick(clickPos, facing);
 
     // Then:
     RightClickBlock act1 = mc().waitFor(RightClickBlock.class);

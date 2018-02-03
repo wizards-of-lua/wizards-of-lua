@@ -14,7 +14,7 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.block.CopiedWolBlock;
+import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
@@ -98,8 +98,8 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
 
-      CopiedWolBlock newWolBlock =
-          new CopiedWolBlock(oldWolBlock.getBlockState(), oldWolBlock.getNbt());
+      ImmutableWolBlock newWolBlock =
+          new ImmutableWolBlock(oldWolBlock.getBlockState(), oldWolBlock.getNbt());
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
@@ -128,7 +128,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
         }
       }
 
-      CopiedWolBlock newWolBlock = new CopiedWolBlock(state, oldWolBlock.getNbt());
+      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(state, oldWolBlock.getNbt());
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
@@ -157,7 +157,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
             oldWolBlock.getBlockState().getBlock().getRegistryName().getResourcePath()));
       }
 
-      CopiedWolBlock newWolBlock = new CopiedWolBlock(oldWolBlock.getBlockState(), newNbt);
+      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(oldWolBlock.getBlockState(), newNbt);
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }

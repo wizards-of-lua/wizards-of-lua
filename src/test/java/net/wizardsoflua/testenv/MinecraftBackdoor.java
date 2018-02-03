@@ -25,7 +25,6 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -33,11 +32,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.spell.SpellEntity;
+import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.player.PlayerBackdoor;
 
 public class MinecraftBackdoor {
@@ -74,6 +73,10 @@ public class MinecraftBackdoor {
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }
+  }
+
+  public String nextServerMessage() {
+    return waitFor(ServerLog4jEvent.class).getMessage();
   }
 
   public void executeCommand(String format, Object... args) {
@@ -208,18 +211,6 @@ public class MinecraftBackdoor {
     file.delete();
   }
 
-  public ItemStack getItemStack(Block block) {
-    IBlockState state = block.getDefaultState();
-    RayTraceResult target = null; // unused
-    World world = player().getDelegate().getEntityWorld();
-    BlockPos pos = null; // unused
-    return block.getPickBlock(state, target, world, pos, player().getDelegate());
-  }
-
-  public ItemStack getItemStack(Item item) {
-    return new ItemStack(item);
-  }
-
   public void clearLuaFunctionCache() {
     testEnv.getWol().clearLuaFunctionCache();
   }
@@ -231,6 +222,4 @@ public class MinecraftBackdoor {
       setBlock(pos, blockType);
     }
   }
-
-
 }

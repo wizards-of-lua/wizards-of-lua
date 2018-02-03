@@ -11,9 +11,7 @@ import org.junit.runner.RunWith;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -151,16 +149,14 @@ public class TestEnvironmentTest extends WolTestBase {
     // Given:
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    ItemStack item = mc().getItemStack(Blocks.PLANKS);
+    ItemStack item = new ItemStack(Blocks.PLANKS);
     mc().player().setMainHandItem(item);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
 
-    EnumHand hand = EnumHand.MAIN_HAND;
     EnumFacing facing = EnumFacing.WEST;
-    Vec3d hitvec = new Vec3d(clickPos);
 
     // When:
-    mc().player().rightclick(clickPos, facing, hitvec, hand);
+    mc().player().rightclick(clickPos, facing);
 
     // Then:
     RightClickBlock act = mc().waitFor(RightClickBlock.class);
