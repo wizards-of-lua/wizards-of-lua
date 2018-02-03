@@ -1,7 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.world.BlockEvent;
 import net.sandius.rembulan.Table;
@@ -38,8 +38,8 @@ public class BlockEventClass
 
     protected Object getBlock() {
       IBlockState blockState = delegate.getState();
-      TileEntity tileEntity = delegate.getWorld().getTileEntity(delegate.getPos());
-      return getConverters().toLua(new ImmutableWolBlock(blockState, tileEntity));
+      NBTTagCompound nbt = null;
+      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
     }
   }
 }
