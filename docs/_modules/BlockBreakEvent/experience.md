@@ -1,5 +1,5 @@
 #### Example
-Drop a number of diamonds equal to the amount of experience a player gains through mining coal ore, redstone ore, etc. Note that you don't get experience fomr breaking blocks in creative mode.
+Drop a number of diamonds equal to the amount of experience a player gains through mining coal ore, redstone ore, etc. Note that you don't get experience from breaking blocks in creative mode.
 ```lua
 local queue = Events.connect("BlockBreakEvent")
 while true do
