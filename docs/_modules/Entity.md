@@ -84,6 +84,11 @@ properties:
     "
     examples:
       - url: Entity/tags.md
+  - name: alive
+    type: boolean
+    access: r
+    description: "This is true, if this entity is alive, false otherwise.
+    "
 functions:
   - name: move
     parameters: direction, distance
@@ -136,6 +141,13 @@ functions:
     "
     examples:
       - url: Entity/dropItem.md
+  - name: kill
+    parameters:
+    results:
+    description: "The 'kill' function kills this entity during the next game tick.
+    "
+    examples:
+      - url: Entity/kill.md
 ---
 
 The Entity class is the base class of all entities that populate the world.
