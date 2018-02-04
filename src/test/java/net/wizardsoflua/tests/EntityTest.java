@@ -573,6 +573,46 @@ public class EntityTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.EntityTest test_alive_is_readable
+  @Test
+  public void test_alive_is_readable() throws Exception {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint();
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
+        pos.getY(), pos.getZ());
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand(
+        "/lua p=Entities.find('@e[name=testpig]')[1]; p:kill(); sleep(1); print(p.alive)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.EntityTest test_kill
+  @Test
+  public void test_kill() throws Exception {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint();
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
+        pos.getY(), pos.getZ());
+
+    // When:
+    mc().executeCommand(
+        "/lua p=Entities.find('@e[name=testpig]')[1]; p:kill(); sleep(1); print('ok')");
+    mc().clearEvents();
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    assertThat(actEntities).hasSize(0);
+  }
+
   // // /test net.wizardsoflua.tests.EntityTest test_world_is_readable
   // @Test
   // public void test_world_is_readable() throws Exception {

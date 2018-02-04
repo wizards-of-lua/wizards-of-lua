@@ -20,6 +20,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
+import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.AbstractFunction3;
 import net.sandius.rembulan.runtime.ExecutionContext;
@@ -41,6 +42,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     add("removeTag", new RemoveTagFunction());
     add("scanView", new ScanViewFunction());
     add("dropItem", new DropItemFunction());
+    add("kill", new KillFunction());
   }
 
   @Override
@@ -62,6 +64,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       super(converters, metatable, delegate);
       addReadOnly("dimension", () -> delegate.dimension);
       addReadOnly("uuid", this::getUuid);
+      addReadOnly("alive", this::isAlive);
       add("name", this::getName, this::setName);
       add("pos", this::getPos, this::setPos);
       addReadOnly("nbt", this::getNbt);
@@ -80,6 +83,10 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     @Override
     public boolean isTransferable() {
       return true;
+    }
+
+    public Object isAlive() {
+      return getConverters().toLua(!delegate.isDead);
     }
 
     public Object getPos() {
@@ -254,13 +261,17 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     public Object dropItem(Object itemLuaObj, Object offsetYLuaObj) {
       ItemStack item = getConverters().toJava(ItemStack.class, itemLuaObj, "item");
-      if ( item.getCount()==0) {
+      if (item.getCount() == 0) {
         throw new IllegalArgumentException("Can't drop an item with count==0");
       }
       float offsetY = getConverters().toJavaOptional(Number.class, offsetYLuaObj, "offsetY")
           .orElse(0f).floatValue();
       EntityItem result = delegate.entityDropItem(item, offsetY);
       return getConverters().toLuaNullable(result);
+    }
+
+    public void kill() {
+      delegate.onKillCommand();
     }
 
     // public Object getWorld() {
@@ -402,6 +413,21 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       Proxy<?> proxy = castToProxy(arg1);
       Object result = proxy.dropItem(arg2, arg3);
       context.getReturnBuffer().setTo(result);
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState)
+        throws ResolvedControlThrowable {
+      throw new NonsuspendableFunctionException();
+    }
+  }
+
+  private class KillFunction extends AbstractFunction1 {
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) {
+      Proxy<?> proxy = castToProxy(arg1);
+      proxy.kill();
+      context.getReturnBuffer().setTo();
     }
 
     @Override
