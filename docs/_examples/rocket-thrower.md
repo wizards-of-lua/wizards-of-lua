@@ -27,11 +27,38 @@ Here is, how you can create this nice little rocket thrower:
 spell.owner.mainhand=i
 ```
 
-## How To Create a Rocket
-Since we will have to create 2 functions, please make sure that you are familiar with
+Now we want to add some behaviour to this item.
+For that we need to create two separate functions:
+one for making the rocket fly, and the other for launching it
+when you swing your arm.
+
+Since we need to create two functions, please make sure that you are familiar with
 [importing Lua files](/tutorials/importing_lua_files) into your spells.
 
-To start, we need a function that can create a flying rocket.
+## How to Create a Profile
+
+To ensure that you can use the new functions from the command line, you just need
+to put them into your personal profile.
+A profile is a special file that will be automatically imported when you cast a spell
+from the command line.
+
+If you haven't created a profile already, the following steps show  how you can do it.
+First, authenticate your browser by typing:
+```
+/wol browser login
+```  
+and then click on the new link that appears in the chat (you must press 'T' before you can click on the link).
+
+Then create the profile with the built-in editor by typing:
+```
+/wol file edit profile.lua
+```
+and again click on the new link.
+
+Now you can copy and paste the source code of the two functions shown below into the new file and save it using CRTL-S.
+
+First, let's have a look at the function that can create a flying rocket.
+## How To Create a Rocket
 
 This can be done in a lot of different ways.
 We just choose a simple one that creates a beam of smoke until it hits
@@ -64,8 +91,9 @@ function rocket(player)
   end
 end
 ```
+When you have added this function to your profile (and saved it), you
+can experiment with it from the command line.
 
-We can experiment with this function from the command line.
 Just find some place with a good view onto something you want to blow up.
 Make sure to look at it directly.
 Then cast the following spell:
@@ -73,6 +101,7 @@ Then cast the following spell:
 ```lua
 /lua rocket()
 ```
+This should fire a rocket.
 So far, so good.
 
 ## How To Bind a Spell to an Event
@@ -81,8 +110,10 @@ Now we want to bind this spell to the [SwingArmEvent](/modules/SwingArmEvent).
 To do this, we need some spell that observes this kind of event.
 Whenever it occurs, a rocket should be fired.
 
+Here is the function for this:
 ```lua
 function rocketThrowerObserver()
+  spell.name = "rocket-thrower-observer"
   local q = Events.connect("SwingArmEvent")
   while true do
     local e = q:next()
@@ -93,12 +124,19 @@ function rocketThrowerObserver()
   end
 end
 ```
-That's it.
-
-To start is, just call:
+Make sure to add it to your profile, and then call:
 ```lua
 /lua rocketThrowerObserver()
 ```
+
+If you want to stop this spell any time later, just type:
+```
+/wol spell break byName rocket-thrower-observer
+```
+This will break all spells with the specified name.
+
+This is handy when you want to cast an updated version of this spell and you
+want to make sure that not two versions of this spell are running at the same time.
 
 Here is a video of the rocket thrower in action:
 {% include youtube.md id="p7r68hYR264" %}
