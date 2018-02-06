@@ -1,0 +1,10 @@
+apply plugin: 'eclipse'
+apply plugin: 'java'
+
+repositories {
+  //?
+}
+
+dependencies {
+  compile 'com.google.guava:guava:17.0'
+}

@@ -1,0 +1,8 @@
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply from: rootProject.file('annotation-processing.gradle')
+
+dependencies {
+  annotationProccessing project(':annotation-processor')
+  compile project(':annotation-processor')
+}

@@ -1,14 +1,16 @@
-.classpath
-.gradle
-.project
-.settings
-bin
+**/.apt_generated
+**/.classpath
+**/.factorypath
+**/.gradle
+**/.project
+**/.settings
+**/bin
 eclipse
 README.txt
 *-changelog.txt
 Paulscode IBXM Library License.txt
 Paulscode SoundSystem CodecIBXM License.txt
-build
+**/build
 run
 *.launch
 CREDITS-fml.txt
