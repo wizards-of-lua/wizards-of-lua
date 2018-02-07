@@ -17,7 +17,7 @@ We want to invite you to join our Beta test team at our public test server at <t
 On this server you can play with the mod without having to install it yourself.
 
 If you are interested to help us with Beta tests, just [ask for operator privileges on our Discord channel]({{ site.discord_url }}),
-since you need to be OP to cast spells,
+since you need to be OP to cast spells.
 We would be grateful for any bug reports and feedback on the project.
 
 -----
