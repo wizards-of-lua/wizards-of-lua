@@ -184,13 +184,13 @@ public class NbtConverter {
     }
     return result;
   }
-  
+
   public static Table toLua(NBTTagIntArray nbt) {
     checkNotNull(nbt, "nbt == null!");
     Table result = new DefaultTable();
     int[] arr = nbt.getIntArray();
-    for ( int i=0; i<arr.length; ++i) {
-      long key = i+1;
+    for (int i = 0; i < arr.length; ++i) {
+      long key = i + 1;
       Object value = arr[i];
       result.rawset(key, value);
     }

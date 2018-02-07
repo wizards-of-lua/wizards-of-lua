@@ -1,39 +1,34 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.Set;
+import static java.util.Objects.requireNonNull;
 
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.world.GameType;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
 import net.wizardsoflua.lua.classes.LuaClass;
-import net.wizardsoflua.lua.classes.LuaClasses;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 public class Converters extends WolConversions {
-  private final ITypes types;
-  private final NbtConverter nbtConverter;
-  private final Set<LuaClass<?, ?>> classInstances;
-  private final TableDataConverter tableDataConverter = new TableDataConverter(this);
+  private final LuaClassLoader luaClassLoader;
   private final EnumConverter enumConverter = new EnumConverter();
+  private final NbtConverter nbtConverter;
+  private final TableDataConverter tableDataConverter = new TableDataConverter(this);
 
-  public Converters(ITypes types, LuaClasses luaClasses) {
-    this.types = checkNotNull(types, "types==null!");
-    nbtConverter = new NbtConverter(types);
-    classInstances = luaClasses.load(this);
+  public Converters(LuaClassLoader luaClassLoader) {
+    this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
+    nbtConverter = new NbtConverter(getTypes());
   }
 
   public ITypes getTypes() {
-    return types;
+    return luaClassLoader.getTypes();
   }
 
   public NbtConverter getNbtConverter() {
@@ -41,7 +36,7 @@ public class Converters extends WolConversions {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    Object luaClass = getByJavaClass(EntityPlayerMP.class);
+    Object luaClass = luaClassLoader.getByJavaClassOrSuperClass(EntityPlayerMP.class);
     // TODO can we replace this ugly casting stuff with something more elegant?
     if (luaClass instanceof PlayerClass) {
       PlayerClass pc = (PlayerClass) luaClass;
@@ -55,7 +50,8 @@ public class Converters extends WolConversions {
   @Override
   public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
     checkNotNull(luaObj, "luaObj==null!");
-    LuaClass<T, ?> cls = getByJavaClass(type);
+    // FIXME Adrodoc55 07.02.2018: Sollten wir nicht eher das luaObj nach seiner Klasse fragen?
+    LuaClass<T, ?> cls = luaClassLoader.getByJavaClass(type);
     if (cls != null) {
       return cls.getJavaInstance(castToTable(luaObj));
     }
@@ -63,25 +59,11 @@ public class Converters extends WolConversions {
       ByteString byteStrV = Conversions.stringValueOf(luaObj);
       String name = byteStrV.toString();
       T result = enumConverter.toJava(type, name);
-      if ( result != null) {
-        return (T)result;
-      }       
-    }
-    return super.toJava(type, luaObj);
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T extends ST, ST> LuaClass<T, ?> getByJavaClass(Class<ST> type) {
-    if (type == null) {
-      return null;
-    }
-    for (LuaClass<?, ?> classBase : classInstances) {
-      if (classBase.getJavaClass().equals(type)) {
-        return (LuaClass<T, ?>) classBase;
+      if (result != null) {
+        return (T) result;
       }
     }
-    Class<? super ST> superClass = type.getSuperclass();
-    return getByJavaClass(superClass);
+    return super.toJava(type, luaObj);
   }
 
   @Override
@@ -95,7 +77,7 @@ public class Converters extends WolConversions {
 
     @SuppressWarnings("unchecked")
     Class<T> javaClass = (Class<T>) value.getClass();
-    LuaClass<T, ?> cls = getByJavaClass(javaClass);
+    LuaClass<? super T, ?> cls = luaClassLoader.getByJavaClassOrSuperClass(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(value);
     }
@@ -105,7 +87,7 @@ public class Converters extends WolConversions {
         return ByteString.of(((IStringSerializable) vEnum).getName());
       }
       Object result = enumConverter.toLua(vEnum);
-      if ( result != null) {
+      if (result != null) {
         return result;
       }
       return ByteString.of(vEnum.name());
@@ -115,7 +97,4 @@ public class Converters extends WolConversions {
     }
     return super.toLua(value);
   }
-
-
-
 }

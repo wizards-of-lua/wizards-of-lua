@@ -8,7 +8,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.wizardsoflua.lua.classes.LuaClasses;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
@@ -28,10 +27,7 @@ public class SpellProgramFactory {
 
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
-    LuaClasses getLuaClasses();
-
     LuaFunctionBinaryCache getLuaFunctionBinaryCache();
-
   }
 
   private final Context context;
@@ -75,11 +71,6 @@ public class SpellProgramFactory {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
         return context.getLuaPathElementOfPlayer(nameOrUuid);
-      }
-
-      @Override
-      public LuaClasses getLuaClasses() {
-        return context.getLuaClasses();
       }
 
       @Override

@@ -28,7 +28,7 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
-import net.wizardsoflua.lua.classes.LuaClasses;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
@@ -55,13 +55,9 @@ public class SpellProgram {
     NEW, PAUSED, FINISHED
   }
   public interface Context {
-
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
-    LuaClasses getLuaClasses();
-
     LuaFunctionBinaryCache getLuaFunctionBinaryCache();
-
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -73,8 +69,7 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
-  private final Types types;
-  private final Converters converters;
+  private final LuaClassLoader luaClassLoader;
   private final EventHandlers eventHandlers;
   private ICommandSender owner;
   private State state;
@@ -101,16 +96,16 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
-    types = new Types(env);
-    converters = new Converters(types, context.getLuaClasses());
-    TypesModule.installInto(env, types, converters);
+    luaClassLoader = new LuaClassLoader(env);
+    luaClassLoader.loadAllLuaClasses();
+    TypesModule.installInto(env, getTypes(), getConverters());
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
       public void send(String message) {
         SpellProgram.this.owner.sendMessage(new TextComponentString(message));
       }
     });
-    AddPathFunction.installInto(env, converters, new AddPathFunction.Context() {
+    AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
         return context.getLuaPathElementOfPlayer(nameOrUuid);
@@ -121,13 +116,21 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
-    TimeModule.installInto(env, converters, time);
-    BlocksModule.installInto(env, converters);
-    ItemsModule.installInto(env, converters);
-    eventHandlers = new EventHandlers(converters, createEventHandlersContext());
-    EventsModule.installInto(env, converters, eventHandlers);
+    TimeModule.installInto(env, getConverters(), time);
+    BlocksModule.installInto(env, getConverters());
+    ItemsModule.installInto(env, getConverters());
+    eventHandlers = new EventHandlers(getConverters(), createEventHandlersContext());
+    EventsModule.installInto(env, getConverters(), eventHandlers);
 
     state = State.NEW;
+  }
+
+  private Types getTypes() {
+    return luaClassLoader.getTypes();
+  }
+
+  private Converters getConverters() {
+    return luaClassLoader.getConverters();
   }
 
   private EventHandlers.Context createEventHandlersContext() {
@@ -221,8 +224,8 @@ public class SpellProgram {
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
 
-    SpellModule.installInto(env, converters, spellEntity);
-    EntitiesModule.installInto(env, converters, spellEntity);
+    SpellModule.installInto(env, getConverters(), spellEntity);
+    EntitiesModule.installInto(env, getConverters(), spellEntity);
 
     dependencies.installModules(env, executor, stateContext);
 
@@ -263,7 +266,7 @@ public class SpellProgram {
         this.owner = player;
       }
     }
-    converters.replacePlayerInstance(player);
+    getConverters().replacePlayerInstance(player);
   }
 
 }

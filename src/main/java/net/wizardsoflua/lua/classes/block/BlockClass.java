@@ -150,7 +150,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       NBTTagCompound oldNbt = oldWolBlock.getNbt();
       NBTTagCompound newNbt;
       if (oldNbt != null) {
-        newNbt = converters.getNbtConverter().merge(oldNbt, nbtTable);
+        newNbt = getConverters().getNbtConverter().merge(oldNbt, nbtTable);
       } else {
         // newNbt = oldNbt;
         throw new IllegalArgumentException(String.format("Can't set nbt for block '%s'",

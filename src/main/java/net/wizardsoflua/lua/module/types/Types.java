@@ -2,6 +2,7 @@ package net.wizardsoflua.lua.module.types;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class Types implements ITypes {
   private final Map<Table, String> classes = new HashMap<Table, String>();
 
   public Types(Table env) {
-    this.env = env;
+    this.env = requireNonNull(env, "env == null!");
     declare(ObjectClass.METATABLE_NAME, (Table) null);
   }
 
@@ -65,11 +66,11 @@ public class Types implements ITypes {
 
   @Override
   public Table declare(String classname, @Nullable String superclassname) {
-    Table superclassMT = null;
-    if (superclassname != null) {
-      superclassMT = checkNotNull(getClassMetatable(superclassname),
-          "getClassMetatable(superclassname)==null!");
+    if (superclassname == null) {
+      return declare(classname);
     }
+    Table superclassMT =
+        checkNotNull(getClassMetatable(superclassname), "getClassMetatable(superclassname)==null!");
     return declare(classname, superclassMT);
   }
 

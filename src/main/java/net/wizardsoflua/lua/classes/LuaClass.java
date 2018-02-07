@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +15,9 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.Converters;
 
 public abstract class LuaClass<J, L extends Table> {
-  private final Map<String, LuaFunction> functions = new HashMap<>();
+  private LuaClassLoader luaClassLoader;
   private Table metatable;
-  protected Converters converters;
+  private final Map<String, LuaFunction> functions = new HashMap<>();
 
   private @Nullable Class<J> javaClass;
 
@@ -31,6 +32,10 @@ public abstract class LuaClass<J, L extends Table> {
     return javaClass;
   }
 
+  void setClassLoader(LuaClassLoader luaClassLoader) {
+    this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
+  }
+
   public Table getMetatable() {
     return metatable;
   }
@@ -43,11 +48,7 @@ public abstract class LuaClass<J, L extends Table> {
   }
 
   public Converters getConverters() {
-    return converters;
-  }
-
-  void setConverters(Converters converters) {
-    this.converters = checkNotNull(converters, "converters==null!");
+    return luaClassLoader.getConverters();
   }
 
   protected void add(String name, LuaFunction function) {

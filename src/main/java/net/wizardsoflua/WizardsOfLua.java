@@ -40,7 +40,7 @@ import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRegistry;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
-import net.wizardsoflua.lua.classes.LuaClasses;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.profiles.Profiles;
@@ -68,7 +68,6 @@ public class WizardsOfLua {
   public Logger logger;
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
-  private final LuaClasses luaClasses = new LuaClasses();
   private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
 
   // TODO move these lazy instances into a new state class
@@ -166,11 +165,6 @@ public class WizardsOfLua {
       }
 
       @Override
-      public LuaClasses getLuaClasses() {
-        return luaClasses;
-      }
-
-      @Override
       public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
         return luaFunctionCache;
       }
@@ -197,7 +191,7 @@ public class WizardsOfLua {
 
       @Override
       public boolean isSupportedLuaEvent(Event event) {
-        return event instanceof CustomLuaEvent || luaClasses.isSupported(event.getClass());
+        return event instanceof CustomLuaEvent || LuaClassLoader.isSupported(event.getClass());
       }
 
       @Override
@@ -205,7 +199,7 @@ public class WizardsOfLua {
         if (event instanceof CustomLuaEvent) {
           return ((CustomLuaEvent) event).getName();
         }
-        return luaClasses.getLuaClassnameOf(event.getClass());
+        return LuaClassLoader.getLuaClassNameOf(event.getClass());
       }
     });
     fileRegistry = new LuaFileRegistry(new LuaFileRegistry.Context() {
