@@ -10,19 +10,47 @@ This tutorial shows how you can import external Lua files into your spells.
 Writing programs into the command line or a command block is inconvenient for programs with more the a few statements.
 It is far better to use an text editor to edit Lua files, and then import them into your spells using the <tt>require</tt> function.
 
-To view, create, and edit a file, you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
+To support this, the Wizards of Lua mod provides for each player a personal directory in the server's file system, that is automatically added to the player's Lua search path.
 
-### Importing a Personal Module
-For each wizard there exists a directory where personal Lua files can be stored and which is automatically added to the Lua search path.
+To edit files in you personal directory you could use any external text editor, provided that you have direct access to the server's file system.
 
-Let's assume that inside your personal directory there already exists a file called "<tt>utilities.lua</tt>" with the following contents:
+But it's more convenient to use the built-in Lua editor, which can be lauched with the [/wol file edit](/wol-command.html#File-Edit) command.
+
+### Creating a Lua Module with the Built-In Lua Editor
+Let's assume you want to create a new Lua module called "utilities" and store it into your personal directory.
+
+To do that, you first have to make sure that your web browser is allowed to access your files.
+Type in the following command:
+```
+/wol browser login
+```
+and then click on the new link that appears in the chat (you must press 'T' before you can click on the link).
+
+This will open your web browser and grant access to your personal files.
+
+Next, create the module with the built-in editor by typing:
+```
+/wol file edit utilities.lua
+```
+and again click on the new link.
+
+This will open a new browser tab with the Lua editor for your new file.
+
+Now copy and paste the source code shown below into the editor and save it using CRTL-S.
+
 ```lua
 function particle(name)
   spell:execute("particle "..name.." ~ ~ ~ 0 0 0 0 1")
 end
 ```
 
-If you want to use the <tt>particle</tt> function in your current spell, you can include your utilities module by using the <tt>require</tt> function.
+![Built-In Editor](/images/wol-file-editor-with-utilities-module.jpg)
+
+### Importing a Personal Module
+Since your personal directory is automatically added to the Lua search path, you can import any file by using <tt>require</tt>
+function.
+
+For example, if you want to use the <tt>particle</tt> function from the "utilities" module in your current spell, you can include the module like this:
 
 ```lua
 /lua require("utilities"); particle("smoke")
@@ -32,7 +60,7 @@ Please note that you must omit the module's file extension ".lua".
 If you want to always import a specific module for any of your spells, you might want to add it to your personal profile.
 
 ### Using a Personal Profile
-A personal profile is an ordinary Lua file with the name "profile.lua" inside your directory.
+A personal profile is an special Lua file with the name "profile.lua" inside your directory.
 If it exists, it is automatically required by any of your spells.
 
 #### Example
