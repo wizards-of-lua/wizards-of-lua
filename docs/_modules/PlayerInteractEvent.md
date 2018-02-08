@@ -36,5 +36,5 @@ properties:
 functions:
 ---
 
-The PlayerInteractEvent is the base class of [LeftClickBlockEvent](/modules/LeftClickBlockEvent/)
+The <span class="notranslate">PlayerInteractEvent</span> is the base class of [LeftClickBlockEvent](/modules/LeftClickBlockEvent/)
 and [RightClickBlockEvent](/modules/RightClickBlockEvent/).

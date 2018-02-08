@@ -54,4 +54,4 @@ functions:
       - url: Time/sleep.md
 ---
 
-The Time module provides access to time related properties of the active Spell's world.
+The <span class="notranslate">Time</span> module provides access to time related properties of the active Spell's world.

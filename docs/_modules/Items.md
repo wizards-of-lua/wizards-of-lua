@@ -14,4 +14,4 @@ functions:
       - url: Items/get.md
 ---
 
-The Items module can be used to create an [item](/modules/Item/) of any type.
+The <span class="notranslate">Items</span> module can be used to create an [item](/modules/Item/) of any type.

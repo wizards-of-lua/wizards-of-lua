@@ -32,4 +32,4 @@ properties:
 functions:
 ---
 
-An instance of the Player class represents a specific player who is currently logged into the world.
+An instance of the <span class="notranslate">Player</span> class represents a specific player who is currently logged into the world.

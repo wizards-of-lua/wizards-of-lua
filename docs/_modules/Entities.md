@@ -14,4 +14,4 @@ functions:
       - url: Entities/find.md
 ---
 
-The Entities module provides access to all [Entity](/modules/Entity/) objects currently loaded.
+The <span class="notranslate">Entities</span> module provides access to all [Entity](/modules/Entity/) objects currently loaded.

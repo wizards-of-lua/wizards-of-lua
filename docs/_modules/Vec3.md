@@ -76,14 +76,14 @@ functions:
       - url: Vec3/normalize.md
 ---
 
-'Vec3' is short for '3-dimensional Vector'.
+An instance of the <span class="notranslate">Vec3</span> class represents a '3-dimensional Vector'.
 Mostly a 3-dimensional vector is used to denote a position in the
 3-dimensional world space. And sometimes it is used to denote a constant velocity
 of an object inside that space.
 Actually a vector can be used for many other 'things' that can be described by
 3 independent numerical values.
 
-To create a vector you can call the Vec3 function:
+To create a vector you can call the <span class="notranslate">Vec3</span> function:
 ```lua
 /lua myvec = Vec3( 1, 2, 3)
 ```

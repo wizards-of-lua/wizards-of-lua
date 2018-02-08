@@ -25,7 +25,7 @@ properties:
 functions:
 ---
 
-The SwingArmEvent is fired whenever a [Player](/modules/Player) waves an arm.
+The <span class="notranslate">SwingArmEvent</span> is fired whenever a [Player](/modules/Player) waves an arm.
 This can be the left arm or the right arm. This event is fired on three occasions:
 - just before the [RightClickBlockEvent](/modules/RightClickBlockEvent)
 - just before the [LeftClickBlockEvent](/modules/LeftClickBlockEvent)

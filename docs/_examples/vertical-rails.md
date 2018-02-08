@@ -22,7 +22,7 @@ If so, the minecart's motion property is updated so that it moves upwards.
 This spell must be inserted into a command block.
 As always, don't forget to add <tt>/lua </tt> in front of it.
 ```lua
-speed=0.1;
+/lua speed=0.1;
 exitMotions = {
   north = {0, 0, 0.2},
   south = {0, 0, -0.2},
@@ -69,4 +69,3 @@ It was inspired by an amazing command block setup published by *Sparks* of *Game
 
 If you are curious, here is a video of it.
 {% include youtube.md id="LJoN7CmJL4Q" %}
-

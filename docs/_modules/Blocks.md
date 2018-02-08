@@ -14,4 +14,4 @@ functions:
       - url: Blocks/get.md
 ---
 
-The Blocks module provides access to all [block types](https://minecraft.gamepedia.com/Block) known in Minecraft.
+The <span class="notranslate">Blocks</span> module provides access to all [block types](https://minecraft.gamepedia.com/Block) known in Minecraft.

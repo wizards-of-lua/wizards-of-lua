@@ -44,7 +44,7 @@ This is really easy.
 You just have to enclose the execute statement in a double for-loop.
 
 ```lua
-summon="/summon Zombie ~0 ~0 ~0 {HandItems:[
+/lua summon="/summon Zombie ~0 ~0 ~0 {HandItems:[
 {Count:1,id:diamond_sword},{Count:1,id:shield}],
 ArmorItems:[{Count:1,id:leather_boots},{},
 {Count:1,id:iron_chestplate},{Count:1,id:iron_helmet}],

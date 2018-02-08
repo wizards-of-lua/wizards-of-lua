@@ -1,7 +1,7 @@
 ---
 name: PlayerItemPickupEvent
 title: PlayerItemPickupEvent
-subtitle: When a Player collects something
+subtitle: When a Player Collects Something
 type: event
 extends: Event
 layout: module
@@ -19,5 +19,5 @@ properties:
 functions:
 ---
 
-The PlayerItemPickupEvent is fired whenever a [Player](/modules/Player) picks up
+The <span class="notranslate">PlayerItemPickupEvent</span> is fired whenever a [Player](/modules/Player) picks up
 an [DroppedItem](/modules/DroppedItem).

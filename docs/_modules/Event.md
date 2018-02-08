@@ -13,4 +13,4 @@ properties:
 functions:
 ---
 
-The Event class represents a notification about something that happend in the world.
+The <span class="notranslate">Event</span> class represents a notification about something that happend in the world.

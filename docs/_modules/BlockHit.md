@@ -1,5 +1,6 @@
 ---
 name: BlockHit
+title: BlockHit
 subtitle: What Lies in View
 type: class
 layout: module
@@ -21,4 +22,4 @@ properties:
 ---
 
 The <span class="notranslate">BlockHit</span> class contains the results of a call
-to the Entity's [scanView()](/modules/Entity/#scanView) function.
+to the entity's [scanView()](/modules/Entity/#scanView) function.

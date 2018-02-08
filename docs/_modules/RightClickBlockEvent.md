@@ -1,7 +1,7 @@
 ---
 name: RightClickBlockEvent
 title: RightClickBlockEvent
-subtitle: When a Player right-clicks on a Block
+subtitle: When a Player Right-Clicks on a Block
 type: event
 extends: PlayerInteractEvent
 layout: module
@@ -14,4 +14,4 @@ properties:
 functions:
 ---
 
-The RightClickBlockEvent class is fired when a player right-clicks at some block.
+The <span class="notranslate">RightClickBlockEvent</span> class is fired when a player right-clicks at some block.

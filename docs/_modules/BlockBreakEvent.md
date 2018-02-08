@@ -1,16 +1,18 @@
 ---
 name: BlockBreakEvent
 title: BlockBreakEvent
-subtitle: When a [Player](!SITE_URL!/modules/Player/) Breaks a [Block](!SITE_URL!/modules/Block/)
+subtitle: When a Player Breaks a Block
 type: event
 extends: BlockEvent
 layout: module
 properties:
   - name: experience
-    type: number (integer)
+    type: number
     access: r
     description: "The experience dropped by the block.
     "
+    examples:
+      - url: BlockBreakEvent/experience.md
   - name: player
     type: "[Player](!SITE_URL!/modules/Player/)"
     access: r
@@ -19,4 +21,4 @@ properties:
 functions:
 ---
 
-The BlockBreakEvent class is fired when a player breaks a block.
+The <span class="notranslate">BlockBreakEvent</span> class is fired when a player breaks a block.

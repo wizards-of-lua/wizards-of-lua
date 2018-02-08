@@ -26,5 +26,5 @@ properties:
 functions:
 ---
 
-The Mob class represents mobile creatures that are self-controlled
+The <span class="notranslate">Mob</span> class represents mobile creatures that are self-controlled
 and have a distinct behaviour.

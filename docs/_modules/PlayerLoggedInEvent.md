@@ -1,7 +1,7 @@
 ---
 name: PlayerLoggedInEvent
 title: PlayerLoggedInEvent
-subtitle: When a Player joins the World
+subtitle: When a Player Joins the World
 type: event
 extends: Event
 layout: module
@@ -14,5 +14,5 @@ properties:
 functions:
 ---
 
-The PlayerLoggedInEvent is fired whenever a [Player](/modules/Player) joins the
+The <span class="notranslate">PlayerLoggedInEvent</span> is fired whenever a [Player](/modules/Player) joins the
 world (server).

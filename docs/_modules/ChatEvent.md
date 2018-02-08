@@ -19,7 +19,7 @@ properties:
 functions:
 ---
 
-The ChatEvent class contains information about a chat message that has been posted
+The <span class="notranslate">ChatEvent</span> class contains information about a chat message that has been posted
 by some [player](/modules/Player/).
 
 ### Example

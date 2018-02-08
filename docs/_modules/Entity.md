@@ -143,11 +143,11 @@ functions:
       - url: Entity/dropItem.md
   - name: kill
     parameters:
-    results:
+    results: nil
     description: "The 'kill' function kills this entity during the next game tick.
     "
     examples:
       - url: Entity/kill.md
 ---
 
-The Entity class is the base class of all entities that populate the world.
+The <span class="notranslate">Entity</span> class is the base class of all entities that populate the world.

@@ -45,4 +45,4 @@ properties:
 functions:
 ---
 
-The Material class describes the physical behaviour of a [Block]({% link _modules/Block.md %}).
+The <span class="notranslate">Material</span> class describes the physical behaviour of a [Block]({% link _modules/Block.md %}).

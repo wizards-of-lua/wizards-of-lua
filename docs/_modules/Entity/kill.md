@@ -1,5 +1,5 @@
 #### Example
-Killing all pigs that are swimming in water.
+Killing all pigs that are swimming in liquid material.
 ```lua
 local pigs = Entities.find("@e[type=pig]")
 for _,pig in pairs(pigs) do

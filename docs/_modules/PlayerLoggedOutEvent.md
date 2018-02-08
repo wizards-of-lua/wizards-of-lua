@@ -1,7 +1,7 @@
 ---
 name: PlayerLoggedOutEvent
 title: PlayerLoggedOutEvent
-subtitle: When a Player leaves the World
+subtitle: When a Player Leaves the World
 type: event
 extends: Event
 layout: module
@@ -14,5 +14,5 @@ properties:
 functions:
 ---
 
-The PlayerLoggedOutEvent is fired whenever a [Player](/modules/Player) leaves the
+The <span class="notranslate">PlayerLoggedOutEvent</span> is fired whenever a [Player](/modules/Player) leaves the
 world (server).

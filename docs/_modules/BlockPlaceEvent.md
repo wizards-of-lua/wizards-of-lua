@@ -1,7 +1,7 @@
 ---
 name: BlockPlaceEvent
 title: BlockPlaceEvent
-subtitle: When a [Player](!SITE_URL!/modules/Player/) Places a [Block](!SITE_URL!/modules/Block/)
+subtitle: When a Player Places a Block
 type: event
 extends: BlockEvent
 layout: module
@@ -18,6 +18,8 @@ properties:
     description: "The block against which the new block was placed.
     Unfortunately the NBT of the block placedAgainst is unavailable.
     "
+    examples:
+      - url: BlockPlaceEvent/placedAgainst.md
   - name: player
     type: "[Player](!SITE_URL!/modules/Player/)"
     access: r
@@ -26,4 +28,4 @@ properties:
 functions:
 ---
 
-The BlockPlaceEvent class is fired when a player places a block.
+The <span class="notranslate">BlockPlaceEvent</span> class is fired when a player places a block.

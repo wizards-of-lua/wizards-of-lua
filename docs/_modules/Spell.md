@@ -45,5 +45,5 @@ functions:
       - url: Spell/execute.md
 ---
 
-"Spell" is one of the main magic classes used in most known spells. It is used to
+The <span class="notranslate">Spell</span> is one of the main magic classes used in most known spells. It is used to
 control the properties and the behaviour of the executed spell itself.

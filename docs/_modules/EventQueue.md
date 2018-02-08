@@ -47,4 +47,4 @@ functions:
       - url: EventQueue/next.md
 ---
 
-The EventQueue class collects [events](/modules/Event/) when it is connected to the event source.
+The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event/) when it is connected to the event source.

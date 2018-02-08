@@ -24,4 +24,4 @@ functions:
       - url: Events/fire.md
 ---
 
-The Events module provides functions for accessing and firing [Events](/modules/Event/).
+The <span class="notranslate">Events</span> module provides functions for accessing and firing [Events](/modules/Event/).

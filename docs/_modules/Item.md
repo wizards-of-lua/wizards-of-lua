@@ -48,4 +48,4 @@ functions:
       - url: Item/putNbt.md
 ---
 
-The Item class represents all things a creature can hold in its hands and which can be stored in an inventory.
+The <span class="notranslate">Item</span> class represents all things a creature can hold in its hands and which can be stored in an inventory.

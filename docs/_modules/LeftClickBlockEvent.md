@@ -1,7 +1,7 @@
 ---
 name: LeftClickBlockEvent
 title: LeftClickBlockEvent
-subtitle: When a Player left-clicks on a Block
+subtitle: When a Player Left-Clicks on a Block
 type: event
 extends: PlayerInteractEvent
 layout: module
@@ -16,4 +16,4 @@ properties:
 functions:
 ---
 
-The LeftClickBlockEvent class is fired when a player left-clicks at some block.
+The <span class="notranslate">LeftClickBlockEvent</span> class is fired when a player left-clicks at some block.

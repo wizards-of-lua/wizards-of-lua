@@ -17,5 +17,5 @@ properties:
 functions:
 ---
 
-The CustomEvent represents any event that has been fired from some Lua code using
+The <span class="notranslate">CustomEvent</span> represents any event that has been fired from some Lua code using
 [Events.fire()](/modules/Events/#fire).

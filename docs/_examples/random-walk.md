@@ -14,10 +14,9 @@ Here is a photo of the remains left by a random walking grass block.
 ![Random Walking Grass](/images/random-walk-in-dessert.jpg)
 
 Just paste the following source code into a command block.
-As always: don't forget to add ```/lua ``` in front of it.
 
 ```lua
-grass=Blocks.get("grass");
+/lua grass=Blocks.get("grass");
 dir={"north","south","east","west"};
 for i=1,200 do
   spell:move(dir[math.random(#dir)]);

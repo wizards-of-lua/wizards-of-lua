@@ -9,8 +9,8 @@ properties:
   - name: block
     type: "[Block](!SITE_URL!/modules/Block/)"
     access: r
-    description: "The block this event is about. For instance the broken block if the event is a [BlockBreakEvent](!SITE_URL!/modules/BlockBreakEvent/).
-    The NBT of the block is only available for a [BlockPlaceEvent](!SITE_URL!/modules/BlockPlaceEvent/).
+    description: "This is the block this event is about.
+    Please note that the [nbt value](!SITE_URL!/modules/Block/#nbt) value of the block is only available for a [BlockPlaceEvent](!SITE_URL!/modules/BlockPlaceEvent/).
     "
   - name: pos
     type: "[Vec3](!SITE_URL!/modules/Vec3/)"
@@ -20,5 +20,5 @@ properties:
 functions:
 ---
 
-The BlockEvent is the base class of [BlockBreakEvent](/modules/BlockBreakEvent/)
+The <span class="notranslate">BlockEvent</span> is the base class of [BlockBreakEvent](/modules/BlockBreakEvent/)
 and [BlockPlaceEvent](/modules/BlockPlaceEvent/).

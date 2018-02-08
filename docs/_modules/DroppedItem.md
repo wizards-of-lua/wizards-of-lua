@@ -1,5 +1,6 @@
 ---
 name: DroppedItem
+title: DroppedItem
 subtitle: Things That are Lying Around
 type: class
 layout: module
@@ -11,4 +12,4 @@ properties:
     "
 ---
 
-The DroppedItem class represents things that are lying somewhere and can be collected by players.
+The <span class="notranslate">DroppedItem</span> class represents things that are lying somewhere and can be collected by players.

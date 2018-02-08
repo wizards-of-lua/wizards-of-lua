@@ -14,4 +14,4 @@ properties:
 functions:
 ---
 
-The PlayerRespawnEvent is fired whenever a [Player](/modules/Player) is born.
+The <span class="notranslate">PlayerRespawnEvent</span> is fired whenever a [Player](/modules/Player) is born.

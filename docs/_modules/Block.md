@@ -58,4 +58,4 @@ functions:
       - url: Block/asItem.md
 ---
 
-The Block class is a basic unit of structure in Minecraft.
+The <span class="notranslate">Block</span> class is a basic unit of structure in Minecraft.

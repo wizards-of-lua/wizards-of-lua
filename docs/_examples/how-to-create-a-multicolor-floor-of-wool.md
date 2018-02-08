@@ -1,29 +1,26 @@
 ---
-title:  "How to Create a Multicolor Floor of Wool"
+title:  "How to Create a Multicolored Floor of Wool"
 date:   2017-08-28 10:49:00
 categories: Structures
 excerpt_separator: <!--more-->
 author: mickkay
 ---
-I really like to to start the share-a-spell initiative to illustrate the power of spells.
-I picked a small one that creates a floor of colored wool blocks.
-Let me show you how this is done.
+To illustrate the power of spells I like to show you a small one that creates a floor of colored wool blocks.
 <!--more-->
 
-![Multicolor Floor of Wool](/images/multicolor-floor-of-wool.jpg)
+![Multicolored Floor of Wool](/images/multicolor-floor-of-wool.jpg)
 
-The alpha version is really a little bit restricted so far since its only strengths are
+At the time of writing, the alpha version (1.0.0-alpha) is somewhat limited since its only strengths are
 * the manipulation of the blocky aspects of the world
 * and the execution of commands within spells.
 
-However, this is quite a bit.
-A smart wizard can already do things that are otherwise quite difficult to achive.
+However, this is quite something, since a smart wizard already can do things that are otherwise difficult to achieve.
 
-For now, let's concentrate on the manipulation of the blocky aspects.
-For example, the following spell can create a big multicolor floor of wool in seconds.
+For now, let's concentrate on the manipulation of blocks.
+For example, the following spell can create a big multicolored floor of wool in seconds.
 
 ```lua
-w=10;
+/lua w=10;
 l=10;
 colors={"white","orange","magenta","light_blue",
 "yellow","lime","pink","gray","silver","cyan",
@@ -40,12 +37,12 @@ for x=1,w do
 end;
 ```
 Please note that almost all statements are terminated with the semicolon character <tt>';'</tt>.
-For normal Lua programs this is actually not neccessary.
-But due the fact that the current version of WoL (1.0.0-alpha) has no support for importing
-external Lua files, we have to insert the whole program into the single line of the chat or a command block.
+
+For normal Lua programs this is actually not necessary.
+But due the fact that the current version of WoL (1.0.0-alpha) has no support for
+[importing Lua files](/tutorials/importing_lua_files), we have to insert the whole program into the single line of the chat or a command block.
 Here we need the semicolons, so that Lua can separate the statements from each other.
 Actually, I had to execute this spell using a command block since it is a little bit longer than the character limit of the chat (wich is 256).
-Just a reminder: don't forget to add ```/lua ``` in front of it.
 
 The variables <tt>w</tt> and <tt>l</tt> stand for "width" and "length".
 For the screenshot above I set them both to a value of 20.
@@ -54,7 +51,7 @@ You can easily modify the above spell to create a whole box of wool.
 Do you see the line where the <tt>y</tt> is?
 Instead of assigning a constant value we can use it as the loop variable in another loop.
 ```lua
-w=10;
+/lua w=10;
 l=10;
 h=10;
 colors={"white","orange","magenta","light_blue",
@@ -76,6 +73,6 @@ The height of the box is defined by <tt>h</tt>.
 
 Again I set the width, length, and height to 20 and casted the spell. Look at the results:
 
-![Multicolor Floor of Wool](/images/multicolor-box-of-wool.jpg)
+![Multicolored Box of Wool](/images/multicolor-box-of-wool.jpg)
 
 Just imagine how long it would take to build this box by hand...
