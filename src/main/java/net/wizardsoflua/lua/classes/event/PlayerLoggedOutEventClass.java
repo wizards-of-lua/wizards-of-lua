@@ -6,11 +6,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = PlayerLoggedOutEventClass.METATABLE_NAME,
-    superclassname = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = PlayerLoggedOutEventClass.NAME, superClass = EventClass.class)
 public class PlayerLoggedOutEventClass extends
     ProxyingLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Proxy<PlayerEvent.PlayerLoggedOutEvent>> {
-  public static final String METATABLE_NAME = "PlayerLoggedOutEvent";
+  public static final String NAME = "PlayerLoggedOutEvent";
 
   @Override
   public Proxy<PlayerEvent.PlayerLoggedOutEvent> toLua(PlayerEvent.PlayerLoggedOutEvent javaObj) {

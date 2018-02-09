@@ -31,9 +31,9 @@ import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
-@DeclareLuaClass(name = EntityClass.METATABLE_NAME)
+@DeclareLuaClass(name = EntityClass.NAME)
 public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<?>> {
-  public static final String METATABLE_NAME = "Entity";
+  public static final String NAME = "Entity";
 
   public EntityClass() {
     add("move", new MoveFunction());

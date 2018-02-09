@@ -20,13 +20,12 @@ import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.spell.SpellEntity;
 
-@DeclareLuaClass(name = SpellClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
+@DeclareLuaClass(name = SpellClass.NAME, superClass = EntityClass.class)
 public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
-  public static final String METATABLE_NAME = "Spell";
+  public static final String NAME = "Spell";
 
   public SpellClass() {
     add("execute", new ExecuteFunction());
-
   }
 
   @Override

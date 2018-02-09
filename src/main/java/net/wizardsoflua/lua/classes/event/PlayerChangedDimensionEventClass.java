@@ -6,11 +6,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = PlayerChangedDimensionEventClass.METATABLE_NAME,
-    superclassname = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = PlayerChangedDimensionEventClass.NAME, superClass = EventClass.class)
 public class PlayerChangedDimensionEventClass extends
     ProxyingLuaClass<PlayerEvent.PlayerChangedDimensionEvent, PlayerChangedDimensionEventClass.Proxy<PlayerEvent.PlayerChangedDimensionEvent>> {
-  public static final String METATABLE_NAME = "PlayerChangedDimensionEvent";
+  public static final String NAME = "PlayerChangedDimensionEvent";
 
   @Override
   public Proxy<PlayerEvent.PlayerChangedDimensionEvent> toLua(

@@ -16,13 +16,13 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 
-@DeclareLuaClass(name = PlayerClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
+@DeclareLuaClass(name = PlayerClass.NAME, superClass = EntityClass.class)
 public class PlayerClass
     extends ProxyCachingLuaClass<EntityPlayerMP, PlayerClass.Proxy<EntityPlayerMP>> {
-  public static final String METATABLE_NAME = "Player";
+  public static final String NAME = "Player";
 
   public PlayerClass() {
-    add("putNbt", new UnsupportedFunction("putNbt", METATABLE_NAME));
+    add("putNbt", new UnsupportedFunction("putNbt", getName()));
   }
 
   @Override

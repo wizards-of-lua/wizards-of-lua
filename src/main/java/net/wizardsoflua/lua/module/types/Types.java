@@ -17,6 +17,7 @@ import net.wizardsoflua.lua.ITypes;
 import net.wizardsoflua.lua.classes.CustomLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.classes.ObjectClass;
 
 public class Types implements ITypes {
   private static final String NIL_META = "nil";
@@ -79,7 +80,7 @@ public class Types implements ITypes {
     if (superClassMetaTable != null) {
       superClass = luaClassLoader.getLuaClassForMetaTable(superClassMetaTable);
     } else {
-      superClass = luaClassLoader.getObjectClass();
+      superClass = luaClassLoader.getLuaClassOfType(ObjectClass.class);
     }
     luaClassLoader.load(new CustomLuaClass(luaClassName, superClass));
   }

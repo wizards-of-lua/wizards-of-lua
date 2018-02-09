@@ -6,10 +6,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = ChatEventClass.METATABLE_NAME, superclassname = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = ChatEventClass.NAME, superClass = EventClass.class)
 public class ChatEventClass
     extends ProxyingLuaClass<ServerChatEvent, ChatEventClass.Proxy<ServerChatEvent>> {
-  public static final String METATABLE_NAME = "ChatEvent";
+  public static final String NAME = "ChatEvent";
 
   @Override
   public Proxy<ServerChatEvent> toLua(ServerChatEvent javaObj) {

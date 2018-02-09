@@ -7,10 +7,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 
-@DeclareLuaClass(name = DroppedItemClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
+@DeclareLuaClass(name = DroppedItemClass.NAME, superClass = EntityClass.class)
 public class DroppedItemClass
     extends ProxyCachingLuaClass<EntityItem, DroppedItemClass.Proxy<EntityItem>> {
-  public static final String METATABLE_NAME = "DroppedItem";
+  public static final String NAME = "DroppedItem";
 
   @Override
   public DroppedItemClass.Proxy<EntityItem> toLua(EntityItem delegate) {

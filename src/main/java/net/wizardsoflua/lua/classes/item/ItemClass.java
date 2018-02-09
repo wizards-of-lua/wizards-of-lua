@@ -14,9 +14,9 @@ import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
-@DeclareLuaClass(name = ItemClass.METATABLE_NAME)
+@DeclareLuaClass(name = ItemClass.NAME)
 public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> {
-  public static final String METATABLE_NAME = "Item";
+  public static final String NAME = "Item";
 
   public ItemClass() {
     add("putNbt", new PutNbtFunction());

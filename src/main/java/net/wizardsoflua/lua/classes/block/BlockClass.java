@@ -23,9 +23,9 @@ import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
-@DeclareLuaClass(name = BlockClass.METATABLE_NAME)
+@DeclareLuaClass(name = BlockClass.NAME)
 public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
-  public static final String METATABLE_NAME = "Block";
+  public static final String NAME = "Block";
 
   public BlockClass() {
     add("withData", new WithDataFunction());

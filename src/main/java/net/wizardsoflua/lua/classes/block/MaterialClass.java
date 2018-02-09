@@ -7,10 +7,9 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-@DeclareLuaClass(name = MaterialClass.METATABLE_NAME)
-public class MaterialClass
-    extends ProxyCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
-  public static final String METATABLE_NAME = "Material";
+@DeclareLuaClass(name = MaterialClass.NAME)
+public class MaterialClass extends ProxyCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
+  public static final String NAME = "Material";
 
   @Override
   public Proxy<Material> toLua(Material delegate) {

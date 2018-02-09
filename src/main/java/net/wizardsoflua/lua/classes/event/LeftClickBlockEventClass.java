@@ -6,11 +6,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = LeftClickBlockEventClass.METATABLE_NAME,
-    superclassname = PlayerInteractEventClass.METATABLE_NAME)
+@DeclareLuaClass(name = LeftClickBlockEventClass.NAME, superClass = PlayerInteractEventClass.class)
 public class LeftClickBlockEventClass extends
     ProxyingLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Proxy<PlayerInteractEvent.LeftClickBlock>> {
-  public static final String METATABLE_NAME = "LeftClickBlockEvent";
+  public static final String NAME = "LeftClickBlockEvent";
 
   @Override
   public Proxy<PlayerInteractEvent.LeftClickBlock> toLua(

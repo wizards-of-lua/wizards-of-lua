@@ -2,7 +2,6 @@ package net.wizardsoflua.lua.classes;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
@@ -27,14 +26,20 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     return getNameOf(getClassWithGenerics());
   }
 
-  public static @Nullable String getSuperClassNameOf(
+  public static Class<? extends LuaClass> getSuperClassClassOf(
       Class<? extends JavaLuaClass<?, ?>> luaClassClass) {
     DeclareLuaClass annotation = luaClassClass.getAnnotation(DeclareLuaClass.class);
-    return Strings.emptyToNull(annotation.superclassname());
+    return annotation.superClass();
   }
 
-  public @Nullable String getSuperClassName() {
-    return getSuperClassNameOf(getClassWithGenerics());
+  public Class<? extends LuaClass> getSuperClassClass() {
+    return getSuperClassClassOf(getClassWithGenerics());
+  }
+
+  @Override
+  public @Nullable LuaClass getSuperClass() {
+    Class<? extends LuaClass> superClassClass = getSuperClassClass();
+    return getClassLoader().getLuaClassOfType(superClassClass);
   }
 
   public Class<? extends JavaLuaClass<?, ?>> getClassWithGenerics() {
@@ -42,16 +47,6 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     Class<? extends JavaLuaClass<?, ?>> luaClassClass =
         (Class<? extends JavaLuaClass<?, ?>>) getClass();
     return luaClassClass;
-  }
-
-  @Override
-  public @Nullable LuaClass getSuperClass() {
-    String superClassName = getSuperClassName();
-    if (superClassName == null) {
-      return null;
-    } else {
-      return getClassLoader().getLuaClassForName(superClassName);
-    }
   }
 
   public Class<J> getJavaClass() {

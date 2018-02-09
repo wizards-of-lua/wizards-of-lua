@@ -12,10 +12,10 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-@DeclareLuaClass(name = EventQueueClass.METATABLE_NAME)
+@DeclareLuaClass(name = EventQueueClass.NAME)
 public class EventQueueClass
     extends ProxyingLuaClass<EventQueue, EventQueueClass.Proxy<EventQueue>> {
-  public static final String METATABLE_NAME = "EventQueue";
+  public static final String NAME = "EventQueue";
 
   public EventQueueClass() {
     add("disconnect", new DisconnectFunction());

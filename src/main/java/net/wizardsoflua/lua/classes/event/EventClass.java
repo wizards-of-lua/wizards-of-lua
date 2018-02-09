@@ -7,9 +7,9 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-@DeclareLuaClass(name = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = EventClass.NAME)
 public class EventClass extends ProxyingLuaClass<Event, EventClass.Proxy<Event>> {
-  public static final String METATABLE_NAME = "Event";
+  public static final String NAME = "Event";
 
   @Override
   public Proxy<Event> toLua(Event javaObj) {

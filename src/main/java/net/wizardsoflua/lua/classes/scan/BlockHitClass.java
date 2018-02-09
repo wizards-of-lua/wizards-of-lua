@@ -8,10 +8,10 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
-@DeclareLuaClass(name = BlockHitClass.METATABLE_NAME)
+@DeclareLuaClass(name = BlockHitClass.NAME)
 public class BlockHitClass
     extends ProxyingLuaClass<RayTraceResult, BlockHitClass.Proxy<RayTraceResult>> {
-  public static final String METATABLE_NAME = "BlockHit";
+  public static final String NAME = "BlockHit";
 
   @Override
   public Proxy<RayTraceResult> toLua(RayTraceResult javaObj) {

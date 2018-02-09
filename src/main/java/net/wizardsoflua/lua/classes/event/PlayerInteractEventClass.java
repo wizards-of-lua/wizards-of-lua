@@ -7,11 +7,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = PlayerInteractEventClass.METATABLE_NAME,
-    superclassname = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = PlayerInteractEventClass.NAME, superClass = EventClass.class)
 public class PlayerInteractEventClass extends
     ProxyingLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Proxy<PlayerInteractEvent>> {
-  public static final String METATABLE_NAME = "PlayerInteractEvent";
+  public static final String NAME = "PlayerInteractEvent";
 
   @Override
   public Proxy<PlayerInteractEvent> toLua(PlayerInteractEvent javaObj) {

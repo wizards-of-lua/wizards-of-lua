@@ -9,23 +9,15 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.common.reflect.TypeToken;
@@ -37,12 +29,12 @@ import net.wizardsoflua.lua.module.types.Types;
 public class LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
 
-  private static final List<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
-      sortByClassHierachy(findJavaLuaClassClasses());
+  private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
+      findJavaLuaClassClasses();
   private static final ImmutableMap<Class<?>, Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASS_BY_JAVA_CLASS =
       Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, LuaClassLoader::getJavaClass);
 
-  private static Iterable<Class<? extends JavaLuaClass<?, ?>>> findJavaLuaClassClasses() {
+  private static ImmutableList<Class<? extends JavaLuaClass<?, ?>>> findJavaLuaClassClasses() {
     try {
       ClassLoader classloader = Thread.currentThread().getContextClassLoader();
       ClassPath classpath = ClassPath.from(classloader);
@@ -53,42 +45,10 @@ public class LuaClassLoader {
       @SuppressWarnings("unchecked")
       Iterable<Class<? extends JavaLuaClass<?, ?>>> result =
           (Iterable<Class<? extends JavaLuaClass<?, ?>>>) (Iterable<?>) luaClasses;
-      return result;
+      return ImmutableList.copyOf(result);
     } catch (IOException ex) {
       throw new UndeclaredThrowableException(ex);
     }
-  }
-
-  // FIXME Adrodoc55 07.02.2018: sortieren sollte implizit bei load class passieren, indem die
-  // superklasse fals nicht vorhanden geladen wird
-  private static List<Class<? extends JavaLuaClass<?, ?>>> sortByClassHierachy(
-      Iterable<Class<? extends JavaLuaClass<?, ?>>> luaClasses) {
-    Multimap<String, Class<? extends JavaLuaClass<?, ?>>> subclasses = ArrayListMultimap.create();
-    for (Class<? extends JavaLuaClass<?, ?>> luaClass : luaClasses) {
-      DeclareLuaClass anno = luaClass.getAnnotation(DeclareLuaClass.class);
-      subclasses.put(anno.superclassname(), luaClass);
-    }
-
-    Deque<Class<? extends JavaLuaClass<?, ?>>> todo = new ArrayDeque<>();
-    todo.addAll(subclasses.removeAll(""));
-
-    List<Class<? extends JavaLuaClass<?, ?>>> result = new ArrayList<>();
-    while (!todo.isEmpty()) {
-      Class<? extends JavaLuaClass<?, ?>> cls = todo.pop();
-      result.add(cls);
-      String name = cls.getAnnotation(DeclareLuaClass.class).name();
-      todo.addAll(subclasses.removeAll(name));
-    }
-    if (!subclasses.isEmpty()) {
-      throw new IllegalStateException(
-          String.format("Could not create Lua class hierarchy from classes: %s!",
-              getClassnames(subclasses.values())));
-    }
-    return result;
-  }
-
-  private static String getClassnames(Iterable<? extends Class<?>> list) {
-    return Joiner.on(", ").join(transform(list, Class::getName));
   }
 
   private static Class<?> getJavaClass(Class<? extends JavaLuaClass<?, ?>> luaClass) {
@@ -115,10 +75,8 @@ public class LuaClassLoader {
   }
 
   private final Table env;
-  private final ObjectClass objectClass = new ObjectClass();
-  private final Set<LuaClass> luaClasses = new HashSet<>();
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
-  private final Map<String, LuaClass> luaClassByName = new HashMap<>();
+  private final Map<Class<? extends LuaClass>, LuaClass> luaClassByType = new HashMap<>();
   private final Map<Table, LuaClass> luaClassByMetaTable = new HashMap<>();
   private final Types types;
   private final Converters converters;
@@ -127,10 +85,6 @@ public class LuaClassLoader {
     this.env = requireNonNull(env, "env == null!");
     types = new Types(this);
     converters = new Converters(this);
-  }
-
-  public LuaClass getObjectClass() {
-    return objectClass;
   }
 
   public Table getEnv() {
@@ -146,27 +100,31 @@ public class LuaClassLoader {
   }
 
   public void loadStandardClasses() {
-    load(objectClass);
+    load(ObjectClass.class);
     for (Class<? extends JavaLuaClass<?, ?>> luaClassClass : JAVA_LUA_CLASS_CLASSES) {
       load(luaClassClass);
     }
   }
 
-  public void load(Class<? extends JavaLuaClass<?, ?>> luaClassClass) {
+  public void load(Class<? extends LuaClass> luaClassClass) {
     try {
-      JavaLuaClass<?, ?> luaClass = luaClassClass.newInstance();
-      luaClassByJavaClass.put(luaClass.getJavaClass(), luaClass);
-      load(luaClass);
+      load(luaClassClass.newInstance());
     } catch (InstantiationException | IllegalAccessException e) {
       throw new UndeclaredThrowableException(e);
     }
   }
 
   public void load(LuaClass luaClass) {
+    if (luaClassByType.containsKey(luaClass.getClass())) {
+      return; // LuaClass is already loaded
+    }
     luaClass.init(this);
-    luaClasses.add(luaClass);
-    luaClassByName.put(luaClass.getName(), luaClass);
+    luaClassByType.put(luaClass.getClass(), luaClass);
     luaClassByMetaTable.put(luaClass.getMetaTable(), luaClass);
+    if (luaClass instanceof JavaLuaClass) {
+      JavaLuaClass<?, ?> javaLuaClass = (JavaLuaClass<?, ?>) luaClass;
+      luaClassByJavaClass.put(javaLuaClass.getJavaClass(), javaLuaClass);
+    }
     get_G().rawset(luaClass.getName(), luaClass.getMetaTable());
   }
 
@@ -175,31 +133,21 @@ public class LuaClassLoader {
     return requireNonNull(_G, "_G == null!");
   }
 
-  public @Nullable <J> JavaLuaClass<J, ?> getLuaClassForJavaClass(Class<J> javaClass) {
-    requireNonNull(javaClass, "javaClass == null!");
-    @SuppressWarnings("unchecked")
-    JavaLuaClass<J, ?> luaClass = (JavaLuaClass<J, ?>) luaClassByJavaClass.get(javaClass);
-    return luaClass;
-  }
-
-  public <J> JavaLuaClass<? super J, ?> getLuaClassForJavaClassRecursively(Class<J> javaClass) {
-    if (javaClass == null) {
-      return null;
+  /**
+   * Returns the {@link LuaClass} instance of the specified type, loading it if neccessary.
+   *
+   * @param luaClassClass
+   * @return the {@link LuaClass} instance
+   */
+  public <LC extends LuaClass> LC getLuaClassOfType(Class<LC> luaClassClass) {
+    requireNonNull(luaClassClass, "luaClassClass == null!");
+    LuaClass luaClass = luaClassByType.get(luaClassClass);
+    if (luaClass == null) {
+      load(luaClassClass);
+      luaClass = luaClassByType.get(luaClassClass);
+      assert luaClass != null;
     }
-    JavaLuaClass<J, ?> luaClass = getLuaClassForJavaClass(javaClass);
-    if (luaClass != null) {
-      return luaClass;
-    }
-    Class<? super J> superClass = javaClass.getSuperclass();
-    return getLuaClassForJavaClassRecursively(superClass);
-  }
-
-  public LuaClass getLuaClassForName(String luaClassName) throws IllegalArgumentException {
-    requireNonNull(luaClassName, "luaClassName == null!");
-    LuaClass luaClass = luaClassByName.get(luaClassName);
-    checkArgument(luaClass != null, "No LuaClass with name '%s' was loaded by this LuaClassLoader",
-        luaClassName);
-    return luaClass;
+    return luaClassClass.cast(luaClass);
   }
 
   public LuaClass getLuaClassForMetaTable(Table luaClassMetaTable) throws IllegalArgumentException {
@@ -209,5 +157,32 @@ public class LuaClassLoader {
         "The table '%s' does not represent a LuaClass loaded by this LuaClassLoader",
         luaClassMetaTable);
     return luaClass;
+  }
+
+  public @Nullable <J> JavaLuaClass<J, ?> getLuaClassForJavaClass(Class<J> javaClass) {
+    requireNonNull(javaClass, "javaClass == null!");
+    @SuppressWarnings("unchecked")
+    JavaLuaClass<J, ?> luaClass = (JavaLuaClass<J, ?>) luaClassByJavaClass.get(javaClass);
+    return luaClass;
+  }
+
+  /**
+   * Returns the corresponding {@link JavaLuaClass} for {@code javaClass} checking all superclasses
+   * recursively.
+   *
+   * @param javaClass
+   * @return the corresponding {@link JavaLuaClass}
+   */
+  public @Nullable <J> JavaLuaClass<? super J, ?> getLuaClassForJavaClassRecursively(
+      @Nullable Class<J> javaClass) {
+    if (javaClass == null) {
+      return null;
+    }
+    JavaLuaClass<J, ?> luaClass = getLuaClassForJavaClass(javaClass);
+    if (luaClass != null) {
+      return luaClass;
+    }
+    Class<? super J> superClass = javaClass.getSuperclass();
+    return getLuaClassForJavaClassRecursively(superClass);
   }
 }

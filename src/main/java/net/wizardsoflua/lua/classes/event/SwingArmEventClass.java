@@ -6,11 +6,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = SwingArmEventClass.METATABLE_NAME,
-    superclassname = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = SwingArmEventClass.NAME, superClass = EventClass.class)
 public class SwingArmEventClass
     extends ProxyingLuaClass<SwingArmEvent, SwingArmEventClass.Proxy<SwingArmEvent>> {
-  public static final String METATABLE_NAME = "SwingArmEvent";
+  public static final String NAME = "SwingArmEvent";
 
   @Override
   public Proxy<SwingArmEvent> toLua(SwingArmEvent javaObj) {

@@ -6,9 +6,9 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 
-@DeclareLuaClass(name = MobClass.METATABLE_NAME, superclassname = EntityClass.METATABLE_NAME)
+@DeclareLuaClass(name = MobClass.NAME, superClass = EntityClass.class)
 public class MobClass extends ProxyCachingLuaClass<EntityLiving, MobClass.Proxy<EntityLiving>> {
-  public static final String METATABLE_NAME = "Mob";
+  public static final String NAME = "Mob";
 
   @Override
   public MobClass.Proxy<EntityLiving> toLua(EntityLiving delegate) {

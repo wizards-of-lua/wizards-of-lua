@@ -8,9 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DeclareLuaClass {
-
   String name();
 
-  String superclassname() default "";
-
+  Class<? extends LuaClass> superClass() default ObjectClass.class;
 }

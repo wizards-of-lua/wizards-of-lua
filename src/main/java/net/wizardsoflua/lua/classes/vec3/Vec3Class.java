@@ -7,9 +7,9 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
-@DeclareLuaClass(name = Vec3Class.METATABLE_NAME)
+@DeclareLuaClass(name = Vec3Class.NAME)
 public class Vec3Class extends JavaLuaClass<Vec3d, Table> {
-  public static final String METATABLE_NAME = "Vec3";
+  public static final String NAME = "Vec3";
 
   @Override
   public Table toLua(Vec3d javaObj) {

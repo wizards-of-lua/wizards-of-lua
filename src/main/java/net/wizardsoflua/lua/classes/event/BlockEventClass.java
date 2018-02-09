@@ -10,10 +10,10 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@DeclareLuaClass(name = BlockEventClass.METATABLE_NAME, superclassname = EventClass.METATABLE_NAME)
+@DeclareLuaClass(name = BlockEventClass.NAME, superClass = EventClass.class)
 public class BlockEventClass
     extends ProxyingLuaClass<BlockEvent, BlockEventClass.Proxy<BlockEvent>> {
-  public static final String METATABLE_NAME = "BlockEvent";
+  public static final String NAME = "BlockEvent";
 
   @Override
   public Proxy<BlockEvent> toLua(BlockEvent javaObj) {
