@@ -8,7 +8,7 @@ import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
 public abstract class ProxyingLuaClass<J, P extends DelegatingProxy<? extends J>>
-    extends LuaClass<J, P> {
+    extends JavaLuaClass<J, P> {
   private @Nullable Class<P> proxyClass;
 
   public Class<P> getProxyClass() {

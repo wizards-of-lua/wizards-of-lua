@@ -13,13 +13,8 @@ public class SwingArmEventClass
   public static final String METATABLE_NAME = "SwingArmEvent";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<SwingArmEvent> toLua(SwingArmEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends SwingArmEvent> extends EventClass.Proxy<D> {

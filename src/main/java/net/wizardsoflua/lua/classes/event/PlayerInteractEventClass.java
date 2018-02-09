@@ -14,13 +14,8 @@ public class PlayerInteractEventClass extends
   public static final String METATABLE_NAME = "PlayerInteractEvent";
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<PlayerInteractEvent> toLua(PlayerInteractEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends PlayerInteractEvent> extends EventClass.Proxy<D> {

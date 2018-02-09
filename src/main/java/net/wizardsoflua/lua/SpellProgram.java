@@ -97,7 +97,7 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
     luaClassLoader = new LuaClassLoader(env);
-    luaClassLoader.loadAllLuaClasses();
+    luaClassLoader.loadStandardClasses();
     TypesModule.installInto(env, getTypes(), getConverters());
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override

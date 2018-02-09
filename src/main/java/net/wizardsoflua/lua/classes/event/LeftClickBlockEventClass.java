@@ -13,14 +13,9 @@ public class LeftClickBlockEventClass extends
   public static final String METATABLE_NAME = "LeftClickBlockEvent";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<PlayerInteractEvent.LeftClickBlock> toLua(
       PlayerInteractEvent.LeftClickBlock javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends PlayerInteractEvent.LeftClickBlock>

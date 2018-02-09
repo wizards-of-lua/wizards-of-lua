@@ -26,13 +26,8 @@ public class PlayerClass
   }
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<EntityPlayerMP> toLua(EntityPlayerMP delegate) {
-    return new Proxy<>(getConverters(), getMetatable(), delegate);
+    return new Proxy<>(getConverters(), getMetaTable(), delegate);
   }
 
   public void replaceDelegate(EntityPlayerMP newPlayer) {

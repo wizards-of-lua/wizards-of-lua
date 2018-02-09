@@ -12,9 +12,11 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.ITypes;
+import net.wizardsoflua.lua.classes.CustomLuaClass;
+import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public class Types implements ITypes {
   private static final String NIL_META = "nil";
@@ -23,18 +25,21 @@ public class Types implements ITypes {
   private static final String STRING_META = "string";
   private static final String TABLE_META = "table";
   private static final String FUNCTION_META = "function";
-
   private static final String CLASSNAME_META_KEY = "__classname";
-  private final Table env;
+
+  private final LuaClassLoader luaClassLoader;
   private final Map<Table, String> classes = new HashMap<Table, String>();
 
-  public Types(Table env) {
-    this.env = requireNonNull(env, "env == null!");
-    declare(ObjectClass.METATABLE_NAME, (Table) null);
+  public Types(LuaClassLoader luaClassLoader) {
+    this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
   }
 
   public Table getEnv() {
-    return env;
+    return luaClassLoader.getEnv();
+  }
+
+  public Table get_G() {
+    return luaClassLoader.get_G();
   }
 
   /**
@@ -47,8 +52,8 @@ public class Types implements ITypes {
   @Override
   public @Nullable Table getClassMetatable(String classname) {
     checkNotNull(classname, "classname==null!");
-    Table G = (Table) env.rawget("_G");
-    Object value = G.rawget(classname);
+    Table _G = get_G();
+    Object value = _G.rawget(classname);
     if (value instanceof Table) {
       Table result = (Table) value;
       String declaredClassname = classes.get(result);
@@ -59,45 +64,24 @@ public class Types implements ITypes {
     return null;
   }
 
-  @Override
-  public Table declare(String classname) {
-    return declare(classname, ObjectClass.METATABLE_NAME);
-  }
-
-  @Override
-  public Table declare(String classname, @Nullable String superclassname) {
-    if (superclassname == null) {
-      return declare(classname);
-    }
-    Table superclassMT =
-        checkNotNull(getClassMetatable(superclassname), "getClassMetatable(superclassname)==null!");
-    return declare(classname, superclassMT);
-  }
-
   /**
-   * Declares a new Lua class with the given name and the optionally given superclass metatable.
+   * Declares a new Lua class with the given name and the optionally given superclass meta table.
    *
-   * @param classname
-   * @param superclassMT
-   * @return the new class metatable
+   * @param luaClassName
+   * @param superClassMetaTable
    */
-  public Table declare(String classname, @Nullable Table superclassMT) {
-    checkNotNull(classname, "classname==null!");
-    Table G = (Table) env.rawget("_G");
-    checkNotNull(G, "G==null!");
-    boolean classnameAvailable = G.rawget(classname) == null;
-    checkState(classnameAvailable, String.format(
-        "bad argument #%s (a global variable with name '%s' is already defined)", 1, classname));
+  public void declareClass(String luaClassName, @Nullable Table superClassMetaTable) {
+    requireNonNull(luaClassName, "luaClassName == null!");
+    checkState(get_G().rawget(luaClassName) == null,
+        "bad argument #%s: a global variable with name '%s' is already defined", 1, luaClassName);
 
-    Table classMT = new DefaultTable();
-    classMT.rawset("__index", classMT);
-    classMT.rawset(CLASSNAME_META_KEY, classname);
-    classMT.setMetatable(superclassMT);
-
-    classes.put(classMT, classname);
-
-    G.rawset(classname, classMT);
-    return classMT;
+    LuaClass superClass;
+    if (superClassMetaTable != null) {
+      superClass = luaClassLoader.getLuaClassForMetaTable(superClassMetaTable);
+    } else {
+      superClass = luaClassLoader.getObjectClass();
+    }
+    luaClassLoader.load(new CustomLuaClass(luaClassName, superClass));
   }
 
   /**
@@ -222,7 +206,7 @@ public class Types implements ITypes {
   }
 
   private boolean isAssignable(String expectedMetatableName, Table actualMetatable) {
-    Table expectedMetatable = (Table) env.rawget(expectedMetatableName);
+    Table expectedMetatable = (Table) getEnv().rawget(expectedMetatableName);
     Table currentMetatable = actualMetatable;
     while (currentMetatable != null) {
       if (currentMetatable == expectedMetatable) {

@@ -14,13 +14,8 @@ public class BlockHitClass
   public static final String METATABLE_NAME = "BlockHit";
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<RayTraceResult> toLua(RayTraceResult javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends RayTraceResult> extends DelegatingProxy<D> {

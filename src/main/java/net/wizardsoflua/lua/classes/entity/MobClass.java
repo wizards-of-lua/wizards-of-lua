@@ -11,13 +11,8 @@ public class MobClass extends ProxyCachingLuaClass<EntityLiving, MobClass.Proxy<
   public static final String METATABLE_NAME = "Mob";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public MobClass.Proxy<EntityLiving> toLua(EntityLiving delegate) {
-    return new Proxy<>(getConverters(), getMetatable(), delegate);
+    return new Proxy<>(getConverters(), getMetaTable(), delegate);
   }
 
   public static class Proxy<D extends EntityLiving> extends EntityClass.EntityLivingBaseProxy<D> {

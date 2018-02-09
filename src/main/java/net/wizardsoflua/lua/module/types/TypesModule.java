@@ -39,10 +39,10 @@ public class TypesModule {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      String classname = converters.toJava(String.class, arg1);
-      Table superclassMT = converters.castToTableNullable(arg2);
+      String luaClassName = converters.toJava(String.class, arg1);
+      Table superClassMetaTable = converters.castToTableNullable(arg2);
 
-      types.declare(classname, superclassMT);
+      types.declareClass(luaClassName, superClassMetaTable);
 
       context.getReturnBuffer().setTo();
     }

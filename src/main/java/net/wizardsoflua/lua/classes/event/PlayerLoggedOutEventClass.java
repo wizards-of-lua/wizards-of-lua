@@ -13,13 +13,8 @@ public class PlayerLoggedOutEventClass extends
   public static final String METATABLE_NAME = "PlayerLoggedOutEvent";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<PlayerEvent.PlayerLoggedOutEvent> toLua(PlayerEvent.PlayerLoggedOutEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends PlayerEvent.PlayerLoggedOutEvent>

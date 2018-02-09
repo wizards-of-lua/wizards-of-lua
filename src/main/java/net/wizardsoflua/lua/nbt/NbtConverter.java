@@ -2,6 +2,7 @@ package net.wizardsoflua.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,16 +27,16 @@ import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.lua.ITypes;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
-  private final ITypes types;
+  private final LuaClassLoader luaClassLoader;
 
-  public NbtConverter(ITypes types) {
-    this.types = checkNotNull(types, "types == null!");
+  public NbtConverter(LuaClassLoader luaClassLoader) {
+    this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
   }
 
   private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
@@ -84,7 +85,7 @@ public class NbtConverter {
   }
 
   private String getTypeOrClassName(Object luaObject) {
-    String actualType = types.getTypename(luaObject);
+    String actualType = luaClassLoader.getTypes().getTypename(luaObject);
     if (actualType == null) {
       actualType = luaObject.getClass().getName();
     }

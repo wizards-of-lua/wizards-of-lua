@@ -13,13 +13,8 @@ public class BlockBreakEventClass extends
   public static final String METATABLE_NAME = "BlockBreakEvent";
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<BlockEvent.BreakEvent> toLua(BlockEvent.BreakEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends BlockEvent.BreakEvent> extends BlockEventClass.Proxy<D> {

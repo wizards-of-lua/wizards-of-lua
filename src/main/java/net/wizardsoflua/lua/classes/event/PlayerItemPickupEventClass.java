@@ -13,13 +13,8 @@ public class PlayerItemPickupEventClass extends
   public static final String METATABLE_NAME = "PlayerItemPickupEvent";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<PlayerEvent.ItemPickupEvent> toLua(PlayerEvent.ItemPickupEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends PlayerEvent.ItemPickupEvent> extends EventClass.Proxy<D> {

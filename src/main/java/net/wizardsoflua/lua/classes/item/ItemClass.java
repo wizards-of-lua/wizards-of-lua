@@ -23,13 +23,8 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
   }
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy toLua(ItemStack delegate) {
-    return new Proxy(getConverters(), getMetatable(), delegate);
+    return new Proxy(getConverters(), getMetaTable(), delegate);
   }
 
   public static class Proxy extends DelegatingProxy<ItemStack> {

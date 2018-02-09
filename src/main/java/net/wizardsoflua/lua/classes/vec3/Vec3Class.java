@@ -4,17 +4,12 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
 @DeclareLuaClass(name = Vec3Class.METATABLE_NAME)
-public class Vec3Class extends LuaClass<Vec3d, Table> {
+public class Vec3Class extends JavaLuaClass<Vec3d, Table> {
   public static final String METATABLE_NAME = "Vec3";
-
-  @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
 
   @Override
   public Table toLua(Vec3d javaObj) {
@@ -22,7 +17,7 @@ public class Vec3Class extends LuaClass<Vec3d, Table> {
     builder.add("x", javaObj.xCoord);
     builder.add("y", javaObj.yCoord);
     builder.add("z", javaObj.zCoord);
-    builder.setMetatable(getMetatable());
+    builder.setMetatable(getMetaTable());
     return builder.build();
   }
 

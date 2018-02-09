@@ -35,13 +35,8 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
   }
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<WolBlock> toLua(WolBlock javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends WolBlock> extends DelegatingProxy<D> {

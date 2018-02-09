@@ -46,17 +46,12 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
   }
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<?> toLua(Entity delegate) {
     if (delegate instanceof EntityLivingBase) {
-      return new EntityLivingBaseProxy<>(getConverters(), getMetatable(),
+      return new EntityLivingBaseProxy<>(getConverters(), getMetaTable(),
           (EntityLivingBase) delegate);
     }
-    return new Proxy<>(getConverters(), getMetatable(), delegate);
+    return new Proxy<>(getConverters(), getMetaTable(), delegate);
   }
 
   public static class Proxy<D extends Entity> extends DelegatingProxy<D> {

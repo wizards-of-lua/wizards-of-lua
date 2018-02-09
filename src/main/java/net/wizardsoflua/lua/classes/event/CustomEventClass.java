@@ -12,13 +12,8 @@ public class CustomEventClass
   public static final String METATABLE_NAME = "CustomEvent";
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<CustomLuaEvent> toLua(CustomLuaEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends CustomLuaEvent> extends EventClass.Proxy<D> {

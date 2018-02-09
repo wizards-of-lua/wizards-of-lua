@@ -30,13 +30,8 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
   }
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<SpellEntity> toLua(SpellEntity delegate) {
-    return new Proxy<>(getConverters(), getMetatable(), delegate);
+    return new Proxy<>(getConverters(), getMetaTable(), delegate);
   }
 
   public static class Proxy<D extends SpellEntity> extends EntityClass.Proxy<D> {

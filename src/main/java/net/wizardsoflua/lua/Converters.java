@@ -9,7 +9,7 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
-import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.data.TableData;
@@ -24,7 +24,7 @@ public class Converters extends WolConversions {
 
   public Converters(LuaClassLoader luaClassLoader) {
     this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
-    nbtConverter = new NbtConverter(getTypes());
+    nbtConverter = new NbtConverter(luaClassLoader);
   }
 
   public ITypes getTypes() {
@@ -36,7 +36,7 @@ public class Converters extends WolConversions {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    Object luaClass = luaClassLoader.getByJavaClassOrSuperClass(EntityPlayerMP.class);
+    Object luaClass = luaClassLoader.getLuaClassForJavaClassRecursively(EntityPlayerMP.class);
     // TODO can we replace this ugly casting stuff with something more elegant?
     if (luaClass instanceof PlayerClass) {
       PlayerClass pc = (PlayerClass) luaClass;
@@ -51,7 +51,7 @@ public class Converters extends WolConversions {
   public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
     checkNotNull(luaObj, "luaObj==null!");
     // FIXME Adrodoc55 07.02.2018: Sollten wir nicht eher das luaObj nach seiner Klasse fragen?
-    LuaClass<T, ?> cls = luaClassLoader.getByJavaClass(type);
+    JavaLuaClass<T, ?> cls = luaClassLoader.getLuaClassForJavaClass(type);
     if (cls != null) {
       return cls.getJavaInstance(castToTable(luaObj));
     }
@@ -77,7 +77,7 @@ public class Converters extends WolConversions {
 
     @SuppressWarnings("unchecked")
     Class<T> javaClass = (Class<T>) value.getClass();
-    LuaClass<? super T, ?> cls = luaClassLoader.getByJavaClassOrSuperClass(javaClass);
+    JavaLuaClass<? super T, ?> cls = luaClassLoader.getLuaClassForJavaClassRecursively(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(value);
     }

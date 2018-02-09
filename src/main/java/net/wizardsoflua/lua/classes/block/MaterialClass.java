@@ -13,13 +13,8 @@ public class MaterialClass
   public static final String METATABLE_NAME = "Material";
 
   @Override
-  protected String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<Material> toLua(Material delegate) {
-    return new Proxy<>(getConverters(), getMetatable(), delegate);
+    return new Proxy<>(getConverters(), getMetaTable(), delegate);
   }
 
   public static class Proxy<D extends Material> extends DelegatingProxy<D> {

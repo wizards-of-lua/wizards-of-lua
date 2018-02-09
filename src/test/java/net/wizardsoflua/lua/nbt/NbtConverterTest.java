@@ -10,13 +10,13 @@ import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.testenv.assertion.AssertionsFactory;
 
 public class NbtConverterTest extends AssertionsFactory {
   private static final int NBT_STRING_TYPE = 8;
 
-  private final NbtConverter underTest = new NbtConverter(new Types(new DefaultTable()));
+  private final NbtConverter underTest = new NbtConverter(new LuaClassLoader(new DefaultTable()));
 
   @Test
   public void test_merge__Uses_NbtType_of_existing_Tag() {

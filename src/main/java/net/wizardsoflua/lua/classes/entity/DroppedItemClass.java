@@ -13,13 +13,8 @@ public class DroppedItemClass
   public static final String METATABLE_NAME = "DroppedItem";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public DroppedItemClass.Proxy<EntityItem> toLua(EntityItem delegate) {
-    return new Proxy<>(getConverters(), getMetatable(), delegate);
+    return new Proxy<>(getConverters(), getMetaTable(), delegate);
   }
 
   public static class Proxy<D extends EntityItem> extends EntityClass.Proxy<D> {

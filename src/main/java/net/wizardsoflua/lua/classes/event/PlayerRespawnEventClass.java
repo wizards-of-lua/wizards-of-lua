@@ -13,13 +13,8 @@ public class PlayerRespawnEventClass extends
   public static final String METATABLE_NAME = "PlayerRespawnEvent";
 
   @Override
-  public String getMetatableName() {
-    return METATABLE_NAME;
-  }
-
-  @Override
   public Proxy<PlayerEvent.PlayerRespawnEvent> toLua(PlayerEvent.PlayerRespawnEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetatable(), javaObj);
+    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
   }
 
   public static class Proxy<D extends PlayerEvent.PlayerRespawnEvent> extends EventClass.Proxy<D> {
