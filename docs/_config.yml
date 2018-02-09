@@ -8,6 +8,7 @@ github:
 show_dir_listing: false
 google_translate: true
 discord_url: https://discord.gg/9En5Drt
+twitter_url: https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw
 defaults:
   - scope:
       path: "images"

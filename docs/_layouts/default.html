@@ -22,12 +22,14 @@
         <nav>
           <!-- <li class="fork"><a href="{{ site.github.repository_url }}">View On GitHub</a></li> -->
           <li class="fork"><a href="{{ site.github.project_url }}">View On GitHub</a></li>
-          <li class="discord"><a href="{{ site.discord_url }}" alt="Discord"></a></li>
+
           {% if site.google_translate %}
             <li class="translate">
               <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net{{ page.url }}" alt="Translate this page"></a>
             </li>
           {% endif %}
+          <li class="discord"><a href="{{ site.discord_url }}" alt="Discord"></a></li>
+          <li class="twitter"><a href="{{ site.twitter_url }}" alt="Follow @WizardsOfLua"></a></li>
 
           {% if site.show_downloads %}
             <li class="downloads"><a href="{{ site.github.zip_url }}">ZIP</a></li>
