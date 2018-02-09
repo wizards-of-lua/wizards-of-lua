@@ -1,6 +1,6 @@
 package net.wizardsoflua.lua.data;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
 
@@ -13,14 +13,18 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public class TableDataConverter {
   private final Cache<TraversableHashMap<Object, Object>, Table> cache =
       CacheBuilder.newBuilder().weakKeys().softValues().build();
+  private final LuaClassLoader classLoader;
   private final Converters converters;
 
-  public TableDataConverter(Converters converters) {
-    this.converters = checkNotNull(converters, "converters==null!");
+  public TableDataConverter(LuaClassLoader classLoader) {
+    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+    converters = classLoader.getConverters();
   }
 
   public Table toLua(TableData data) {
@@ -53,7 +57,10 @@ public class TableDataConverter {
     if (classname == null) {
       return null;
     }
-    return converters.getTypes().getClassMetatable(classname);
+    LuaClass luaClass = classLoader.getLuaClassForName(classname);
+    if (luaClass == null) {
+      return null;
+    }
+    return luaClass.getMetaTable();
   }
-
 }

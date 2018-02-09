@@ -119,7 +119,7 @@ public class SpellProgram {
     TimeModule.installInto(env, getConverters(), time);
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());
-    eventHandlers = new EventHandlers(getConverters(), createEventHandlersContext());
+    eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
     EventsModule.installInto(env, getConverters(), eventHandlers);
 
     state = State.NEW;

@@ -1,6 +1,5 @@
 package net.wizardsoflua.lua.classes;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static java.util.Objects.requireNonNull;
@@ -75,9 +74,10 @@ public class LuaClassLoader {
   }
 
   private final Table env;
-  private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
   private final Map<Class<? extends LuaClass>, LuaClass> luaClassByType = new HashMap<>();
+  private final Map<String, LuaClass> luaClassByName = new HashMap<>();
   private final Map<Table, LuaClass> luaClassByMetaTable = new HashMap<>();
+  private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
   private final Types types;
   private final Converters converters;
 
@@ -120,6 +120,7 @@ public class LuaClassLoader {
     }
     luaClass.init(this);
     luaClassByType.put(luaClass.getClass(), luaClass);
+    luaClassByName.put(luaClass.getName(), luaClass);
     luaClassByMetaTable.put(luaClass.getMetaTable(), luaClass);
     if (luaClass instanceof JavaLuaClass) {
       JavaLuaClass<?, ?> javaLuaClass = (JavaLuaClass<?, ?>) luaClass;
@@ -150,12 +151,31 @@ public class LuaClassLoader {
     return luaClassClass.cast(luaClass);
   }
 
-  public LuaClass getLuaClassForMetaTable(Table luaClassMetaTable) throws IllegalArgumentException {
+  /**
+   * Returns the {@link LuaClass} with the specified name or {@code null} if no such
+   * {@link LuaClass} was loaded by {@code this} {@link LuaClassLoader}.
+   *
+   * @param luaClassName the name of the {@link LuaClass}
+   * @return the {@link LuaClass} with the specified name or {@code null}
+   * @throws NullPointerException if the specified name is {@code null}
+   */
+  public @Nullable LuaClass getLuaClassForName(String luaClassName) throws NullPointerException {
+    requireNonNull(luaClassName, "luaClassName == null!");
+    return luaClassByName.get(luaClassName);
+  }
+
+  /**
+   * Returns the {@link LuaClass} with the specified meta table or {@code null} if no such
+   * {@link LuaClass} was loaded by {@code this} {@link LuaClassLoader}.
+   *
+   * @param luaClassMetaTable the meta table of the {@link LuaClass}
+   * @return the {@link LuaClass} with the specified meta table or {@code null}
+   * @throws NullPointerException if the specified meta table is {@code null}
+   */
+  public @Nullable LuaClass getLuaClassForMetaTable(Table luaClassMetaTable)
+      throws NullPointerException {
     requireNonNull(luaClassMetaTable, "luaClassMetaTable == null!");
     LuaClass luaClass = luaClassByMetaTable.get(luaClassMetaTable);
-    checkArgument(luaClass != null,
-        "The table '%s' does not represent a LuaClass loaded by this LuaClassLoader",
-        luaClassMetaTable);
     return luaClass;
   }
 

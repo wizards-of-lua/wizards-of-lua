@@ -14,21 +14,23 @@ import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
+import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 public class Converters extends WolConversions {
-  private final LuaClassLoader luaClassLoader;
+  private final LuaClassLoader classLoader;
   private final EnumConverter enumConverter = new EnumConverter();
   private final NbtConverter nbtConverter;
-  private final TableDataConverter tableDataConverter = new TableDataConverter(this);
+  private final TableDataConverter tableDataConverter;
 
-  public Converters(LuaClassLoader luaClassLoader) {
-    this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
-    nbtConverter = new NbtConverter(luaClassLoader);
+  public Converters(LuaClassLoader classLoader) {
+    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+    nbtConverter = new NbtConverter(classLoader);
+    tableDataConverter = new TableDataConverter(classLoader);
   }
 
-  public ITypes getTypes() {
-    return luaClassLoader.getTypes();
+  public Types getTypes() {
+    return classLoader.getTypes();
   }
 
   public NbtConverter getNbtConverter() {
@@ -36,7 +38,7 @@ public class Converters extends WolConversions {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    Object luaClass = luaClassLoader.getLuaClassForJavaClassRecursively(EntityPlayerMP.class);
+    Object luaClass = classLoader.getLuaClassForJavaClassRecursively(EntityPlayerMP.class);
     // TODO can we replace this ugly casting stuff with something more elegant?
     if (luaClass instanceof PlayerClass) {
       PlayerClass pc = (PlayerClass) luaClass;
@@ -51,7 +53,7 @@ public class Converters extends WolConversions {
   public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
     checkNotNull(luaObj, "luaObj==null!");
     // FIXME Adrodoc55 07.02.2018: Sollten wir nicht eher das luaObj nach seiner Klasse fragen?
-    JavaLuaClass<T, ?> cls = luaClassLoader.getLuaClassForJavaClass(type);
+    JavaLuaClass<T, ?> cls = classLoader.getLuaClassForJavaClass(type);
     if (cls != null) {
       return cls.getJavaInstance(castToTable(luaObj));
     }
@@ -77,7 +79,7 @@ public class Converters extends WolConversions {
 
     @SuppressWarnings("unchecked")
     Class<T> javaClass = (Class<T>) value.getClass();
-    JavaLuaClass<? super T, ?> cls = luaClassLoader.getLuaClassForJavaClassRecursively(javaClass);
+    JavaLuaClass<? super T, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(value);
     }

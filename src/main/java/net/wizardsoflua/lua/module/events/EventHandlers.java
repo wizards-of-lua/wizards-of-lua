@@ -1,6 +1,6 @@
 package net.wizardsoflua.lua.module.events;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -8,7 +8,7 @@ import com.google.common.collect.Multimap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.event.CustomLuaEvent;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.data.Data;
 
@@ -30,12 +30,12 @@ public class EventHandlers {
       return context.getCurrentTime();
     }
   };
-  private final Converters converters;
+  private final LuaClassLoader classLoader;
   private final Context context;
 
-  public EventHandlers(Converters converters, Context context) {
-    this.converters = checkNotNull(converters, "converters==null!");
-    this.context = checkNotNull(context, "context==null!");;
+  public EventHandlers(LuaClassLoader classLoader, Context context) {
+    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+    this.context = requireNonNull(context, "context == null!");
   }
 
   public EventQueue connect(Iterable<String> eventNames) {
@@ -75,7 +75,7 @@ public class EventHandlers {
   }
 
   public void fire(String eventName, Object dataLuaObj) {
-    Data data = Data.createData(dataLuaObj, converters);
+    Data data = Data.createData(dataLuaObj, classLoader);
     MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data));
   }
 

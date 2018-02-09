@@ -72,7 +72,7 @@ public class NbtConverter {
   private String keyToString(Object luaKey, int index, String path) {
     ByteString result = Conversions.stringValueOf(luaKey);
     if (result == null) {
-      String actualType = getTypeOrClassName(luaKey);
+      String actualType = getTypename(luaKey);
       throw new ConversionException("Can't convert key " + index + " in " + path
           + "! string/number expected, but got " + actualType);
     }
@@ -80,16 +80,12 @@ public class NbtConverter {
   }
 
   ConversionException conversionException(String path, Object actual, String expected) {
-    return new ConversionException("Can't convert " + path + "! " + expected + " expected, but got "
-        + getTypeOrClassName(actual));
+    return new ConversionException(
+        "Can't convert " + path + "! " + expected + " expected, but got " + getTypename(actual));
   }
 
-  private String getTypeOrClassName(Object luaObject) {
-    String actualType = luaClassLoader.getTypes().getTypename(luaObject);
-    if (actualType == null) {
-      actualType = luaObject.getClass().getName();
-    }
-    return actualType;
+  private String getTypename(Object luaObject) {
+    return luaClassLoader.getTypes().getTypename(luaObject);
   }
 
   public NBTTagCompound merge(NBTTagCompound nbt, Table data) {
