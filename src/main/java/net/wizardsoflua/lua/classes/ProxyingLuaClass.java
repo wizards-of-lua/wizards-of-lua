@@ -23,13 +23,8 @@ public abstract class ProxyingLuaClass<J, P extends DelegatingProxy<? extends J>
   }
 
   @Override
-  public J toJava(Table luaObj) {
-    P proxy = castToProxy(luaObj);
+  public J toJava(Table luaObj) throws ClassCastException {
+    P proxy = getProxyClass().cast(luaObj);
     return proxy.getDelegate();
-  }
-
-  public P castToProxy(Object luaObj) {
-    checkAssignable(luaObj);
-    return getProxyClass().cast(luaObj);
   }
 }

@@ -77,16 +77,11 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     return toLua(javaObj);
   }
 
-  public J getJavaInstance(Table luaObj) {
-    checkAssignable(luaObj);
+  public J getJavaInstance(Table luaObj) throws ClassCastException {
     return toJava(luaObj);
-  }
-
-  protected void checkAssignable(Object luaObj) {
-    getConverters().getTypes().checkAssignable(getName(), luaObj);
   }
 
   protected abstract L toLua(J javaObj);
 
-  protected abstract J toJava(Table luaObj);
+  protected abstract J toJava(Table luaObj) throws ClassCastException;
 }

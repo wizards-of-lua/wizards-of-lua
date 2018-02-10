@@ -98,7 +98,7 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = castToProxy(arg1);
+      Proxy proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
       proxy.putNbt(nbt);
       context.getReturnBuffer().setTo();

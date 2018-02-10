@@ -52,7 +52,7 @@ public class Converters extends WolConversions {
   @Override
   protected Object convertTo(Class<?> type, Object luaObject)
       throws ClassCastException, BadArgumentException {
-    if (luaObject instanceof Table) {
+    if (LuaClassLoader.isSupported(type) && luaObject instanceof Table) {
       Table table = (Table) luaObject;
       LuaClass luaClass = classLoader.getLuaClassOf(table);
       if (luaClass instanceof JavaLuaClass) {

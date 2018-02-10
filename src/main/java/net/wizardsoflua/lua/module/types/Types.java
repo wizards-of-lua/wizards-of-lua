@@ -7,7 +7,6 @@ import static java.util.Objects.requireNonNull;
 import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
-import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.classes.CustomLuaClass;
@@ -133,59 +132,4 @@ public class Types {
     }
     return null;
   }
-
-  public void checkAssignable(String expectedMetatableName, Object luaObj)
-      throws IllegalArgumentException {
-    checkAssignable(expectedMetatableName, luaObj, Terms.MANDATORY);
-  }
-
-  public void checkAssignable(String expectedMetatableName, Object luaObj, Terms terms)
-      throws IllegalArgumentException {
-    if (luaObj == null && terms == Terms.MANDATORY
-        || !isAssignable(expectedMetatableName, luaObj)) {
-      throw new IllegalArgumentException(
-          String.format("Expected %s but got %s", expectedMetatableName, getTypename(luaObj)));
-    }
-  }
-
-  private boolean isAssignable(String expectedMetatableName, Object luaObj) {
-    if (luaObj == null) {
-      return true;
-    }
-    if (BOOLEAN_META.equals(expectedMetatableName)) {
-      return luaObj instanceof Boolean;
-    }
-    if (NUMBER_META.equals(expectedMetatableName)) {
-      return Conversions.numericalValueOf(luaObj) != null;
-    }
-    if (STRING_META.equals(expectedMetatableName)) {
-      return Conversions.stringValueOf(luaObj) != null;
-    }
-    if (FUNCTION_META.equals(expectedMetatableName)) {
-      return luaObj instanceof LuaFunction;
-    }
-    if (TABLE_META.equals(expectedMetatableName)) {
-      return (luaObj instanceof Table);
-    }
-    if (luaObj instanceof Table) {
-      Table actualMetatable = ((Table) luaObj).getMetatable();
-      if (actualMetatable != null) {
-        return isAssignable(expectedMetatableName, actualMetatable);
-      }
-    }
-    return false;
-  }
-
-  private boolean isAssignable(String expectedMetatableName, Table actualMetatable) {
-    Table expectedMetatable = (Table) getEnv().rawget(expectedMetatableName);
-    Table currentMetatable = actualMetatable;
-    while (currentMetatable != null) {
-      if (currentMetatable == expectedMetatable) {
-        return true;
-      }
-      currentMetatable = currentMetatable.getMetatable();
-    }
-    return false;
-  }
-
 }

@@ -113,7 +113,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      Proxy<SpellEntity> proxy = castToProxy(arg0);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg0, 1, "self", getName());
       if (args.length < 2) {
         throw new IllegalArgumentException("Expected command, but got nil");
       }

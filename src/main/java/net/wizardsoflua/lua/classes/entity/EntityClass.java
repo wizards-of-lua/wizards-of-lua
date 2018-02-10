@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Optional.ofNullable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -246,13 +245,11 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       return result;
     }
 
-    public Object dropItem(ItemStack item, @Nullable Float offsetY) {
+    public EntityItem dropItem(ItemStack item, float offsetY) {
       if (item.getCount() == 0) {
         throw new IllegalArgumentException("Can't drop an item with count==0");
       }
-      offsetY = ofNullable(offsetY).orElse(0f);
-      EntityItem result = delegate.entityDropItem(item, offsetY);
-      return getConverters().toLuaNullable(result);
+      return delegate.entityDropItem(item, offsetY);
     }
 
     public void kill() {
@@ -321,7 +318,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3)
         throws ResolvedControlThrowable {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       String direction = getConverters().toJava(String.class, arg2, 2, "direction", getName());
       Double distance =
           getConverters().toJavaNullable(Double.class, arg3, 3, "distance", getName());
@@ -338,7 +335,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
       proxy.putNbt(nbt);
       context.getReturnBuffer().setTo();
@@ -353,7 +350,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       String tag = getConverters().toJava(String.class, arg2, 2, "tag", getName());
       boolean result = proxy.addTag(tag);
       context.getReturnBuffer().setTo(result);
@@ -368,7 +365,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       String tag = getConverters().toJava(String.class, arg2, 2, "tag", getName());
       boolean result = proxy.removeTag(tag);
       context.getReturnBuffer().setTo(result);
@@ -383,7 +380,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       float distance = getConverters().toJava(Float.class, arg2, 2, "distance", getName());
       Object result = proxy.scanView(distance);
       context.getReturnBuffer().setTo(result);
@@ -398,11 +395,12 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3) {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       ItemStack item = getConverters().toJava(ItemStack.class, arg2, 2, "item", getName());
-      Float offsetY = getConverters().toJavaNullable(Float.class, arg3, 3, "offsetY", getName());
-      Object result = proxy.dropItem(item, offsetY);
-      context.getReturnBuffer().setTo(result);
+      float offsetY =
+          getConverters().toJavaOptional(Float.class, arg3, 3, "offsetY", getName()).orElse(0f);
+      EntityItem result = proxy.dropItem(item, offsetY);
+      context.getReturnBuffer().setTo(getConverters().toLuaNullable(result));
     }
   }
 
@@ -414,7 +412,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) {
-      Proxy<?> proxy = castToProxy(arg1);
+      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
       proxy.kill();
       context.getReturnBuffer().setTo();
     }
