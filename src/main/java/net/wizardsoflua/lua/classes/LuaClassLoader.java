@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -28,7 +29,13 @@ public class LuaClassLoader {
   private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
       findJavaLuaClassClasses();
   private static final ImmutableMap<Class<?>, Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASS_BY_JAVA_CLASS =
-      Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, JavaLuaClass::getJavaClassOf);
+      Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, new Function<Class<?>, Class<?>>() {
+        @Override // for some reason the JDK does not like our generics here so we use raw types
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        public Class<?> apply(Class<?> input) {
+          return JavaLuaClass.getJavaClassOf((Class) input);
+        }
+      });
 
   private static ImmutableList<Class<? extends JavaLuaClass<?, ?>>> findJavaLuaClassClasses() {
     try {

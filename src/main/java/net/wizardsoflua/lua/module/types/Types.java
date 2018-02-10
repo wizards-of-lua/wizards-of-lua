@@ -96,9 +96,7 @@ public class Types {
 
   public @Nullable String getTypename(Class<?> type) {
     if (DelegatingProxy.class.isAssignableFrom(type)) {
-      @SuppressWarnings("unchecked")
-      Class<? extends DelegatingProxy<?>> proxyClass = (Class<? extends DelegatingProxy<?>>) type;
-      type = DelegatingProxy.getDelegateClassOf(proxyClass);
+      type = unproxy(type);
     }
     JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(type);
     if (luaClass != null) {
@@ -120,6 +118,12 @@ public class Types {
       return FUNCTION_META;
     }
     return type.getName();
+  }
+
+  private <T> Class<T> unproxy(Class<?> type) {
+    @SuppressWarnings("unchecked")
+    Class<? extends DelegatingProxy<T>> proxyClass = (Class<? extends DelegatingProxy<T>>) type;
+    return DelegatingProxy.getDelegateClassOf(proxyClass);
   }
 
   /**
