@@ -69,9 +69,8 @@ public class LuaClassLoader {
     this.env = requireNonNull(env, "env == null!");
   }
 
-  public Table get_G() {
-    Table _G = (Table) env.rawget("_G");
-    return requireNonNull(_G, "_G == null!");
+  public Table getEnv() {
+    return env;
   }
 
   public Types getTypes() {
@@ -109,7 +108,7 @@ public class LuaClassLoader {
       JavaLuaClass<?, ?> javaLuaClass = (JavaLuaClass<?, ?>) luaClass;
       luaClassByJavaClass.put(javaLuaClass.getJavaClass(), javaLuaClass);
     }
-    get_G().rawset(luaClass.getName(), luaClass.getMetaTable());
+    env.rawset(luaClass.getName(), luaClass.getMetaTable());
   }
 
   /**

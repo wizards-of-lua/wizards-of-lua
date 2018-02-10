@@ -36,8 +36,8 @@ public class Types {
    */
   public void declareClass(String luaClassName, @Nullable Table superClassMetaTable) {
     requireNonNull(luaClassName, "luaClassName == null!");
-    Table _G = classLoader.get_G();
-    checkState(_G.rawget(luaClassName) == null,
+    Table env = classLoader.getEnv();
+    checkState(env.rawget(luaClassName) == null,
         "bad argument #%s: a global variable with name '%s' is already defined", 1, luaClassName);
 
     LuaClass superClass;
