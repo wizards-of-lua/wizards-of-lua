@@ -5,8 +5,6 @@ import static com.google.common.collect.Iterables.transform;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +17,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
@@ -31,7 +28,7 @@ public class LuaClassLoader {
   private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
       findJavaLuaClassClasses();
   private static final ImmutableMap<Class<?>, Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASS_BY_JAVA_CLASS =
-      Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, LuaClassLoader::getJavaClass);
+      Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, JavaLuaClass::getJavaClassOf);
 
   private static ImmutableList<Class<? extends JavaLuaClass<?, ?>>> findJavaLuaClassClasses() {
     try {
@@ -48,19 +45,6 @@ public class LuaClassLoader {
     } catch (IOException ex) {
       throw new UndeclaredThrowableException(ex);
     }
-  }
-
-  private static Class<?> getJavaClass(Class<? extends JavaLuaClass<?, ?>> luaClass) {
-    // TODO Adrodoc55 07.02.2018: Zusammenziehen mit LuaClass.getJavaClass() ?
-    @SuppressWarnings("serial")
-    TypeToken<JavaLuaClass<?, ?>> token = new TypeToken<JavaLuaClass<?, ?>>(luaClass) {};
-    // FIXME Adrodoc55 07.02.2018: cls.getGenericSuperclass()? nicht eher nur cls
-    TypeToken<?> resolveType = token.resolveType(luaClass.getGenericSuperclass());
-    Type type = resolveType.getType();
-    ParameterizedType ptype = (ParameterizedType) type;
-    Type arg1 = ptype.getActualTypeArguments()[0];
-    Class<?> typeArg = (Class<?>) arg1;
-    return typeArg;
   }
 
   public static boolean isSupported(Class<?> javaClass) {

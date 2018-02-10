@@ -1,5 +1,8 @@
 package net.wizardsoflua.lua.classes;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 import javax.annotation.Nullable;
 
 import com.google.common.reflect.TypeToken;
@@ -14,25 +17,28 @@ import net.wizardsoflua.lua.Converters;
  * @author Adrodoc55
  */
 public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
-  private @Nullable Class<J> javaClass;
-
   public static String getNameOf(Class<? extends JavaLuaClass<?, ?>> luaClassClass) {
     DeclareLuaClass annotation = luaClassClass.getAnnotation(DeclareLuaClass.class);
     return annotation.name();
   }
 
+  private @Nullable String name;
+
   @Override
   public String getName() {
-    return getNameOf(getClassWithGenerics());
+    if (name == null) {
+      name = getNameOf(getClassWithGenerics());
+    }
+    return name;
   }
 
-  public static Class<? extends LuaClass> getSuperClassClassOf(
+  private static Class<? extends LuaClass> getSuperClassClassOf(
       Class<? extends JavaLuaClass<?, ?>> luaClassClass) {
     DeclareLuaClass annotation = luaClassClass.getAnnotation(DeclareLuaClass.class);
     return annotation.superClass();
   }
 
-  public Class<? extends LuaClass> getSuperClassClass() {
+  private Class<? extends LuaClass> getSuperClassClass() {
     return getSuperClassClassOf(getClassWithGenerics());
   }
 
@@ -42,22 +48,25 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     return getClassLoader().getLuaClassOfType(superClassClass);
   }
 
-  public Class<? extends JavaLuaClass<?, ?>> getClassWithGenerics() {
+  public static <J> Class<J> getJavaClassOf(Class<? extends JavaLuaClass<J, ?>> luaClass) {
+    TypeToken<? extends JavaLuaClass<?, ?>> token = TypeToken.of(luaClass);
+    Type superType = token.getSupertype(JavaLuaClass.class).getType();
+    ParameterizedType parameterizedSuperType = (ParameterizedType) superType;
+    Type arg0 = parameterizedSuperType.getActualTypeArguments()[0];
     @SuppressWarnings("unchecked")
-    Class<? extends JavaLuaClass<?, ?>> luaClassClass =
-        (Class<? extends JavaLuaClass<?, ?>>) getClass();
-    return luaClassClass;
+    Class<J> typeArg0 = (Class<J>) arg0;
+    return typeArg0;
   }
 
   public Class<J> getJavaClass() {
-    if (javaClass == null) {
-      @SuppressWarnings("serial")
-      TypeToken<J> token = new TypeToken<J>(getClass()) {};
-      @SuppressWarnings("unchecked")
-      Class<J> rawType = (Class<J>) token.getRawType();
-      javaClass = rawType;
-    }
-    return javaClass;
+    return getJavaClassOf(getClassWithGenerics());
+  }
+
+  public Class<? extends JavaLuaClass<J, L>> getClassWithGenerics() {
+    @SuppressWarnings("unchecked")
+    Class<? extends JavaLuaClass<J, L>> luaClassClass =
+        (Class<? extends JavaLuaClass<J, L>>) getClass();
+    return luaClassClass;
   }
 
   public Converters getConverters() {

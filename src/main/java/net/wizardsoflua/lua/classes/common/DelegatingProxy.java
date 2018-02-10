@@ -18,7 +18,7 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
   public void setDelegate(D delegate) {
     this.delegate = checkNotNull(delegate, "delegate==null!");
   }
-  
+
   public D getDelegate() {
     return delegate;
   }
@@ -28,5 +28,4 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
   }
 
   public abstract boolean isTransferable();
-
 }
