@@ -22,10 +22,10 @@ import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
 import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunction3;
@@ -48,15 +48,14 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
   @Override
   public Proxy<?> toLua(Entity delegate) {
     if (delegate instanceof EntityLivingBase) {
-      return new EntityLivingBaseProxy<>(getConverters(), getMetaTable(),
-          (EntityLivingBase) delegate);
+      return new EntityLivingBaseProxy<>(this, (EntityLivingBase) delegate);
     }
-    return new Proxy<>(getConverters(), getMetaTable(), delegate);
+    return new Proxy<>(this, delegate);
   }
 
-  public static class Proxy<D extends Entity> extends DelegatingProxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+  public static class Proxy<D extends Entity> extends LuaInstanceProxy<D> {
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addReadOnly("dimension", () -> delegate.dimension);
       addReadOnly("uuid", this::getUuid);
       addReadOnly("alive", this::isAlive);
@@ -212,7 +211,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     public void putNbt(Table nbt) {
       NBTTagCompound oldNbt = delegate.serializeNBT();
-      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbt);
+      NBTTagCompound newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
       delegate.readFromNBT(newNbt);
     }
 
@@ -264,8 +263,8 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
   }
 
   public static class EntityLivingBaseProxy<D extends EntityLivingBase> extends Proxy<D> {
-    public EntityLivingBaseProxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public EntityLivingBaseProxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       add("mainhand", this::getMainhand, this::setMainhand);
       add("offhand", this::getOffhand, this::setOffhand);
     }

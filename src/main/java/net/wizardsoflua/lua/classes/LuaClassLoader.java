@@ -62,17 +62,11 @@ public class LuaClassLoader {
   private final Map<String, LuaClass> luaClassByName = new HashMap<>();
   private final Map<Table, LuaClass> luaClassByMetaTable = new HashMap<>();
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
-  private final Types types;
-  private final Converters converters;
+  private final Types types = new Types(this);
+  private final Converters converters = new Converters(this);
 
   public LuaClassLoader(Table env) {
     this.env = requireNonNull(env, "env == null!");
-    types = new Types(this);
-    converters = new Converters(this);
-  }
-
-  public Table getEnv() {
-    return env;
   }
 
   public Table get_G() {

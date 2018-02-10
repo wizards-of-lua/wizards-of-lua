@@ -4,9 +4,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.world.BlockEvent;
-import net.sandius.rembulan.Table;
 import net.wizardsoflua.block.ImmutableWolBlock;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
@@ -17,12 +15,12 @@ public class BlockEventClass
 
   @Override
   public Proxy<BlockEvent> toLua(BlockEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
+    return new Proxy<>(this, javaObj);
   }
 
   public static class Proxy<D extends BlockEvent> extends EventClass.Proxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addReadOnly("pos", this::getPos);
       addReadOnly("block", this::getBlock);
     }

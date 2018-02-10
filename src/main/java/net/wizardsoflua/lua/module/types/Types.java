@@ -28,10 +28,6 @@ public class Types {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
   }
 
-  public Table getEnv() {
-    return classLoader.getEnv();
-  }
-
   /**
    * Declares a new {@link LuaClass} with the specified name and the optional superclass meta table.
    *

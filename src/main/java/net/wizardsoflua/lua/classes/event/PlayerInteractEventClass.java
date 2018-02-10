@@ -2,8 +2,6 @@ package net.wizardsoflua.lua.classes.event;
 
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
@@ -14,12 +12,12 @@ public class PlayerInteractEventClass extends
 
   @Override
   public Proxy<PlayerInteractEvent> toLua(PlayerInteractEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
+    return new Proxy<>(this, javaObj);
   }
 
   public static class Proxy<D extends PlayerInteractEvent> extends EventClass.Proxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addImmutable("player", getConverters().toLua(delegate.getEntityPlayer()));
       addImmutableNullable("face", getConverters().toLuaNullable(delegate.getFace()));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));

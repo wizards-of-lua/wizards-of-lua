@@ -45,7 +45,6 @@ import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.lua.module.time.TimeModule;
-import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
@@ -99,7 +98,7 @@ public class SpellProgram {
     installSystemLibraries();
     luaClassLoader = new LuaClassLoader(env);
     luaClassLoader.loadStandardClasses();
-    TypesModule.installInto(env, getTypes(), getConverters());
+    TypesModule.installInto(env, luaClassLoader.getTypes(), getConverters());
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
       public void send(String message) {
@@ -117,17 +116,13 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
-    TimeModule.installInto(env, getConverters(), time);
+    TimeModule.installInto(env, luaClassLoader, time);
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());
     eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
-    EventsModule.installInto(env, getConverters(), eventHandlers);
+    EventsModule.installInto(env, luaClassLoader, eventHandlers);
 
     state = State.NEW;
-  }
-
-  private Types getTypes() {
-    return luaClassLoader.getTypes();
   }
 
   private Converters getConverters() {

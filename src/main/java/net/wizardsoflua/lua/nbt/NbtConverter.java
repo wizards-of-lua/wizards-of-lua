@@ -33,10 +33,10 @@ import net.wizardsoflua.lua.table.TableIterable;
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
-  private final LuaClassLoader luaClassLoader;
+  private final LuaClassLoader classLoader;
 
-  public NbtConverter(LuaClassLoader luaClassLoader) {
-    this.luaClassLoader = requireNonNull(luaClassLoader, "luaClassLoader == null!");
+  public NbtConverter(LuaClassLoader classLoader) {
+    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
   }
 
   private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
@@ -72,7 +72,7 @@ public class NbtConverter {
   private String keyToString(Object luaKey, int index, String path) {
     ByteString result = Conversions.stringValueOf(luaKey);
     if (result == null) {
-      String actualType = getTypename(luaKey);
+      String actualType = classLoader.getTypes().getTypename(luaKey);
       throw new ConversionException("Can't convert key " + index + " in " + path
           + "! string/number expected, but got " + actualType);
     }
@@ -80,12 +80,9 @@ public class NbtConverter {
   }
 
   ConversionException conversionException(String path, Object actual, String expected) {
+    String actualType = classLoader.getTypes().getTypename(actual);
     return new ConversionException(
-        "Can't convert " + path + "! " + expected + " expected, but got " + getTypename(actual));
-  }
-
-  private String getTypename(Object luaObject) {
-    return luaClassLoader.getTypes().getTypename(luaObject);
+        "Can't convert " + path + "! " + expected + " expected, but got " + actualType);
   }
 
   public NBTTagCompound merge(NBTTagCompound nbt, Table data) {

@@ -1,13 +1,11 @@
 package net.wizardsoflua.lua.classes.eventqueue;
 
-import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
 import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.function.NamedFunction2;
 
@@ -25,12 +23,12 @@ public class EventQueueClass
 
   @Override
   public Proxy<EventQueue> toLua(EventQueue javaObj) {
-    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
+    return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends EventQueue> extends DelegatingProxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+  public static class Proxy<D extends EventQueue> extends LuaInstanceProxy<D> {
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addReadOnly("names", this::getNames);
     }
 

@@ -61,9 +61,8 @@ public class TypesModule {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      Table classMT = converters.toJavaNullable(Table.class, arg1, 1, "class", getName());
-      boolean result = types.isInstanceOf(classMT, arg2);
-
+      Table classMetaTable = converters.toJavaNullable(Table.class, arg1, 1, "class", getName());
+      boolean result = types.isInstanceOf(classMetaTable, arg2);
       context.getReturnBuffer().setTo(result);
     }
   }

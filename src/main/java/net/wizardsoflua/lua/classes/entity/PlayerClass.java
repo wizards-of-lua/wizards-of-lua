@@ -8,10 +8,9 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.ByteString;
-import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @DeclareLuaClass(name = PlayerClass.NAME, superClass = EntityClass.class)
 public class PlayerClass
@@ -24,7 +23,7 @@ public class PlayerClass
 
   @Override
   public Proxy<EntityPlayerMP> toLua(EntityPlayerMP delegate) {
-    return new Proxy<>(getConverters(), getMetaTable(), delegate);
+    return new Proxy<>(this, delegate);
   }
 
   public void replaceDelegate(EntityPlayerMP newPlayer) {
@@ -39,8 +38,8 @@ public class PlayerClass
   }
 
   public class Proxy<D extends EntityPlayerMP> extends EntityClass.EntityLivingBaseProxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       // Overwrite name, since player names can't be changed
       addReadOnly("name", this::getName);
       add("team", this::getTeam, this::setTeam);

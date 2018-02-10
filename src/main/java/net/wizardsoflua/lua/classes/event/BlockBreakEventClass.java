@@ -1,8 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import net.minecraftforge.event.world.BlockEvent;
-import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
@@ -13,12 +11,12 @@ public class BlockBreakEventClass extends
 
   @Override
   public Proxy<BlockEvent.BreakEvent> toLua(BlockEvent.BreakEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
+    return new Proxy<>(this, javaObj);
   }
 
   public static class Proxy<D extends BlockEvent.BreakEvent> extends BlockEventClass.Proxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addReadOnly("experience", this::getExperience);
       addReadOnly("player", this::getPlayer);
     }

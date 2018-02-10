@@ -1,11 +1,10 @@
 package net.wizardsoflua.lua.classes.block;
 
 import net.minecraft.block.material.Material;
-import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
 
 @DeclareLuaClass(name = MaterialClass.NAME)
 public class MaterialClass extends ProxyCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
@@ -13,12 +12,12 @@ public class MaterialClass extends ProxyCachingLuaClass<Material, MaterialClass.
 
   @Override
   public Proxy<Material> toLua(Material delegate) {
-    return new Proxy<>(getConverters(), getMetaTable(), delegate);
+    return new Proxy<>(this, delegate);
   }
 
-  public static class Proxy<D extends Material> extends DelegatingProxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+  public static class Proxy<D extends Material> extends LuaInstanceProxy<D> {
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addImmutable("blocksLight", delegate.blocksLight());
       addImmutable("blocksMovement", delegate.blocksMovement());
       addImmutable("canBurn", delegate.getCanBurn());

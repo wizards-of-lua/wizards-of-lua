@@ -5,10 +5,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
@@ -22,12 +22,12 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
 
   @Override
   public Proxy toLua(ItemStack delegate) {
-    return new Proxy(getConverters(), getMetaTable(), delegate);
+    return new Proxy(this, delegate);
   }
 
-  public static class Proxy extends DelegatingProxy<ItemStack> {
-    public Proxy(Converters converters, Table metatable, ItemStack delegate) {
-      super(converters, metatable, delegate);
+  public static class Proxy extends LuaInstanceProxy<ItemStack> {
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, ItemStack delegate) {
+      super(luaClass, delegate);
       addReadOnly("id", this::getId);
       add("displayName", delegate::getDisplayName, this::setDisplayName);
       add("damage", delegate::getItemDamage, this::setDamage);
@@ -85,7 +85,7 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
 
     public void putNbt(Table nbt) {
       NBTTagCompound oldNbt = delegate.serializeNBT();
-      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbt);
+      NBTTagCompound newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
       delegate.deserializeNBT(newNbt);
     }
   }

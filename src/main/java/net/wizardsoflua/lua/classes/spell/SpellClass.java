@@ -5,16 +5,15 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.LiveWolBlock;
 import net.wizardsoflua.block.WolBlock;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
@@ -29,12 +28,12 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
 
   @Override
   public Proxy<SpellEntity> toLua(SpellEntity delegate) {
-    return new Proxy<>(getConverters(), getMetaTable(), delegate);
+    return new Proxy<>(this, delegate);
   }
 
   public static class Proxy<D extends SpellEntity> extends EntityClass.Proxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addReadOnly("owner", this::getOwner);
       add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);

@@ -1,8 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
-import net.sandius.rembulan.Table;
 import net.wizardsoflua.event.CustomLuaEvent;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
@@ -13,12 +11,12 @@ public class CustomEventClass
 
   @Override
   public Proxy<CustomLuaEvent> toLua(CustomLuaEvent javaObj) {
-    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
+    return new Proxy<>(this, javaObj);
   }
 
   public static class Proxy<D extends CustomLuaEvent> extends EventClass.Proxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       Object content = delegate.getData().getContent();
       addImmutableNullable("data", getConverters().toLuaNullable(content));
     }

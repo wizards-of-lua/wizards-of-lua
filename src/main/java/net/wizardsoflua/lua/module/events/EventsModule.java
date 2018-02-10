@@ -5,22 +5,22 @@ import java.util.Collection;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
 public class EventsModule extends DelegatingProxy<EventHandlers> {
-  public static EventsModule installInto(Table env, Converters converters,
+  public static EventsModule installInto(Table env, LuaClassLoader classLoader,
       EventHandlers eventHandlers) {
-    EventsModule result = new EventsModule(converters, eventHandlers);
+    EventsModule result = new EventsModule(classLoader, eventHandlers);
     env.rawset("Events", result);
     return result;
   }
 
-  public EventsModule(Converters converters, EventHandlers delegate) {
-    super(converters, null, delegate);
+  public EventsModule(LuaClassLoader classLoader, EventHandlers delegate) {
+    super(classLoader, null, delegate);
     ConnectFunction connectFunction = new ConnectFunction();
     addImmutable(connectFunction.getName(), connectFunction);
     FireFunction fireFunction = new FireFunction();

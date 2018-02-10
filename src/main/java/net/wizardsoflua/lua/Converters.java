@@ -40,10 +40,6 @@ public class Converters {
     tableDataConverter = new TableDataConverter(classLoader);
   }
 
-  public Types getTypes() {
-    return classLoader.getTypes();
-  }
-
   public NbtConverter getNbtConverter() {
     return nbtConverter;
   }
@@ -183,8 +179,9 @@ public class Converters {
       Object result = convertTo(type, luaObject);
       return type.cast(result);
     } catch (ClassCastException ex) {
-      String expected = getTypes().getTypename(type);
-      String actual = getTypes().getTypename(luaObject);
+      Types types = classLoader.getTypes();
+      String expected = types.getTypename(type);
+      String actual = types.getTypename(luaObject);
       throw new BadArgumentException(expected, actual);
     }
   }

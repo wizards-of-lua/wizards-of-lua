@@ -13,10 +13,9 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.block.WolBlock;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
 import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
@@ -35,12 +34,12 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
 
   @Override
   public Proxy<WolBlock> toLua(WolBlock javaObj) {
-    return new Proxy<>(getConverters(), getMetaTable(), javaObj);
+    return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends WolBlock> extends DelegatingProxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+  public static class Proxy<D extends WolBlock> extends LuaInstanceProxy<D> {
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       addReadOnly("name", this::getName);
       addReadOnly("material", this::getMaterial);
       addReadOnly("data", this::getData);

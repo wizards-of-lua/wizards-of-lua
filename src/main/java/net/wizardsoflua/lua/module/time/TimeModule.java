@@ -6,18 +6,18 @@ import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
 public class TimeModule extends DelegatingProxy<Time> {
-  public static TimeModule installInto(Table env, Converters converters, Time time) {
-    TimeModule result = new TimeModule(converters, time);
+  public static TimeModule installInto(Table env, LuaClassLoader classLoader, Time time) {
+    TimeModule result = new TimeModule(classLoader, time);
     env.rawset("Time", result);
     return result;
   }
 
-  public TimeModule(Converters converters, Time delegate) {
-    super(converters, null, delegate);
+  public TimeModule(LuaClassLoader classLoader, Time delegate) {
+    super(classLoader, null, delegate);
     add("autosleep", () -> delegate.isAutoSleep(), this::setAutoSleep);
     addReadOnly("allowance", () -> delegate.getAllowance());
     addReadOnly("luatime", () -> delegate.getLuaTicks());

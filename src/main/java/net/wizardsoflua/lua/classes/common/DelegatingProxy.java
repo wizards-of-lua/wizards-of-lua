@@ -2,17 +2,24 @@ package net.wizardsoflua.lua.classes.common;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.annotation.Nullable;
+
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public abstract class DelegatingProxy<D> extends DelegatingTable {
+  private final LuaClassLoader classLoader;
   protected D delegate;
-  protected final Converters converters;
 
-  public DelegatingProxy(Converters converters, Table metatable, D delegate) {
-    super(metatable);
+  public DelegatingProxy(LuaClassLoader classLoader, @Nullable Table metaTable, D delegate) {
+    super(metaTable);
+    this.classLoader = checkNotNull(classLoader, "classLoader == null!");
     this.delegate = checkNotNull(delegate, "delegate==null!");
-    this.converters = checkNotNull(converters, "converters==null!");
+  }
+
+  public Converters getConverters() {
+    return classLoader.getConverters();
   }
 
   public void setDelegate(D delegate) {
@@ -21,10 +28,6 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
 
   public D getDelegate() {
     return delegate;
-  }
-
-  public Converters getConverters() {
-    return converters;
   }
 
   public abstract boolean isTransferable();

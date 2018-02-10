@@ -2,10 +2,9 @@ package net.wizardsoflua.lua.classes.entity;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
+import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @DeclareLuaClass(name = DroppedItemClass.NAME, superClass = EntityClass.class)
 public class DroppedItemClass
@@ -14,12 +13,12 @@ public class DroppedItemClass
 
   @Override
   public DroppedItemClass.Proxy<EntityItem> toLua(EntityItem delegate) {
-    return new Proxy<>(getConverters(), getMetaTable(), delegate);
+    return new Proxy<>(this, delegate);
   }
 
   public static class Proxy<D extends EntityItem> extends EntityClass.Proxy<D> {
-    public Proxy(Converters converters, Table metatable, D delegate) {
-      super(converters, metatable, delegate);
+    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+      super(luaClass, delegate);
       add("item", this::getItem, this::setItem);
     }
 
