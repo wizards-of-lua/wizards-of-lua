@@ -1,8 +1,5 @@
 package net.wizardsoflua.lua.classes.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.common.cache.Cache;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,18 +29,12 @@ public class PlayerClass
 
   public void replaceDelegate(EntityPlayerMP newPlayer) {
     Cache<EntityPlayerMP, Proxy<EntityPlayerMP>> cache = getCache();
-
-    Set<EntityPlayer> found = new HashSet<>();
-    for (EntityPlayer key : cache.asMap().keySet()) {
-      if (key.getUniqueID().equals(newPlayer.getUniqueID())) {
-        found.add(key);
+    for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
+      if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
+        Proxy<EntityPlayerMP> oldValue = cache.asMap().remove(oldPlayer);
+        cache.put(newPlayer, oldValue);
+        oldValue.setDelegate(newPlayer);
       }
-    }
-
-    for (EntityPlayer entityPlayer : found) {
-      Proxy<EntityPlayerMP> oldValue = cache.asMap().remove(entityPlayer);
-      cache.put(newPlayer, oldValue);
-      oldValue.setDelegate(newPlayer);
     }
   }
 

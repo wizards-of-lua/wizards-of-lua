@@ -29,6 +29,7 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.SchedulingContextFactory;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
@@ -266,7 +267,7 @@ public class SpellProgram {
         this.owner = player;
       }
     }
-    getConverters().replacePlayerInstance(player);
+    PlayerClass playerClass = luaClassLoader.getLuaClassOfType(PlayerClass.class);
+    playerClass.replaceDelegate(player);
   }
-
 }
