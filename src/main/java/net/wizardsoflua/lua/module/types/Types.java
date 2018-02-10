@@ -57,23 +57,23 @@ public class Types {
   }
 
   /**
-   * Returns <code>true</code> if the given Lua object is an instance of the Lua class represented
-   * by the given class metatable.
+   * Returns {@code true} if the specified Lua object is an instance of the Lua class represented by
+   * the specified class meta table.
    *
-   * @param classMT
-   * @param luaObj
-   * @return <code>true</code> if the given Lua object is an instance of the Lua class represented
-   *         by the given class metatable
+   * @param classMetaTable
+   * @param luaObject
+   * @return {@code true} if the specified Lua object is an instance of the Lua class
    */
-  public boolean isInstanceOf(Table classMT, Object luaObj) {
-    if (luaObj == null) {
+  public boolean isInstanceOf(Table classMetaTable, Object luaObject) {
+    if (luaObject == null) {
       return false;
     }
-    if (!(luaObj instanceof Table)) {
+    if (!(luaObject instanceof Table)) {
       return false;
     }
-    Table actualMT = ((Table) luaObj).getMetatable();
-    return actualMT != null && (actualMT == classMT || isInstanceOf(classMT, actualMT));
+    Table actualMetaTable = ((Table) luaObject).getMetatable();
+    return actualMetaTable != null
+        && (actualMetaTable == classMetaTable || isInstanceOf(classMetaTable, actualMetaTable));
   }
 
   /**
