@@ -10,9 +10,11 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.classes.CustomLuaClass;
+import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.ObjectClass;
+import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
 public class Types {
   private static final String NIL_META = "nil";
@@ -93,6 +95,15 @@ public class Types {
   }
 
   public @Nullable String getTypename(Class<?> type) {
+    if (DelegatingProxy.class.isAssignableFrom(type)) {
+      @SuppressWarnings("unchecked")
+      Class<? extends DelegatingProxy<?>> proxyClass = (Class<? extends DelegatingProxy<?>>) type;
+      type = DelegatingProxy.getDelegateClassOf(proxyClass);
+    }
+    JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(type);
+    if (luaClass != null) {
+      return luaClass.getName();
+    }
     if (Table.class.isAssignableFrom(type)) {
       return TABLE_META;
     }
@@ -108,7 +119,7 @@ public class Types {
     if (LuaFunction.class.isAssignableFrom(type)) {
       return FUNCTION_META;
     }
-    return type.getSimpleName();
+    return type.getName();
   }
 
   /**

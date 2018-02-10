@@ -1,6 +1,5 @@
 package net.wizardsoflua.lua;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -174,16 +173,22 @@ public class Converters {
   }
 
   private <T> T toJava(Class<T> type, Object luaObject) throws BadArgumentException {
-    checkArgument(luaObject != null, "%s expected but got nil", type.getName());
+    if (luaObject == null) {
+      throw badArgument(type, luaObject);
+    }
     try {
       Object result = convertTo(type, luaObject);
       return type.cast(result);
     } catch (ClassCastException ex) {
-      Types types = classLoader.getTypes();
-      String expected = types.getTypename(type);
-      String actual = types.getTypename(luaObject);
-      throw new BadArgumentException(expected, actual);
+      throw badArgument(type, luaObject);
     }
+  }
+
+  private BadArgumentException badArgument(Class<?> expectedType, Object actualObject) {
+    Types types = classLoader.getTypes();
+    String expected = types.getTypename(expectedType);
+    String actual = types.getTypename(actualObject);
+    return new BadArgumentException(expected, actual);
   }
 
   private Object convertTo(Class<?> type, Object luaObject)
