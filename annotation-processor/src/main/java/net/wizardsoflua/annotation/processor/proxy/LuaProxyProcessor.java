@@ -1,5 +1,6 @@
 package net.wizardsoflua.annotation.processor.proxy;
 
+import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
@@ -11,11 +12,13 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -35,6 +38,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -42,6 +46,8 @@ import com.squareup.javapoet.TypeSpec;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaModule;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.processor.Argument;
+import net.wizardsoflua.annotation.processor.Function;
 import net.wizardsoflua.annotation.processor.Module;
 import net.wizardsoflua.annotation.processor.Property;
 import net.wizardsoflua.annotation.processor.Utils;
@@ -82,7 +88,9 @@ public class LuaProxyProcessor extends AbstractProcessor {
           }
           LuaFunction luaFunction = method.getAnnotation(LuaFunction.class);
           if (luaFunction != null) {
-            System.out.println(luaFunction);
+            String docComment = elements.getDocComment(method);
+            Function function = Function.of(method, luaFunction, docComment);
+            module.addFunction(function);
           }
         }
 
@@ -91,10 +99,13 @@ public class LuaProxyProcessor extends AbstractProcessor {
         int typeParameterIndex = 0;
         TypeMirror delegateType = getTypeParameter(subType, superType, typeParameterIndex, types);
 
-        ClassName apiClassName = ClassName.get(moduleElement);
-        TypeName delegateTypeName = ClassName.get(delegateType);
+        ClassName apiTypeName = ClassName.get(moduleElement);
+        TypeName delegateTypeName = TypeName.get(delegateType);
         String packageName = elements.getPackageOf(moduleElement).getQualifiedName().toString();
 
+
+        JavaFile proxy = createProxy(module, packageName, apiTypeName, delegateTypeName);
+        ClassName proxyTypeName = ClassName.get(proxy.packageName, proxy.typeSpec.name);
 
         ClassName declareLuaClass =
             ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
@@ -103,17 +114,104 @@ public class LuaProxyProcessor extends AbstractProcessor {
             .addMember("name", "$S", module.getName())//
             .addMember("superClass", "$T.class", module.getSuperClass())//
             .build();
-        TypeSpec luaClassType = classBuilder(module.getName() + "Class")//
-            .addAnnotation(anno)//
-            .build();
-        JavaFile luaClass = JavaFile.builder(packageName, luaClassType).build();
 
-        JavaFile proxy = createProxy(module, packageName, apiClassName, delegateTypeName);
+        ClassName rawSuperclass =
+            ClassName.get("net.wizardsoflua.lua.classes", "ProxyCachingLuaClass");
+        ParameterizedTypeName superclass =
+            ParameterizedTypeName.get(rawSuperclass, delegateTypeName, proxyTypeName);
+
+        MethodSpec toLuaMethod = methodBuilder("toLua")//
+            .addAnnotation(Override.class)//
+            .addModifiers(Modifier.PROTECTED)//
+            .returns(proxyTypeName)//
+            .addParameter(delegateTypeName, "javaObject")//
+            .addStatement("return new $T(new $T(this, javaObject))", proxyTypeName, apiTypeName)//
+            .build();
+
+        Builder constructor = constructorBuilder()//
+            .addModifiers(Modifier.PUBLIC) //
+        ;
+
+        for (Function function : module.getFunctions()) {
+          String Name = Utils.capitalize(function.getName());
+          constructor.addStatement("add(new $LFunction())", Name);
+        }
+
+        TypeSpec.Builder luaClassType = classBuilder(module.getName() + "Class")//
+            .addAnnotation(GENERATED_ANNOTATION)//
+            .addAnnotation(anno)//
+            .addModifiers(Modifier.PUBLIC)//
+            .superclass(superclass)//
+            .addMethod(toLuaMethod)//
+            .addMethod(constructor.build())//
+        ;
+
+        for (Function function : module.getFunctions()) {
+          String name = function.getName();
+          String Name = Utils.capitalize(name);
+          Collection<Argument> args = function.getArgs();
+          MethodSpec.Builder getNameMethod = methodBuilder("getName")//
+              .addAnnotation(Override.class)//
+              .addModifiers(Modifier.PUBLIC)//
+              .returns(String.class)//
+              .addStatement("return $S", name)//
+          ;
+          ClassName executionContextName =
+              ClassName.get("net.sandius.rembulan.runtime", "ExecutionContext");
+          MethodSpec.Builder invokeMethod = methodBuilder("invoke")//
+              .addAnnotation(Override.class)//
+              .addModifiers(Modifier.PUBLIC)//
+              .addParameter(executionContextName, "context")//
+          ;
+          int i = 0;
+          for (Argument arg : args) {
+            invokeMethod.addParameter(Object.class, "arg" + (++i));
+          }
+          i = 0;
+          for (Argument arg : args) {
+            TypeMirror type = arg.getType();
+            String argName = arg.getName();
+            invokeMethod.addStatement(
+                "$T $L = getConverters().toJava($T.class, arg$L, $L, $S, getName())", type, argName,
+                type, i, i, argName);
+          }
+          TypeSpec.Builder functionClass = classBuilder(Name + "Function")//
+              .addModifiers(Modifier.PRIVATE)//
+              .superclass(
+                  ClassName.get("net.wizardsoflua.lua.function", "NamedFunction" + args.size()))//
+              .addMethod(getNameMethod.build())//
+              .addMethod(invokeMethod.build())//
+          ;
+          luaClassType.addType(functionClass.build());
+
+          constructor.addStatement("add(new $LFunction())", Name);
+        }
+
+
+        // private class PutNbtFunction extends NamedFunction2 {
+        // @Override
+        // public String getName() {
+        // return "putNbt";
+        // }
+        //
+        // @Override
+        // public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+        // LuaItem self = getConverters().toJava(LuaItem.class, arg1, 1, "self", getName());
+        // Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
+        // self.putNbt(nbt);
+        // context.getReturnBuffer().setTo();
+        // }
+        // }
+
+
+
+        JavaFile luaClass = JavaFile.builder(packageName, luaClassType.build()).build();
+
 
         Filer filer = processingEnv.getFiler();
         try {
-          write(luaClass, filer);
           write(proxy, filer);
+          write(luaClass, filer);
         } catch (IOException ex) {
           throw new UndeclaredThrowableException(ex);
         }
@@ -129,6 +227,10 @@ public class LuaProxyProcessor extends AbstractProcessor {
     }
   }
 
+  private final AnnotationSpec GENERATED_ANNOTATION = AnnotationSpec.builder(Generated.class)//
+      .addMember("value", "$S", "LuaApi")//
+      .build();
+
   private JavaFile createProxy(Module module, String packageName, ClassName apiClassName,
       TypeName delegateTypeName) {
     TypeSpec proxyType = createProxyType(module, apiClassName, delegateTypeName);
@@ -137,28 +239,29 @@ public class LuaProxyProcessor extends AbstractProcessor {
 
   private TypeSpec createProxyType(Module module, ClassName apiClassName,
       TypeName delegateTypeName) {
-    ClassName proxySuperclass = ClassName.get("net.wizardsoflua.scribble", "LuaApiProxy");
-    ParameterizedTypeName parameterizedProxySuperclass =
-        ParameterizedTypeName.get(proxySuperclass, apiClassName, delegateTypeName);
+    ClassName rawSuperclass = ClassName.get("net.wizardsoflua.scribble", "LuaApiProxy");
+    ParameterizedTypeName superclass =
+        ParameterizedTypeName.get(rawSuperclass, apiClassName, delegateTypeName);
 
-    TypeSpec.Builder type = classBuilder(module.getName() + "Proxy")//
+    TypeSpec.Builder proxyType = classBuilder(module.getName() + "Proxy")//
+        .addAnnotation(GENERATED_ANNOTATION)//
         .addModifiers(Modifier.PUBLIC)//
-        .superclass(parameterizedProxySuperclass)//
+        .superclass(superclass)//
         .addMethod(createConstructor(module, apiClassName))//
     ;
     for (Property property : module.getProperties()) {
       if (property.isReadable()) {
-        type.addMethod(createProxyGetter(property));
+        proxyType.addMethod(createProxyGetter(property));
       }
       if (property.isWriteable()) {
-        type.addMethod(createProxySetter(property));
+        proxyType.addMethod(createProxySetter(property));
       }
     }
-    return type.build();
+    return proxyType.build();
   }
 
   private MethodSpec createConstructor(Module module, ClassName apiClassName) {
-    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()//
+    MethodSpec.Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
         .addParameter(apiClassName, "api")//
         .addStatement("super(api)")//
@@ -167,12 +270,12 @@ public class LuaProxyProcessor extends AbstractProcessor {
       String name = property.getName();
       String Name = Utils.capitalize(name);
       if (property.isWriteable()) {
-        constructorBuilder.addStatement("add($S, this::get$L, this::set$L)", name, Name, Name);
+        constructor.addStatement("add($S, this::get$L, this::set$L)", name, Name, Name);
       } else {
-        constructorBuilder.addStatement("addReadOnly($S, this::get$L)", name, Name);
+        constructor.addStatement("addReadOnly($S, this::get$L)", name, Name);
       }
     }
-    return constructorBuilder.build();
+    return constructor.build();
   }
 
   private MethodSpec createProxyGetter(Property property) {

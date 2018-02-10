@@ -39,4 +39,9 @@ public class Module {
   public Collection<Property> getProperties() {
     return Collections.unmodifiableCollection(properties.values());
   }
+
+  public Collection<Function> getFunctions() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
