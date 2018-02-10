@@ -115,7 +115,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
       }
       if (args.length == 2) {
         Object arg1 = args[1];
-        String command = getConverters().toJava(String.class, arg1, "command");
+        String command = getConverters().toJavaOld(String.class, arg1, "command");
         int result = proxy.execute(command);
         context.getReturnBuffer().setTo(result);
       } else if (args.length > 2) {

@@ -32,8 +32,8 @@ public class ItemsModule {
   }
 
   public @Nullable Object get(Object argItemId, Object argAmount) {
-    String id = converters.toJava(String.class, argItemId, "id");
-    int amount = converters.toJavaOptional(Number.class, argAmount, "amount").orElse(1).intValue();
+    String id = converters.toJavaOld(String.class, argItemId, "id");
+    int amount = converters.toJavaOptionalOld(Number.class, argAmount, "amount").orElse(1).intValue();
     Item item = Item.getByNameOrId(id);
     ItemStack result = new ItemStack(item, amount);
     return converters.toLuaNullable(result);

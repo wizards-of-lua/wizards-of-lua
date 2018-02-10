@@ -21,7 +21,7 @@ public class TableUtils {
 
   public static <T> T getAs(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
-    return CONVERSION.toJava(type, value, key);
+    return CONVERSION.toJavaOld(type, value, key);
   }
 
   public static <T> Optional<T> getAsOptional(Class<T> type, Table table, String key) {
@@ -31,7 +31,7 @@ public class TableUtils {
 
   public static @Nullable <T> T getAsNullable(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
-    return CONVERSION.toJavaNullable(type, value, key);
+    return CONVERSION.toJavaNullableOld(type, value, key);
   }
 
   public static void writeTo(PrintWriter out, Table table) {

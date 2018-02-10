@@ -80,34 +80,40 @@ public class Types {
   /**
    * Returns the Lua type name of the given Lua object.
    *
-   * @param luaObj
+   * @param luaObject
    * @return the Lua type name of the given Lua object
    */
-  public @Nullable String getTypename(@Nullable Object luaObj) {
-    if (luaObj == null) {
+  public @Nullable String getTypename(@Nullable Object luaObject) {
+    if (luaObject == null) {
       return NIL_META;
     }
-    if (luaObj instanceof Table) {
-      Table table = (Table) luaObj;
+    if (luaObject instanceof Table) {
+      Table table = (Table) luaObject;
       String classname = getClassname(table);
       if (classname != null) {
         return classname;
       }
+    }
+    return getTypename(luaObject.getClass());
+  }
+
+  public @Nullable String getTypename(Class<?> type) {
+    if (Table.class.isAssignableFrom(type)) {
       return TABLE_META;
     }
-    if ((luaObj instanceof ByteString) || (luaObj instanceof String)) {
+    if (ByteString.class.isAssignableFrom(type) || String.class.isAssignableFrom(type)) {
       return STRING_META;
     }
-    if (luaObj instanceof Number) {
+    if (Number.class.isAssignableFrom(type)) {
       return NUMBER_META;
     }
-    if (luaObj instanceof Boolean) {
+    if (Boolean.class.isAssignableFrom(type)) {
       return BOOLEAN_META;
     }
-    if (luaObj instanceof LuaFunction) {
+    if (LuaFunction.class.isAssignableFrom(type)) {
       return FUNCTION_META;
     }
-    return luaObj.getClass().getName();
+    return type.getSimpleName();
   }
 
   /**

@@ -1,14 +1,16 @@
 package net.wizardsoflua.lua;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
-import net.sandius.rembulan.Conversions;
+import net.sandius.rembulan.Table;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
+import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
@@ -17,7 +19,6 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 
 public class Converters extends WolConversions {
   private final LuaClassLoader classLoader;
-  private final EnumConverter enumConverter = new EnumConverter();
   private final NbtConverter nbtConverter;
   private final TableDataConverter tableDataConverter;
 
@@ -35,23 +36,34 @@ public class Converters extends WolConversions {
     return nbtConverter;
   }
 
+  /**
+   * @deprecated This method should be protected
+   */
+  @Deprecated
   @Override
-  public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
-    checkNotNull(luaObj, "luaObj==null!");
-    // FIXME Adrodoc55 07.02.2018: Sollten wir nicht eher das luaObj nach seiner Klasse fragen?
-    JavaLuaClass<T, ?> cls = classLoader.getLuaClassForJavaClass(type);
-    if (cls != null) {
-      return cls.getJavaInstance(castToTable(luaObj));
+  public <T> T toJava(Class<T> type, Object luaObject) throws BadArgumentException {
+    checkArgument(luaObject != null, "%s expected but got nil", type.getName());
+    try {
+      Object result = convertTo(type, luaObject);
+      return type.cast(result);
+    } catch (ClassCastException ex) {
+      String expected = getTypes().getTypename(type);
+      String actual = getTypes().getTypename(luaObject);
+      throw new BadArgumentException(expected, actual);
     }
-    if (Enum.class.isAssignableFrom(type)) {
-      ByteString byteStrV = Conversions.stringValueOf(luaObj);
-      String name = byteStrV.toString();
-      T result = enumConverter.toJava(type, name);
-      if (result != null) {
-        return (T) result;
+  }
+
+  @Override
+  protected Object convertTo(Class<?> type, Object luaObject)
+      throws ClassCastException, BadArgumentException {
+    if (luaObject instanceof Table) {
+      Table table = (Table) luaObject;
+      LuaClass luaClass = classLoader.getLuaClassOf(table);
+      if (luaClass instanceof JavaLuaClass) {
+        return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }
     }
-    return super.toJava(type, luaObj);
+    return super.convertTo(type, luaObject);
   }
 
   @Override

@@ -1,7 +1,9 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Optional.ofNullable;
 
+import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -180,7 +182,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     }
 
     public void setTags(Object luaObj) {
-      Iterable<String> tags = getConverters().toJavaIterable(String.class, luaObj);
+      Collection<String> tags = getConverters().toJavaCollection(String.class, luaObj, "tags");
 
       for (String oldTag : Lists.newArrayList(delegate.getTags())) {
         delegate.removeTag(oldTag);
@@ -246,7 +248,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     }
 
     public Object scanView(Object luaObj) {
-      float distance = getConverters().toJava(Number.class, luaObj, "distance").floatValue();
+      float distance = getConverters().toJavaOld(Number.class, luaObj, "distance").floatValue();
       Vec3d start = delegate.getPositionEyes(0);
       Vec3d end = start.add(delegate.getLookVec().scale(distance));
       RayTraceResult hit = delegate.getEntityWorld().rayTraceBlocks(start, end, false);
@@ -254,13 +256,11 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       return result;
     }
 
-    public Object dropItem(Object itemLuaObj, Object offsetYLuaObj) {
-      ItemStack item = getConverters().toJava(ItemStack.class, itemLuaObj, "item");
+    public Object dropItem(ItemStack item, @Nullable Float offsetY) {
       if (item.getCount() == 0) {
         throw new IllegalArgumentException("Can't drop an item with count==0");
       }
-      float offsetY = getConverters().toJavaOptional(Number.class, offsetYLuaObj, "offsetY")
-          .orElse(0f).floatValue();
+      offsetY = ofNullable(offsetY).orElse(0f);
       EntityItem result = delegate.entityDropItem(item, offsetY);
       return getConverters().toLuaNullable(result);
     }
@@ -406,7 +406,10 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2, Object arg3) {
       Proxy<?> proxy = castToProxy(arg1);
-      Object result = proxy.dropItem(arg2, arg3);
+      String functionName = "dropItem";
+      ItemStack item = getConverters().toJava(ItemStack.class, arg2, 2, "item", functionName);
+      Float offsetY = getConverters().toJavaNullable(Float.class, arg3, 3, "offsetY", functionName);
+      Object result = proxy.dropItem(item, offsetY);
       context.getReturnBuffer().setTo(result);
     }
 

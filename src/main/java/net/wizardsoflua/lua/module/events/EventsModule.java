@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.module.events;
 
+import java.util.Collection;
+
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -20,7 +22,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
   public EventsModule(Converters converters, EventHandlers delegate) {
     super(converters, null, delegate);
-    addImmutable("connect", new ConnectFunction());
+    addImmutable(ConnectFunction.NAME, new ConnectFunction());
     addImmutable("fire", new FireFunction());
   }
 
@@ -30,9 +32,11 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
   }
 
   private class ConnectFunction extends AbstractFunctionAnyArg {
+    public static final String NAME = "connect";
+
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      Iterable<String> eventNames = getConverters().toJavaIterableFromArray(String.class, args);
+      Collection<String> eventNames = getConverters().toJavaCollection(String.class, args, NAME);
       EventQueue eventQueue = delegate.connect(eventNames);
       Object result = getConverters().toLua(eventQueue);
       context.getReturnBuffer().setTo(result);
@@ -48,7 +52,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
   private class FireFunction extends AbstractFunction2 {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      String eventName = getConverters().toJava(String.class, arg1, "eventName");
+      String eventName = getConverters().toJavaOld(String.class, arg1, "eventName");
       delegate.fire(eventName, arg2);
       context.getReturnBuffer().setTo();
     }

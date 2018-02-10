@@ -104,7 +104,7 @@ public class LuaClassLoader {
   }
 
   public void load(LuaClass luaClass) {
-    if (luaClassByType.containsKey(luaClass.getClass())) {
+    if (luaClassByName.containsKey(luaClass.getName())) {
       return; // LuaClass is already loaded
     }
     luaClass.init(this);
@@ -161,6 +161,25 @@ public class LuaClassLoader {
     requireNonNull(luaClassMetaTable, "luaClassMetaTable == null!");
     LuaClass luaClass = luaClassByMetaTable.get(luaClassMetaTable);
     return luaClass;
+  }
+
+  /**
+   * Returns the {@link LuaClass} of the specified {@link Table}. If {@code luaObject} is not an
+   * instance of a class then {@code null} is returned.
+   *
+   * @param luaObject
+   * @return the {@link LuaClass} or {@code null}
+   */
+  public @Nullable LuaClass getLuaClassOf(Table luaObject) {
+    LuaClass result = getLuaClassForMetaTable(luaObject);
+    if (result != null) {
+      return null; // luaObject is a class itself and we don't want to return the superclass
+    }
+    Table metatable = luaObject.getMetatable();
+    if (metatable != null) {
+      return getLuaClassForMetaTable(metatable);
+    }
+    return null;
   }
 
   public @Nullable <J> JavaLuaClass<J, ?> getLuaClassForJavaClass(Class<J> javaClass) {

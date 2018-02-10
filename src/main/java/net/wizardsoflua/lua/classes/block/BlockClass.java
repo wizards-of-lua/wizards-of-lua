@@ -170,7 +170,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
         throws ResolvedControlThrowable {
       WolBlock wolBlock = getConverters().toJava(WolBlock.class, arg1);
       int amount =
-          getConverters().toJavaOptional(Number.class, arg2, "amount").orElse(1).intValue();
+          getConverters().toJavaOptionalOld(Number.class, arg2, "amount").orElse(1).intValue();
       ItemStack itemStack = wolBlock.asItemStack(amount);
       Object result = getConverters().toLua(itemStack);
       context.getReturnBuffer().setTo(result);

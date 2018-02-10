@@ -2,9 +2,11 @@ package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,45 +14,29 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
+import net.sandius.rembulan.LuaMathOperators;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
+import net.wizardsoflua.lua.BadArgumentException;
+import net.wizardsoflua.lua.EnumConverter;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class WolConversions {
+  protected final EnumConverter enumConverter = new EnumConverter();
 
-  public @Nullable Table castToTableNullable(Object luaObj, String name)
-      throws ConversionException {
-    checkNotNull(name, "name==null!");
-    try {
-      return castToTableNullable(luaObj);
-    } catch (Exception e) {
-      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
-    }
-  }
-
+  @Deprecated
   public @Nullable Table castToTableNullable(Object luaObj) throws ConversionException {
-    if (luaObj == null) {
-      return null;
-    }
-    return castToTable(luaObj);
+    return toJavaNullable(Table.class, luaObj);
   }
 
+  @Deprecated
   public Table castToTable(Object luaObj, String name) throws ConversionException {
-    checkNotNull(name, "name==null!");
-    try {
-      return castToTable(luaObj);
-    } catch (Exception e) {
-      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
-    }
+    return toJavaOld(Table.class, luaObj, name);
   }
 
+  @Deprecated
   public Table castToTable(Object luaObj) throws ConversionException {
-    checkNotNull(luaObj, "luaObj==null!");
-    if (luaObj instanceof Table) {
-      return (Table) luaObj;
-    }
-    throw new ConversionException(
-        format("Table expected, but got: %s", luaObj.getClass().getName()));
+    return toJava(Table.class, luaObj);
   }
 
   public final @Nullable <T> Optional<? extends Object> toLuaOptional(@Nullable T value,
@@ -122,8 +108,9 @@ public class WolConversions {
 
   ///////////
 
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObj, String name)
-      throws ConversionException {
+  @Deprecated
+  public final <T> Optional<T> toJavaOptionalOld(Class<T> type, @Nullable Object luaObj,
+      String name) throws ConversionException {
     checkNotNull(name, "name==null!");
     try {
       return toJavaOptional(type, luaObj);
@@ -132,13 +119,15 @@ public class WolConversions {
     }
   }
 
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObj)
+  @Deprecated
+  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject)
       throws ConversionException {
-    return Optional.ofNullable(toJavaNullable(type, luaObj));
+    return Optional.ofNullable(toJavaNullable(type, luaObject));
   }
 
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObj, String name)
-      throws ConversionException {
+  @Deprecated
+  public final @Nullable <T> T toJavaNullableOld(Class<T> type, @Nullable Object luaObj,
+      String name) throws ConversionException {
     checkNotNull(name, "name==null!");
     try {
       return toJavaNullable(type, luaObj);
@@ -147,97 +136,264 @@ public class WolConversions {
     }
   }
 
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObj)
+  @Deprecated
+  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject)
       throws ConversionException {
-    if (luaObj == null) {
+    if (luaObject == null) {
       return null;
     }
-    return toJava(type, luaObj);
+    return toJava(type, luaObject);
   }
 
-  public final <T> T toJava(Class<T> type, Object luaObj, String name) throws ConversionException {
+  @Deprecated
+  public final <T> T toJavaOld(Class<T> type, Object luaObj, String name)
+      throws ConversionException {
     checkNotNull(name, "name==null!");
     try {
       return toJava(type, luaObj);
     } catch (ConversionException e) {
       throw new ConversionException(format("Can't convert '%s' argument!", name), e);
     } catch (NullPointerException e) {
-      throw new ConversionException(
-          format("Can't convert '%s' argument: value is nil!", name), e);
+      throw new ConversionException(format("Can't convert '%s' argument: value is nil!", name), e);
     }
   }
 
-  public final <T, I extends Iterable<? super T>> I toJavaIterableFromArray(Class<T> type,
-      Object[] luaObjs) throws ConversionException {
-    List<T> resultList = new ArrayList<>();
-    for (Object luaObj : luaObjs) {
-      T javaObj = toJava(type, luaObj);
-      resultList.add(javaObj);
+  public final <J> Collection<J> toJavaCollection(Class<J> type, Object[] args,
+      String functionOrPropertyName) throws ConversionException {
+    Collection<J> result = new ArrayList<>(args.length);
+    for (int i = 0; i < args.length; i++) {
+      Object arg = args[i];
+      int argumentIndex = i + 1;
+      J javaObject = toJava(type, arg, argumentIndex, functionOrPropertyName);
+      result.add(javaObject);
     }
-    @SuppressWarnings("unchecked")
-    I result = (I) resultList;
     return result;
   }
 
-  public final <T, I extends Iterable<? super T>> I toJavaIterable(Class<T> type, Object luaObj)
-      throws ConversionException {
-    Table table = castToTable(luaObj);
-    TableIterable it = new TableIterable(table);
-    List<T> resultList = new ArrayList<>();
-
-    for (Map.Entry<Object, Object> e : it) {
-      Object elemLuaValue = e.getValue();
-      T elemJavaValue = toJava(type, elemLuaValue);
-      resultList.add(elemJavaValue);
+  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
+      String functionOrPropertyName) throws ConversionException {
+    Table table = toJava(Table.class, luaObject, functionOrPropertyName);
+    Collection<J> result = new ArrayList<>();
+    for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
+      Object key = entry.getKey();
+      String argumentName = Conversions.toHumanReadableString(key).toString();
+      Object luaValue = entry.getValue();
+      J javaValue = toJava(type, luaValue, argumentName, functionOrPropertyName);
+      result.add(javaValue);
     }
-
-    @SuppressWarnings("unchecked")
-    I result = (I) resultList;
     return result;
   }
 
+  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
+      int argumentIndex, String argumentName, String functionOrPropertyName)
+      throws BadArgumentException {
+    return ofNullable(
+        toJavaNullable(type, luaObject, argumentIndex, argumentName, functionOrPropertyName));
+  }
+
+  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+      int argumentIndex, String argumentName, String functionOrPropertyName)
+      throws BadArgumentException {
+    requireNonNull(argumentName, "argumentName == null!");
+    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
+    if (luaObject == null) {
+      return null;
+    }
+    return toJava(type, luaObject, argumentIndex, argumentName, functionOrPropertyName);
+  }
+
+  public final <T> T toJava(Class<T> type, Object luaObject, int argumentIndex, String argumentName,
+      String functionOrPropertyName) throws BadArgumentException {
+    try {
+      return toJava(type, luaObject, argumentName, functionOrPropertyName);
+    } catch (BadArgumentException ex) {
+      ex.setArgumentIndex(argumentIndex);
+      throw ex;
+    }
+  }
+
+  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
+      String argumentName, String functionOrPropertyName) throws BadArgumentException {
+    return ofNullable(toJavaNullable(type, luaObject, argumentName, functionOrPropertyName));
+  }
+
+  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+      String argumentName, String functionOrPropertyName) throws BadArgumentException {
+    requireNonNull(argumentName, "argumentName == null!");
+    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
+    if (luaObject == null) {
+      return null;
+    }
+    return toJava(type, luaObject, argumentName, functionOrPropertyName);
+  }
+
+  public final <T> T toJava(Class<T> type, Object luaObject, String argumentName,
+      String functionOrPropertyName) throws BadArgumentException {
+    requireNonNull(argumentName, "argumentName == null!");
+    try {
+      return toJava(type, luaObject, functionOrPropertyName);
+    } catch (BadArgumentException ex) {
+      ex.setArgumentName(argumentName);
+      throw ex;
+    }
+  }
+
+  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
+      int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
+    return ofNullable(toJavaNullable(type, luaObject, argumentIndex, functionOrPropertyName));
+  }
+
+  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+      int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
+    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
+    if (luaObject == null) {
+      return null;
+    }
+    return toJava(type, luaObject, argumentIndex, functionOrPropertyName);
+  }
+
+  public final <T> T toJava(Class<T> type, Object luaObject, int argumentIndex,
+      String functionOrPropertyName) throws BadArgumentException {
+    try {
+      return toJava(type, luaObject, functionOrPropertyName);
+    } catch (BadArgumentException ex) {
+      ex.setArgumentIndex(argumentIndex);
+      throw ex;
+    }
+  }
+
+  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
+      String functionOrPropertyName) throws BadArgumentException {
+    return ofNullable(toJavaNullable(type, luaObject, functionOrPropertyName));
+  }
+
+  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+      String functionOrPropertyName) throws BadArgumentException {
+    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
+    if (luaObject == null) {
+      return null;
+    }
+    return toJava(type, luaObject, functionOrPropertyName);
+  }
+
+  public final <T> T toJava(Class<T> type, Object luaObject, String functionOrPropertyName)
+      throws BadArgumentException {
+    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
+    try {
+      return toJava(type, luaObject);
+    } catch (BadArgumentException ex) {
+      ex.setFunctionOrPropertyName(functionOrPropertyName);
+      throw ex;
+    }
+  }
+
+  @Deprecated
   @SuppressWarnings("unchecked")
-  public <T> T toJava(Class<T> type, Object luaObj) throws ConversionException {
-    checkNotNull(luaObj, "luaObj==null!");
+  protected <T> T toJava(Class<T> type, Object luaObject) throws ConversionException {
+    checkNotNull(luaObject, "luaObj==null!");
     if (Boolean.class == type) {
-      if (luaObj instanceof Boolean) {
-        return (T) luaObj;
+      if (luaObject instanceof Boolean) {
+        return (T) luaObject;
       }
       throw new ConversionException(format("Can't convert value! Boolean expected, but got: %s",
-          luaObj.getClass().getName()));
+          luaObject.getClass().getName()));
     }
     if (Integer.class == type) {
-      Long longV = Conversions.integerValueOf(luaObj);
+      Long longV = Conversions.integerValueOf(luaObject);
       if (longV != null) {
         return (T) Integer.valueOf(longV.intValue());
       }
       throw new ConversionException(format("Can't convert value! Integer expected, but got: %s",
-          luaObj.getClass().getName()));
+          luaObject.getClass().getName()));
     }
     if (Long.class == type) {
-      Long longV = Conversions.integerValueOf(luaObj);
+      Long longV = Conversions.integerValueOf(luaObject);
       if (longV != null) {
         return (T) longV;
       }
-      throw new ConversionException(
-          format("Can't convert value! Long expected, but got: %s", luaObj.getClass().getName()));
+      throw new ConversionException(format("Can't convert value! Long expected, but got: %s",
+          luaObject.getClass().getName()));
     }
     if (Number.class == type) {
-      Number numV = Conversions.numericalValueOf(luaObj);
+      Number numV = Conversions.numericalValueOf(luaObject);
       if (numV != null) {
         return (T) numV;
       }
-      throw new ConversionException(
-          format("Can't convert value! Number expected, but got: %s", luaObj.getClass().getName()));
+      throw new ConversionException(format("Can't convert value! Number expected, but got: %s",
+          luaObject.getClass().getName()));
     }
     if (String.class == type) {
-      ByteString byteStrV = Conversions.stringValueOf(luaObj);
+      ByteString byteStrV = Conversions.stringValueOf(luaObject);
       if (byteStrV != null) {
         return (T) byteStrV.toString();
       }
-      throw new ConversionException(
-          format("Can't convert value! String expected, but got: %s", luaObj.getClass().getName()));
+      throw new ConversionException(format("Can't convert value! String expected, but got: %s",
+          luaObject.getClass().getName()));
     }
     throw new IllegalArgumentException(String.format("Unsupported type %s!", type));
+  }
+
+  protected Object convertTo(Class<?> type, Object luaObject)
+      throws ClassCastException, BadArgumentException {
+    if (type == String.class) {
+      return Conversions.javaRepresentationOf(luaObject);
+    }
+    if (type == Double.class || type == double.class) {
+      return castToDouble(luaObject);
+    }
+    if (type == Float.class || type == float.class) {
+      return castToFloat(luaObject);
+    }
+    if (type == Integer.class || type == int.class) {
+      return castToInt(luaObject);
+    }
+    if (type == Long.class || type == long.class) {
+      return castToLong(luaObject);
+    }
+    if (Enum.class.isAssignableFrom(type)) {
+      String name = (String) Conversions.javaRepresentationOf(luaObject);
+      return enumConverter.toJava(type, name);
+    }
+    return luaObject;
+  }
+
+  private Double castToDouble(Object luaObject) throws ClassCastException, BadArgumentException {
+    if (luaObject instanceof Long) {
+      Long l = (Long) luaObject;
+      if (LuaMathOperators.hasExactFloatRepresentation(l.longValue())) {
+        return l.doubleValue();
+      } else {
+        throw new BadArgumentException("number has no double representation");
+      }
+    }
+    return Conversions.floatValueOf((Number) luaObject);
+  }
+
+  private Float castToFloat(Object luaObject) throws ClassCastException, BadArgumentException {
+    Number number = (Number) luaObject;
+    float result = number.floatValue();
+    if ((double) result == number.doubleValue()) {
+      return result;
+    } else {
+      throw new BadArgumentException("number has no float representation");
+    }
+  }
+
+  private Integer castToInt(Object luaObject) throws ClassCastException, BadArgumentException {
+    Long result = Conversions.integerValueOf((Number) luaObject);
+    if (result != null && result.intValue() == result.longValue()) {
+      return result.intValue();
+    } else {
+      throw new BadArgumentException("number has no int representation");
+    }
+  }
+
+  private Long castToLong(Object luaObject) throws ClassCastException, BadArgumentException {
+    Long result = Conversions.integerValueOf((Number) luaObject);
+    if (result != null) {
+      return result;
+    } else {
+      throw new BadArgumentException("number has no long representation");
+    }
   }
 }
