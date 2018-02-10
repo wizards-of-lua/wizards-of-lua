@@ -174,9 +174,9 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
       delegate.velocityChanged = true;
     }
 
-    public Table getTags() {
+    public Object getTags() {
       Set<String> result = delegate.getTags();
-      return getConverters().toLuaIterable(result);
+      return getConverters().toLua(result);
     }
 
     public void setTags(Object luaObj) {

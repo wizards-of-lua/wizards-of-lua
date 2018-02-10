@@ -12,15 +12,18 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.config.WolConversions;
 import net.wizardsoflua.lua.BadArgumentException;
+import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public class TableUtils {
 
   private static final Pattern LUA_IDENTIFIER = Pattern.compile("^[_a-zA-Z][_a-zA-Z0-9]*$");
 
-  private static final WolConversions CONVERSION = new WolConversions();
+  private static final Converters CONVERSION =
+      new LuaClassLoader(new DefaultTable()).getConverters();
 
   private TableUtils() {}
 

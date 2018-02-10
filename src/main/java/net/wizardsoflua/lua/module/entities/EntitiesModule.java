@@ -60,9 +60,8 @@ public class EntitiesModule {
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       String selector = converters.toJava(String.class, arg1, 1, "selector", getName());
-      Iterable<Entity> entities = find(selector);
-      Table result = converters.toLuaIterable(entities);
-      context.getReturnBuffer().setTo(result);
+      Iterable<Entity> result = find(selector);
+      context.getReturnBuffer().setTo(converters.toLua(result));
     }
   }
 }

@@ -39,9 +39,9 @@ public class EventQueueClass
       return false;
     }
 
-    private Table getNames() {
+    private Object getNames() {
       Iterable<String> eventTypes = delegate.getNames();
-      return getConverters().toLuaIterable(eventTypes);
+      return getConverters().toLua(eventTypes);
     }
   }
 
