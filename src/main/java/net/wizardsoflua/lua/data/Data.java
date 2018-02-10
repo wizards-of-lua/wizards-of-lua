@@ -53,7 +53,7 @@ public class Data {
       return luaObj;
     }
     if (luaObj instanceof ByteString) {
-      return classLoader.getConverters().toJava(String.class, luaObj);
+      return luaObj.toString();
     }
     if (luaObj instanceof CustomEventClass.Proxy) {
       CustomEventClass.Proxy<?> proxy = (CustomEventClass.Proxy<?>) luaObj;

@@ -29,7 +29,7 @@ public class DroppedItemClass
     }
 
     public void setItem(Object luaObj) {
-      ItemStack stack = getConverters().toJava(ItemStack.class, luaObj);
+      ItemStack stack = getConverters().toJava(ItemStack.class, luaObj, "item");
       delegate.setEntityItemStack(stack);
     }
   }

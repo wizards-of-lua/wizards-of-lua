@@ -26,7 +26,7 @@ public class MobClass extends ProxyCachingLuaClass<EntityLiving, MobClass.Proxy<
     }
 
     public void setAi(Object luaObj) {
-      boolean enabled = getConverters().toJava(Boolean.class, luaObj);
+      boolean enabled = getConverters().toJava(Boolean.class, luaObj, "ai");
       delegate.setNoAI(!enabled);
     }
   }

@@ -36,12 +36,8 @@ public class Converters extends WolConversions {
     return nbtConverter;
   }
 
-  /**
-   * @deprecated This method should be protected
-   */
-  @Deprecated
   @Override
-  public <T> T toJava(Class<T> type, Object luaObject) throws BadArgumentException {
+  protected <T> T toJava(Class<T> type, Object luaObject) throws BadArgumentException {
     checkArgument(luaObject != null, "%s expected but got nil", type.getName());
     try {
       Object result = convertTo(type, luaObject);

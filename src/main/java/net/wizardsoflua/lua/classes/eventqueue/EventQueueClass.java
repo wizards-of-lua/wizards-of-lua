@@ -1,9 +1,6 @@
 package net.wizardsoflua.lua.classes.eventqueue;
 
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
-import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
@@ -11,6 +8,8 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.function.NamedFunction2;
 
 @DeclareLuaClass(name = EventQueueClass.NAME)
 public class EventQueueClass
@@ -18,10 +17,10 @@ public class EventQueueClass
   public static final String NAME = "EventQueue";
 
   public EventQueueClass() {
-    add("disconnect", new DisconnectFunction());
-    add("isEmpty", new IsEmptyFunction());
-    add("latest", new LatestFunction());
-    add("next", new NextFunction());
+    add(new DisconnectFunction());
+    add(new IsEmptyFunction());
+    add(new LatestFunction());
+    add(new NextFunction());
   }
 
   @Override
@@ -46,58 +45,63 @@ public class EventQueueClass
     }
   }
 
-  private class DisconnectFunction extends AbstractFunction1 {
+  private class DisconnectFunction extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "disconnect";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1) {
-      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
+      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1, 1, "self", getName());
       eventQueue.disconnect();
       context.getReturnBuffer().setTo();
     }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState) {
-      throw new NonsuspendableFunctionException();
-    }
   }
 
-  private class IsEmptyFunction extends AbstractFunction1 {
+  private class IsEmptyFunction extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "isEmpty";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1) {
-      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
+      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1, 1, "self", getName());
       boolean isEmpty = eventQueue.isEmpty();
       Object result = getConverters().toLua(isEmpty);
       context.getReturnBuffer().setTo(result);
     }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState) {
-      throw new NonsuspendableFunctionException();
-    }
   }
 
-  private class LatestFunction extends AbstractFunction1 {
+  private class LatestFunction extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "latest";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
+      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1, 1, "self", getName());
       Object event = eventQueue.latest();
       eventQueue.clear();
       Object result = getConverters().toLuaNullable(event);
       context.getReturnBuffer().setTo(result);
     }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState) {
-      throw new NonsuspendableFunctionException();
-    }
   }
 
-  private class NextFunction extends AbstractFunction2 {
+  private class NextFunction extends NamedFunction2 {
+    @Override
+    public String getName() {
+      return "next";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1);
-      Long gameticksTimeout = getConverters().toJavaNullable(Long.class, arg2);
-      eventQueue.waitForEvents(gameticksTimeout);
+      EventQueue eventQueue = getConverters().toJava(EventQueue.class, arg1, 1, "self", getName());
+      Long timeout = getConverters().toJavaNullable(Long.class, arg2, 2, "timeout", getName());
+      eventQueue.waitForEvents(timeout);
       execute(context, eventQueue);
     }
 

@@ -53,7 +53,7 @@ public class PlayerClass
     }
 
     public void setGamemode(Object modeObj) {
-      GameType mode = getConverters().toJava(GameType.class, modeObj);
+      GameType mode = getConverters().toJava(GameType.class, modeObj, "gamemode");
       delegate.setGameType(mode);
     }
 
@@ -99,15 +99,14 @@ public class PlayerClass
     }
 
     public void setTeam(Object luaObj) {
-      String teamName = getConverters().toJavaNullable(String.class, luaObj);
-      if (teamName == null) {
+      String team = getConverters().toJavaNullable(String.class, luaObj, "team");
+      if (team == null) {
         delegate.getWorldScoreboard().removePlayerFromTeams(delegate.getName());
       } else {
-        boolean success =
-            delegate.getWorldScoreboard().addPlayerToTeam(delegate.getName(), teamName);
+        boolean success = delegate.getWorldScoreboard().addPlayerToTeam(delegate.getName(), team);
         if (!success) {
           throw new IllegalArgumentException(String
-              .format("Couldn't add player %s to unknown team %s!", delegate.getName(), teamName));
+              .format("Couldn't add player %s to unknown team %s!", delegate.getName(), team));
         }
       }
     }

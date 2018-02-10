@@ -6,11 +6,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.function.NamedFunction2;
 
 public class ItemsModule {
   public static ItemsModule installInto(Table env, Converters converters) {
@@ -24,33 +23,33 @@ public class ItemsModule {
 
   public ItemsModule(Converters converters) {
     this.converters = converters;
-    luaTable.rawset("get", new GetFunction());
+    GetFunction getFunction = new GetFunction();
+    luaTable.rawset(getFunction.getName(), getFunction);
   }
 
   public Table getLuaTable() {
     return luaTable;
   }
 
-  public @Nullable Object get(Object argItemId, Object argAmount) {
-    String id = converters.toJavaOld(String.class, argItemId, "id");
-    int amount = converters.toJavaOptionalOld(Number.class, argAmount, "amount").orElse(1).intValue();
-    Item item = Item.getByNameOrId(id);
+  public @Nullable Object get(String itemId, int amount) {
+    Item item = Item.getByNameOrId(itemId);
     ItemStack result = new ItemStack(item, amount);
     return converters.toLuaNullable(result);
   }
 
-  private class GetFunction extends AbstractFunction2 {
+  private class GetFunction extends NamedFunction2 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2)
-        throws ResolvedControlThrowable {
-      Object result = get(arg1, arg2);
-      context.getReturnBuffer().setTo(result);
+    public String getName() {
+      return "get";
     }
 
     @Override
-    public void resume(ExecutionContext context, Object suspendedState)
+    public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
+      String itemId = converters.toJava(String.class, arg1, 1, "itemId", getName());
+      int amount = converters.toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
+      Object result = get(itemId, amount);
+      context.getReturnBuffer().setTo(result);
     }
   }
 }

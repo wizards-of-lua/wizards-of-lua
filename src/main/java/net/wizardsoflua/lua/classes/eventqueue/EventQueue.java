@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableSet;
 
 public class EventQueue {
@@ -37,7 +39,7 @@ public class EventQueue {
     return waitUntil;
   }
 
-  public void waitForEvents(Long timeout) {
+  public void waitForEvents(@Nullable Long timeout) {
     if (timeout != null) {
       waitUntil = context.getCurrentTime() + timeout;
     } else {

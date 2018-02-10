@@ -20,11 +20,13 @@ public class TableDataConverter {
   private final Cache<TraversableHashMap<Object, Object>, Table> cache =
       CacheBuilder.newBuilder().weakKeys().softValues().build();
   private final LuaClassLoader classLoader;
-  private final Converters converters;
 
   public TableDataConverter(LuaClassLoader classLoader) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
-    converters = classLoader.getConverters();
+  }
+
+  public Converters getConverters() {
+    return classLoader.getConverters();
   }
 
   public Table toLua(TableData data) {
@@ -40,9 +42,9 @@ public class TableDataConverter {
     cache.put(map, result);
     for (Map.Entry<Object, Object> e : map.entrySet()) {
       Object javaKey = e.getKey();
-      Object luaKey = converters.toLua(javaKey);
+      Object luaKey = getConverters().toLua(javaKey);
       Object javaValue = e.getValue();
-      Object luaValue = converters.toLuaNullable(javaValue);
+      Object luaValue = getConverters().toLuaNullable(javaValue);
       result.rawset(luaKey, luaValue);
     }
     Table mt = getMetatable(data);

@@ -1,13 +1,12 @@
 package net.wizardsoflua.lua.module.luapath;
 
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.function.NamedFunction1;
 
-public class AddPathFunction extends AbstractFunction1 {
+public class AddPathFunction extends NamedFunction1 {
 
   public static final String LUA_EXTENSION_WILDCARD = "?.lua";
 
@@ -19,7 +18,7 @@ public class AddPathFunction extends AbstractFunction1 {
 
   public static AddPathFunction installInto(Table env, Converters converters, Context context) {
     AddPathFunction result = new AddPathFunction(converters, context);
-    env.rawset("addpath", result);
+    env.rawset(result.getName(), result);
     return result;
   }
 
@@ -32,17 +31,15 @@ public class AddPathFunction extends AbstractFunction1 {
   }
 
   @Override
+  public String getName() {
+    return "addpath";
+  }
+
+  @Override
   public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-    String nameOrUuid = converters.toJava(String.class, arg1);
+    String nameOrUuid = converters.toJava(String.class, arg1, 1, getName());
     String pathElement = this.context.getLuaPathElementOfPlayer(nameOrUuid);
     this.context.addPath(pathElement);
     context.getReturnBuffer().setTo();
   }
-
-  @Override
-  public void resume(ExecutionContext context, Object suspendedState)
-      throws ResolvedControlThrowable {
-    throw new NonsuspendableFunctionException();
-  }
-
 }

@@ -34,7 +34,7 @@ public class TimeModule extends DelegatingProxy<Time> {
   }
 
   public void setAutoSleep(Object luaObj) {
-    boolean value = getConverters().toJava(Boolean.class, luaObj);
+    boolean value = getConverters().toJava(Boolean.class, luaObj, "autosleep");
     delegate.setAutoSleep(value);
   }
 

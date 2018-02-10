@@ -4,12 +4,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
-import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.function.NamedFunction2;
 
 public class TypesModule {
   public static TypesModule installInto(Table env, Types types, Converters converters) {
@@ -25,65 +24,60 @@ public class TypesModule {
   public TypesModule(Types types, Converters converters) {
     this.converters = checkNotNull(converters, "converters==null!");
     this.types = types;
-    luaTable.rawset("declare", new DeclareFunction());
-    luaTable.rawset("instanceOf", new InstanceOfFunction());
-    luaTable.rawset("getTypename", new GetTypenameFunction());
+    DeclareFunction declareFunction = new DeclareFunction();
+    luaTable.rawset(declareFunction.getName(), declareFunction);
+    InstanceOfFunction instanceOfFunction = new InstanceOfFunction();
+    luaTable.rawset(instanceOfFunction.getName(), instanceOfFunction);
+    GetTypenameFunction getTypenameFunction = new GetTypenameFunction();
+    luaTable.rawset(getTypenameFunction.getName(), getTypenameFunction);
   }
 
   public Table getLuaTable() {
     return luaTable;
   }
 
-  private class DeclareFunction extends AbstractFunction2 {
+  private class DeclareFunction extends NamedFunction2 {
+    @Override
+    public String getName() {
+      return "declare";
+    }
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      String luaClassName = converters.toJava(String.class, arg1);
-      Table superClassMetaTable = converters.toJavaNullable(Table.class, arg2);
-
-      types.declareClass(luaClassName, superClassMetaTable);
-
+      String className = converters.toJava(String.class, arg1, 1, "className", getName());
+      Table metatable = converters.toJavaNullable(Table.class, arg2, 2, "metatable", getName());
+      types.declareClass(className, metatable);
       context.getReturnBuffer().setTo();
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
     }
   }
 
-  private class InstanceOfFunction extends AbstractFunction2 {
+  private class InstanceOfFunction extends NamedFunction2 {
+    @Override
+    public String getName() {
+      return "instanceOf";
+    }
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      Table classMT = converters.castToTableNullable(arg1);
+      Table classMT = converters.toJavaNullable(Table.class, arg1, 1, "class", getName());
       boolean result = types.isInstanceOf(classMT, arg2);
 
       context.getReturnBuffer().setTo(result);
     }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
   }
 
-  private class GetTypenameFunction extends AbstractFunction1 {
+  private class GetTypenameFunction extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "getTypename";
+    }
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       String result = types.getTypename(arg1);
       context.getReturnBuffer().setTo(result);
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
     }
   }
 }

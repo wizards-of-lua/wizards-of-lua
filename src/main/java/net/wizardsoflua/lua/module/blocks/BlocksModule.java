@@ -10,12 +10,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.function.NamedFunction1;
 
 public class BlocksModule {
   public static BlocksModule installInto(Table env, Converters converters) {
@@ -29,7 +28,8 @@ public class BlocksModule {
 
   public BlocksModule(Converters converters) {
     this.converters = converters;
-    luaTable.rawset("get", new Get());
+    Get get = new Get();
+    luaTable.rawset(get.getName(), get);
   }
 
   private Block getBlockByName(String blockName) {
@@ -46,12 +46,16 @@ public class BlocksModule {
     return luaTable;
   }
 
-  private class Get extends AbstractFunction1 {
+  private class Get extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "get";
+    }
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String blockName = converters.toJava(String.class, arg1);
-      Block block = getBlockByName(blockName);
+      String blockId = converters.toJava(String.class, arg1, 1, "blockId", getName());
+      Block block = getBlockByName(blockId);
 
       IBlockState blockState = block.getDefaultState();
 
@@ -78,12 +82,6 @@ public class BlocksModule {
           origData.setTag("Items", new NBTTagList());
         }
       }
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
     }
   }
 }

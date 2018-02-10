@@ -4,14 +4,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
-import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 @DeclareLuaClass(name = ItemClass.NAME)
@@ -19,7 +17,7 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
   public static final String NAME = "Item";
 
   public ItemClass() {
-    add("putNbt", new PutNbtFunction());
+    add(new PutNbtFunction());
   }
 
   @Override
@@ -32,9 +30,9 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
       super(converters, metatable, delegate);
       addReadOnly("id", this::getId);
       add("displayName", delegate::getDisplayName, this::setDisplayName);
-      add("damage", delegate::getItemDamage, this::setItemDamage);
+      add("damage", delegate::getItemDamage, this::setDamage);
       add("repairCost", this::getRepairCost, this::setRepairCost);
-      add("count", delegate::getCount, this::setStackSize);
+      add("count", delegate::getCount, this::setCount);
       addReadOnly("nbt", this::getNbt);
     }
 
@@ -60,18 +58,19 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
       return NbtConverter.toLua(nbt);
     }
 
-    private void setDisplayName(Object luaObj) {
-      delegate.setStackDisplayName(getConverters().toJava(String.class, luaObj));
+    private void setDisplayName(Object luaObject) {
+      String displayName = getConverters().toJava(String.class, luaObject, "displayName");
+      delegate.setStackDisplayName(displayName);
     }
 
-    private void setItemDamage(Object luaObj) {
-      int value = getConverters().toJava(Integer.class, luaObj);
-      delegate.setItemDamage(value);
+    private void setDamage(Object luaObject) {
+      int damage = getConverters().toJava(Integer.class, luaObject, "damage");
+      delegate.setItemDamage(damage);
     }
 
-    private void setRepairCost(Object luaObj) {
-      int value = getConverters().toJava(Integer.class, luaObj);
-      delegate.setRepairCost(value);
+    private void setRepairCost(Object luaObject) {
+      int repairCost = getConverters().toJava(Integer.class, luaObject, "repairCost");
+      delegate.setRepairCost(repairCost);
     }
 
     private Object getRepairCost() {
@@ -79,32 +78,30 @@ public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> 
       return getConverters().toLua(cost);
     }
 
-    private void setStackSize(Object luaObj) {
-      int value = getConverters().toJava(Integer.class, luaObj);
-      delegate.setCount(value);
+    private void setCount(Object luaObj) {
+      int count = getConverters().toJava(Integer.class, luaObj, "count");
+      delegate.setCount(count);
     }
 
-    public void putNbt(Object luaObj) {
-      Table nbtTable = getConverters().castToTable(luaObj);
+    public void putNbt(Table nbt) {
       NBTTagCompound oldNbt = delegate.serializeNBT();
-      delegate.writeToNBT(oldNbt);
-      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbtTable);
+      NBTTagCompound newNbt = converters.getNbtConverter().merge(oldNbt, nbt);
       delegate.deserializeNBT(newNbt);
     }
   }
 
-  private class PutNbtFunction extends AbstractFunction2 {
+  private class PutNbtFunction extends NamedFunction2 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = castToProxy(arg1);
-      proxy.putNbt(arg2);
-      context.getReturnBuffer().setTo();
+    public String getName() {
+      return "putNbt";
     }
 
     @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+      Proxy proxy = castToProxy(arg1);
+      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
+      proxy.putNbt(nbt);
+      context.getReturnBuffer().setTo();
     }
   }
 }

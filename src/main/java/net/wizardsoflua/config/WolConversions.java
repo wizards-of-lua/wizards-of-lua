@@ -24,21 +24,6 @@ import net.wizardsoflua.lua.table.TableIterable;
 public class WolConversions {
   protected final EnumConverter enumConverter = new EnumConverter();
 
-  @Deprecated
-  public @Nullable Table castToTableNullable(Object luaObj) throws ConversionException {
-    return toJavaNullable(Table.class, luaObj);
-  }
-
-  @Deprecated
-  public Table castToTable(Object luaObj, String name) throws ConversionException {
-    return toJavaOld(Table.class, luaObj, name);
-  }
-
-  @Deprecated
-  public Table castToTable(Object luaObj) throws ConversionException {
-    return toJava(Table.class, luaObj);
-  }
-
   public final @Nullable <T> Optional<? extends Object> toLuaOptional(@Nullable T value,
       String name) throws ConversionException {
     checkNotNull(name, "name==null!");
@@ -107,56 +92,6 @@ public class WolConversions {
   }
 
   ///////////
-
-  @Deprecated
-  public final <T> Optional<T> toJavaOptionalOld(Class<T> type, @Nullable Object luaObj,
-      String name) throws ConversionException {
-    checkNotNull(name, "name==null!");
-    try {
-      return toJavaOptional(type, luaObj);
-    } catch (Exception e) {
-      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
-    }
-  }
-
-  @Deprecated
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject)
-      throws ConversionException {
-    return Optional.ofNullable(toJavaNullable(type, luaObject));
-  }
-
-  @Deprecated
-  public final @Nullable <T> T toJavaNullableOld(Class<T> type, @Nullable Object luaObj,
-      String name) throws ConversionException {
-    checkNotNull(name, "name==null!");
-    try {
-      return toJavaNullable(type, luaObj);
-    } catch (ConversionException e) {
-      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
-    }
-  }
-
-  @Deprecated
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject)
-      throws ConversionException {
-    if (luaObject == null) {
-      return null;
-    }
-    return toJava(type, luaObject);
-  }
-
-  @Deprecated
-  public final <T> T toJavaOld(Class<T> type, Object luaObj, String name)
-      throws ConversionException {
-    checkNotNull(name, "name==null!");
-    try {
-      return toJava(type, luaObj);
-    } catch (ConversionException e) {
-      throw new ConversionException(format("Can't convert '%s' argument!", name), e);
-    } catch (NullPointerException e) {
-      throw new ConversionException(format("Can't convert '%s' argument: value is nil!", name), e);
-    }
-  }
 
   public final <J> Collection<J> toJavaCollection(Class<J> type, Object[] args,
       String functionOrPropertyName) throws ConversionException {
@@ -290,7 +225,7 @@ public class WolConversions {
   @Deprecated
   @SuppressWarnings("unchecked")
   protected <T> T toJava(Class<T> type, Object luaObject) throws ConversionException {
-    checkNotNull(luaObject, "luaObj==null!");
+    checkNotNull(luaObject, "luaObject == null!");
     if (Boolean.class == type) {
       if (luaObject instanceof Boolean) {
         return (T) luaObject;

@@ -1,5 +1,8 @@
 package net.wizardsoflua.lua.table;
 
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
@@ -9,7 +12,9 @@ import javax.annotation.Nullable;
 
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.config.WolConversions;
+import net.wizardsoflua.lua.BadArgumentException;
 
 public class TableUtils {
 
@@ -19,19 +24,26 @@ public class TableUtils {
 
   private TableUtils() {}
 
-  public static <T> T getAs(Class<T> type, Table table, String key) {
-    Object value = table.rawget(key);
-    return CONVERSION.toJavaOld(type, value, key);
-  }
-
   public static <T> Optional<T> getAsOptional(Class<T> type, Table table, String key) {
-    Object value = table.rawget(key);
-    return CONVERSION.toJavaOptional(type, value);
+    return ofNullable(getAsNullable(type, table, key));
   }
 
   public static @Nullable <T> T getAsNullable(Class<T> type, Table table, String key) {
     Object value = table.rawget(key);
-    return CONVERSION.toJavaNullableOld(type, value, key);
+    if (value == null) {
+      return null;
+    }
+    return getAs(type, table, key);
+  }
+
+  public static <T> T getAs(Class<T> type, Table table, String key) {
+    Object value = table.rawget(key);
+    try {
+      return CONVERSION.toJava(type, value, key);
+    } catch (BadArgumentException ex) {
+      throw new ConversionException(format("Can't convert value '%s'! %s expected, but got: %s",
+          key, type.getName(), value.getClass().getName()));
+    }
   }
 
   public static void writeTo(PrintWriter out, Table table) {

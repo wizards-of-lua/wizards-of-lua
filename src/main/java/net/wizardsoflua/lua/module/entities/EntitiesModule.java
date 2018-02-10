@@ -10,11 +10,10 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class EntitiesModule {
@@ -32,16 +31,17 @@ public class EntitiesModule {
   public EntitiesModule(Converters converters, SpellEntity spellEntity) {
     this.converters = converters;
     this.spellEntity = spellEntity;
-    luaTable.rawset("find", new FindFunction());
+    FindFunction findFunction = new FindFunction();
+    luaTable.rawset(findFunction.getName(), findFunction);
   }
 
   public Table getLuaTable() {
     return luaTable;
   }
 
-  public @Nullable Iterable<Entity> find(String target) {
+  public @Nullable Iterable<Entity> find(String selector) {
     try {
-      List<Entity> list = EntitySelector.<Entity>matchEntities(spellEntity, target, Entity.class);
+      List<Entity> list = EntitySelector.<Entity>matchEntities(spellEntity, selector, Entity.class);
       return list;
     } catch (CommandException e) {
       throw new UndeclaredThrowableException(e);
@@ -51,19 +51,18 @@ public class EntitiesModule {
   /**
    * Returns the entities matching the given selector.
    */
-  private class FindFunction extends AbstractFunction1 {
+  private class FindFunction extends NamedFunction1 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String target = converters.toJava(String.class, arg1);
-      Iterable<Entity> entities = find(target);
-      Table result = converters.toLuaIterable(entities);
-      context.getReturnBuffer().setTo(result);
+    public String getName() {
+      return "find";
     }
 
     @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      String selector = converters.toJava(String.class, arg1, 1, "selector", getName());
+      Iterable<Entity> entities = find(selector);
+      Table result = converters.toLuaIterable(entities);
+      context.getReturnBuffer().setTo(result);
     }
   }
 }

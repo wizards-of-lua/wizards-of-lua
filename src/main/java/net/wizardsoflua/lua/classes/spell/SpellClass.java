@@ -6,9 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
 import net.sandius.rembulan.lib.StringLib;
-import net.sandius.rembulan.runtime.AbstractFunctionAnyArg;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
@@ -18,6 +16,7 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
+import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
 
 @DeclareLuaClass(name = SpellClass.NAME, superClass = EntityClass.class)
@@ -25,7 +24,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
   public static final String NAME = "Spell";
 
   public SpellClass() {
-    add("execute", new ExecuteFunction());
+    add(new ExecuteFunction());
   }
 
   @Override
@@ -64,10 +63,10 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
       // World world = delegate.getEntityWorld();
       // BlockPos pos = new BlockPos(delegate.getPositionVector());
       // wolBlock.setBlock(world, pos);
-      WolBlock wolBlock = getConverters().toJava(WolBlock.class, luaObj);
+      WolBlock block = getConverters().toJava(WolBlock.class, luaObj, "block");
       World world = delegate.getEntityWorld();
       BlockPos pos = new BlockPos(delegate.getPositionVector());
-      wolBlock.setBlock(world, pos);
+      block.setBlock(world, pos);
     }
 
     // public ItemStack getItemFromBlock() {
@@ -91,7 +90,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
     // }
 
     public void setVisible(Object luaObj) {
-      boolean value = getConverters().toJava(Boolean.class, luaObj);
+      boolean value = getConverters().toJava(Boolean.class, luaObj, "visible");
       delegate.setVisible(value);
     }
 
@@ -105,7 +104,12 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
     }
   }
 
-  private class ExecuteFunction extends AbstractFunctionAnyArg {
+  private class ExecuteFunction extends NamedFunctionAnyArg {
+    @Override
+    public String getName() {
+      return "execute";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
@@ -115,7 +119,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
       }
       if (args.length == 2) {
         Object arg1 = args[1];
-        String command = getConverters().toJavaOld(String.class, arg1, "command");
+        String command = getConverters().toJava(String.class, arg1, 1, "command", getName());
         int result = proxy.execute(command);
         context.getReturnBuffer().setTo(result);
       } else if (args.length > 2) {
@@ -129,12 +133,6 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
         int result = proxy.execute(command);
         context.getReturnBuffer().setTo(result);
       }
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
     }
   }
 }

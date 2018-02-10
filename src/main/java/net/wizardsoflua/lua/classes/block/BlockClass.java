@@ -9,9 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
-import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
@@ -20,6 +17,8 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
@@ -28,10 +27,10 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
   public static final String NAME = "Block";
 
   public BlockClass() {
-    add("withData", new WithDataFunction());
-    add("withNbt", new WithNbtFunction());
-    add("copy", new CopyFunction());
-    add("asItem", new AsItemFunction());
+    add(new WithDataFunction());
+    add(new WithNbtFunction());
+    add(new CopyFunction());
+    add(new AsItemFunction());
   }
 
   @Override
@@ -88,98 +87,96 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     }
   }
 
-  private class CopyFunction extends AbstractFunction1 {
+  private class CopyFunction extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "copy";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
-
-      ImmutableWolBlock newWolBlock =
-          new ImmutableWolBlock(oldWolBlock.getBlockState(), oldWolBlock.getNbt());
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(self.getBlockState(), self.getNbt());
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
   }
 
-  private class WithDataFunction extends AbstractFunction2 {
-    @SuppressWarnings({"unchecked", "rawtypes"})
+  private class WithDataFunction extends NamedFunction2 {
+    @Override
+    public String getName() {
+      return "withData";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
-      Table dataTable = getConverters().castToTable(arg2);
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      Table data = getConverters().toJava(Table.class, arg2, 2, "data", getName());
 
-      IBlockState state = oldWolBlock.getBlockState();
+      IBlockState state = self.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
-        Object luaValue = dataTable.rawget(key.getName());
+        Object luaValue = data.rawget(key.getName());
         if (luaValue != null) {
-          Comparable javaValue = BlockPropertyConverter.toJava(key.getValueClass(), luaValue);
-          state = state.withProperty((IProperty) key, javaValue);
+          state = withProperty(state, key, luaValue);
         }
       }
 
-      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(state, oldWolBlock.getNbt());
+      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(state, self.getNbt());
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
+    private <T extends Comparable<T>> IBlockState withProperty(IBlockState state, IProperty<T> key,
+        Object luaValue) {
+      T javaValue = BlockPropertyConverter.toJava(key.getValueClass(), luaValue);
+      return state.withProperty(key, javaValue);
     }
   }
 
-  private class WithNbtFunction extends AbstractFunction2 {
+  private class WithNbtFunction extends NamedFunction2 {
+    @Override
+    public String getName() {
+      return "withNbt";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock oldWolBlock = getConverters().toJava(WolBlock.class, arg1);
-      Table nbtTable = getConverters().castToTable(arg2);
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
 
-      NBTTagCompound oldNbt = oldWolBlock.getNbt();
+      NBTTagCompound oldNbt = self.getNbt();
       NBTTagCompound newNbt;
       if (oldNbt != null) {
-        newNbt = getConverters().getNbtConverter().merge(oldNbt, nbtTable);
+        newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
       } else {
         // newNbt = oldNbt;
         throw new IllegalArgumentException(String.format("Can't set nbt for block '%s'",
-            oldWolBlock.getBlockState().getBlock().getRegistryName().getResourcePath()));
+            self.getBlockState().getBlock().getRegistryName().getResourcePath()));
       }
 
-      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(oldWolBlock.getBlockState(), newNbt);
+      ImmutableWolBlock newWolBlock = new ImmutableWolBlock(self.getBlockState(), newNbt);
       Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
-    }
   }
 
-  private class AsItemFunction extends AbstractFunction2 {
+  private class AsItemFunction extends NamedFunction2 {
+    @Override
+    public String getName() {
+      return "asItem";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock wolBlock = getConverters().toJava(WolBlock.class, arg1);
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
       int amount =
-          getConverters().toJavaOptionalOld(Number.class, arg2, "amount").orElse(1).intValue();
-      ItemStack itemStack = wolBlock.asItemStack(amount);
+          getConverters().toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
+      ItemStack itemStack = self.asItemStack(amount);
       Object result = getConverters().toLua(itemStack);
       context.getReturnBuffer().setTo(result);
-    }
-
-    @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
     }
   }
 }

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.common.Named;
 
 public abstract class LuaClass {
   /**
@@ -60,6 +61,10 @@ public abstract class LuaClass {
   public abstract String getName();
 
   public abstract @Nullable LuaClass getSuperClass();
+
+  protected <F extends LuaFunction & Named> void add(F function) {
+    add(function.getName(), function);
+  }
 
   protected void add(String name, LuaFunction function) {
     functions.put(name, function);
