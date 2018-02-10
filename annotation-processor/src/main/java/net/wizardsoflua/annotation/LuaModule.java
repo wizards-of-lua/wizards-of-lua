@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.lua;
+package net.wizardsoflua.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 
@@ -13,4 +13,6 @@ public @interface LuaModule {
    * The name of the module. Defaults to the simple class name.
    */
   String name() default "";
+
+  Class<?> superClass();
 }

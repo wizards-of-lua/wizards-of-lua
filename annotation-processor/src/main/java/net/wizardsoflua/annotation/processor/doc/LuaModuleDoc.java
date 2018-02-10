@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.lua.doc;
+package net.wizardsoflua.annotation.processor.doc;
 
 import static java.lang.annotation.ElementType.TYPE;
 

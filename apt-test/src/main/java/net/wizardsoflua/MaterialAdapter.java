@@ -1,8 +1,8 @@
 package net.wizardsoflua;
 
-import net.wizardsoflua.annotation.lua.LuaModule;
-import net.wizardsoflua.annotation.lua.LuaProperty;
-import net.wizardsoflua.annotation.lua.doc.LuaModuleDoc;
+import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.processor.doc.LuaModuleDoc;
 
 /**
  * The Material class describes the physical behaviour of a [Block]({% link _modules/Block.md %}).

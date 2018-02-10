@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.lua;
+package net.wizardsoflua.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 

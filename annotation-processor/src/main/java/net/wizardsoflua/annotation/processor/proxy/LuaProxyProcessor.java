@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.lua.doc.jekyll;
+package net.wizardsoflua.annotation.processor.proxy;
 
 import static javax.lang.model.type.TypeKind.VOID;
 
@@ -15,7 +15,6 @@ import java.util.TreeMap;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
@@ -30,14 +29,14 @@ import javax.tools.StandardLocation;
 
 import com.google.common.base.Strings;
 
-import net.wizardsoflua.annotation.lua.LuaProperty;
+import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.processor.Property;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
-public class JekyllLuaDocumentationProcessor extends AbstractProcessor {
+public class LuaProxyProcessor extends AbstractProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     HashSet<String> result = new HashSet<>();
-    result.add(LuaProperty.class.getName());
+    result.add(LuaModule.class.getName());
     return result;
   }
 
@@ -51,6 +50,12 @@ public class JekyllLuaDocumentationProcessor extends AbstractProcessor {
     Elements utils = processingEnv.getElementUtils();
     for (TypeElement annotation : annotations) {
       Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
+
+      for (Element moduleElement : annotatedElements) {
+        System.out.println(moduleElement);
+        TypeMirror moduleType = moduleElement.asType();
+        System.out.println(moduleType);
+      }
 
       Map<String, Property> properties = new TreeMap<>();
 

@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.lua.doc.jekyll;
+package net.wizardsoflua.annotation.processor;
 
 import static java.util.Objects.requireNonNull;
 

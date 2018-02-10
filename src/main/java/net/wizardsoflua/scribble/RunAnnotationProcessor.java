@@ -1,4 +1,4 @@
-package net.wizardsoflua;
+package net.wizardsoflua.scribble;
 
 import java.io.File;
 import java.io.PrintWriter;
