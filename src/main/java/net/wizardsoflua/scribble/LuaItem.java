@@ -16,12 +16,12 @@ public class LuaItem extends LuaApi<ItemStack> {
   }
 
   @LuaProperty
-  public int getItemDamage() {
+  public int getDamage() {
     return delegate.getItemDamage();
   }
 
   @LuaProperty
-  public void setItemDamage(int value) {
+  public void setDamage(int value) {
     delegate.setItemDamage(value);
   }
 

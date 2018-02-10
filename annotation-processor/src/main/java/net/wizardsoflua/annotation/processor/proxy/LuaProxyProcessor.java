@@ -1,36 +1,50 @@
 package net.wizardsoflua.annotation.processor.proxy;
 
-import static javax.lang.model.type.TypeKind.VOID;
+import static com.squareup.javapoet.MethodSpec.methodBuilder;
+import static com.squareup.javapoet.TypeSpec.classBuilder;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.util.ElementFilter.methodsIn;
+import static javax.lang.model.util.ElementFilter.typesIn;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
+import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Name;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.tools.JavaFileManager.Location;
-import javax.tools.StandardLocation;
+import javax.lang.model.util.Types;
 
-import com.google.common.base.Strings;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
+import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.processor.Module;
 import net.wizardsoflua.annotation.processor.Property;
+import net.wizardsoflua.annotation.processor.Utils;
 
 public class LuaProxyProcessor extends AbstractProcessor {
   @Override
@@ -47,127 +61,177 @@ public class LuaProxyProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    Elements utils = processingEnv.getElementUtils();
+    Elements elements = processingEnv.getElementUtils();
+    Types types = processingEnv.getTypeUtils();
     for (TypeElement annotation : annotations) {
-      Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
+      Set<TypeElement> moduleElements = typesIn(roundEnv.getElementsAnnotatedWith(annotation));
+      for (TypeElement moduleElement : moduleElements) {
+        LuaModule luaModule = moduleElement.getAnnotation(LuaModule.class);
+        String moduleName = luaModule.name();
+        AnnotationMirror mirror = getAnnoationMirror(moduleElement, LuaModule.class);
+        DeclaredType superClass = getClassValue(mirror, "superClass");
+        Module module = new Module(moduleName, superClass);
 
-      for (Element moduleElement : annotatedElements) {
-        System.out.println(moduleElement);
-        TypeMirror moduleType = moduleElement.asType();
-        System.out.println(moduleType);
-      }
-
-      Map<String, Property> properties = new TreeMap<>();
-
-      for (Element method : annotatedElements) {
-        String methodName = method.getSimpleName().toString();
-        ExecutableType methodType = (ExecutableType) method.asType();
-        TypeMirror returnType = methodType.getReturnType();
-        List<? extends TypeMirror> parameterTypes = methodType.getParameterTypes();
-        TypeKind returnTypeKind = returnType.getKind();
-        String description = Strings.nullToEmpty(utils.getDocComment(method)).trim();
-        if (returnTypeKind != VOID && parameterTypes.isEmpty()) { // Getter
-          String propertyName = extractPropertyNameFromGetter(methodName);
-          Property property = properties.computeIfAbsent(propertyName,
-              name -> new Property(name, typeToString(returnType), description));
-          property.setReadable(true);
-        } else if (returnTypeKind == VOID && parameterTypes.size() == 1) { // Setter
-          String propertyName = extractPropertyNameFromSetter(methodName);
-          Property property = properties.computeIfAbsent(propertyName, name -> {
-            return new Property(name, typeToString(parameterTypes.get(0)), description);
-          });
-          property.setWriteable(true);
-        } else {
-          // TODO error?
+        List<ExecutableElement> methods = methodsIn(elements.getAllMembers(moduleElement));
+        for (ExecutableElement method : methods) {
+          LuaProperty luaProperty = method.getAnnotation(LuaProperty.class);
+          if (luaProperty != null) {
+            String docComment = elements.getDocComment(method);
+            Property property = Property.of(method, luaProperty, docComment);
+            module.addProperty(property);
+          }
+          LuaFunction luaFunction = method.getAnnotation(LuaFunction.class);
+          if (luaFunction != null) {
+            System.out.println(luaFunction);
+          }
         }
-      }
+
+        TypeMirror subType = moduleElement.asType();
+        String superType = "net.wizardsoflua.scribble.LuaApi";
+        int typeParameterIndex = 0;
+        TypeMirror delegateType = getTypeParameter(subType, superType, typeParameterIndex, types);
+
+        ClassName apiClassName = ClassName.get(moduleElement);
+        TypeName delegateTypeName = ClassName.get(delegateType);
+        String packageName = elements.getPackageOf(moduleElement).getQualifiedName().toString();
 
 
+        ClassName declareLuaClass =
+            ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
 
-      Filer filer = processingEnv.getFiler();
-      Location location = StandardLocation.SOURCE_OUTPUT;
-      CharSequence pkg = "net.wizardsoflua.test";
-      CharSequence relativeName = "bla.txt";
-      try (Writer writer =
-          new BufferedWriter(filer.createResource(location, pkg, relativeName).openWriter())) {
-        writer.write("properties:\n");
-        for (Property property : properties.values()) {
-          writer.write(property + "\n");
+        AnnotationSpec anno = AnnotationSpec.builder(declareLuaClass)//
+            .addMember("name", "$S", module.getName())//
+            .addMember("superClass", "$T.class", module.getSuperClass())//
+            .build();
+        TypeSpec luaClassType = classBuilder(module.getName() + "Class")//
+            .addAnnotation(anno)//
+            .build();
+        JavaFile luaClass = JavaFile.builder(packageName, luaClassType).build();
+
+        JavaFile proxy = createProxy(module, packageName, apiClassName, delegateTypeName);
+
+        Filer filer = processingEnv.getFiler();
+        try {
+          write(luaClass, filer);
+          write(proxy, filer);
+        } catch (IOException ex) {
+          throw new UndeclaredThrowableException(ex);
         }
-      } catch (IOException ex) {
-        throw new UndeclaredThrowableException(ex);
       }
     }
     return false;
   }
 
-  private String typeToString(TypeMirror typeMirror) {
-    TypeKind typeKind = typeMirror.getKind();
-    switch (typeKind) {
-      case ARRAY:
-        return "table";
-      case BOOLEAN:
-        return "boolean";
-      case BYTE:
-      case DOUBLE:
-      case FLOAT:
-      case INT:
-      case LONG:
-      case SHORT:
-        return "number (" + typeKind.toString().toLowerCase() + ")";
-      case CHAR:
-        return "string";
-      case DECLARED:
-        Name simpleName = ((DeclaredType) typeMirror).asElement().getSimpleName();
-        return "[" + simpleName + "](!SITE_URL!/modules/" + simpleName + "/)";
-      case EXECUTABLE:
-      case ERROR:
-      case INTERSECTION:
-      case NONE:
-      case NULL:
-      case OTHER:
-      case PACKAGE:
-      case TYPEVAR:
-      case UNION:
-      case WILDCARD:
-      default:
-        throw new IllegalArgumentException("Unknown type: " + typeMirror);
+  private void write(JavaFile file, Filer filer) throws IOException {
+    String qualifiedName = file.packageName + '.' + file.typeSpec.name;
+    try (Writer writer = new BufferedWriter(filer.createSourceFile(qualifiedName).openWriter())) {
+      file.writeTo(writer);
     }
   }
 
-  private static final String GET = "get";
-  private static final int GET_LENGTH = GET.length();
-  private static final String IS = "is";
-  private static final int IS_LENGTH = IS.length();
-
-  private String extractPropertyNameFromGetter(String methodName) {
-    if (methodName.startsWith(GET) && methodName.length() > GET_LENGTH) {
-      char firstChar = methodName.charAt(GET_LENGTH);
-      if (Character.isUpperCase(firstChar)) {
-        return Character.toLowerCase(firstChar) + methodName.substring(GET_LENGTH + 1);
-      }
-    } else {
-      if (methodName.startsWith(IS) && methodName.length() > IS_LENGTH) {
-        char firstChar = methodName.charAt(IS_LENGTH);
-        if (Character.isUpperCase(firstChar)) {
-          return Character.toLowerCase(firstChar) + methodName.substring(IS_LENGTH + 1);
-        }
-      }
-    }
-    throw new IllegalArgumentException("'" + methodName + "' is not a name of a getter method");
+  private JavaFile createProxy(Module module, String packageName, ClassName apiClassName,
+      TypeName delegateTypeName) {
+    TypeSpec proxyType = createProxyType(module, apiClassName, delegateTypeName);
+    return JavaFile.builder(packageName, proxyType).build();
   }
 
-  private static final String SET = "set";
-  private static final int SET_LENGTH = SET.length();
+  private TypeSpec createProxyType(Module module, ClassName apiClassName,
+      TypeName delegateTypeName) {
+    ClassName proxySuperclass = ClassName.get("net.wizardsoflua.scribble", "LuaApiProxy");
+    ParameterizedTypeName parameterizedProxySuperclass =
+        ParameterizedTypeName.get(proxySuperclass, apiClassName, delegateTypeName);
 
-  private String extractPropertyNameFromSetter(String methodName) {
-    if (methodName.startsWith(SET) && methodName.length() > SET_LENGTH) {
-      char firstChar = methodName.charAt(SET_LENGTH);
-      if (Character.isUpperCase(firstChar)) {
-        return Character.toLowerCase(firstChar) + methodName.substring(SET_LENGTH + 1);
+    TypeSpec.Builder type = classBuilder(module.getName() + "Proxy")//
+        .addModifiers(Modifier.PUBLIC)//
+        .superclass(parameterizedProxySuperclass)//
+        .addMethod(createConstructor(module, apiClassName))//
+    ;
+    for (Property property : module.getProperties()) {
+      if (property.isReadable()) {
+        type.addMethod(createProxyGetter(property));
+      }
+      if (property.isWriteable()) {
+        type.addMethod(createProxySetter(property));
       }
     }
-    throw new IllegalArgumentException("'" + methodName + "' is not a name of a setter method");
+    return type.build();
+  }
+
+  private MethodSpec createConstructor(Module module, ClassName apiClassName) {
+    MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder()//
+        .addModifiers(Modifier.PUBLIC)//
+        .addParameter(apiClassName, "api")//
+        .addStatement("super(api)")//
+    ;
+    for (Property property : module.getProperties()) {
+      String name = property.getName();
+      String Name = Utils.capitalize(name);
+      if (property.isWriteable()) {
+        constructorBuilder.addStatement("add($S, this::get$L, this::set$L)", name, Name, Name);
+      } else {
+        constructorBuilder.addStatement("addReadOnly($S, this::get$L)", name, Name);
+      }
+    }
+    return constructorBuilder.build();
+  }
+
+  private MethodSpec createProxyGetter(Property property) {
+    String name = property.getName();
+    String Name = Utils.capitalize(name);
+    return methodBuilder("get" + Name)//
+        .addModifiers(PRIVATE)//
+        .returns(Object.class)//
+        .addStatement("$T result = api.get$L()", property.getType(), Name)//
+        .addStatement("return getConverters().toLuaNullable(result)") //
+        .build();
+  }
+
+  private MethodSpec createProxySetter(Property property) {
+    String name = property.getName();
+    String Name = Utils.capitalize(name);
+    TypeName propertyType = TypeName.get(property.getType());
+    return methodBuilder("set" + Name)//
+        .addModifiers(PRIVATE)//
+        .addParameter(Object.class, "luaObject")//
+        .addStatement("$T $L = getConverters().toJava($T.class, luaObject, $S)", propertyType, name,
+            propertyType, name)//
+        .addStatement("api.set$L($L)", Name, name)//
+        .build();
+  }
+
+  private TypeMirror getTypeParameter(TypeMirror subType, String superType, int typeParameterIndex,
+      Types types) {
+    TypeMirror typeParameter = null;
+    TypeMirror superMirror = subType;
+    do {
+      TypeElement superElement = (TypeElement) types.asElement(superMirror);
+      if (superType.equals(superElement.getQualifiedName().toString())) {
+        typeParameter = ((DeclaredType) superMirror).getTypeArguments().get(typeParameterIndex);
+        break;
+      }
+      superMirror = superElement.getSuperclass();
+    } while (superMirror != null);
+    return typeParameter;
+  }
+
+  private @Nullable DeclaredType getClassValue(AnnotationMirror mirror, String key) {
+    for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : mirror
+        .getElementValues().entrySet()) {
+      if (key.equals(entry.getKey().getSimpleName().toString())) {
+        return (DeclaredType) entry.getValue().getValue();
+      }
+    }
+    return null;
+  }
+
+  private @Nullable AnnotationMirror getAnnoationMirror(TypeElement moduleElement,
+      Class<? extends Annotation> annoationClass) {
+    for (AnnotationMirror mirror : moduleElement.getAnnotationMirrors()) {
+      if (annoationClass.getName().equals(mirror.getAnnotationType().toString())) {
+        return mirror;
+      }
+    }
+    return null;
   }
 
 }

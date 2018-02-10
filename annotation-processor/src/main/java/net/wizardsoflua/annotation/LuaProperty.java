@@ -14,9 +14,4 @@ public @interface LuaProperty {
    * prefix.
    */
   String name() default "";
-
-  /**
-   * The type of the property. Defaults to a value appropriate for the return / parameter type.
-   */
-  String type() default "";
 }

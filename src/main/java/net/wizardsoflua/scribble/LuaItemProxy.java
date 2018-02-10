@@ -11,12 +11,12 @@ public class LuaItemProxy extends LuaApiProxy<LuaItem, ItemStack> {
   }
 
   private int getDamage() {
-    return api.getItemDamage();
+    return api.getDamage();
   }
 
   private void setDamage(Object luaObject) {
     int damage = getConverters().toJava(int.class, luaObject, "damage");
-    api.setItemDamage(damage);
+    api.setDamage(damage);
   }
 
   private Object getNbt() {

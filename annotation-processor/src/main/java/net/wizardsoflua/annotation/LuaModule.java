@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface LuaModule {
   /**
-   * The name of the module. Defaults to the simple class name.
+   * The name of the module.
    */
-  String name() default "";
+  String name();
 
   Class<?> superClass();
 }

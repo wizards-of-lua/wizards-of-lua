@@ -10,12 +10,11 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
-
-import net.wizardsoflua.annotation.processor.doc.jekyll.JekyllLuaDocProcessor;
-
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
+
+import net.wizardsoflua.annotation.processor.proxy.LuaProxyProcessor;
 
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {
@@ -31,7 +30,7 @@ public class RunAnnotationProcessor {
 
     CompilationTask task =
         compiler.getTask(new PrintWriter(System.out), null, null, null, null, files);
-    task.setProcessors(Arrays.asList(new JekyllLuaDocProcessor()));
+    task.setProcessors(Arrays.asList(new LuaProxyProcessor()));
 
     task.call();
   }
@@ -41,6 +40,10 @@ public class RunAnnotationProcessor {
     StandardJavaFileManager files = compiler.getStandardFileManager(null, null, null);
 
     files.setLocation(StandardLocation.SOURCE_PATH, Arrays.asList(new File(p_path)));
+    File outputDir = new File("build/apt");
+    outputDir.mkdirs();
+    files.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(outputDir));
+    files.setLocation(StandardLocation.SOURCE_OUTPUT, Arrays.asList(outputDir));
 
     Set<Kind> fileKinds = Collections.singleton(Kind.SOURCE);
     return files.list(StandardLocation.SOURCE_PATH, "", fileKinds, true);
