@@ -15,6 +15,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import net.wizardsoflua.annotation.processor.model.ModuleModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
@@ -36,6 +37,8 @@ public class LuaProxyGenerator {
     TypeSpec.Builder proxyType = classBuilder(module.getProxyClassName())//
         .addAnnotation(GENERATED_ANNOTATION)//
         .addModifiers(Modifier.PUBLIC)//
+        .addTypeVariable(createTypeVariableA())//
+        .addTypeVariable(createTypeVariableD())//
         .superclass(createSuperClassTypeName())//
         .addMethod(createConstructor())//
     ;
@@ -50,17 +53,28 @@ public class LuaProxyGenerator {
     return proxyType.build();
   }
 
+  private TypeVariableName createTypeVariableA() {
+    TypeVariableName d = createTypeVariableD();
+    ParameterizedTypeName upperBound = ParameterizedTypeName.get(module.getApiClassName(), d);
+    return TypeVariableName.get("A", upperBound);
+  }
+
+  private TypeVariableName createTypeVariableD() {
+    TypeName upperBound = module.getDelegateTypeName();
+    return TypeVariableName.get("D", upperBound);
+  }
+
   private ParameterizedTypeName createSuperClassTypeName() {
-    ClassName raw = ClassName.get("net.wizardsoflua.scribble", "LuaApiProxy");
-    TypeName api = module.getApiClassName();
-    TypeName delegate = module.getDelegateTypeName();
-    return ParameterizedTypeName.get(raw, api, delegate);
+    ClassName raw = module.getSuperProxyClassName();
+    TypeVariableName a = createTypeVariableA();
+    TypeVariableName d = createTypeVariableD();
+    return ParameterizedTypeName.get(raw, a, d);
   }
 
   private MethodSpec createConstructor() {
     MethodSpec.Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
-        .addParameter(module.getApiClassName(), "api")//
+        .addParameter(createTypeVariableA(), "api")//
         .addStatement("super(api)")//
     ;
     for (PropertyModel property : module.getProperties()) {

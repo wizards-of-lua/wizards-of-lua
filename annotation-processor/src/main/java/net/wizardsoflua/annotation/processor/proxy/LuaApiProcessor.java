@@ -74,7 +74,7 @@ public class LuaApiProcessor extends AbstractProcessor {
   private ModuleModel analyze(TypeElement moduleElement) {
     Elements elements = processingEnv.getElementUtils();
     ModuleModel module = ModuleModel.of(moduleElement, processingEnv);
-    List<ExecutableElement> methods = methodsIn(elements.getAllMembers(moduleElement));
+    List<ExecutableElement> methods = methodsIn(moduleElement.getEnclosedElements());
     for (ExecutableElement method : methods) {
       LuaProperty luaProperty = method.getAnnotation(LuaProperty.class);
       if (luaProperty != null) {

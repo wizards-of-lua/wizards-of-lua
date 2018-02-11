@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor;
 
 import java.lang.annotation.Annotation;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
@@ -9,7 +10,6 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
@@ -33,13 +33,13 @@ public class ProcessorUtils {
   public static @Nullable TypeMirror getTypeParameter(DeclaredType type, String superClass,
       int index, Types types) {
     while (true) {
-      TypeElement superElement = (TypeElement) type.asElement();
-      if (superClass.equals(superElement.getQualifiedName().toString())) {
+      TypeElement element = (TypeElement) type.asElement();
+      if (superClass.equals(element.getQualifiedName().toString())) {
         return type.getTypeArguments().get(index);
       }
-      TypeMirror superType = superElement.getSuperclass();
-      if (superType.getKind() == TypeKind.DECLARED) {
-        type = (DeclaredType) superType;
+      Iterator<? extends TypeMirror> supertypes = types.directSupertypes(type).iterator();
+      if (supertypes.hasNext()) {
+        type = (DeclaredType) supertypes.next();
       } else {
         return null;
       }

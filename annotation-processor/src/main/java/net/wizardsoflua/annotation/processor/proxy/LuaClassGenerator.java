@@ -48,8 +48,8 @@ public class LuaClassGenerator {
         .addAnnotation(createDeclareLuaClassAnnotation(module))//
         .addModifiers(Modifier.PUBLIC)//
         .superclass(createSuperclassTypeName())//
-        .addMethod(createToLuaMethod())//
         .addMethod(createConstructor(module))//
+        .addMethod(createToLuaMethod())//
     ;
     for (FunctionModel function : module.getFunctions()) {
       luaClassType.addType(createInnerFunctionClass(function));
@@ -61,28 +61,15 @@ public class LuaClassGenerator {
     ClassName declareLuaClass = ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
     return AnnotationSpec.builder(declareLuaClass)//
         .addMember("name", "$S", module.getName())//
-        .addMember("superClass", "$T.class", module.getSuperClass())//
+        .addMember("superClass", "$T.class", module.getSuperTypeName())//
         .build();
   }
 
   private ParameterizedTypeName createSuperclassTypeName() {
     ClassName raw = ClassName.get("net.wizardsoflua.lua.classes", "ProxyCachingLuaClass");
     TypeName delegate = module.getDelegateTypeName();
-    TypeName proxy = module.getProxyClassName();
+    TypeName proxy = module.getParameterizedProxyTypeName();
     return ParameterizedTypeName.get(raw, delegate, proxy);
-  }
-
-  private MethodSpec createToLuaMethod() {
-    TypeName api = module.getApiClassName();
-    TypeName delegate = module.getDelegateTypeName();
-    TypeName proxy = module.getProxyClassName();
-    return methodBuilder("toLua")//
-        .addAnnotation(Override.class)//
-        .addModifiers(Modifier.PROTECTED)//
-        .returns(proxy)//
-        .addParameter(delegate, "javaObject")//
-        .addStatement("return new $T(new $T(this, javaObject))", proxy, api)//
-        .build();
   }
 
   private MethodSpec createConstructor(ModuleModel module) {
@@ -94,6 +81,19 @@ public class LuaClassGenerator {
       constructor.addStatement("add(new $LFunction())", Name);
     }
     return constructor.build();
+  }
+
+  private MethodSpec createToLuaMethod() {
+    TypeName api = module.getParameterizedApiTypeName();
+    TypeName delegate = module.getDelegateTypeName();
+    TypeName proxy = module.getParameterizedProxyTypeName();
+    return methodBuilder("toLua")//
+        .addAnnotation(Override.class)//
+        .addModifiers(Modifier.PROTECTED)//
+        .returns(proxy)//
+        .addParameter(delegate, "javaObject")//
+        .addStatement("return new $T(new $T(this, javaObject))", proxy, api)//
+        .build();
   }
 
   private TypeSpec createInnerFunctionClass(FunctionModel function) {
@@ -136,12 +136,16 @@ public class LuaClassGenerator {
     for (int i = 1; i <= args.size() + 1; i++) {
       invokeMethod.addParameter(Object.class, "arg" + i);
     }
-    invokeMethod.addStatement(createArgConversionStatement(1, "self", module.getApiClassName()));
+    ClassName apiType = module.getApiClassName();
+    String self = "self";
+    invokeMethod.addStatement("$T<?> $L = $L", apiType, self,
+        createArgConversionStatement(1, self, apiType));
     int argIndex = 2;
     for (ArgumentModel arg : args) {
       TypeMirror argType = arg.getType();
       String argName = arg.getName();
-      invokeMethod.addStatement(createArgConversionStatement(argIndex, argName, argType));
+      invokeMethod.addStatement("$T $L = $L", argType, argName,
+          createArgConversionStatement(argIndex, argName, argType));
       argIndex++;
     }
     String arguments = Joiner.on(", ").join(Iterables.transform(args, ArgumentModel::getName));
@@ -158,7 +162,7 @@ public class LuaClassGenerator {
   }
 
   private CodeBlock createArgConversionStatement(int argIndex, String argName, Object argType) {
-    return CodeBlock.of("$T $L = getConverters().toJava($T.class, arg$L, $L, $S, getName())",
-        argType, argName, argType, argIndex, argIndex, argName);
+    return CodeBlock.of("getConverters().toJava($T.class, arg$L, $L, $S, getName())", argType,
+        argIndex, argIndex, argName);
   }
 }
