@@ -1,5 +1,4 @@
 include 'annotation-processor'
-include 'apt-test'
 
 void subprojects(ProjectDescriptor project = rootProject, Closure closure) {
   project.children.each {
