@@ -3,8 +3,8 @@ package net.wizardsoflua.scribble;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class LuaItemProxy extends LuaApiProxy<LuaItem, ItemStack> {
-  public LuaItemProxy(LuaItem api) {
+public class LuaItemProxy extends LuaApiProxy<ItemApi, ItemStack> {
+  public LuaItemProxy(ItemApi api) {
     super(api);
     add("damage", this::getDamage, this::setDamage);
     addReadOnly("nbt", this::getNbt);

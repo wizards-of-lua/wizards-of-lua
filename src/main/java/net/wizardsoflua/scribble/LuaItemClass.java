@@ -12,7 +12,7 @@ import net.wizardsoflua.lua.function.NamedFunction2;
 public class LuaItemClass extends ProxyCachingLuaClass<ItemStack, LuaItemProxy> {
   @Override
   protected LuaItemProxy toLua(ItemStack javaObject) {
-    return new LuaItemProxy(new LuaItem(this, javaObject));
+    return new LuaItemProxy(new ItemApi(this, javaObject));
   }
 
   public LuaItemClass() {
@@ -27,7 +27,7 @@ public class LuaItemClass extends ProxyCachingLuaClass<ItemStack, LuaItemProxy> 
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      LuaItem self = getConverters().toJava(LuaItem.class, arg1, 1, "self", getName());
+      ItemApi self = getConverters().toJava(ItemApi.class, arg1, 1, "self", getName());
       Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
       self.putNbt(nbt);
       context.getReturnBuffer().setTo();

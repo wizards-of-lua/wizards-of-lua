@@ -10,8 +10,8 @@ import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @LuaModule(name = "Item", superClass = ObjectClass.class)
-public class LuaItem extends LuaApi<ItemStack> {
-  public LuaItem(ProxyingLuaClass<?, ?> luaClass, ItemStack delegate) {
+public class ItemApi extends LuaApiBase<ItemStack> {
+  public ItemApi(ProxyingLuaClass<?, ?> luaClass, ItemStack delegate) {
     super(luaClass, delegate);
   }
 
@@ -35,5 +35,10 @@ public class LuaItem extends LuaApi<ItemStack> {
     NBTTagCompound oldNbt = delegate.serializeNBT();
     NBTTagCompound newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
     delegate.deserializeNBT(newNbt);
+  }
+
+  @LuaFunction
+  public int getCount() {
+    return delegate.getCount();
   }
 }

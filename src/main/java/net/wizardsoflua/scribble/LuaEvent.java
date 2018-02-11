@@ -7,7 +7,7 @@ import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @LuaModule(name = "Event", superClass = ObjectClass.class)
-public class LuaEvent extends LuaApi<Event> {
+public class LuaEvent extends LuaApiBase<Event> {
   public LuaEvent(ProxyingLuaClass<?, ?> luaClass, Event delegate) {
     super(luaClass, delegate);
   }

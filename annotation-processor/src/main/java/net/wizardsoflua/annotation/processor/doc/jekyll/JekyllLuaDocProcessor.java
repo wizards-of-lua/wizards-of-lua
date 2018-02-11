@@ -30,7 +30,7 @@ import javax.tools.StandardLocation;
 import com.google.common.base.Strings;
 
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.annotation.processor.Property;
+import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class JekyllLuaDocProcessor extends AbstractProcessor {
   @Override
@@ -51,30 +51,30 @@ public class JekyllLuaDocProcessor extends AbstractProcessor {
     for (TypeElement annotation : annotations) {
       Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
 
-      Map<String, Property> properties = new TreeMap<>();
+      Map<String, PropertyModel> properties = new TreeMap<>();
 
-      for (Element method : annotatedElements) {
-        String methodName = method.getSimpleName().toString();
-        ExecutableType methodType = (ExecutableType) method.asType();
-        TypeMirror returnType = methodType.getReturnType();
-        List<? extends TypeMirror> parameterTypes = methodType.getParameterTypes();
-        TypeKind returnTypeKind = returnType.getKind();
-        String description = Strings.nullToEmpty(utils.getDocComment(method)).trim();
-        if (returnTypeKind != VOID && parameterTypes.isEmpty()) { // Getter
-          String propertyName = extractPropertyNameFromGetter(methodName);
-          Property property = properties.computeIfAbsent(propertyName,
-              name -> new Property(name, typeToString(returnType), description));
-          property.setReadable(true);
-        } else if (returnTypeKind == VOID && parameterTypes.size() == 1) { // Setter
-          String propertyName = extractPropertyNameFromSetter(methodName);
-          Property property = properties.computeIfAbsent(propertyName, name -> {
-            return new Property(name, typeToString(parameterTypes.get(0)), description);
-          });
-          property.setWriteable(true);
-        } else {
-          // TODO error?
-        }
-      }
+//      for (Element method : annotatedElements) {
+//        String methodName = method.getSimpleName().toString();
+//        ExecutableType methodType = (ExecutableType) method.asType();
+//        TypeMirror returnType = methodType.getReturnType();
+//        List<? extends TypeMirror> parameterTypes = methodType.getParameterTypes();
+//        TypeKind returnTypeKind = returnType.getKind();
+//        String description = Strings.nullToEmpty(utils.getDocComment(method)).trim();
+//        if (returnTypeKind != VOID && parameterTypes.isEmpty()) { // Getter
+//          String propertyName = extractPropertyNameFromGetter(methodName);
+//          PropertyModel property = properties.computeIfAbsent(propertyName,
+//              name -> new PropertyModel(name, typeToString(returnType), description));
+//          property.setReadable(true);
+//        } else if (returnTypeKind == VOID && parameterTypes.size() == 1) { // Setter
+//          String propertyName = extractPropertyNameFromSetter(methodName);
+//          PropertyModel property = properties.computeIfAbsent(propertyName, name -> {
+//            return new PropertyModel(name, typeToString(parameterTypes.get(0)), description);
+//          });
+//          property.setWriteable(true);
+//        } else {
+//          // TODO error?
+//        }
+//      }
 
 
 
@@ -85,7 +85,7 @@ public class JekyllLuaDocProcessor extends AbstractProcessor {
       try (Writer writer =
           new BufferedWriter(filer.createResource(location, pkg, relativeName).openWriter())) {
         writer.write("properties:\n");
-        for (Property property : properties.values()) {
+        for (PropertyModel property : properties.values()) {
           writer.write(property + "\n");
         }
       } catch (IOException ex) {
