@@ -39,7 +39,7 @@ public class ModuleModel {
     DeclaredType superType = ProcessorUtils.getClassValue(mirror, "superClass");
     TypeName superTypeName = TypeName.get(superType);
 
-    ClassName superProxyClassName = getSuperProxyClassName(types, superType);
+    ClassName superProxyClassName = getSuperProxyClassName(superType, types);
 
     return new ModuleModel(apiClassName, delegateTypeName, moduleName, superTypeName,
         superProxyClassName);
@@ -56,8 +56,8 @@ public class ModuleModel {
     return TypeName.get(delegateType);
   }
 
-  private static ClassName getSuperProxyClassName(Types types, DeclaredType superType) {
-    String superSuperType = "net.wizardsoflua.lua.classes.ProxyCachingLuaClass";
+  private static ClassName getSuperProxyClassName(DeclaredType superType, Types types) {
+    String superSuperType = "net.wizardsoflua.lua.classes.ProxyingLuaClass";
     int typeParameterIndex = 1;
     TypeMirror superProxyType =
         getTypeParameter(superType, superSuperType, typeParameterIndex, types);
