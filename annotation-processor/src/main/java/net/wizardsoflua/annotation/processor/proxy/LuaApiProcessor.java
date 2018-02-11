@@ -9,8 +9,11 @@ import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -22,6 +25,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.tools.Diagnostic;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
@@ -50,10 +54,20 @@ public class LuaApiProcessor extends AbstractProcessor {
     return SourceVersion.RELEASE_8;
   }
 
+  private final Map<TypeElement, Exception> failedInLastRound = new HashMap<>();
+
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    Collection<ModuleModel> modules = analyze(annotations, roundEnv);
-    generate(modules);
+    if (!roundEnv.processingOver()) {
+      Collection<ModuleModel> modules = analyze(annotations, roundEnv);
+      generate(modules);
+    } else {
+      for (Entry<TypeElement, Exception> entry : failedInLastRound.entrySet()) {
+        CharSequence message = entry.getValue().getMessage();
+        Element element = entry.getKey();
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+      }
+    }
     return false;
   }
 
@@ -63,9 +77,15 @@ public class LuaApiProcessor extends AbstractProcessor {
     for (TypeElement annotation : annotations) {
       Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
       Set<TypeElement> moduleElements = typesIn(annotatedElements);
+      moduleElements.addAll(failedInLastRound.keySet());
+      failedInLastRound.clear();
       for (TypeElement moduleElement : moduleElements) {
-        ModuleModel module = analyze(moduleElement);
-        modules.add(module);
+        try {
+          ModuleModel module = analyze(moduleElement);
+          modules.add(module);
+        } catch (Exception ex) {
+          failedInLastRound.put(moduleElement, ex);
+        }
       }
     }
     return modules;
