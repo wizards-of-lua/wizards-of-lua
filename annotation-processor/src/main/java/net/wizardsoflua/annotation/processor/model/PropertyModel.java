@@ -19,26 +19,26 @@ public class PropertyModel {
       @Nullable String docComment) {
     String methodName = method.getSimpleName().toString();
     String name = luaProperty.name();
+    String getterName = null;
+    String setterName = null;
     TypeMirror type;
-    boolean readable = false;
-    boolean writeable = false;
     if (isGetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromGetter(methodName);
       }
       type = method.getReturnType();
-      readable = true;
+      getterName = methodName;
     } else if (isSetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromSetter(methodName);
       }
       type = method.getParameters().get(0).asType();
-      writeable = true;
+      setterName = methodName;
     } else {
       throw new IllegalArgumentException("method " + method + " is neither a getter nor a setter");
     }
     String description = Strings.nullToEmpty(docComment).trim();
-    return new PropertyModel(name, type, readable, writeable, description);
+    return new PropertyModel(name, getterName, setterName, type, description);
   }
 
   public static boolean isGetter(ExecutableElement method) {
@@ -122,26 +122,18 @@ public class PropertyModel {
     }
   }
 
-
   private final String name;
   private final TypeMirror type;
-  private boolean readable;
-  private boolean writeable;
+  private @Nullable String getterName;
+  private @Nullable String setterName;
   private String description;
 
-  @Deprecated
-  public PropertyModel(String name, TypeMirror type, String description) {
+  public PropertyModel(String name, @Nullable String getterName, @Nullable String setterName,
+      TypeMirror type, String description) {
     this.name = requireNonNull(name, "name == null!");
     this.type = requireNonNull(type, "type == null!");
-    this.description = requireNonNull(description, "description == null!");
-  }
-
-  public PropertyModel(String name, TypeMirror type, boolean readable, boolean writeable,
-      String description) {
-    this.name = requireNonNull(name, "name == null!");
-    this.type = requireNonNull(type, "type == null!");
-    this.readable = readable;
-    this.writeable = writeable;
+    this.getterName = getterName;
+    this.setterName = setterName;
     this.description = requireNonNull(description, "description == null!");
   }
 
@@ -153,29 +145,35 @@ public class PropertyModel {
     return type;
   }
 
-  public boolean isReadable() {
-    return readable;
+  public @Nullable String getGetterName() {
+    return getterName;
   }
 
-  public void setReadable(boolean readable) {
-    this.readable = readable;
+  public @Nullable String getSetterName() {
+    return setterName;
+  }
+
+  public boolean isReadable() {
+    return getterName != null;
   }
 
   public boolean isWriteable() {
-    return writeable;
-  }
-
-  public void setWriteable(boolean writeable) {
-    this.writeable = writeable;
+    return setterName != null;
   }
 
   public void merge(PropertyModel property) {
     checkArgument(this.name.equals(property.name));
+    checkArgument(this.getterName == null || property.getterName == null
+        || this.getterName.equals(property.getterName));
+    checkArgument(this.setterName == null || property.setterName == null
+        || this.setterName.equals(property.setterName));
+
     checkArgument(this.getType().equals(property.getType()));
     checkArgument(this.description.isEmpty() || property.description.isEmpty()
         || this.description.equals(property.description));
-    this.readable |= property.readable;
-    this.writeable |= property.writeable;
+
+    this.getterName = this.getterName == null ? property.getterName : this.getterName;
+    this.setterName = this.setterName == null ? property.setterName : this.setterName;
     this.description = this.description.isEmpty() ? property.description : this.description;
   }
 
@@ -188,14 +186,14 @@ public class PropertyModel {
   }
 
   private String renderAccess() {
-    if (readable) {
-      if (writeable) {
+    if (isReadable()) {
+      if (isWriteable()) {
         return "r/w";
       } else {
         return "r";
       }
     } else {
-      if (writeable) {
+      if (isWriteable()) {
         return "w";
       } else {
         throw new IllegalStateException("Property must be readable or writeable");

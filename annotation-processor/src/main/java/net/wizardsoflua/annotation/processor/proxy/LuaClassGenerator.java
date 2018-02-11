@@ -123,11 +123,14 @@ public class LuaClassGenerator {
   private MethodSpec createInvokeMethod(FunctionModel function) {
     ClassName executionContextName =
         ClassName.get("net.sandius.rembulan.runtime", "ExecutionContext");
+    ClassName resolvedControlThrowableName =
+        ClassName.get("net.sandius.rembulan.runtime", "ResolvedControlThrowable");
 
     Collection<ArgumentModel> args = function.getArgs();
     MethodSpec.Builder invokeMethod = methodBuilder("invoke")//
         .addAnnotation(Override.class)//
         .addModifiers(Modifier.PUBLIC)//
+        .addException(resolvedControlThrowableName)//
         .addParameter(executionContextName, "context")//
     ;
     for (int i = 1; i <= args.size() + 1; i++) {

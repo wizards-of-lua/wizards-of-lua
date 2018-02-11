@@ -16,7 +16,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.model.ModuleModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
@@ -66,37 +65,37 @@ public class LuaProxyGenerator {
     ;
     for (PropertyModel property : module.getProperties()) {
       String name = property.getName();
-      String Name = Utils.capitalize(name);
+      String getterName = property.getGetterName();
+      String setterName = property.getSetterName();
       if (property.isWriteable()) {
-        constructor.addStatement("add($S, this::get$L, this::set$L)", name, Name, Name);
+        constructor.addStatement("add($S, this::$L, this::$L)", name, getterName, setterName);
       } else {
-        constructor.addStatement("addReadOnly($S, this::get$L)", name, Name);
+        constructor.addStatement("addReadOnly($S, this::$L)", name, getterName);
       }
     }
     return constructor.build();
   }
 
   private MethodSpec createGetter(PropertyModel property) {
-    String name = property.getName();
-    String Name = Utils.capitalize(name);
-    return methodBuilder("get" + Name)//
+    String getterName = property.getGetterName();
+    return methodBuilder(getterName)//
         .addModifiers(PRIVATE)//
         .returns(Object.class)//
-        .addStatement("$T result = api.get$L()", property.getType(), Name)//
+        .addStatement("Object result = api.$L()", getterName)//
         .addStatement("return getConverters().toLuaNullable(result)") //
         .build();
   }
 
   private MethodSpec createSetter(PropertyModel property) {
     String name = property.getName();
-    String Name = Utils.capitalize(name);
+    String setterName = property.getSetterName();
     TypeName propertyType = TypeName.get(property.getType());
-    return methodBuilder("set" + Name)//
+    return methodBuilder(setterName)//
         .addModifiers(PRIVATE)//
         .addParameter(Object.class, "luaObject")//
         .addStatement("$T $L = getConverters().toJava($T.class, luaObject, $S)", propertyType, name,
             propertyType, name)//
-        .addStatement("api.set$L($L)", Name, name)//
+        .addStatement("api.$L($L)", setterName, name)//
         .build();
   }
 }
