@@ -10,8 +10,8 @@ import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @LuaModule(name = "Item", superClass = ObjectClass.class)
-public class ItemApi extends LuaApiBase<ItemStack> {
-  public ItemApi(ProxyingLuaClass<?, ?> luaClass, ItemStack delegate) {
+public class ItemApi<D extends ItemStack> extends LuaApiBase<D> {
+  public ItemApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

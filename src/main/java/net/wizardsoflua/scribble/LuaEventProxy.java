@@ -2,8 +2,8 @@ package net.wizardsoflua.scribble;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
-public class LuaEventProxy extends LuaApiProxy<LuaEvent, Event> {
-  public LuaEventProxy(LuaEvent api) {
+public class LuaEventProxy<A extends LuaEvent<D>, D extends Event> extends LuaApiProxy<A, D> {
+  public LuaEventProxy(A api) {
     super(api);
     addReadOnly("name", this::getName);
   }

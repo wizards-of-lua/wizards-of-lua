@@ -9,8 +9,8 @@ import net.wizardsoflua.event.SwingArmEvent;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @LuaModule(name = "SwingArmEvent", superClass = LuaEventClass.class)
-public class LuaSwingArmEvent extends LuaApiBase<SwingArmEvent> {
-  public LuaSwingArmEvent(ProxyingLuaClass<?, ?> luaClass, SwingArmEvent delegate) {
+public class LuaSwingArmEvent<D extends SwingArmEvent> extends LuaEvent<D> {
+  public LuaSwingArmEvent(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

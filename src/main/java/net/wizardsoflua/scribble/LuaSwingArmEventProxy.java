@@ -5,8 +5,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.wizardsoflua.event.SwingArmEvent;
 
-public class LuaSwingArmEventProxy extends LuaApiProxy<LuaSwingArmEvent, SwingArmEvent> {
-  public LuaSwingArmEventProxy(LuaSwingArmEvent api) {
+public class LuaSwingArmEventProxy<A extends LuaSwingArmEvent<D>, D extends SwingArmEvent>
+    extends LuaEventProxy<A, D> {
+  public LuaSwingArmEventProxy(A api) {
     super(api);
     addReadOnly("hand", this::getHand);
     addReadOnly("item", this::getItem);

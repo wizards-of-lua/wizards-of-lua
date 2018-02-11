@@ -6,10 +6,11 @@ import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.classes.event.EventClass;
 
 @DeclareLuaClass(name = "SwingArmEvent", superClass = EventClass.class)
-public class LuaSwingArmEventClass
-    extends ProxyCachingLuaClass<SwingArmEvent, LuaSwingArmEventProxy> {
+public class LuaSwingArmEventClass extends
+    ProxyCachingLuaClass<SwingArmEvent, LuaSwingArmEventProxy<LuaSwingArmEvent<SwingArmEvent>, SwingArmEvent>> {
   @Override
-  protected LuaSwingArmEventProxy toLua(SwingArmEvent javaObject) {
-    return new LuaSwingArmEventProxy(new LuaSwingArmEvent(this, javaObject));
+  protected LuaSwingArmEventProxy<LuaSwingArmEvent<SwingArmEvent>, SwingArmEvent> toLua(
+      SwingArmEvent javaObject) {
+    return new LuaSwingArmEventProxy<>(new LuaSwingArmEvent<>(this, javaObject));
   }
 }
