@@ -14,7 +14,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
-import net.wizardsoflua.annotation.processor.proxy.LuaProxyProcessor;
+import net.wizardsoflua.annotation.processor.proxy.LuaApiProcessor;
 
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {
@@ -30,7 +30,7 @@ public class RunAnnotationProcessor {
 
     CompilationTask task =
         compiler.getTask(new PrintWriter(System.out), null, null, null, null, files);
-    task.setProcessors(Arrays.asList(new LuaProxyProcessor()));
+    task.setProcessors(Arrays.asList(new LuaApiProcessor()));
 
     task.call();
   }

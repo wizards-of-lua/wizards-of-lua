@@ -1,2 +1,1 @@
-net.wizardsoflua.annotation.processor.doc.jekyll.JekyllLuaDocProcessor
-net.wizardsoflua.annotation.processor.proxy.LuaProxyProcessor
+net.wizardsoflua.annotation.processor.proxy.LuaApiProcessor
