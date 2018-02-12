@@ -8,6 +8,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -27,37 +28,40 @@ public class PropertyModel {
 
     String methodName = method.getSimpleName().toString();
     String name = luaProperty.name();
+    boolean nullable = false;
     String getterName = null;
     String setterName = null;
 
     AnnotationMirror mirror = ProcessorUtils.getAnnoationMirror(method, LuaProperty.class);
-    TypeMirror rype = ProcessorUtils.getClassValue(mirror, "type", env);
-    if (types.isSameType(rype, elements.getTypeElement(Void.class.getName()).asType())) {
-      rype = null;
+    TypeMirror type = ProcessorUtils.getClassValue(mirror, "type", env);
+    if (types.isSameType(type, elements.getTypeElement(Void.class.getName()).asType())) {
+      type = null;
     }
     TypeMirror setterType = null;
     if (isGetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromGetter(methodName);
       }
-      if (rype == null) {
-        rype = method.getReturnType();
+      if (type == null) {
+        type = method.getReturnType();
       }
       getterName = methodName;
     } else if (isSetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromSetter(methodName);
       }
-      setterType = method.getParameters().get(0).asType();
-      if (rype == null) {
-        rype = setterType;
+      VariableElement parameter = method.getParameters().get(0);
+      nullable = parameter.getAnnotation(Nullable.class) != null;
+      setterType = parameter.asType();
+      if (type == null) {
+        type = setterType;
       }
       setterName = methodName;
     } else {
       throw new IllegalArgumentException("method " + method + " is neither a getter nor a setter");
     }
     String description = Strings.nullToEmpty(docComment).trim();
-    return new PropertyModel(name, rype, getterName, setterName, setterType, description);
+    return new PropertyModel(name, type, description, nullable, getterName, setterName, setterType);
   }
 
   public static boolean isGetter(ExecutableElement method) {
@@ -143,19 +147,21 @@ public class PropertyModel {
 
   private final String name;
   private final TypeMirror type;
+  private String description;
+  private boolean nullable;
   private @Nullable String getterName;
   private @Nullable String setterName;
   private @Nullable TypeMirror setterType;
-  private String description;
 
-  public PropertyModel(String name, TypeMirror type, @Nullable String getterName,
-      @Nullable String setterName, @Nullable TypeMirror setterType, String description) {
+  public PropertyModel(String name, TypeMirror type, String description, boolean nullable,
+      @Nullable String getterName, @Nullable String setterName, @Nullable TypeMirror setterType) {
     this.name = requireNonNull(name, "name == null!");
     this.type = requireNonNull(type, "type == null!");
+    this.description = requireNonNull(description, "description == null!");
+    this.nullable = nullable;
     this.getterName = getterName;
     this.setterName = setterName;
     this.setterType = setterType;
-    this.description = requireNonNull(description, "description == null!");
   }
 
   public String getName() {
@@ -168,6 +174,10 @@ public class PropertyModel {
 
   public @Nullable String getGetterName() {
     return getterName;
+  }
+
+  public boolean isNullable() {
+    return nullable;
   }
 
   public @Nullable String getSetterName() {
@@ -196,14 +206,15 @@ public class PropertyModel {
         name);
 
     checkArgument(
-        this.description.isEmpty() || other.description.isEmpty()
-            || this.description.equals(other.description),
+        description.isEmpty() || other.description.isEmpty()
+            || description.equals(other.description),
         "The description of property '%s' on the getter differs from the description on the setter");
 
-    this.getterName = getterName == null ? other.getterName : getterName;
-    this.setterName = setterName == null ? other.setterName : setterName;
-    this.setterType = setterType == null ? other.setterType : setterType;
-    this.description = description.isEmpty() ? other.description : description;
+    nullable |= other.nullable;
+    getterName = getterName == null ? other.getterName : getterName;
+    setterName = setterName == null ? other.setterName : setterName;
+    setterType = setterType == null ? other.setterType : setterType;
+    description = description.isEmpty() ? other.description : description;
   }
 
   private String renderName() {

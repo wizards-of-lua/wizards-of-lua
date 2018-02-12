@@ -139,13 +139,14 @@ public class LuaClassGenerator {
     ClassName apiType = module.getApiClassName();
     String self = "self";
     invokeMethod.addStatement("$T<?> $L = $L", apiType, self,
-        createArgConversionStatement(1, self, apiType));
+        createArgConversionStatement(1, self, apiType, false));
     int argIndex = 2;
     for (ArgumentModel arg : args) {
       TypeMirror argType = arg.getType();
       String argName = arg.getName();
+      boolean nullable = arg.isNullable();
       invokeMethod.addStatement("$T $L = $L", argType, argName,
-          createArgConversionStatement(argIndex, argName, argType));
+          createArgConversionStatement(argIndex, argName, argType, nullable));
       argIndex++;
     }
     String arguments = Joiner.on(", ").join(Iterables.transform(args, ArgumentModel::getName));
@@ -161,8 +162,10 @@ public class LuaClassGenerator {
     return invokeMethod.build();
   }
 
-  private CodeBlock createArgConversionStatement(int argIndex, String argName, Object argType) {
-    return CodeBlock.of("getConverters().toJava($T.class, arg$L, $L, $S, getName())", argType,
-        argIndex, argIndex, argName);
+  private CodeBlock createArgConversionStatement(int argIndex, String argName, Object argType,
+      boolean nullable) {
+    String convertersMethod = nullable ? "toJavaNullable" : "toJava";
+    return CodeBlock.of("getConverters().$L($T.class, arg$L, $L, $S, getName())", convertersMethod,
+        argType, argIndex, argIndex, argName);
   }
 }

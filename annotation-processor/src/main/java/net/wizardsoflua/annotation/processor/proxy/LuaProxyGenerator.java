@@ -104,11 +104,12 @@ public class LuaProxyGenerator {
     String name = property.getName();
     String setterName = property.getSetterName();
     TypeName propertyType = TypeName.get(property.getSetterType());
+    String convertersMethod = property.isNullable() ? "toJavaNullable" : "toJava";
     return methodBuilder(setterName)//
         .addModifiers(PRIVATE)//
         .addParameter(Object.class, "luaObject")//
-        .addStatement("$T $L = getConverters().toJava($T.class, luaObject, $S)", propertyType, name,
-            propertyType, name)//
+        .addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", propertyType, name,
+            convertersMethod, propertyType, name)//
         .addStatement("api.$L($L)", setterName, name)//
         .build();
   }
