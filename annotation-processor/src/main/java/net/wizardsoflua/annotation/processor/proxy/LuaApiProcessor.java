@@ -24,6 +24,9 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
@@ -100,7 +103,8 @@ public class LuaApiProcessor extends AbstractProcessor {
   private ModuleModel analyze(TypeElement moduleElement) {
     Elements elements = processingEnv.getElementUtils();
     ModuleModel module = ModuleModel.of(moduleElement, processingEnv);
-    List<ExecutableElement> methods = methodsIn(moduleElement.getEnclosedElements());
+    List<ExecutableElement> methods = getRelevantMethods(moduleElement);
+
     for (ExecutableElement method : methods) {
       try {
         LuaProperty luaProperty = method.getAnnotation(LuaProperty.class);
@@ -120,6 +124,33 @@ public class LuaApiProcessor extends AbstractProcessor {
       }
     }
     return module;
+  }
+
+  /**
+   * Returns all methods in that are declare in {@code moduleElement} or it's super classes. If a
+   * super class is itself a {@link LuaModule} then its methods and those of its superclasses are
+   * ignored, because they are already exported to Lua.
+   *
+   * @param moduleElement
+   * @param methods
+   * @return all methods in that are declare in {@code moduleElement} or it's super classes
+   */
+  private List<ExecutableElement> getRelevantMethods(TypeElement moduleElement) {
+    List<ExecutableElement> methods = new ArrayList<>();
+    while (true) {
+      methods.addAll(methodsIn(moduleElement.getEnclosedElements()));
+
+      TypeMirror superclass = moduleElement.getSuperclass();
+      if (superclass.getKind() == TypeKind.DECLARED) {
+        DeclaredType superType = (DeclaredType) superclass;
+        moduleElement = (TypeElement) superType.asElement();
+        if (moduleElement.getAnnotation(LuaModule.class) != null) {
+          return methods;
+        }
+      } else {
+        return methods;
+      }
+    }
   }
 
   private void generate(Collection<ModuleModel> modules) {
