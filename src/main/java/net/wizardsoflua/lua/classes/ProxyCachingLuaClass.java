@@ -14,7 +14,7 @@ public abstract class ProxyCachingLuaClass<J, P extends LuaInstanceProxy<? exten
     return cache.asMap().computeIfAbsent(delegate, super::getLuaInstance);
   }
 
-  protected Cache<J, P> getCache() {
+  public Cache<J, P> getCache() {
     return cache;
   }
 }
