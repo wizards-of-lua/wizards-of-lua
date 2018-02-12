@@ -103,7 +103,7 @@ public class LuaProxyGenerator {
   private MethodSpec createSetter(PropertyModel property) {
     String name = property.getName();
     String setterName = property.getSetterName();
-    TypeName propertyType = TypeName.get(property.getType());
+    TypeName propertyType = TypeName.get(property.getSetterType());
     return methodBuilder(setterName)//
         .addModifiers(PRIVATE)//
         .addParameter(Object.class, "luaObject")//

@@ -26,47 +26,47 @@ import net.wizardsoflua.annotation.processor.ProcessorUtils;
 
 public class ModuleModel {
   public static ModuleModel of(TypeElement moduleElement, ProcessingEnvironment env) {
-    Types types = env.getTypeUtils();
-
-
     ClassName apiClassName = ClassName.get(moduleElement);
 
-    TypeName delegateTypeName = getDelegateTypeName(moduleElement, types);
+    TypeName delegateTypeName = getDelegateTypeName(moduleElement, env);
 
     String moduleName = moduleElement.getAnnotation(LuaModule.class).name();
 
     AnnotationMirror mirror = ProcessorUtils.getAnnoationMirror(moduleElement, LuaModule.class);
-    DeclaredType superType = ProcessorUtils.getClassValue(mirror, "superClass");
+    DeclaredType superType = ProcessorUtils.getClassValue(mirror, "superClass", env);
     TypeName superTypeName = TypeName.get(superType);
 
-    ClassName superProxyClassName = getSuperProxyClassName(superType, types);
+    ClassName superProxyClassName = getSuperProxyClassName(superType, env);
 
     return new ModuleModel(apiClassName, delegateTypeName, moduleName, superTypeName,
         superProxyClassName);
   }
 
-  private static TypeName getDelegateTypeName(TypeElement moduleElement, Types types) {
+  private static TypeName getDelegateTypeName(TypeElement moduleElement,
+      ProcessingEnvironment env) {
     DeclaredType subType = (DeclaredType) moduleElement.asType();
     String superType = "net.wizardsoflua.scribble.LuaApiBase";
     int typeParameterIndex = 0;
-    TypeMirror delegateType = getTypeParameter(subType, superType, typeParameterIndex, types);
+    TypeMirror delegateType = getTypeParameter(subType, superType, typeParameterIndex, env);
     if (delegateType.getKind() == TypeKind.TYPEVAR) {
       delegateType = ((TypeVariable) delegateType).getUpperBound();
     }
     return TypeName.get(delegateType);
   }
 
-  private static ClassName getSuperProxyClassName(DeclaredType superType, Types types) {
+  private static ClassName getSuperProxyClassName(DeclaredType superType,
+      ProcessingEnvironment env) {
     String superSuperType = "net.wizardsoflua.lua.classes.ProxyingLuaClass";
     int typeParameterIndex = 1;
     TypeMirror superProxyType =
-        getTypeParameter(superType, superSuperType, typeParameterIndex, types);
+        getTypeParameter(superType, superSuperType, typeParameterIndex, env);
     if (superProxyType == null) {
       return ClassName.get("net.wizardsoflua.scribble", "LuaApiProxy");
     }
     if (superProxyType.getKind() == TypeKind.TYPEVAR) {
       superProxyType = ((TypeVariable) superProxyType).getUpperBound();
     }
+    Types types = env.getTypeUtils();
     TypeElement superProxyElement = (TypeElement) types.asElement(superProxyType);
     return ClassName.get(superProxyElement);
   }
@@ -137,10 +137,10 @@ public class ModuleModel {
     return superProxyClassName;
   }
 
-  public void addProperty(PropertyModel property) {
+  public void addProperty(PropertyModel property, ProcessingEnvironment env) {
     PropertyModel existing = properties.get(property.getName());
     if (existing != null) {
-      existing.merge(property);
+      existing.merge(property, env);
     } else {
       properties.put(property.getName(), property);
     }

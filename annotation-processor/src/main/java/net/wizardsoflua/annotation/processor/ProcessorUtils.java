@@ -5,12 +5,15 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 public class ProcessorUtils {
@@ -31,10 +34,11 @@ public class ProcessorUtils {
    *         specified {@code index} or {@code null}
    */
   public static @Nullable TypeMirror getTypeParameter(DeclaredType type, String superClass,
-      int index, Types types) {
+      int index, ProcessingEnvironment env) {
+    Types types = env.getTypeUtils();
     while (true) {
       TypeElement element = (TypeElement) type.asElement();
-      if (superClass.equals(element.getQualifiedName().toString())) {
+      if (element.getQualifiedName().contentEquals(superClass)) {
         return type.getTypeArguments().get(index);
       }
       Iterator<? extends TypeMirror> supertypes = types.directSupertypes(type).iterator();
@@ -46,9 +50,11 @@ public class ProcessorUtils {
     }
   }
 
-  public static @Nullable DeclaredType getClassValue(AnnotationMirror mirror, String key) {
-    for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : mirror
-        .getElementValues().entrySet()) {
+  public static @Nullable DeclaredType getClassValue(AnnotationMirror mirror, String key,
+      ProcessingEnvironment env) {
+    Elements elements = env.getElementUtils();
+    for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elements
+        .getElementValuesWithDefaults(mirror).entrySet()) {
       if (key.equals(entry.getKey().getSimpleName().toString())) {
         return (DeclaredType) entry.getValue().getValue();
       }
@@ -56,9 +62,9 @@ public class ProcessorUtils {
     return null;
   }
 
-  public static @Nullable AnnotationMirror getAnnoationMirror(TypeElement moduleElement,
+  public static @Nullable AnnotationMirror getAnnoationMirror(Element element,
       Class<? extends Annotation> annoationClass) {
-    for (AnnotationMirror mirror : moduleElement.getAnnotationMirrors()) {
+    for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
       if (annoationClass.getName().equals(mirror.getAnnotationType().toString())) {
         return mirror;
       }

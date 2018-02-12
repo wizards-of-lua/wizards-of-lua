@@ -4,41 +4,60 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import com.google.common.base.Strings;
 
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.processor.ProcessorUtils;
 
 public class PropertyModel {
   public static PropertyModel of(ExecutableElement method, LuaProperty luaProperty,
-      @Nullable String docComment) {
+      @Nullable String docComment, ProcessingEnvironment env) {
+    Types types = env.getTypeUtils();
+    Elements elements = env.getElementUtils();
+
     String methodName = method.getSimpleName().toString();
     String name = luaProperty.name();
     String getterName = null;
     String setterName = null;
-    TypeMirror type;
+
+    AnnotationMirror mirror = ProcessorUtils.getAnnoationMirror(method, LuaProperty.class);
+    TypeMirror rype = ProcessorUtils.getClassValue(mirror, "type", env);
+    if (types.isSameType(rype, elements.getTypeElement(Void.class.getName()).asType())) {
+      rype = null;
+    }
+    TypeMirror setterType = null;
     if (isGetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromGetter(methodName);
       }
-      type = method.getReturnType();
+      if (rype == null) {
+        rype = method.getReturnType();
+      }
       getterName = methodName;
     } else if (isSetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromSetter(methodName);
       }
-      type = method.getParameters().get(0).asType();
+      setterType = method.getParameters().get(0).asType();
+      if (rype == null) {
+        rype = setterType;
+      }
       setterName = methodName;
     } else {
       throw new IllegalArgumentException("method " + method + " is neither a getter nor a setter");
     }
     String description = Strings.nullToEmpty(docComment).trim();
-    return new PropertyModel(name, getterName, setterName, type, description);
+    return new PropertyModel(name, rype, getterName, setterName, setterType, description);
   }
 
   public static boolean isGetter(ExecutableElement method) {
@@ -126,14 +145,16 @@ public class PropertyModel {
   private final TypeMirror type;
   private @Nullable String getterName;
   private @Nullable String setterName;
+  private @Nullable TypeMirror setterType;
   private String description;
 
-  public PropertyModel(String name, @Nullable String getterName, @Nullable String setterName,
-      TypeMirror type, String description) {
+  public PropertyModel(String name, TypeMirror type, @Nullable String getterName,
+      @Nullable String setterName, @Nullable TypeMirror setterType, String description) {
     this.name = requireNonNull(name, "name == null!");
     this.type = requireNonNull(type, "type == null!");
     this.getterName = getterName;
     this.setterName = setterName;
+    this.setterType = setterType;
     this.description = requireNonNull(description, "description == null!");
   }
 
@@ -153,6 +174,10 @@ public class PropertyModel {
     return setterName;
   }
 
+  public @Nullable TypeMirror getSetterType() {
+    return setterType;
+  }
+
   public boolean isReadable() {
     return getterName != null;
   }
@@ -161,20 +186,24 @@ public class PropertyModel {
     return setterName != null;
   }
 
-  public void merge(PropertyModel property) {
-    checkArgument(this.name.equals(property.name));
-    checkArgument(this.getterName == null || property.getterName == null
-        || this.getterName.equals(property.getterName));
-    checkArgument(this.setterName == null || property.setterName == null
-        || this.setterName.equals(property.setterName));
+  public void merge(PropertyModel other, ProcessingEnvironment env) {
+    Types types = env.getTypeUtils();
 
-    checkArgument(this.getType().equals(property.getType()));
-    checkArgument(this.description.isEmpty() || property.description.isEmpty()
-        || this.description.equals(property.description));
+    checkArgument(name.equals(other.name), "Cannot merge properties with different names");
+    checkArgument(getterName == null || other.getterName == null, "duplicate property '%s'", name);
+    checkArgument(setterName == null || other.setterName == null, "duplicate property '%s'", name);
+    checkArgument(types.isSameType(type, other.type), "setter and getter are of different types",
+        name);
 
-    this.getterName = this.getterName == null ? property.getterName : this.getterName;
-    this.setterName = this.setterName == null ? property.setterName : this.setterName;
-    this.description = this.description.isEmpty() ? property.description : this.description;
+    checkArgument(
+        this.description.isEmpty() || other.description.isEmpty()
+            || this.description.equals(other.description),
+        "The description of property '%s' on the getter differs from the description on the setter");
+
+    this.getterName = getterName == null ? other.getterName : getterName;
+    this.setterName = setterName == null ? other.setterName : setterName;
+    this.setterType = setterType == null ? other.setterType : setterType;
+    this.description = description.isEmpty() ? other.description : description;
   }
 
   private String renderName() {

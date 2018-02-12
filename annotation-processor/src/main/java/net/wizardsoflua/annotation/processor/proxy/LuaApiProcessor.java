@@ -54,7 +54,8 @@ public class LuaApiProcessor extends AbstractProcessor {
     return SourceVersion.RELEASE_8;
   }
 
-  private final Map<TypeElement, Exception> failedInLastRound = new HashMap<>();
+  private final Map<TypeElement, Exception> retryNextRound = new HashMap<>();
+  private final Map<Element, Exception> failedInLastRound = new HashMap<>();
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -62,10 +63,13 @@ public class LuaApiProcessor extends AbstractProcessor {
       Collection<ModuleModel> modules = analyze(annotations, roundEnv);
       generate(modules);
     } else {
-      for (Entry<TypeElement, Exception> entry : failedInLastRound.entrySet()) {
-        CharSequence message = entry.getValue().getMessage();
+      for (Entry<Element, Exception> entry : failedInLastRound.entrySet()) {
+        Exception ex = entry.getValue();
+        CharSequence message = ex.getMessage();
+        message = message != null ? message : ex.toString();
         Element element = entry.getKey();
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+        ex.printStackTrace();
       }
     }
     return false;
@@ -77,13 +81,15 @@ public class LuaApiProcessor extends AbstractProcessor {
     for (TypeElement annotation : annotations) {
       Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
       Set<TypeElement> moduleElements = typesIn(annotatedElements);
-      moduleElements.addAll(failedInLastRound.keySet());
+      moduleElements.addAll(retryNextRound.keySet());
+      retryNextRound.clear();
       failedInLastRound.clear();
       for (TypeElement moduleElement : moduleElements) {
         try {
           ModuleModel module = analyze(moduleElement);
           modules.add(module);
         } catch (Exception ex) {
+          retryNextRound.put(moduleElement, ex);
           failedInLastRound.put(moduleElement, ex);
         }
       }
@@ -96,17 +102,21 @@ public class LuaApiProcessor extends AbstractProcessor {
     ModuleModel module = ModuleModel.of(moduleElement, processingEnv);
     List<ExecutableElement> methods = methodsIn(moduleElement.getEnclosedElements());
     for (ExecutableElement method : methods) {
-      LuaProperty luaProperty = method.getAnnotation(LuaProperty.class);
-      if (luaProperty != null) {
-        String docComment = elements.getDocComment(method);
-        PropertyModel property = PropertyModel.of(method, luaProperty, docComment);
-        module.addProperty(property);
-      }
-      LuaFunction luaFunction = method.getAnnotation(LuaFunction.class);
-      if (luaFunction != null) {
-        String docComment = elements.getDocComment(method);
-        FunctionModel function = FunctionModel.of(method, luaFunction, docComment);
-        module.addFunction(function);
+      try {
+        LuaProperty luaProperty = method.getAnnotation(LuaProperty.class);
+        if (luaProperty != null) {
+          String docComment = elements.getDocComment(method);
+          PropertyModel property = PropertyModel.of(method, luaProperty, docComment, processingEnv);
+          module.addProperty(property, processingEnv);
+        }
+        LuaFunction luaFunction = method.getAnnotation(LuaFunction.class);
+        if (luaFunction != null) {
+          String docComment = elements.getDocComment(method);
+          FunctionModel function = FunctionModel.of(method, luaFunction, docComment);
+          module.addFunction(function);
+        }
+      } catch (Exception ex) {
+        failedInLastRound.put(method, ex);
       }
     }
     return module;
