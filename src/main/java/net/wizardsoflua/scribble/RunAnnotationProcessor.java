@@ -10,11 +10,12 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
+
+import net.wizardsoflua.annotation.processor.LuaApiProcessor;
+
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
-
-import net.wizardsoflua.annotation.processor.proxy.LuaApiProcessor;
 
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {

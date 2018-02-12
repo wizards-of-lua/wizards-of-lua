@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
 import java.util.Collection;
@@ -15,8 +16,10 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import com.google.common.base.Strings;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -38,8 +41,11 @@ public class ModuleModel {
 
     ClassName superProxyClassName = getSuperProxyClassName(superType, env);
 
+    Elements elements = env.getElementUtils();
+    String docComment = elements.getDocComment(moduleElement);
+    String description = Strings.nullToEmpty(docComment).trim();
     return new ModuleModel(apiClassName, delegateTypeName, moduleName, superTypeName,
-        superProxyClassName);
+        superProxyClassName, description);
   }
 
   private static TypeName getDelegateTypeName(TypeElement moduleElement,
@@ -78,14 +84,16 @@ public class ModuleModel {
   private final ClassName superProxyClassName;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
+  private String description;
 
   public ModuleModel(ClassName apiClassName, TypeName delegateTypeName, String name,
-      TypeName superTypeName, ClassName superProxyClassName) {
+      TypeName superTypeName, ClassName superProxyClassName, String description) {
     this.apiClassName = checkNotNull(apiClassName, "apiClassName == null!");
     this.delegateTypeName = checkNotNull(delegateTypeName, "delegateTypeName == null!");
     this.name = checkNotNull(name, "name == null!");
     this.superTypeName = checkNotNull(superTypeName, "superTypeName == null!");
     this.superProxyClassName = checkNotNull(superProxyClassName, "superProxyClassName == null!");
+    this.description = requireNonNull(description, "description == null!");
   }
 
   public String getPackageName() {
@@ -137,10 +145,10 @@ public class ModuleModel {
     return superProxyClassName;
   }
 
-  public void addProperty(PropertyModel property, ProcessingEnvironment env) {
+  public void addProperty(PropertyModel property) {
     PropertyModel existing = properties.get(property.getName());
     if (existing != null) {
-      existing.merge(property, env);
+      existing.merge(property);
     } else {
       properties.put(property.getName(), property);
     }
@@ -156,5 +164,9 @@ public class ModuleModel {
 
   public Collection<FunctionModel> getFunctions() {
     return Collections.unmodifiableCollection(functions.values());
+  }
+
+  public String getDescription() {
+    return description;
   }
 }

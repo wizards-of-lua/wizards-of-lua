@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.processor.doc;
+package net.wizardsoflua.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 

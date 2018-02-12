@@ -1,11 +1,11 @@
-package net.wizardsoflua.annotation.processor.proxy;
+package net.wizardsoflua.annotation.processor.generator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static net.wizardsoflua.annotation.processor.proxy.LuaApiProcessor.GENERATED_ANNOTATION;
+import static net.wizardsoflua.annotation.processor.LuaApiProcessor.GENERATED_ANNOTATION;
 
 import javax.lang.model.element.Modifier;
 

@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.processor.proxy;
+package net.wizardsoflua.annotation.processor;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.lang.model.util.ElementFilter.typesIn;
@@ -29,6 +29,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
+import javax.tools.StandardLocation;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
@@ -36,6 +37,9 @@ import com.squareup.javapoet.JavaFile;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaModule;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.processor.generator.LuaClassGenerator;
+import net.wizardsoflua.annotation.processor.generator.LuaDocGenerator;
+import net.wizardsoflua.annotation.processor.generator.LuaProxyGenerator;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.model.ModuleModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
@@ -111,7 +115,7 @@ public class LuaApiProcessor extends AbstractProcessor {
         if (luaProperty != null) {
           String docComment = elements.getDocComment(method);
           PropertyModel property = PropertyModel.of(method, luaProperty, docComment, processingEnv);
-          module.addProperty(property, processingEnv);
+          module.addProperty(property);
         }
         LuaFunction luaFunction = method.getAnnotation(LuaFunction.class);
         if (luaFunction != null) {
@@ -157,11 +161,15 @@ public class LuaApiProcessor extends AbstractProcessor {
     for (ModuleModel module : modules) {
       JavaFile luaProxy = new LuaProxyGenerator(module).generate();
       JavaFile luaClass = new LuaClassGenerator(module).generate();
+      String luaDoc = new LuaDocGenerator(module, processingEnv).generate();
 
       Filer filer = processingEnv.getFiler();
-      try {
+      try (
+          Writer docWriter = new BufferedWriter(filer.createResource(StandardLocation.SOURCE_OUTPUT,
+              module.getPackageName(), module.getName() + ".md").openWriter())) {
         write(luaProxy, filer);
         write(luaClass, filer);
+        docWriter.write(luaDoc);
       } catch (IOException ex) {
         throw new UndeclaredThrowableException(ex);
       }

@@ -5,45 +5,32 @@ import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 
 import com.google.common.base.Strings;
 
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.annotation.processor.ProcessorUtils;
+import net.wizardsoflua.annotation.processor.generator.LuaDocGenerator;
 
 public class PropertyModel {
   public static PropertyModel of(ExecutableElement method, LuaProperty luaProperty,
       @Nullable String docComment, ProcessingEnvironment env) {
-    Types types = env.getTypeUtils();
-    Elements elements = env.getElementUtils();
-
     String methodName = method.getSimpleName().toString();
     String name = luaProperty.name();
     boolean nullable = false;
     String getterName = null;
     String setterName = null;
-
-    AnnotationMirror mirror = ProcessorUtils.getAnnoationMirror(method, LuaProperty.class);
-    TypeMirror type = ProcessorUtils.getClassValue(mirror, "type", env);
-    if (types.isSameType(type, elements.getTypeElement(Void.class.getName()).asType())) {
-      type = null;
-    }
+    String type = LuaDocGenerator.toReference(luaProperty.type());
     TypeMirror setterType = null;
     if (isGetter(method)) {
       if (name.isEmpty()) {
         name = extractPropertyNameFromGetter(methodName);
       }
-      if (type == null) {
-        type = method.getReturnType();
+      if (type.isEmpty()) {
+        type = LuaDocGenerator.renderType(method.getReturnType(), env);
       }
       getterName = methodName;
     } else if (isSetter(method)) {
@@ -53,8 +40,8 @@ public class PropertyModel {
       VariableElement parameter = method.getParameters().get(0);
       nullable = parameter.getAnnotation(Nullable.class) != null;
       setterType = parameter.asType();
-      if (type == null) {
-        type = setterType;
+      if (type.isEmpty()) {
+        type = LuaDocGenerator.renderType(setterType, env);
       }
       setterName = methodName;
     } else {
@@ -111,49 +98,15 @@ public class PropertyModel {
     throw new IllegalArgumentException("'" + methodName + "' is not a name of a setter method");
   }
 
-  public static String typeToString(TypeMirror typeMirror) {
-    TypeKind typeKind = typeMirror.getKind();
-    switch (typeKind) {
-      case ARRAY:
-        return "table";
-      case BOOLEAN:
-        return "boolean";
-      case BYTE:
-      case DOUBLE:
-      case FLOAT:
-      case INT:
-      case LONG:
-      case SHORT:
-        return "number (" + typeKind.toString().toLowerCase() + ")";
-      case CHAR:
-        return "string";
-      case DECLARED:
-        Name simpleName = ((DeclaredType) typeMirror).asElement().getSimpleName();
-        return "[" + simpleName + "](!SITE_URL!/modules/" + simpleName + "/)";
-      case EXECUTABLE:
-      case ERROR:
-      case INTERSECTION:
-      case NONE:
-      case NULL:
-      case OTHER:
-      case PACKAGE:
-      case TYPEVAR:
-      case UNION:
-      case WILDCARD:
-      default:
-        throw new IllegalArgumentException("Unknown type: " + typeMirror);
-    }
-  }
-
   private final String name;
-  private final TypeMirror type;
+  private final String type;
   private String description;
   private boolean nullable;
   private @Nullable String getterName;
   private @Nullable String setterName;
   private @Nullable TypeMirror setterType;
 
-  public PropertyModel(String name, TypeMirror type, String description, boolean nullable,
+  public PropertyModel(String name, String type, String description, boolean nullable,
       @Nullable String getterName, @Nullable String setterName, @Nullable TypeMirror setterType) {
     this.name = requireNonNull(name, "name == null!");
     this.type = requireNonNull(type, "type == null!");
@@ -168,7 +121,7 @@ public class PropertyModel {
     return name;
   }
 
-  public TypeMirror getType() {
+  public String getType() {
     return type;
   }
 
@@ -196,19 +149,21 @@ public class PropertyModel {
     return setterName != null;
   }
 
-  public void merge(PropertyModel other, ProcessingEnvironment env) {
-    Types types = env.getTypeUtils();
+  public String getDescription() {
+    return description;
+  }
 
+  public void merge(PropertyModel other) {
     checkArgument(name.equals(other.name), "Cannot merge properties with different names");
     checkArgument(getterName == null || other.getterName == null, "duplicate property '%s'", name);
     checkArgument(setterName == null || other.setterName == null, "duplicate property '%s'", name);
-    checkArgument(types.isSameType(type, other.type), "setter and getter are of different types",
-        name);
+    checkArgument(type.equals(other.type), "setter and getter are of different types", name);
 
     checkArgument(
         description.isEmpty() || other.description.isEmpty()
             || description.equals(other.description),
-        "The description of property '%s' on the getter differs from the description on the setter");
+        "The description of property '%s' on the getter differs from the description on the setter",
+        name);
 
     nullable |= other.nullable;
     getterName = getterName == null ? other.getterName : getterName;
@@ -217,15 +172,7 @@ public class PropertyModel {
     description = description.isEmpty() ? other.description : description;
   }
 
-  private String renderName() {
-    return name;
-  }
-
-  private String renderType() {
-    return typeToString(getType());
-  }
-
-  private String renderAccess() {
+  public String renderAccess() {
     if (isReadable()) {
       if (isWriteable()) {
         return "r/w";
@@ -239,21 +186,5 @@ public class PropertyModel {
         throw new IllegalStateException("Property must be readable or writeable");
       }
     }
-  }
-
-  private String renderDescription() {
-    if (description.contains("\n")) {
-      return '"' + description + '"';
-    } else {
-      return description;
-    }
-  }
-
-  @Override
-  public String toString() {
-    return "  - name: " + renderName() //
-        + "\n    type: " + renderType() //
-        + "\n    access: " + renderAccess()//
-        + "\n    description: " + renderDescription();
   }
 }

@@ -18,5 +18,5 @@ public @interface LuaProperty {
   /**
    * The type of the property. Defaults to a value appropriate for the return / parameter type.
    */
-  Class<?> type() default Void.class;
+  String type() default "";
 }
