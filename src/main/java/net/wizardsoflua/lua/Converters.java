@@ -29,6 +29,8 @@ import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
+import net.wizardsoflua.scribble.LuaApiBase;
+import net.wizardsoflua.scribble.LuaApiProxy;
 
 public class Converters {
   private final LuaClassLoader classLoader;
@@ -202,6 +204,9 @@ public class Converters {
       if (luaClass instanceof JavaLuaClass) {
         return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }
+    }
+    if (LuaApiBase.class.isAssignableFrom(type) && luaObject instanceof LuaApiProxy) {
+      return ((LuaApiProxy<?, ?>) luaObject).getApi();
     }
     if (type == String.class) {
       return Conversions.javaRepresentationOf(luaObject);

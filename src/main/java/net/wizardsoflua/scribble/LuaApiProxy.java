@@ -12,6 +12,19 @@ public class LuaApiProxy<A extends LuaApiBase<D>, D> extends LuaInstanceProxy<D>
     this.api = requireNonNull(api, "api == null!");
   }
 
+  /**
+   * @return the value of {@link #api}
+   */
+  public A getApi() {
+    return api;
+  }
+
+  @Override
+  public void setDelegate(D delegate) {
+    super.setDelegate(delegate);
+    api.setDelegate(delegate);
+  }
+
   @Override
   public boolean isTransferable() {
     return true;

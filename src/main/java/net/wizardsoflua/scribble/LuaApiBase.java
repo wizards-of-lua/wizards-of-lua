@@ -7,7 +7,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 public class LuaApiBase<D> {
   protected final ProxyingLuaClass<?, ?> luaClass;
-  protected final D delegate;
+  protected D delegate;
 
   public LuaApiBase(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     this.luaClass = requireNonNull(luaClass, "luaClass == null!");
@@ -20,6 +20,13 @@ public class LuaApiBase<D> {
 
   public D getDelegate() {
     return delegate;
+  }
+
+  /**
+   * @param delegate the new value for {@link #delegate}
+   */
+  public void setDelegate(D delegate) {
+    this.delegate = requireNonNull(delegate, "delegate == null!");
   }
 
   public Converters getConverters() {
