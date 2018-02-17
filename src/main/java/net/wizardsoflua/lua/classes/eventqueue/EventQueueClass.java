@@ -5,7 +5,7 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.function.NamedFunction2;
 
@@ -27,7 +27,7 @@ public class EventQueueClass
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends EventQueue> extends LuaInstanceProxy<D> {
+  public static class Proxy<D extends EventQueue> extends LuaInstance<D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addReadOnly("names", this::getNames);

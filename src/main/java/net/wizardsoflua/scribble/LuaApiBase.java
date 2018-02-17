@@ -32,4 +32,8 @@ public class LuaApiBase<D> {
   public Converters getConverters() {
     return luaClass.getClassLoader().getConverters();
   }
+
+  public boolean isTransferable() {
+    return true;
+  }
 }

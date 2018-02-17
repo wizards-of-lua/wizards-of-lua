@@ -2,9 +2,9 @@ package net.wizardsoflua.scribble;
 
 import static java.util.Objects.requireNonNull;
 
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 
-public class LuaApiProxy<A extends LuaApiBase<D>, D> extends LuaInstanceProxy<D> {
+public class LuaApiProxy<A extends LuaApiBase<D>, D> extends LuaInstance<D> {
   protected final A api;
 
   public LuaApiProxy(A api) {
@@ -27,6 +27,6 @@ public class LuaApiProxy<A extends LuaApiBase<D>, D> extends LuaInstanceProxy<D>
 
   @Override
   public boolean isTransferable() {
-    return true;
+    return api.isTransferable();
   }
 }

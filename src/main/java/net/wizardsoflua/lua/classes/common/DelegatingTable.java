@@ -15,15 +15,14 @@ import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.lua.table.Property;
 
 public class DelegatingTable extends Table {
-
   private final TraversableHashMap<Object, Object> properties = new TraversableHashMap<>();
-
-  public DelegatingTable(Table metatable) {
-    setMetatable(metatable);
-  }
 
   public DelegatingTable() {
     this(null);
+  }
+
+  public DelegatingTable(Table metatable) {
+    setMetatable(metatable);
   }
 
   private static void checkKey(Object key) {

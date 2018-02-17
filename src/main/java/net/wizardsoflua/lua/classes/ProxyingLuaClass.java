@@ -5,9 +5,9 @@ import javax.annotation.Nullable;
 import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 
-public abstract class ProxyingLuaClass<J, P extends LuaInstanceProxy<? extends J>>
+public abstract class ProxyingLuaClass<J, P extends LuaInstance<? extends J>>
     extends JavaLuaClass<J, P> {
   private @Nullable Class<P> proxyClass;
 

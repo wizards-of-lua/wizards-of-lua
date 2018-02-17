@@ -17,7 +17,7 @@ public class TimeModule extends DelegatingProxy<Time> {
   }
 
   public TimeModule(LuaClassLoader classLoader, Time delegate) {
-    super(classLoader, null, delegate);
+    super(classLoader, delegate);
     addReadOnly("allowance", () -> delegate.getAllowance());
     add("autosleep", () -> delegate.isAutosleep(), this::setAutosleep);
     addReadOnly("luatime", () -> delegate.getLuaTicks());
@@ -56,30 +56,21 @@ public class TimeModule extends DelegatingProxy<Time> {
   private class SleepFunction extends AbstractFunction1 {
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      // System.out.println("sleep: " + arg1);
       if (arg1 == null) {
-        // ignore call
-        return;
+        return; // ignore call
       }
-      if (!(arg1 instanceof Number)) {
-        throw new IllegalArgumentException(
-            String.format("Integer value expected but got %s!", arg1));
-      }
-      int ticks = ((Number) arg1).intValue();
-
+      int ticks = getConverters().toJava(int.class, arg1, 1, "ticks", "sleep");
       delegate.startSleep(ticks);
-      try {
-        context.pauseIfRequested();
-      } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(SleepFunction.this, "Sleeping");
-      }
-
-      context.getReturnBuffer().setTo();
+      execute(context);
     }
 
     @Override
     public void resume(ExecutionContext context, Object suspendedState)
         throws ResolvedControlThrowable {
+      execute(context);
+    }
+
+    private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
         context.pauseIfRequested();
       } catch (UnresolvedControlThrowable e) {

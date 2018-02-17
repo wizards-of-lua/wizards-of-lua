@@ -10,7 +10,7 @@ import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.common.Named;
 
-public abstract class LuaClass {
+public abstract class LuaClass implements Named {
   /**
    * The {@link LuaClassLoader} that loaded {@code this} {@link LuaClass}.
    */
@@ -60,8 +60,6 @@ public abstract class LuaClass {
   public Table getMetaTable() {
     return metaTable;
   }
-
-  public abstract String getName();
 
   public abstract @Nullable LuaClass getSuperClass();
 
