@@ -7,7 +7,9 @@ import static net.wizardsoflua.annotation.processor.LuaApiProcessor.GENERATED_AN
 
 import java.util.Collection;
 
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -91,6 +93,11 @@ public class LuaClassGenerator {
     for (FunctionModel function : module.getFunctions()) {
       String Name = Utils.capitalize(function.getName());
       onLoadMethod.addStatement("add(new $LFunction())", Name);
+    }
+    for (ExecutableElement onLoadLuaClass : module.getOnLoadLuaClass()) {
+      ClassName apiClassName = module.getApiClassName();
+      Name method = onLoadLuaClass.getSimpleName();
+      onLoadMethod.addStatement("$T.$L(this)", apiClassName, method);
     }
     return onLoadMethod.build();
   }

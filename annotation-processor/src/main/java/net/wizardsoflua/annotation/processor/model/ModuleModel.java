@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.SortedMap;
@@ -11,6 +12,7 @@ import java.util.TreeMap;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -85,6 +87,9 @@ public class ModuleModel {
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
   private String description;
+
+  private final Collection<ExecutableElement> onCreateLuaProxy = new ArrayList<>();
+  private final Collection<ExecutableElement> onLoadLuaClass = new ArrayList<>();
 
   public ModuleModel(ClassName apiClassName, TypeName delegateTypeName, String name,
       TypeName superTypeName, ClassName superProxyClassName, String description) {
@@ -168,5 +173,21 @@ public class ModuleModel {
 
   public String getDescription() {
     return description;
+  }
+
+  public void addOnCreateLuaProxy(ExecutableElement method) {
+    onCreateLuaProxy.add(method);
+  }
+
+  public Collection<ExecutableElement> getOnCreateLuaProxy() {
+    return Collections.unmodifiableCollection(onCreateLuaProxy);
+  }
+
+  public void addOnLoadLuaClass(ExecutableElement method) {
+    onLoadLuaClass.add(method);
+  }
+
+  public Collection<ExecutableElement> getOnLoadLuaClass() {
+    return Collections.unmodifiableCollection(onLoadLuaClass);
   }
 }

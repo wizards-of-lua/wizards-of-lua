@@ -37,6 +37,8 @@ import com.squareup.javapoet.JavaFile;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaModule;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.OnCreateLuaProxy;
+import net.wizardsoflua.annotation.OnLoadLuaClass;
 import net.wizardsoflua.annotation.processor.generator.LuaClassGenerator;
 import net.wizardsoflua.annotation.processor.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.generator.LuaProxyGenerator;
@@ -122,6 +124,12 @@ public class LuaApiProcessor extends AbstractProcessor {
           String docComment = elements.getDocComment(method);
           FunctionModel function = FunctionModel.of(method, luaFunction, docComment);
           module.addFunction(function);
+        }
+        if (method.getAnnotation(OnCreateLuaProxy.class) != null) {
+          module.addOnCreateLuaProxy(method);
+        }
+        if (method.getAnnotation(OnLoadLuaClass.class) != null) {
+          module.addOnLoadLuaClass(method);
         }
       } catch (Exception ex) {
         failedInLastRound.put(method, ex);

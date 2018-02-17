@@ -7,6 +7,7 @@ import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static net.wizardsoflua.annotation.processor.LuaApiProcessor.GENERATED_ANNOTATION;
 
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.ClassName;
@@ -86,6 +87,9 @@ public class LuaProxyGenerator {
       } else {
         constructor.addStatement("addReadOnly($S, this::$L)", name, getterName);
       }
+    }
+    for (ExecutableElement onCreateLuaProxy : module.getOnCreateLuaProxy()) {
+      constructor.addStatement("api.$L(this)", onCreateLuaProxy.getSimpleName());
     }
     return constructor.build();
   }
