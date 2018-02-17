@@ -16,7 +16,8 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 public class ItemClass extends ProxyCachingLuaClass<ItemStack, ItemClass.Proxy> {
   public static final String NAME = "Item";
 
-  public ItemClass() {
+  @Override
+  protected void onLoad() {
     add(new PutNbtFunction());
   }
 

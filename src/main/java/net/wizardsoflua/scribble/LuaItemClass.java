@@ -16,7 +16,8 @@ public class LuaItemClass
     return new LuaItemProxy<>(new ItemApi<>(this, javaObject));
   }
 
-  public LuaItemClass() {
+  @Override
+  protected void onLoad() {
     add(new PutNbtFunction());
   }
 

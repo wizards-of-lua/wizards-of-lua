@@ -14,7 +14,8 @@ public class EventQueueClass
     extends ProxyingLuaClass<EventQueue, EventQueueClass.Proxy<EventQueue>> {
   public static final String NAME = "EventQueue";
 
-  public EventQueueClass() {
+  @Override
+  protected void onLoad() {
     add(new DisconnectFunction());
     add(new IsEmptyFunction());
     add(new LatestFunction());

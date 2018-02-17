@@ -23,7 +23,8 @@ import net.wizardsoflua.spell.SpellEntity;
 public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String NAME = "Spell";
 
-  public SpellClass() {
+  @Override
+  protected void onLoad() {
     add(new ExecuteFunction());
   }
 

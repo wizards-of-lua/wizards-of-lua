@@ -1,7 +1,6 @@
 package net.wizardsoflua.annotation.processor.generator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static net.wizardsoflua.annotation.processor.LuaApiProcessor.GENERATED_ANNOTATION;
@@ -19,7 +18,6 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -45,11 +43,11 @@ public class LuaClassGenerator {
   private TypeSpec createLuaClass() {
     TypeSpec.Builder luaClassType = classBuilder(module.getClassClassName())//
         .addAnnotation(GENERATED_ANNOTATION)//
-        .addAnnotation(createDeclareLuaClassAnnotation(module))//
+        .addAnnotation(createDeclareLuaClassAnnotation())//
         .addModifiers(Modifier.PUBLIC)//
         .superclass(createSuperclassTypeName())//
-        .addMethod(createConstructor(module))//
         .addMethod(createToLuaMethod())//
+        .addMethod(createOnLoadMethod())//
     ;
     for (FunctionModel function : module.getFunctions()) {
       luaClassType.addType(createInnerFunctionClass(function));
@@ -57,7 +55,7 @@ public class LuaClassGenerator {
     return luaClassType.build();
   }
 
-  private AnnotationSpec createDeclareLuaClassAnnotation(ModuleModel module) {
+  private AnnotationSpec createDeclareLuaClassAnnotation() {
     ClassName declareLuaClass = ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
     return AnnotationSpec.builder(declareLuaClass)//
         .addMember("name", "$S", module.getName())//
@@ -72,17 +70,6 @@ public class LuaClassGenerator {
     return ParameterizedTypeName.get(raw, delegate, proxy);
   }
 
-  private MethodSpec createConstructor(ModuleModel module) {
-    Builder constructor = constructorBuilder()//
-        .addModifiers(Modifier.PUBLIC) //
-    ;
-    for (FunctionModel function : module.getFunctions()) {
-      String Name = Utils.capitalize(function.getName());
-      constructor.addStatement("add(new $LFunction())", Name);
-    }
-    return constructor.build();
-  }
-
   private MethodSpec createToLuaMethod() {
     TypeName api = module.getParameterizedApiTypeName();
     TypeName delegate = module.getDelegateTypeName();
@@ -94,6 +81,18 @@ public class LuaClassGenerator {
         .addParameter(delegate, "javaObject")//
         .addStatement("return new $T(new $T(this, javaObject))", proxy, api)//
         .build();
+  }
+
+  private MethodSpec createOnLoadMethod() {
+    MethodSpec.Builder onLoadMethod = methodBuilder("onLoad")//
+        .addAnnotation(Override.class)//
+        .addModifiers(Modifier.PROTECTED) //
+    ;
+    for (FunctionModel function : module.getFunctions()) {
+      String Name = Utils.capitalize(function.getName());
+      onLoadMethod.addStatement("add(new $LFunction())", Name);
+    }
+    return onLoadMethod.build();
   }
 
   private TypeSpec createInnerFunctionClass(FunctionModel function) {

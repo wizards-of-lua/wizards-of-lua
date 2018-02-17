@@ -115,7 +115,7 @@ public class LuaClassLoader {
     if (luaClassByName.containsKey(luaClass.getName())) {
       return; // LuaClass is already loaded
     }
-    luaClass.init(this);
+    luaClass.load(this);
     luaClassByType.put(luaClass.getClass(), luaClass);
     luaClassByName.put(luaClass.getName(), luaClass);
     luaClassByMetaTable.put(luaClass.getMetaTable(), luaClass);

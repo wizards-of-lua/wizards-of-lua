@@ -25,7 +25,8 @@ import net.wizardsoflua.lua.table.PatchedImmutableTable;
 public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
   public static final String NAME = "Block";
 
-  public BlockClass() {
+  @Override
+  protected void onLoad() {
     add(new WithDataFunction());
     add(new WithNbtFunction());
     add(new CopyFunction());
