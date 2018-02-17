@@ -14,7 +14,7 @@ public abstract class LuaClass {
   /**
    * The {@link LuaClassLoader} that loaded {@code this} {@link LuaClass}.
    */
-  private LuaClassLoader classLoader;
+  private @Nullable LuaClassLoader classLoader;
   /**
    * The metatable to use for instances and subclass tables. It contains all functions of
    * {@code this} {@link LuaClass}.
@@ -57,7 +57,7 @@ public abstract class LuaClass {
    *
    * @return the value of {@link #metaTable}
    */
-  public Table getMetaTable() throws IllegalStateException {
+  public Table getMetaTable() {
     return metaTable;
   }
 
