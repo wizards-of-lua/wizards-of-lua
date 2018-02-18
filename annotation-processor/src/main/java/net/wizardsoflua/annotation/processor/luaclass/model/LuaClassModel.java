@@ -1,6 +1,5 @@
-package net.wizardsoflua.annotation.processor.model;
+package net.wizardsoflua.annotation.processor.luaclass.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
@@ -18,36 +17,32 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import com.google.common.base.Strings;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
-import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.processor.ProcessorUtils;
+import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
-public class ModuleModel {
-  public static ModuleModel of(TypeElement moduleElement, ProcessingEnvironment env) {
-    ClassName apiClassName = ClassName.get(moduleElement);
+public class LuaClassModel {
+  public static LuaClassModel of(TypeElement annotatedElement, ProcessingEnvironment env) {
+    TypeName delegateTypeName = getDelegateTypeName(annotatedElement, env);
 
-    TypeName delegateTypeName = getDelegateTypeName(moduleElement, env);
+    String moduleName = annotatedElement.getAnnotation(GenerateLuaClass.class).name();
 
-    String moduleName = moduleElement.getAnnotation(LuaModule.class).name();
-
-    AnnotationMirror mirror = ProcessorUtils.getAnnoationMirror(moduleElement, LuaModule.class);
+    AnnotationMirror mirror =
+        ProcessorUtils.getAnnotationMirror(annotatedElement, GenerateLuaClass.class);
     DeclaredType superType = ProcessorUtils.getClassValue(mirror, "superClass", env);
-    TypeName superTypeName = TypeName.get(superType);
+    ClassName superClassName = ClassName.get((TypeElement) superType.asElement());
 
     ClassName superProxyClassName = getSuperProxyClassName(superType, env);
 
-    Elements elements = env.getElementUtils();
-    String docComment = elements.getDocComment(moduleElement);
-    String description = Strings.nullToEmpty(docComment).trim();
-    return new ModuleModel(apiClassName, delegateTypeName, moduleName, superTypeName,
-        superProxyClassName, description);
+    return new LuaClassModel(annotatedElement, delegateTypeName, moduleName, superClassName,
+        superProxyClassName);
   }
 
   private static TypeName getDelegateTypeName(TypeElement moduleElement,
@@ -79,26 +74,30 @@ public class ModuleModel {
     return ClassName.get(superProxyElement);
   }
 
+  private final TypeElement annotatedElement;
   private final ClassName apiClassName;
   private final TypeName delegateTypeName;
   private final String name;
-  private final TypeName superTypeName;
+  private final ClassName superClassName;
   private final ClassName superProxyClassName;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
-  private String description;
 
   private final Collection<ExecutableElement> onCreateLuaProxy = new ArrayList<>();
   private final Collection<ExecutableElement> onLoadLuaClass = new ArrayList<>();
 
-  public ModuleModel(ClassName apiClassName, TypeName delegateTypeName, String name,
-      TypeName superTypeName, ClassName superProxyClassName, String description) {
-    this.apiClassName = checkNotNull(apiClassName, "apiClassName == null!");
-    this.delegateTypeName = checkNotNull(delegateTypeName, "delegateTypeName == null!");
-    this.name = checkNotNull(name, "name == null!");
-    this.superTypeName = checkNotNull(superTypeName, "superTypeName == null!");
-    this.superProxyClassName = checkNotNull(superProxyClassName, "superProxyClassName == null!");
-    this.description = requireNonNull(description, "description == null!");
+  public LuaClassModel(TypeElement annotatedElement, TypeName delegateTypeName, String name,
+      ClassName superClassName, ClassName superProxyClassName) {
+    this.annotatedElement = requireNonNull(annotatedElement, "annotatedElement == null!");
+    apiClassName = ClassName.get(annotatedElement);
+    this.delegateTypeName = requireNonNull(delegateTypeName, "delegateTypeName == null!");
+    this.name = requireNonNull(name, "name == null!");
+    this.superClassName = requireNonNull(superClassName, "superClassName == null!");
+    this.superProxyClassName = requireNonNull(superProxyClassName, "superProxyClassName == null!");
+  }
+
+  public TypeElement getAnnotatedElement() {
+    return annotatedElement;
   }
 
   public String getPackageName() {
@@ -142,8 +141,8 @@ public class ModuleModel {
     return name;
   }
 
-  public TypeName getSuperTypeName() {
-    return superTypeName;
+  public ClassName getSuperClassName() {
+    return superClassName;
   }
 
   public ClassName getSuperProxyClassName() {
@@ -169,10 +168,6 @@ public class ModuleModel {
 
   public Collection<FunctionModel> getFunctions() {
     return Collections.unmodifiableCollection(functions.values());
-  }
-
-  public String getDescription() {
-    return description;
   }
 
   public void addOnCreateLuaProxy(ExecutableElement method) {

@@ -1,11 +1,13 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import net.minecraft.entity.EntityLiving;
-import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.GenerateLuaClass;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@LuaModule(name = MobApi.NAME, superClass = EntityClass.class)
+@GenerateLuaClass(name = MobApi.NAME, superClass = EntityClass.class)
+@GenerateLuaDoc(subtitle = "Mobile Creatures")
 public class MobApi<D extends EntityLiving> extends EntityApi<D> {
   public static final String NAME = "Mob";
 

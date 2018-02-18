@@ -1,6 +1,6 @@
 package net.wizardsoflua.annotation.processor.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 import javax.lang.model.element.VariableElement;
@@ -19,9 +19,9 @@ public class ArgumentModel {
   private final boolean nullable;
 
   public ArgumentModel(String name, TypeMirror type, boolean nullable) {
-    this.name = checkNotNull(name, "name == null!");
-    this.type = checkNotNull(type, "type == null!");
-    this.nullable = checkNotNull(nullable, "nullable == null!");
+    this.name = requireNonNull(name, "name == null!");
+    this.type = requireNonNull(type, "type == null!");
+    this.nullable = requireNonNull(nullable, "nullable == null!");
   }
 
   public String getName() {

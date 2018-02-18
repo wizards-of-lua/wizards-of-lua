@@ -10,12 +10,13 @@ import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
-
-import net.wizardsoflua.annotation.processor.LuaApiProcessor;
-
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
+
+import net.wizardsoflua.annotation.processor.doc.GenerateLuaDocProcessor;
+import net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor;
+import net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor;
 
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {
@@ -31,7 +32,11 @@ public class RunAnnotationProcessor {
 
     CompilationTask task =
         compiler.getTask(new PrintWriter(System.out), null, null, null, null, files);
-    task.setProcessors(Arrays.asList(new LuaApiProcessor()));
+    task.setProcessors(Arrays.asList(//
+        new GenerateLuaClassProcessor(), //
+        new GenerateLuaDocProcessor(), //
+        new GenerateLuaModuleProcessor() //
+    ));
 
     task.call();
   }

@@ -10,11 +10,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.GenerateLuaClass;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@LuaModule(name = PlayerApi.NAME, superClass = EntityClass.class)
+@GenerateLuaClass(name = PlayerApi.NAME, superClass = EntityClass.class)
+@GenerateLuaDoc(subtitle = "Controlling the Player")
 public class PlayerApi<D extends EntityPlayerMP> extends EntityLivingBaseApi<D> {
   public static final String NAME = "Player";
 

@@ -3,12 +3,12 @@ package net.wizardsoflua.scribble;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.event.SwingArmEvent;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@LuaModule(name = "SwingArmEvent", superClass = LuaEventClass.class)
+@GenerateLuaClass(name = "SwingArmEvent", superClass = LuaEventClass.class)
 public class LuaSwingArmEvent<D extends SwingArmEvent> extends LuaEvent<D> {
   public LuaSwingArmEvent(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);

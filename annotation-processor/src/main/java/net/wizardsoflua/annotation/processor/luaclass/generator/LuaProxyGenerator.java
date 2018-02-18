@@ -1,11 +1,11 @@
-package net.wizardsoflua.annotation.processor.generator;
+package net.wizardsoflua.annotation.processor.luaclass.generator;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.javapoet.MethodSpec.constructorBuilder;
-import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
-import static javax.lang.model.element.Modifier.PRIVATE;
-import static net.wizardsoflua.annotation.processor.LuaApiProcessor.GENERATED_ANNOTATION;
+import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingGetter;
+import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
+import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.GENERATED_ANNOTATION;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -18,24 +18,24 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
-import net.wizardsoflua.annotation.processor.model.ModuleModel;
+import net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class LuaProxyGenerator {
-  private final ModuleModel module;
+  private final LuaClassModel model;
 
-  public LuaProxyGenerator(ModuleModel module) {
-    this.module = checkNotNull(module, "module == null!");
+  public LuaProxyGenerator(LuaClassModel model) {
+    this.model = requireNonNull(model, "model == null!");
   }
 
   public JavaFile generate() {
-    String packageName = module.getPackageName();
+    String packageName = model.getPackageName();
     TypeSpec luaProxyType = createLuaProxyType();
     return JavaFile.builder(packageName, luaProxyType).build();
   }
 
   private TypeSpec createLuaProxyType() {
-    TypeSpec.Builder proxyType = classBuilder(module.getProxyClassName())//
+    TypeSpec.Builder proxyType = classBuilder(model.getProxyClassName())//
         .addAnnotation(GENERATED_ANNOTATION)//
         .addModifiers(Modifier.PUBLIC)//
         .addTypeVariable(createTypeVariableA())//
@@ -43,12 +43,12 @@ public class LuaProxyGenerator {
         .superclass(createSuperClassTypeName())//
         .addMethod(createConstructor())//
     ;
-    for (PropertyModel property : module.getProperties()) {
+    for (PropertyModel property : model.getProperties()) {
       if (property.isReadable()) {
-        proxyType.addMethod(createGetter(property));
+        proxyType.addMethod(createDelegatingGetter(property, "api"));
       }
       if (property.isWriteable()) {
-        proxyType.addMethod(createSetter(property));
+        proxyType.addMethod(createDelegatingSetter(property, "api"));
       }
     }
     return proxyType.build();
@@ -56,17 +56,17 @@ public class LuaProxyGenerator {
 
   private TypeVariableName createTypeVariableA() {
     TypeVariableName d = createTypeVariableD();
-    ParameterizedTypeName upperBound = ParameterizedTypeName.get(module.getApiClassName(), d);
+    ParameterizedTypeName upperBound = ParameterizedTypeName.get(model.getApiClassName(), d);
     return TypeVariableName.get("A", upperBound);
   }
 
   private TypeVariableName createTypeVariableD() {
-    TypeName upperBound = module.getDelegateTypeName();
+    TypeName upperBound = model.getDelegateTypeName();
     return TypeVariableName.get("D", upperBound);
   }
 
   private ParameterizedTypeName createSuperClassTypeName() {
-    ClassName raw = module.getSuperProxyClassName();
+    ClassName raw = model.getSuperProxyClassName();
     TypeVariableName a = createTypeVariableA();
     TypeVariableName d = createTypeVariableD();
     return ParameterizedTypeName.get(raw, a, d);
@@ -78,7 +78,7 @@ public class LuaProxyGenerator {
         .addParameter(createTypeVariableA(), "api")//
         .addStatement("super(api)")//
     ;
-    for (PropertyModel property : module.getProperties()) {
+    for (PropertyModel property : model.getProperties()) {
       String name = property.getName();
       String getterName = property.getGetterName();
       String setterName = property.getSetterName();
@@ -88,33 +88,9 @@ public class LuaProxyGenerator {
         constructor.addStatement("addReadOnly($S, this::$L)", name, getterName);
       }
     }
-    for (ExecutableElement onCreateLuaProxy : module.getOnCreateLuaProxy()) {
+    for (ExecutableElement onCreateLuaProxy : model.getOnCreateLuaProxy()) {
       constructor.addStatement("api.$L(this)", onCreateLuaProxy.getSimpleName());
     }
     return constructor.build();
-  }
-
-  private MethodSpec createGetter(PropertyModel property) {
-    String getterName = property.getGetterName();
-    return methodBuilder(getterName)//
-        .addModifiers(PRIVATE)//
-        .returns(Object.class)//
-        .addStatement("Object result = api.$L()", getterName)//
-        .addStatement("return getConverters().toLuaNullable(result)") //
-        .build();
-  }
-
-  private MethodSpec createSetter(PropertyModel property) {
-    String name = property.getName();
-    String setterName = property.getSetterName();
-    TypeName propertyType = TypeName.get(property.getSetterType());
-    String convertersMethod = property.isNullable() ? "toJavaNullable" : "toJava";
-    return methodBuilder(setterName)//
-        .addModifiers(PRIVATE)//
-        .addParameter(Object.class, "luaObject")//
-        .addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", propertyType, name,
-            convertersMethod, propertyType, name)//
-        .addStatement("api.$L($L)", setterName, name)//
-        .build();
   }
 }

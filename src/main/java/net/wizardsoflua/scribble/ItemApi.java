@@ -4,12 +4,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.LuaFunction;
-import net.wizardsoflua.annotation.LuaModule;
+import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@LuaModule(name = "Item", superClass = ObjectClass.class)
+@GenerateLuaClass(name = "Item", superClass = ObjectClass.class)
 public class ItemApi<D extends ItemStack> extends LuaApiBase<D> {
   public ItemApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);

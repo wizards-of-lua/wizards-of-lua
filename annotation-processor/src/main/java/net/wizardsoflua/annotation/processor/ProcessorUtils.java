@@ -1,11 +1,18 @@
 package net.wizardsoflua.annotation.processor;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -16,7 +23,19 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import com.squareup.javapoet.JavaFile;
+
+import net.wizardsoflua.annotation.LuaProperty;
+
 public class ProcessorUtils {
+  public static <A extends Annotation> A checkAnnotated(Element element, Class<A> annotationClass) {
+    A annotation = element.getAnnotation(annotationClass);
+    String kind = element.getKind().toString().toLowerCase();
+    checkArgument(annotation != null, "%s %s is not annotated with @%s", kind, element,
+        LuaProperty.class.getSimpleName());
+    return annotation;
+  }
+
   /**
    * Returns the type parameter of {@code superClass} in the context of {@code type} at the
    * specified {@code index} or {@code null} if {@code superClass} is not a super class of
@@ -52,23 +71,45 @@ public class ProcessorUtils {
 
   public static @Nullable DeclaredType getClassValue(AnnotationMirror mirror, String key,
       ProcessingEnvironment env) {
+    AnnotationValue value = getAnnotationValue(mirror, key, env);
+    if (value != null) {
+      return (DeclaredType) value.getValue();
+    }
+    return null;
+  }
+
+  public static @Nullable AnnotationValue getAnnotationValue(AnnotationMirror mirror, String key,
+      ProcessingEnvironment env) {
     Elements elements = env.getElementUtils();
     for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : elements
         .getElementValuesWithDefaults(mirror).entrySet()) {
-      if (key.equals(entry.getKey().getSimpleName().toString())) {
-        return (DeclaredType) entry.getValue().getValue();
+      if (entry.getKey().getSimpleName().contentEquals(key)) {
+        return entry.getValue();
       }
     }
     return null;
   }
 
-  public static @Nullable AnnotationMirror getAnnoationMirror(Element element,
-      Class<? extends Annotation> annoationClass) {
-    for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
-      if (annoationClass.getName().equals(mirror.getAnnotationType().toString())) {
+  public static @Nullable AnnotationMirror getAnnotationMirror(
+      AnnotatedConstruct annotatedConstruct, Class<? extends Annotation> annoationClass) {
+    return getAnnotationMirror(annotatedConstruct, annoationClass.getName());
+  }
+
+  public @Nullable static AnnotationMirror getAnnotationMirror(
+      AnnotatedConstruct annotatedConstruct, String annotationClassName) {
+    for (AnnotationMirror mirror : annotatedConstruct.getAnnotationMirrors()) {
+      TypeElement annotationElement = (TypeElement) mirror.getAnnotationType().asElement();
+      if (annotationElement.getQualifiedName().contentEquals(annotationClassName)) {
         return mirror;
       }
     }
     return null;
+  }
+
+  public static void write(JavaFile file, Filer filer) throws IOException {
+    String qualifiedName = file.packageName + '.' + file.typeSpec.name;
+    try (Writer writer = new BufferedWriter(filer.createSourceFile(qualifiedName).openWriter())) {
+      file.writeTo(writer);
+    }
   }
 }

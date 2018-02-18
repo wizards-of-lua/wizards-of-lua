@@ -1,1 +1,3 @@
-net.wizardsoflua.annotation.processor.LuaApiProcessor
+net.wizardsoflua.annotation.processor.doc.GenerateLuaDocProcessor
+net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor
+net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor
