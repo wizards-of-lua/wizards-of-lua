@@ -1,18 +1,17 @@
 package net.wizardsoflua.lua.module.time;
 
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.NonsuspendableFunctionException;
-import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.LuaModule;
+import net.wizardsoflua.lua.function.NamedFunction1;
 
-public class TimeModule extends DelegatingProxy<Time> {
+public class TimeModule extends LuaModule<Time> {
   public static TimeModule installInto(Table env, LuaClassLoader classLoader, Time time) {
     TimeModule result = new TimeModule(classLoader, time);
-    env.rawset("Time", result);
+    env.rawset(result.getName(), result);
     return result;
   }
 
@@ -24,42 +23,46 @@ public class TimeModule extends DelegatingProxy<Time> {
     addReadOnly("gametime", () -> delegate.getGameTotalTime());
     addReadOnly("realtime", () -> delegate.getRealtime());
 
-    addImmutable("sleep", new SleepFunction());
-    addImmutable("getDate", new GetDateFunction());
+    addReadOnly(new SleepFunction());
+    addReadOnly(new GetDateFunction());
   }
 
   @Override
-  public boolean isTransferable() {
-    return false;
+  public String getName() {
+    return "Time";
   }
 
   public void setAutosleep(Object luaObj) {
-    boolean value = getConverters().toJava(Boolean.class, luaObj, "autosleep");
+    boolean value = getConverters().toJava(boolean.class, luaObj, "autosleep");
     delegate.setAutosleep(value);
   }
 
-  private class GetDateFunction extends AbstractFunction1 {
+  private class GetDateFunction extends NamedFunction1 {
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String pattern = arg1 == null ? null : String.valueOf(arg1);
-      String result = delegate.getDate(pattern);
-      context.getReturnBuffer().setTo(result);
+    public String getName() {
+      return "getDate";
     }
 
     @Override
-    public void resume(ExecutionContext context, Object suspendedState)
-        throws ResolvedControlThrowable {
-      throw new NonsuspendableFunctionException();
+    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+      String format = getConverters().toJavaNullable(String.class, arg1, 1, "format", getName());
+      String result = delegate.getDate(format);
+      context.getReturnBuffer().setTo(result);
     }
   }
 
-  private class SleepFunction extends AbstractFunction1 {
+  private class SleepFunction extends NamedFunction1 {
+    @Override
+    public String getName() {
+      return "sleep";
+    }
+
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       if (arg1 == null) {
         return; // ignore call
       }
-      int ticks = getConverters().toJava(int.class, arg1, 1, "ticks", "sleep");
+      int ticks = getConverters().toJava(int.class, arg1, 1, "ticks", getName());
       delegate.startSleep(ticks);
       execute(context);
     }
@@ -73,8 +76,8 @@ public class TimeModule extends DelegatingProxy<Time> {
     private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
         context.pauseIfRequested();
-      } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(SleepFunction.this, "Sleeping");
+      } catch (UnresolvedControlThrowable ex) {
+        throw ex.resolve(this, null);
       }
       context.getReturnBuffer().setTo();
     }

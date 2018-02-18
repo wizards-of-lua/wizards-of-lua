@@ -14,11 +14,11 @@ public abstract class LuaModule<D> extends DelegatingProxy<D> implements Named {
     return false;
   }
 
-  public <F extends LuaFunction & Named> void add(F function) {
-    add(function.getName(), function);
+  public <F extends LuaFunction & Named> void addReadOnly(F function) {
+    addReadOnly(function.getName(), function);
   }
 
-  public void add(String name, LuaFunction function) {
+  public void addReadOnly(String name, LuaFunction function) {
     addImmutable(name, function);
   }
 }
