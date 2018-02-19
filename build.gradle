@@ -55,7 +55,12 @@ repositories {
   }
 }
 
-apply from: rootProject.file('annotation-processing.gradle')
+apply from: file('gradle-snippets/annotation-processing.gradle')
+allprojects {
+  plugins.withId('eclipse') {
+    project.apply from: rootProject.file('gradle-snippets/eclipse/rename-subproject.gradle')
+  }
+}
 
 configurations {
   embed
@@ -63,8 +68,8 @@ configurations {
 }
 
 dependencies {
-    compile project(':annotation-processor')
-    annotationProccessing project(':annotation-processor')
+    compile project(':apt')
+    annotationProccessing project(':apt')
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:2.5.0'
