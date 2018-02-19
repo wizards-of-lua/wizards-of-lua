@@ -12,6 +12,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 import net.wizardsoflua.annotation.processor.doc.model.FunctionDocModel;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
@@ -31,7 +32,7 @@ public class LuaDocGenerator {
     doc.append("---\n");
     doc.append("name: ").append(model.getName()).append('\n');
     doc.append("subtitle: ").append(model.getSubtitle()).append('\n');
-    doc.append("type: class\n");
+    doc.append("type: ").append(model.getType()).append('\n');
     String superClass = model.getSuperClass();
     if (superClass != null) {
       doc.append("extends: ").append(superClass).append('\n');
@@ -42,7 +43,8 @@ public class LuaDocGenerator {
       doc.append("  - name: ").append(property.getName()).append('\n');
       doc.append("    type: ").append(property.getType()).append('\n');
       doc.append("    access: ").append(property.getAccess()).append('\n');
-      doc.append("    description: ").append(property.getDescription()).append('\n');
+      doc.append("    description: ").append(quoteDescription(property.getDescription()))
+          .append('\n');
     }
     doc.append("functions:\n");
     for (FunctionDocModel function : model.getFunctions()) {
@@ -50,7 +52,8 @@ public class LuaDocGenerator {
       String args = Joiner.on(", ").join(function.getArgs());
       doc.append("    parameters: ").append(args).append('\n');
       doc.append("    results: ").append(function.getReturnType()).append('\n');
-      doc.append("    description: ").append(function.getDescription()).append('\n');
+      doc.append("    description: ").append(quoteDescription(function.getDescription()))
+          .append('\n');
     }
     doc.append("---\n");
     doc.append("\n");
@@ -61,13 +64,10 @@ public class LuaDocGenerator {
   public static String getDescription(Element element, ProcessingEnvironment env) {
     Elements elements = env.getElementUtils();
     String docComment = elements.getDocComment(element);
-    if (docComment == null) {
-      return "";
-    }
-    return renderDescription(docComment);
+    return Strings.nullToEmpty(docComment).trim();
   }
 
-  public static String renderDescription(String description) {
+  private static String quoteDescription(String description) {
     if (description.contains("\n")) {
       return '"' + description + '"';
     } else {
@@ -126,7 +126,22 @@ public class LuaDocGenerator {
     }
   }
 
-  public static String toReference(CharSequence simpleName) {
+  public static String renderType(String type) {
+    switch (type) {
+      case "boolean":
+      case "function":
+      case "number":
+      case "string":
+      case "table":
+        return type;
+    }
+    if (type.startsWith("number (")) {
+      return type;
+    }
+    return toReference(type);
+  }
+
+  private static String toReference(CharSequence simpleName) {
     return simpleName.length() == 0 ? ""
         : "[" + simpleName + "](!SITE_URL!/modules/" + simpleName + "/)";
   }

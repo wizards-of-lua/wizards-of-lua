@@ -10,9 +10,9 @@ public class TimeModule2 extends LuaModule<TimeApi> {
   public TimeModule2(LuaClassLoader classLoader, TimeApi delegate) {
     super(classLoader, delegate);
     addReadOnly("allowance", () -> delegate.getAllowance());
-    add("autosleep", () -> delegate.isAutoSleep(), this::setAutoSleep);
-    addReadOnly("gametime", () -> delegate.getGameTotalTime());
-    addReadOnly("luatime", () -> delegate.getLuaTicks());
+    add("autosleep", () -> delegate.isAutosleep(), this::setAutoSleep);
+    addReadOnly("gametime", () -> delegate.getGametime());
+    addReadOnly("luatime", () -> delegate.getLuatime());
     addReadOnly("realtime", () -> delegate.getRealtime());
     addReadOnly(new GetDateFunction());
     addReadOnly(delegate.new SleepFunction());
@@ -25,7 +25,7 @@ public class TimeModule2 extends LuaModule<TimeApi> {
 
   public void setAutoSleep(Object luaObj) {
     boolean value = getConverters().toJava(boolean.class, luaObj, "autosleep");
-    delegate.setAutoSleep(value);
+    delegate.setAutosleep(value);
   }
 
   private class GetDateFunction extends NamedFunction1 {

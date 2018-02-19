@@ -74,7 +74,7 @@ public class LuaPropertyUtils {
   public static String getPropertyType(ExecutableElement method, ProcessingEnvironment env)
       throws ProcessingException {
     LuaProperty luaProperty = checkAnnotated(method, LuaProperty.class);
-    String type = LuaDocGenerator.toReference(luaProperty.type());
+    String type = LuaDocGenerator.renderType(luaProperty.type());
     if (!type.isEmpty()) {
       return type;
     }

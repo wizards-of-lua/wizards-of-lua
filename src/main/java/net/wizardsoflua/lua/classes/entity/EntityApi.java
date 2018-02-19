@@ -143,7 +143,7 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
    * but to activate them you have to assign the modified table to the entity by using the
    * [putNbt()](/modules/Entity/#putNbt) function.
    */
-  @LuaProperty
+  @LuaProperty(type = "table")
   public NBTTagCompound getNbt() {
     NBTTagCompound nbt = new NBTTagCompound();
     delegate.writeToNBT(nbt);

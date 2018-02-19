@@ -80,22 +80,24 @@ public class PropertyDocModel {
 
   public PropertyDocModel merge(PropertyDocModel other) throws MultipleProcessingExceptions {
     checkArgument(name.equals(other.name), "Cannot merge properties with different names");
+    Set<Element> elements = Sets.union(this.elements, other.elements);
     if (access == other.access || access == READWRITE || other.access == READWRITE) {
-      throw newMultipleProcessingExceptions("Duplicate getter/setter " + name);
+      throw newMultipleProcessingExceptions("Duplicate getter/setter " + name, elements);
     }
     if (!type.equals(other.type)) {
-      throw newMultipleProcessingExceptions("Getter type does not equal setter type");
+      throw newMultipleProcessingExceptions("Getter type does not equal setter type", elements);
     }
     if (!description.isEmpty() && !other.description.isEmpty()
         && !description.equals(other.description)) {
       throw newMultipleProcessingExceptions(
-          "The description on the getter differs from the description on the setter");
+          "The description on the getter differs from the description on the setter", elements);
     }
-    Set<Element> elements = Sets.union(this.elements, other.elements);
+    PropertyAccess access = READWRITE;
     return new PropertyDocModel(name, type, access, description, elements);
   }
 
-  private MultipleProcessingExceptions newMultipleProcessingExceptions(CharSequence msg) {
+  private static MultipleProcessingExceptions newMultipleProcessingExceptions(CharSequence msg,
+      Set<Element> elements) {
     return new MultipleProcessingExceptions(Iterables.transform(elements, e -> {
       AnnotationMirror a = getAnnotationMirror(e, LuaProperty.class);
       return new ProcessingException(msg, e, a);

@@ -9,11 +9,9 @@ import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotation
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationValue;
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.getRelevantMethods;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -41,6 +39,8 @@ public class LuaDocModel {
     GenerateLuaClass generateLuaClass = checkAnnotated(annotatedElement, GenerateLuaClass.class);
     String name = generateLuaClass.name();
 
+    String type = "class";
+
     AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaClass.class);
     AnnotationValue superClassValue = getAnnotationValue(mirror, "superClass", env);
     DeclaredType superType = (DeclaredType) superClassValue.getValue();
@@ -60,20 +60,21 @@ public class LuaDocModel {
 
     List<ExecutableElement> methods = getRelevantMethods(annotatedElement);
 
-    return of(annotatedElement, name, superClass, methods, env);
+    return of(annotatedElement, name, type, superClass, methods, env);
   }
 
   public static LuaDocModel forLuaModule(TypeElement annotatedElement, ProcessingEnvironment env)
       throws ProcessingException, MultipleProcessingExceptions {
     GenerateLuaModule generateLuaClass = checkAnnotated(annotatedElement, GenerateLuaModule.class);
     String name = generateLuaClass.name();
+    String type = "module";
     String superClass = null;
     List<ExecutableElement> methods = methodsIn(annotatedElement.getEnclosedElements());
-    return of(annotatedElement, name, superClass, methods, env);
+    return of(annotatedElement, name, type, superClass, methods, env);
   }
 
-  private static LuaDocModel of(TypeElement annotatedElement, String name, String superClass,
-      List<ExecutableElement> methods, ProcessingEnvironment env)
+  private static LuaDocModel of(TypeElement annotatedElement, String name, String type,
+      String superClass, List<ExecutableElement> methods, ProcessingEnvironment env)
       throws ProcessingException, MultipleProcessingExceptions {
     CharSequence packageName =
         env.getElementUtils().getPackageOf(annotatedElement).getQualifiedName();
@@ -83,8 +84,8 @@ public class LuaDocModel {
 
     String description = LuaDocGenerator.getDescription(annotatedElement, env);
 
-    Map<String, PropertyDocModel> properties = new HashMap<>();
-    Collection<FunctionDocModel> functions = new ArrayList<>();
+    Map<String, PropertyDocModel> properties = new TreeMap<>();
+    Map<String, FunctionDocModel> functions = new TreeMap<>();
 
     for (ExecutableElement method : methods) {
       if (method.getAnnotation(LuaProperty.class) != null) {
@@ -96,27 +97,30 @@ public class LuaDocModel {
         properties.put(property.getName(), property);
       }
       if (method.getAnnotation(LuaFunction.class) != null) {
-        functions.add(FunctionDocModel.of(method, env));
+        FunctionDocModel function = FunctionDocModel.of(method, env);
+        functions.put(function.getName(), function);
       }
     }
-    return new LuaDocModel(packageName, name, subtitle, superClass, description,
-        properties.values(), functions);
+    return new LuaDocModel(packageName, name, subtitle, type, superClass, description,
+        properties.values(), functions.values());
   }
 
   private final CharSequence packageName;
   private final String name;
   private final @Nullable String superClass;
   private final String subtitle;
+  private final String type;
   private final String description;
   private final ImmutableSet<PropertyDocModel> properties;
   private final ImmutableSet<FunctionDocModel> functions;
 
-  public LuaDocModel(CharSequence packageName, String name, String subtitle,
+  public LuaDocModel(CharSequence packageName, String name, String subtitle, String type,
       @Nullable String superClass, String description, Iterable<PropertyDocModel> properties,
       Iterable<FunctionDocModel> functions) {
     this.packageName = requireNonNull(packageName, "packageName == null!");
     this.name = requireNonNull(name, "name == null!");
     this.subtitle = requireNonNull(subtitle, "subtitle == null!");
+    this.type = requireNonNull(type, "type == null!");
     this.superClass = superClass;
     this.description = requireNonNull(description, "description == null!");
     this.properties = ImmutableSet.copyOf(properties);
@@ -133,6 +137,10 @@ public class LuaDocModel {
 
   public String getSubtitle() {
     return subtitle;
+  }
+
+  public String getType() {
+    return type;
   }
 
   public String getDescription() {

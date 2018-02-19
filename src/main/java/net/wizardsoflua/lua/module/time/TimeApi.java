@@ -3,13 +3,18 @@ package net.wizardsoflua.lua.module.time;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.function.NamedFunction1;
 
+/**
+ * The Time module provides access to time related properties of the active Spell's world.
+ */
 @GenerateLuaModule(name = "Time2")
+@GenerateLuaDoc(subtitle = "Accessing the Time")
 public class TimeApi {
   private Time delegate;
   private Converters converters;
@@ -18,36 +23,59 @@ public class TimeApi {
     return converters;
   }
 
-  @LuaProperty
-  public boolean isAutoSleep() {
-    return delegate.isAutoSleep();
-  }
-
-  @LuaProperty
-  public void setAutoSleep(boolean isAutoSleep) {
-    delegate.setAutoSleep(isAutoSleep);
-  }
-
-  @LuaProperty
-  public long getGameTotalTime() {
-    return delegate.getGameTotalTime();
-  }
-
-  @LuaProperty
-  public long getLuaTicks() {
-    return delegate.getLuaTicks();
-  }
-
+  /**
+   * The allowance is the number of lua ticks that are left before the active spell must sleep for
+   * at least one game tick.
+   */
   @LuaProperty
   public long getAllowance() {
     return delegate.getAllowance();
   }
 
+  /**
+   * The autosleep value defines whether the current spell should go to sleep automatically when its
+   * allowance is exceeded. If this is set to false, the spell will never go to sleep automatically,
+   * but instead will be broken when its allowance falls below zero. Default is true.
+   */
+  @LuaProperty
+  public boolean isAutosleep() {
+    return delegate.isAutoSleep();
+  }
+
+  @LuaProperty
+  public void setAutosleep(boolean autosleep) {
+    delegate.setAutoSleep(autosleep);
+  }
+
+  /**
+   * The gametime is the number of game ticks that have passed since the world has been created.
+   */
+  @LuaProperty
+  public long getGametime() {
+    return delegate.getGameTotalTime();
+  }
+
+  /**
+   * The luatime is the number of lua ticks that the current spell has worked since it has been
+   * casted.
+   */
+  @LuaProperty
+  public long getLuatime() {
+    return delegate.getLuaTicks();
+  }
+
+  /**
+   * The realtime is the number of milliseconds that have passed since January 1st, 1970.
+   */
   @LuaProperty
   public long getRealtime() {
     return delegate.getRealtime();
   }
 
+  /**
+   * Returns a string with the current real date and time. If you want you can change the format by
+   * providing an optional format string.
+   */
   @LuaFunction
   public String getDate(String pattern) {
     return delegate.getDate(pattern);
@@ -57,6 +85,9 @@ public class TimeApi {
     module.addReadOnly(new SleepFunction());
   }
 
+  /**
+   * Forces the current spell to sleep for the given amount of game ticks.
+   */
   @LuaFunction
   public class SleepFunction extends NamedFunction1 {
     @Override
