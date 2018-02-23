@@ -6,9 +6,9 @@ type: class
 layout: module
 properties:
   - name: item
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[Item](/modules/Item/)"
     access: r
-    description: "This is the [item](!SITE_URL!/modules/Item/) that has been dropped.    
+    description: "This is the [item](/modules/Item/) that has been dropped.    
     "
 ---
 

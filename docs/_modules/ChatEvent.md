@@ -12,7 +12,7 @@ properties:
     description: "The chat message that has been posted.
     "
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that sent the chat message.
     "

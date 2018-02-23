@@ -26,7 +26,7 @@ properties:
     -1 is the Nether, and 1 is the End.
     "
   - name: pos
-    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    type: "[Vec3](/modules/Vec3/)"
     access: r/w
     description: "The 'pos' is short for 'position'. It is a 3-dimensional vector
     containing the location of the entity inside the world it is living in.
@@ -46,7 +46,7 @@ properties:
     description: "The 'facing' is the compass direction this entity is facing. This is one of 'north', 'east', 'south', and 'west'.
     "
   - name: lookVec
-    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    type: "[Vec3](/modules/Vec3/)"
     access: r/w
     description: "The 'lookVec' is a 3-dimensional vector that points into the direction this entity is looking at, or nil, if it
     is not looking anywhere, for example, if it has no eyes.
@@ -70,7 +70,7 @@ properties:
     description: "The 'eyeHeight' is the distance from this entity's feet to its eyes in Y direction.
     "
   - name: motion
-    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    type: "[Vec3](/modules/Vec3/)"
     access: r/w
     description: "The 'motion' is a 3-dimensional vector that represents the velocity of this entity when it is moved by some
     external force, e.g. when it is falling or when it is pushed by an explosion.
@@ -99,7 +99,7 @@ functions:
     Valid direction values are absolute directions ('up', 'down', 'north', 'east',
     'south', and 'west'), as well as relative directions ('forward', 'back',
     'left', and 'right'). Relative directions are interpreted relative to the direction the entity is
-    [facing](!SITE_URL!/modules/Entity/#facing).
+    [facing](/modules/Entity/#facing).
     "
     examples:
       - url: Entity/move.md
@@ -107,36 +107,36 @@ functions:
     parameters: table
     results: nil
     description: "The 'putNbt' function inserts the given table entries into the
-    [nbt](!SITE_URL!/modules/Entity/#nbt) property of this entity.
+    [nbt](/modules/Entity/#nbt) property of this entity.
     Please note that this function is not supported for
-    [Player](!SITE_URL!/modules/Player/) objects.
+    [Player](/modules/Player/) objects.
     "
     examples:
       - url: Entity/putNbt.md
   - name: addTag
     parameters: string
     results: boolean
-    description: "The 'addTag' function adds the given tag to the set of [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
+    description: "The 'addTag' function adds the given tag to the set of [tags](/modules/Entity/#tags) of this entity.
     This function returns true if the tag was added successfully.
     "
   - name: removeTag
     parameters: string
     results: boolean
-    description: "The 'removeTag' function removes the given tag from the set of [tags](!SITE_URL!/modules/Entity/#tags) of this entity.
+    description: "The 'removeTag' function removes the given tag from the set of [tags](/modules/Entity/#tags) of this entity.
     This function returns true if the tag has been removed successfully, and false if there was no such tag.
     "
   - name: scanView
     parameters: distance
-    results: "[BlockHit](!SITE_URL!/modules/BlockHit/)"
+    results: "[BlockHit](/modules/BlockHit/)"
     description: "The 'scanView' function scans the view of this entity for the next
-    (non-liquid) block. On success it returns a [BlockHit](!SITE_URL!/modules/BlockHit/), otherwise nil.
+    (non-liquid) block. On success it returns a [BlockHit](/modules/BlockHit/), otherwise nil.
     It scans the view with a line-of-sight-range of up to the given distance (meter).
     "
     examples:
       - url: Entity/scanView.md
   - name: dropItem
-    parameters: "[Item](!SITE_URL!/modules/Item/), verticalOffset"
-    results: "[DroppedItem](!SITE_URL!/modules/DroppedItem/)"
+    parameters: "[Item](/modules/Item/), verticalOffset"
+    results: "[DroppedItem](/modules/DroppedItem/)"
     description: "The 'dropItem' function drops the given item at this entity's position modified by the optionally given vertical offset.
     "
     examples:

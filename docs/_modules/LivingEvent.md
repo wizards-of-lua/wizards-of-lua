@@ -7,7 +7,7 @@ extends: Event
 layout: module
 properties:
   - name: entity
-    type: "[Entity](!SITE_URL!/modules/Entity/)"
+    type: "[Entity](/modules/Entity/)"
     access: r
     description: "The entity that this event is about.
     "

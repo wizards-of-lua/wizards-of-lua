@@ -14,7 +14,7 @@ properties:
     examples:
       - url: BlockBreakEvent/experience.md
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that triggered this event.
     "

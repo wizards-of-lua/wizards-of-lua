@@ -7,7 +7,7 @@ properties:
 functions:
   - name: get
     parameters: string
-    results: "[Block](!SITE_URL!/modules/Block/)"
+    results: "[Block](/modules/Block/)"
     description: "The 'get' function returns the block with the given name.
     "
     examples:

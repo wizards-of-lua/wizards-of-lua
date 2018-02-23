@@ -6,11 +6,11 @@ type: class
 layout: module
 properties:
   - name: hitVec
-    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    type: "[Vec3](/modules/Vec3/)"
     access: r
     description: "This is the exact position where the scan hit the block."
   - name: pos
-    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    type: "[Vec3](/modules/Vec3/)"
     access: r
     description: "This is the position of the block that was hit by the scan."
   - name: sideHit

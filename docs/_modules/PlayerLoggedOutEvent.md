@@ -7,7 +7,7 @@ extends: Event
 layout: module
 properties:  
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that left the world.
     "

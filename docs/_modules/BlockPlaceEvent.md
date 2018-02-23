@@ -13,7 +13,7 @@ properties:
     Can be 'MAIN_HAND' or 'OFF_HAND'.
     "
   - name: placedAgainst
-    type: "[Block](!SITE_URL!/modules/Block/)"
+    type: "[Block](/modules/Block/)"
     access: r
     description: "The block against which the new block was placed.
     Unfortunately the NBT of the block placedAgainst is unavailable.
@@ -21,7 +21,7 @@ properties:
     examples:
       - url: BlockPlaceEvent/placedAgainst.md
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that triggered this event.
     "

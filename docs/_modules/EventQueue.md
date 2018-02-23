@@ -29,7 +29,7 @@ functions:
       - url: EventQueue/isEmpty.md
   - name: latest
     parameters:
-    results: "[Event](!SITE_URL!/modules/Event/)"
+    results: "[Event](/modules/Event/)"
     description: "The 'latest' function returns the newest event in this queue and discards all older events.
     If the queue [is empty](/modules/EventQueue/#isEmpty) then nil is returned.
     This is useful for update events where you are only interested in the most recent change.
@@ -38,7 +38,7 @@ functions:
       - url: EventQueue/latest.md
   - name: next
     parameters: timeout
-    results: "[Event](!SITE_URL!/modules/Event/)"
+    results: "[Event](/modules/Event/)"
     description: "The 'next' function returns the next event in this queue, if any.
     This function blocks until an event is available or the given timeout (measured in game ticks) is reached.
     If no timeout is specified, this function blocks forever.

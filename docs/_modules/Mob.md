@@ -14,14 +14,14 @@ properties:
     Default is true.
     "
   - name: mainhand
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[Item](/modules/Item/)"
     access: r/w
-    description: "This is the [item](!SITE_URL!/modules/Item/) this creature is holding in its main hand.    
+    description: "This is the [item](/modules/Item/) this creature is holding in its main hand.    
     "
   - name: offhand
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[Item](/modules/Item/)"
     access: r/w
-    description: "This is the [item](!SITE_URL!/modules/Item/) this creature is holding in its off hand.    
+    description: "This is the [item](/modules/Item/) this creature is holding in its off hand.    
     "
 functions:
 ---

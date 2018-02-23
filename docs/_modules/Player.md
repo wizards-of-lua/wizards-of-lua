@@ -30,12 +30,12 @@ properties:
   - name: mainhand
     type: "[Item](/modules/Item/)"
     access: r/w
-    description: "This is the [item](!SITE_URL!/modules/Item/) this player is holding in his main hand.    
+    description: "This is the [item](/modules/Item/) this player is holding in his main hand.    
     "
   - name: offhand
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[Item](/modules/Item/)"
     access: r/w
-    description: "This is the [item](!SITE_URL!/modules/Item/) this player is holding in his off hand.    
+    description: "This is the [item](/modules/Item/) this player is holding in his off hand.    
     "
   - name: gamemode
     type: string

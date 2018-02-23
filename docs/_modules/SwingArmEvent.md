@@ -7,7 +7,7 @@ extends: Event
 layout: module
 properties:
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that triggered this event.
     "
@@ -18,7 +18,7 @@ properties:
     Can be 'MAIN_HAND' or 'OFF_HAND'.
     "
   - name: item
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[Item](/modules/Item/)"
     access: r
     description: "The item in the player's hand.
     "

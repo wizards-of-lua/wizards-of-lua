@@ -42,7 +42,7 @@ functions:
     parameters: table
     results: nil
     description: "The 'putNbt' function inserts the given table entries into this item's
-    [nbt](!SITE_URL!/modules/Item/#nbt) property.
+    [nbt](/modules/Item/#nbt) property.
     "
     examples:
       - url: Item/putNbt.md

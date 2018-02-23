@@ -26,16 +26,16 @@ properties:
     information about its content.
     "
   - name: material
-    type: "[Material](!SITE_URL!/modules/Material/)"
+    type: "[Material](/modules/Material/)"
     access: r
     description: "
     The 'material' give you some insights in how this block behaves.
-    Please have a look into the [Material Book](!SITE_URL!/modules/Material/) for more information.
+    Please have a look into the [Material Book](/modules/Material/) for more information.
     "
 functions:
   - name: withData
     parameters: table
-    results: "[Block](!SITE_URL!/modules/Block/)"
+    results: "[Block](/modules/Block/)"
     description: "The 'withData' function returns a modified copy of the given block with the given table values
     as the [block's data](https://minecraft.gamepedia.com/Data_values#Data).
     "
@@ -43,7 +43,7 @@ functions:
       - url: Block/withData.md
   - name: withNbt
     parameters: table
-    results: "[Block](!SITE_URL!/modules/Block/)"
+    results: "[Block](/modules/Block/)"
     description: "The 'withNbt' function returns a modified copy of the given block with the given table values
     for the [block's entity](https://minecraft.gamepedia.com/Block_entity_format).
     "
@@ -51,8 +51,8 @@ functions:
       - url: Block/withNbt.md
   - name: asItem
     parameters: amount
-    results: "[Item](!SITE_URL!/modules/Item/)"
-    description: "The 'asItem' function returns this block as an [item](!SITE_URL!/modules/Item/) of the given amount.
+    results: "[Item](/modules/Item/)"
+    description: "The 'asItem' function returns this block as an [item](/modules/Item/) of the given amount.
     "
     examples:
       - url: Block/asItem.md

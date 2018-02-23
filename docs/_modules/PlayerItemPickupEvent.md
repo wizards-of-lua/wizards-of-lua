@@ -7,12 +7,12 @@ extends: Event
 layout: module
 properties:  
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that triggered this event.
     "
   - name: item
-    type: "[DroppedItem](!SITE_URL!/modules/DroppedItem/)"
+    type: "[DroppedItem](/modules/DroppedItem/)"
     access: r
     description: "The item that has been collected.
     "

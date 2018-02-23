@@ -6,7 +6,7 @@ extends: Entity
 layout: module
 properties:
   - name: block
-    type: "[Block](!SITE_URL!/modules/Block/)"
+    type: "[Block](/modules/Block/)"
     access: r/w
     description: "The 'block' denotes the *block's state* at the spell's position. Use
     it to find out about what material the block is constructed of, or in which
@@ -15,7 +15,7 @@ properties:
     examples:
       - url: Spell/block.md
   - name: owner
-    type: "[Entity](!SITE_URL!/modules/Entity/)"
+    type: "[Entity](/modules/Entity/)"
     access: r
     description: The entity that has casted this spell. Normally this is a Player, or nil if the spell has been casted by a command block.
     examples:

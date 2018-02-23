@@ -7,17 +7,17 @@ properties:
 functions:
   - name: connect
     parameters: string...
-    results: "[EventQueue](!SITE_URL!/modules/EventQueue/)"
-    description: "The 'connect' function creates and returns an [EventQueue](!SITE_URL!/modules/EventQueue/)
+    results: "[EventQueue](/modules/EventQueue/)"
+    description: "The 'connect' function creates and returns an [EventQueue](/modules/EventQueue/)
     that is connected to the event source.
-    It will collect all occuring [events](!SITE_URL!/modules/Event/) of the given kind(s).
+    It will collect all occuring [events](/modules/Event/) of the given kind(s).
     "
     examples:
       - url: Events/connect.md
   - name: fire
     parameters: string, object
     results: nil
-    description: "The 'fire' function posts a new [CustomEvent](!SITE_URL!/modules/CustomEvent/)
+    description: "The 'fire' function posts a new [CustomEvent](/modules/CustomEvent/)
     with the given name and the optional given content data.
     "
     examples:

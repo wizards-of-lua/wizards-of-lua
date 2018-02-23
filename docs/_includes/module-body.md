@@ -7,7 +7,7 @@ Here is an overview of the {{ page.name }} *properties*:
 
 | Property             | Type          | read / write |
 | ---------------------|---------------| :-----------:|
-{% for prop in properties %}| [<span class="notranslate">{{ prop.name }}</span>](#{{ prop.name }}) | <span class="notranslate">{{ prop.type | replace: '!SITE_URL!', site.url }}</span> | {{ prop.access }} |
+{% for prop in properties %}| [<span class="notranslate">{{ prop.name }}</span>](#{{ prop.name }}) | <span class="notranslate">{{ prop.type }}</span> | {{ prop.access }} |
 {% endfor %}
 {% endif %}
 {% if page.functions %}
@@ -15,7 +15,7 @@ Here is an overview of the {{ page.name }} *functions*:
 
 | Function             | Parameters    | Results      |
 | ---------------------|---------------| :-----------:|
-{% for func in functions %}| [<span class="notranslate">{{ func.name }}</span>](#{{ func.name }}) | <span class="notranslate">{{ func.parameters | replace: '!SITE_URL!', site.url }}</span> | <span class="notranslate">{{ func.results | replace: '!SITE_URL!', site.url }}</span> |
+{% for func in functions %}| [<span class="notranslate">{{ func.name }}</span>](#{{ func.name }}) | <span class="notranslate">{{ func.parameters }}</span> | <span class="notranslate">{{ func.results }}</span> |
 {% endfor %}
 {% endif %}
 
@@ -28,9 +28,9 @@ and some examples about how to use them in your spells.
 ---
 {% for prop in properties %}
 <a style="position:relative; top:-70px; display:block;" name="{{ prop.name }}"></a>
-### <span class="notranslate">{{ prop.name }} : {{ prop.type | replace: '!SITE_URL!', site.url }}</span>
+### <span class="notranslate">{{ prop.name }} : {{ prop.type }}</span>
 
-{{ prop.description | replace: '!SITE_URL!', site.url}}
+{{ prop.description }}
 {% for ex in prop.examples %}
 {% include_relative {{ ex.url }} %}
 {% endfor %}
@@ -47,9 +47,9 @@ and some examples about how to use them in your spells.
 ---
 {% for func in functions %}
 <a style="position:relative; top:-70px; display:block;" name="{{ func.name }}"></a>
-### <span class="notranslate">{{ func.name }} ({{ func.parameters | replace: '!SITE_URL!', site.url }}) -> {{ func.results | replace: '!SITE_URL!', site.url }}</span>
+### <span class="notranslate">{{ func.name }} ({{ func.parameters }}) -> {{ func.results }}</span>
 
-{{ func.description | replace: '!SITE_URL!', site.url}}
+{{ func.description }}
 {% for ex in func.examples %}
 {% include_relative {{ ex.url }} %}
 {% endfor %}

@@ -7,7 +7,7 @@ extends: Event
 layout: module
 properties:
   - name: player
-    type: "[Player](!SITE_URL!/modules/Player/)"
+    type: "[Player](/modules/Player/)"
     access: r
     description: "The player that triggered this event.
     "
@@ -24,12 +24,12 @@ properties:
     Can be 'MAIN_HAND' or 'OFF_HAND'.
     "
   - name: pos
-    type: "[Vec3](!SITE_URL!/modules/Vec3/)"
+    type: "[Vec3](/modules/Vec3/)"
     access: r
     description: "The block's position.
     "
   - name: item
-    type: "[Item](!SITE_URL!/modules/Item/)"
+    type: "[Item](/modules/Item/)"
     access: r
     description: "The item in the player's hand.
     "

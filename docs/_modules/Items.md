@@ -7,8 +7,8 @@ properties:
 functions:
   - name: get
     parameters: string, amount
-    results: "[Item](!SITE_URL!/modules/Item/)"
-    description: "The 'get' function returns an new [item](!SITE_URL!/modules/Item/) of the given type and amount.
+    results: "[Item](/modules/Item/)"
+    description: "The 'get' function returns an new [item](/modules/Item/) of the given type and amount.
     "
     examples:
       - url: Items/get.md

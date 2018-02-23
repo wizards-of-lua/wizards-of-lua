@@ -10,7 +10,7 @@ properties:
     type: any
     access: r
     description: "The data value that has been sent with this event.
-    See [Events.fire()](!SITE_URL!/modules/Events/#fire) for more details on this.
+    See [Events.fire()](/modules/Events/#fire) for more details on this.
     "
     examples:
       - url: CustomEvent/data.md
