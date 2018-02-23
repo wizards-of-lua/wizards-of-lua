@@ -3,6 +3,7 @@ description: The Art of Spell Crafting
 theme: jekyll-theme-midnight
 encoding: "utf-8"
 show_header: true
+repository: wizards-of-lua/webpage
 github:
   project_url: https://github.com/wizards-of-lua/wizards-of-lua
 show_dir_listing: false
