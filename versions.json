@@ -5,6 +5,7 @@
         "1.11.2-recommended": "1.11.2-1.13.0-alpha"     
     },
     "1.11.2": {
+        "1.11.2-1.13.1-alpha": "* Fixed #125\n",
         "1.11.2-1.13.0-alpha": "* Fixed #123\nFixed #124\n",
         "1.11.2-1.12.0-alpha": "* Fixed #120\nFixed #121\n",
         "1.11.2-1.11.2-alpha": "* Fixed #113\nFixed #114\nFixed #118\n",
