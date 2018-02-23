@@ -20,8 +20,8 @@ public class FileMoveAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public FileMoveAction() {
-    wol = WizardsOfLua.instance;
+  public FileMoveAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override
@@ -59,6 +59,8 @@ public class FileMoveAction extends MenuEntry implements CommandAction {
             "Error - Can't move! To move a file please specify old name and new name");
         sender.sendMessage(message);
       }
+    } else {
+      throw new CommandException("Only players can use this command!");
     }
   }
 

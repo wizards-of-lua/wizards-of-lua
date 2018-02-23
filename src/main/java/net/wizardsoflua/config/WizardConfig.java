@@ -21,16 +21,16 @@ public class WizardConfig {
     void save();
   }
 
+  private final Context context;
   private UUID id;
   private String libDir;
   private String apiKey = new Crypto().createRandomPassword();
-  private final Context context;
 
   public WizardConfig(Table table, Context context) {
+    this.context = checkNotNull(context, "context==null!");
     this.id = UUID.fromString(getAs(String.class, table, "id"));
     this.libDir = getAsOptional(String.class, table, "libDir").orElse(id.toString());
     this.apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
-    this.context = checkNotNull(context, "context==null!");
   }
 
   public WizardConfig(UUID id, Context context) {

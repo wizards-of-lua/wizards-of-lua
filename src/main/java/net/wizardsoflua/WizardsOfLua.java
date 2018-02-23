@@ -38,6 +38,7 @@ import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRegistry;
+import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
@@ -69,6 +70,7 @@ public class WizardsOfLua {
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
+  private final GistRepo gistRepo = new GistRepo();
 
   // TODO move these lazy instances into a new state class
   private WolConfig config;
@@ -278,7 +280,7 @@ public class WizardsOfLua {
     server = event.getServer();
     gameProfiles = new GameProfiles(server);
     permissions = new Permissions(server);
-    event.registerServerCommand(new WolCommand());
+    event.registerServerCommand(new WolCommand(this, this.logger));
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();
@@ -333,6 +335,10 @@ public class WizardsOfLua {
 
   public WolRestApiServer getRestServer() {
     return restApiServer;
+  }
+
+  public GistRepo getGistRepo() {
+    return gistRepo;
   }
 
 }

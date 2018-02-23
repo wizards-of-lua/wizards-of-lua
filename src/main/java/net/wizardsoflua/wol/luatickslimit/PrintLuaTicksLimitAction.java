@@ -15,6 +15,12 @@ import net.wizardsoflua.wol.menu.MenuEntry;
 
 public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction {
 
+  private final WizardsOfLua wol;
+
+  public PrintLuaTicksLimitAction(WizardsOfLua wol) {
+    this.wol = wol;
+  }
+
   @Override
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
@@ -23,7 +29,7 @@ public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    int luaTicksLimit = WizardsOfLua.instance.getConfig().getGeneralConfig().getLuaTicksLimit();
+    int luaTicksLimit = wol.getConfig().getGeneralConfig().getLuaTicksLimit();
     WolAnnouncementMessage message = new WolAnnouncementMessage("luaTicksLimit = " + luaTicksLimit);
     sender.sendMessage(message);
   }

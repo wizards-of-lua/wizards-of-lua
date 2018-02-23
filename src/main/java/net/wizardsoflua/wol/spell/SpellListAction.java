@@ -20,7 +20,11 @@ import net.wizardsoflua.wol.menu.MenuEntry;
 
 public class SpellListAction extends MenuEntry implements CommandAction {
 
-  public SpellListAction() {}
+  private final WizardsOfLua wol;
+
+  public SpellListAction(WizardsOfLua wol) {
+    this.wol = wol;
+  }
 
   @Override
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
@@ -35,7 +39,7 @@ public class SpellListAction extends MenuEntry implements CommandAction {
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     String selector = argList.poll();
     if (selector == null || "all".equals(selector)) {
-      Iterable<SpellEntity> spells = WizardsOfLua.instance.getSpellRegistry().getAll();
+      Iterable<SpellEntity> spells = wol.getSpellRegistry().getAll();
       ITextComponent message = format(spells);
       sender.sendMessage(message);
     } else {

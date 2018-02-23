@@ -6,6 +6,8 @@ import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
 
+import javax.annotation.Nullable;
+
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
 
@@ -30,6 +32,7 @@ public class GeneralConfig {
   private final File luaLibDirHomeFile;
   private String sharedLibDir = "shared";
   private final File sharedLibDirFile;
+  private String gitHubAccessToken = "";
 
   private final Context context;
 
@@ -50,6 +53,8 @@ public class GeneralConfig {
     sharedLibDir = getAsOptional(String.class, table, "sharedLibDir").orElse(sharedLibDir);
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
     sharedLibDirFile = tryToCreateDir(new File(luaLibDirHomeFile, sharedLibDir));
+    gitHubAccessToken =
+        getAsOptional(String.class, table, "gitHubAccessToken").orElse(gitHubAccessToken);
   }
 
   public Table writeTo(Table table) {
@@ -57,6 +62,7 @@ public class GeneralConfig {
     table.rawset("showAboutMessage", showAboutMessage);
     table.rawset("luaLibDirHome", luaLibDirHome);
     table.rawset("sharedLibDir", sharedLibDir);
+    table.rawset("gitHubAccessToken", gitHubAccessToken);
     return table;
   }
 
@@ -106,6 +112,10 @@ public class GeneralConfig {
       }
     }
     return dir;
+  }
+
+  public @Nullable String getGitHubAccessToken() {
+    return gitHubAccessToken.equals("") ? null : gitHubAccessToken;
   }
 
 }

@@ -20,8 +20,8 @@ public class SharedFileEditAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public SharedFileEditAction() {
-    wol = WizardsOfLua.instance;
+  public SharedFileEditAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override

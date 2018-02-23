@@ -23,8 +23,8 @@ public class FileEditAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public FileEditAction() {
-    wol = WizardsOfLua.instance;
+  public FileEditAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override
@@ -57,6 +57,8 @@ public class FileEditAction extends MenuEntry implements CommandAction {
       WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to edit: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
       sender.sendMessage(message);
+    } else {
+      throw new CommandException("Only players can use this command!");
     }
   }
 

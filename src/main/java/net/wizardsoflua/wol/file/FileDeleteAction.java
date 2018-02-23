@@ -20,8 +20,8 @@ public class FileDeleteAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public FileDeleteAction() {
-    wol = WizardsOfLua.instance;
+  public FileDeleteAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override
@@ -50,6 +50,8 @@ public class FileDeleteAction extends MenuEntry implements CommandAction {
       }
       WolAnnouncementMessage message = new WolAnnouncementMessage(name + " deleted.");
       sender.sendMessage(message);
+    } else {
+      throw new CommandException("Only players can use this command!");
     }
   }
 

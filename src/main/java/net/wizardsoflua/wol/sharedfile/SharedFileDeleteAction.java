@@ -17,8 +17,8 @@ public class SharedFileDeleteAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public SharedFileDeleteAction() {
-    wol = WizardsOfLua.instance;
+  public SharedFileDeleteAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override

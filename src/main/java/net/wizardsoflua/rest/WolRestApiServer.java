@@ -504,6 +504,4 @@ public class WolRestApiServer {
     return LOGIN_COOKIE_KEY_PREFIX + server;
   }
 
-  
-
 }

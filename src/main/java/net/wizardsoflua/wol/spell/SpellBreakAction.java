@@ -21,8 +21,8 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public SpellBreakAction() {
-    wol = WizardsOfLua.instance;
+  public SpellBreakAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override
@@ -51,7 +51,7 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     String option = argList.poll();
     if (ALL.equalsIgnoreCase(option)) {
-      WizardsOfLua.instance.getSpellRegistry().breakAll();
+      wol.getSpellRegistry().breakAll();
       // TODO I18n
       sender.getEntityWorld().getMinecraftServer().getPlayerList()
           .sendMessage(new WolAnnouncementMessage("Broke all spells"));
@@ -59,7 +59,7 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
       String sidString = argList.poll();
       // TODO throw command exception if value is not an integer or null
       int sid = Integer.parseInt(sidString);
-      boolean found = WizardsOfLua.instance.getSpellRegistry().breakBySid(sid);
+      boolean found = wol.getSpellRegistry().breakBySid(sid);
       if (found) {
         // TODO I18n
         sender.getEntityWorld().getMinecraftServer().getPlayerList()
@@ -71,7 +71,7 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
       String name = argList.poll();
       // TODO support names with white spaces!
       // TODO throw command exception if value is null
-      int count = WizardsOfLua.instance.getSpellRegistry().breakByName(name);
+      int count = wol.getSpellRegistry().breakByName(name);
       if (count == 1) {
         // TODO I18n
         sender.getEntityWorld().getMinecraftServer().getPlayerList()
@@ -86,7 +86,7 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
     } else if (BY_OWNER.equalsIgnoreCase(option)) {
       String ownerName = argList.poll();
       // TODO throw command exception if value is null
-      int count = WizardsOfLua.instance.getSpellRegistry().breakByOwner(ownerName);
+      int count = wol.getSpellRegistry().breakByOwner(ownerName);
       if (count == 1) {
         // TODO I18n
         sender.getEntityWorld().getMinecraftServer().getPlayerList()

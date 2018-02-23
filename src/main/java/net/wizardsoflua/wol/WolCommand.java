@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.base.Joiner;
 
 import net.minecraft.command.CommandBase;
@@ -14,11 +16,14 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.wol.browser.LoginAction;
 import net.wizardsoflua.wol.browser.LogoutAction;
 import net.wizardsoflua.wol.file.FileDeleteAction;
 import net.wizardsoflua.wol.file.FileEditAction;
 import net.wizardsoflua.wol.file.FileMoveAction;
+import net.wizardsoflua.wol.file.FileSection;
+import net.wizardsoflua.wol.gist.GistGetAction;
 import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
@@ -33,15 +38,20 @@ public class WolCommand extends CommandBase {
   private static final String CMD_NAME = "wol";
 
   /**
-   * Re-Tokenize the arguments by taking quoted strings into account.
+   * Pattern used to re-tokenize the arguments by taking quoted strings into account.
    */
   private static final Pattern TOKEN = Pattern.compile("\"([^\"]*)\"|(\\S+)");
 
   private final List<String> aliases = new ArrayList<String>();
 
-  private final Menu menu = new WolMenu();
+  private final WizardsOfLua wol;
+  private final Logger logger;
+  private final Menu menu;
 
-  public WolCommand() {
+  public WolCommand(WizardsOfLua wol, Logger logger) {
+    this.wol = wol;
+    this.logger = logger;
+    this.menu = new WolMenu();
     aliases.add(CMD_NAME);
   }
 
@@ -56,34 +66,41 @@ public class WolCommand extends CommandBase {
   }
   class FileMenu extends Menu {
     FileMenu() {
-      put("delete", new FileDeleteAction());
-      put("edit", new FileEditAction());
-      put("move", new FileMoveAction());
+      put("delete", new FileDeleteAction(wol));
+      put("edit", new FileEditAction(wol));
+      put("gist", new GistMenu(FileSection.PERSONAL));
+      put("move", new FileMoveAction(wol));
+    }
+  }
+  class GistMenu extends Menu {
+    GistMenu(FileSection section) {
+      put("get", new GistGetAction(wol, logger, section));
     }
   }
   class SharedFileMenu extends Menu {
     SharedFileMenu() {
-      put("delete", new SharedFileDeleteAction());
-      put("edit", new SharedFileEditAction());
-      put("move", new SharedFileMoveAction());
+      put("delete", new SharedFileDeleteAction(wol));
+      put("edit", new SharedFileEditAction(wol));
+      put("gist", new GistMenu(FileSection.SHARED));
+      put("move", new SharedFileMoveAction(wol));
     }
   }
   class SpellMenu extends Menu {
     SpellMenu() {
-      put("list", new SpellListAction());
-      put("break", new SpellBreakAction());
+      put("list", new SpellListAction(wol));
+      put("break", new SpellBreakAction(wol));
     }
   }
   class LuaTicksLimitMenu extends Menu {
     LuaTicksLimitMenu() {
-      put(new PrintLuaTicksLimitAction());
-      put("set", new SetLuaTicksLimitAction());
+      put(new PrintLuaTicksLimitAction(wol));
+      put("set", new SetLuaTicksLimitAction(wol));
     }
   }
   class BrowserMenu extends Menu {
     BrowserMenu() {
-      put("login", new LoginAction());
-      put("logout", new LogoutAction());
+      put("login", new LoginAction(wol));
+      put("logout", new LogoutAction(wol));
     }
   }
 

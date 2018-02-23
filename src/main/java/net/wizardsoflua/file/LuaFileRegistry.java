@@ -9,7 +9,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -209,6 +208,12 @@ public class LuaFileRegistry {
     }
   }
 
+  /**
+   * Saves the given content to the file denoted by the given file reference.
+   * 
+   * @param fileReference
+   * @param content
+   */
   public void saveLuaFile(String fileReference, String content) {
     try {
       File file = getFile(fileReference);
@@ -217,10 +222,21 @@ public class LuaFileRegistry {
       }
       Charset cs = Charset.defaultCharset();
       byte[] bytes = content.getBytes(cs.name());
-      Files.write(file.toPath(), bytes);
+      Path path = file.toPath();
+      Files.write(path, bytes);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Returns true, if the file denoted by the given file reference exists.
+   * 
+   * @return true, if the file denoted by the given file reference exists
+   */
+  public boolean exists(String fileReference) {
+    File file = getFile(fileReference);
+    return file.exists();
   }
 
   public URL getPasswordTokenUrl(EntityPlayer player) {
@@ -274,11 +290,11 @@ public class LuaFileRegistry {
     }
   }
 
-  private String getFileReferenceFor(EntityPlayer player, String filepath) {
+  public String getFileReferenceFor(EntityPlayer player, String filepath) {
     return player.getUniqueID().toString() + "/" + filepath;
   }
 
-  private String getSharedFileReferenceFor(String filepath) {
+  public String getSharedFileReferenceFor(String filepath) {
     return "shared" + "/" + filepath;
   }
 
@@ -299,4 +315,5 @@ public class LuaFileRegistry {
       return !dirStream.iterator().hasNext();
     }
   }
+
 }

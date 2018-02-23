@@ -21,8 +21,8 @@ public class LogoutAction extends MenuEntry implements CommandAction {
   private final WizardsOfLua wol;
   private final Crypto crypto = new Crypto();
 
-  public LogoutAction() {
-    wol = WizardsOfLua.instance;
+  public LogoutAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override
@@ -38,7 +38,8 @@ public class LogoutAction extends MenuEntry implements CommandAction {
       EntityPlayer player = (EntityPlayer) entity;
       String password = crypto.createRandomPassword();
       wol.getConfig().getOrCreateWizardConfig(player.getUniqueID()).setRestApiKey(password);
-      WolAnnouncementMessage message = new WolAnnouncementMessage("Your web browser is logged out.");
+      WolAnnouncementMessage message =
+          new WolAnnouncementMessage("Your web browser is logged out.");
       sender.sendMessage(message);
     }
   }

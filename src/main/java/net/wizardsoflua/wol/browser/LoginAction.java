@@ -22,8 +22,8 @@ public class LoginAction extends MenuEntry implements CommandAction {
 
   private final WizardsOfLua wol;
 
-  public LoginAction() {
-    wol = WizardsOfLua.instance;
+  public LoginAction(WizardsOfLua wol) {
+    this.wol = wol;
   }
 
   @Override
@@ -38,7 +38,8 @@ public class LoginAction extends MenuEntry implements CommandAction {
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
       URL url = wol.getFileRegistry().getPasswordTokenUrl(player);
-      WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to log in with your web browser: ");
+      WolAnnouncementMessage message =
+          new WolAnnouncementMessage("Click here to log in with your web browser: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
       sender.sendMessage(message);
     }
