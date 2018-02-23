@@ -234,8 +234,8 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
   }
 
   /**
-   * The 'addTag' function adds the given tag to the set of [tags](!SITE_URL!/modules/Entity/#tags)
-   * of this entity. This function returns true if the tag was added successfully.
+   * The 'addTag' function adds the given tag to the set of [tags](/modules/Entity/#tags) of this
+   * entity. This function returns true if the tag was added successfully.
    */
   @LuaFunction
   public boolean addTag(String tag) {
@@ -268,7 +268,7 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
    * taken as default distance. Valid direction values are absolute directions ('up', 'down',
    * 'north', 'east', 'south', and 'west'), as well as relative directions ('forward', 'back',
    * 'left', and 'right'). Relative directions are interpreted relative to the direction the entity
-   * is [facing](!SITE_URL!/modules/Entity/#facing).
+   * is [facing](/modules/Entity/#facing).
    */
   @LuaFunction
   public void move(String directionName, @Nullable Double distance) {
@@ -285,9 +285,9 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
   }
 
   /**
-   * The 'putNbt' function inserts the given table entries into the
-   * [nbt](!SITE_URL!/modules/Entity/#nbt) property of this entity. Please note that this function
-   * is not supported for [Player](!SITE_URL!/modules/Player/) objects.
+   * The 'putNbt' function inserts the given table entries into the [nbt](/modules/Entity/#nbt)
+   * property of this entity. Please note that this function is not supported for
+   * [Player](/modules/Player/) objects.
    */
   @LuaFunction
   public void putNbt(Table nbt) {
@@ -297,9 +297,9 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
   }
 
   /**
-   * The 'removeTag' function removes the given tag from the set of
-   * [tags](!SITE_URL!/modules/Entity/#tags) of this entity. This function returns true if the tag
-   * has been removed successfully, and false if there was no such tag.
+   * The 'removeTag' function removes the given tag from the set of [tags](/modules/Entity/#tags) of
+   * this entity. This function returns true if the tag has been removed successfully, and false if
+   * there was no such tag.
    */
   @LuaFunction
   public boolean removeTag(String tag) {
@@ -308,8 +308,8 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
 
   /**
    * The 'scanView' function scans the view of this entity for the next (non-liquid) block. On
-   * success it returns a [BlockHit](!SITE_URL!/modules/BlockHit/), otherwise nil. It scans the view
-   * with a line-of-sight-range of up to the given distance (meter).
+   * success it returns a [BlockHit](/modules/BlockHit/), otherwise nil. It scans the view with a
+   * line-of-sight-range of up to the given distance (meter).
    */
   @LuaFunction
   public RayTraceResult scanView(float distance) {

@@ -41,9 +41,9 @@ public class LuaDocGenerator {
     doc.append("properties:\n");
     for (PropertyDocModel property : model.getProperties()) {
       doc.append("  - name: ").append(property.getName()).append('\n');
-      doc.append("    type: ").append(property.getType()).append('\n');
+      doc.append("    type: '").append(property.getType()).append("'\n");
       doc.append("    access: ").append(property.getAccess()).append('\n');
-      doc.append("    description: ").append(quoteDescription(property.getDescription()))
+      doc.append("    description: |\n").append(indentDescription(property.getDescription()))
           .append('\n');
     }
     doc.append("functions:\n");
@@ -51,8 +51,8 @@ public class LuaDocGenerator {
       doc.append("  - name: ").append(function.getName()).append('\n');
       String args = Joiner.on(", ").join(function.getArgs());
       doc.append("    parameters: ").append(args).append('\n');
-      doc.append("    results: ").append(function.getReturnType()).append('\n');
-      doc.append("    description: ").append(quoteDescription(function.getDescription()))
+      doc.append("    results: '").append(function.getReturnType()).append("'\n");
+      doc.append("    description: |\n").append(indentDescription(function.getDescription()))
           .append('\n');
     }
     doc.append("---\n");
@@ -67,12 +67,9 @@ public class LuaDocGenerator {
     return Strings.nullToEmpty(docComment).trim();
   }
 
-  private static String quoteDescription(String description) {
-    if (description.contains("\n")) {
-      return '"' + description + '"';
-    } else {
-      return description;
-    }
+  private static String indentDescription(String description) {
+    String indent = "        ";
+    return indent + description.replace("\n", "\n" + indent);
   }
 
   public String renderType(TypeMirror typeMirror) {
@@ -142,7 +139,6 @@ public class LuaDocGenerator {
   }
 
   private static String toReference(CharSequence simpleName) {
-    return simpleName.length() == 0 ? ""
-        : "[" + simpleName + "](!SITE_URL!/modules/" + simpleName + "/)";
+    return simpleName.length() == 0 ? "" : "[" + simpleName + "](/modules/" + simpleName + "/)";
   }
 }
