@@ -108,7 +108,7 @@ After that, the spell can load any of mickkay's files.
 
 <a name="File-Edit" style="position:relative; top:-70px; display:block;"></a>
 ### Creating a New File
-To create a new file in your personal directory just send the following command:
+To create a new file in your personal directory, just submit the following command:
 ```
 /wol file edit <newfilename>
 ```
@@ -123,7 +123,7 @@ For example, to create a file with the name "profile.lua", just type:
 ```
 
 ### Editing an Existing File
-To edit an existing file from your personal directory send the following command:
+To edit an existing file from your personal directory, submit the following command:
 ```
 /wol file edit <filename>
 ```
@@ -138,7 +138,7 @@ For example, to edit a file with the name "magic/rocket.lua", just type:
 ```
 
 ### Moving an Existing File
-To move an existing file from your personal directory to some new location send the following command:
+To move an existing file from your personal directory to some new location, submit the following command:
 ```
 /wol file move <filename> <newfilename>
 ```
@@ -151,7 +151,7 @@ For example, to move a file with the name "magic/rocket.lua" to "items/rocket.lu
 ```
 
 ### Deleting an Existing File
-To delete an existing file from your personal directory send the following command:
+To delete an existing file from your personal directory, submit the following command:
 ```
 /wol file delete <filename>
 ```
@@ -160,6 +160,30 @@ where *&lt;filename&gt;* is the name of the file.
 For example, to delete a file with the name "magic/rocket.lua", just type:
 ```
 /wol file delete magic/rocket.lua
+```
+
+<a name="Import-Gist" style="position:relative; top:-70px; display:block;"></a>
+### Importing Files from GitHub Gists
+To import a GitHub Gist into your personal directory, submit the following command:
+```
+/wol file gist get <gist-id> <target-folder>
+```
+where *&lt;gist-id&gt;* is the ID of the Gist you want to import,
+and *&lt;target-folder&gt;* is the name of the folder, where the Gist's contents should be stored.
+
+The specification of the target folder is optional. If not specified, the top-level folder is used as target folder.
+
+For example, to import the [Bomberman Gist](https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c), which has the Gist ID <tt>a62a55f14ed076ec08bccc0302d7f41c</tt>, type the following:
+
+```
+/wol file gist get a62a55f14ed076ec08bccc0302d7f41c
+```
+This will download the file 'bomberman.lua' from the Bomberman Gist into your personal directory.
+
+Alternatively you also could use the Gist's URL instead of its ID:
+
+```
+/wol file gist get https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c
 ```
 
 <br/>
@@ -171,7 +195,7 @@ They are visible to all wizards and have no specific owner.
 Anybody with operator privileges can use, view, and edit these files.
 
 ### Creating a New Shared File
-To create a new shared file just send the following command:
+To create a new shared file, just submit the following command:
 ```
 /wol shared-file edit <newfilename>
 ```
@@ -186,7 +210,7 @@ For example, to create a shared file with the name "shared-profile.lua", just ty
 ```
 
 ### Editing an Existing Shared File
-To edit an existing shared file send the following command:
+To edit an existing shared file, submit the following command:
 ```
 /wol shared-file edit <filename>
 ```
@@ -201,7 +225,7 @@ For example, to edit a shared file with the name "magic/rocket.lua", just type:
 ```
 
 ### Moving an Existing Shared File
-To move an existing shared file to some new location send the following command:
+To move an existing shared file to some new location, submit the following command:
 ```
 /wol shared-file move <filename> <newfilename>
 ```
@@ -214,7 +238,7 @@ For example, to move a file with the name "magic/rocket.lua" to "items/rocket.lu
 ```
 
 ### Deleting an Existing Shared File
-To delete an existing shared file just send the following command:
+To delete an existing shared file, just submit the following command:
 ```
 /wol shared-file delete <filename>
 ```
@@ -225,7 +249,31 @@ For example, to delete a file with the name "magic/rocket.lua", just type:
 /wol shared-file delete magic/rocket.lua
 ```
 
+### Importing Files from GitHub Gists into the Shared Directory
+To import a GitHub Gist into the shared directory, submit the following command:
+```
+/wol shared-file gist get <gist-id> <target-folder>
+```
+where *&lt;gist-id&gt;* is the ID of the Gist you want to import,
+and *&lt;target-folder&gt;* is the name of the folder, where the Gist's contents should be stored.
+
+The specification of the target folder is optional. If not specified, the top-level folder is used as target folder.
+
+For example, to import the [Bomberman Gist](https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c), which has the Gist ID <tt>a62a55f14ed076ec08bccc0302d7f41c</tt>, type the following:
+
+```
+/wol shared-file gist get a62a55f14ed076ec08bccc0302d7f41c
+```
+This will download the file 'bomberman.lua' from the Bomberman Gist into the shared directory.
+
+Alternatively you also could use the Gist's URL instead of its ID:
+
+```
+/wol shared-file gist get https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c
+```
+
 <br/>
+
 
 <a name="Lua-Ticks-Limit" style="position:relative; top:-70px; display:block;"></a>
 ## Lua Ticks Limit Configuration
