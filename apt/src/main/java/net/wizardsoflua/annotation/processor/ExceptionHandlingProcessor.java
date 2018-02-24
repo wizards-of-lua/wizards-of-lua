@@ -23,26 +23,29 @@ public abstract class ExceptionHandlingProcessor extends AbstractProcessor {
     if (!roundEnv.processingOver()) {
       Set<Entry<TypeElement, Element>> retryNow = new HashSet<>(retryNextRound.keySet());
       retryNextRound.clear();
-      for (Entry<TypeElement, Element> entry : retryNow) {
-        TypeElement annotation = entry.getKey();
-        Element annotatedElement = entry.getValue();
-        process(annotation, annotatedElement, roundEnv);
-      }
       for (TypeElement annotation : annotations) {
         Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
         for (Element annotatedElement : annotatedElements) {
           process(annotation, annotatedElement, roundEnv);
         }
       }
+      for (Entry<TypeElement, Element> entry : retryNow) {
+        TypeElement annotation = entry.getKey();
+        Element annotatedElement = entry.getValue();
+        process(annotation, annotatedElement, roundEnv);
+      }
     } else {
+      processingOver();
       logExceptions();
     }
-    return areAnnotationsClaimed();
+    return areAnnotationsClaimed(annotations);
   }
 
-  protected boolean areAnnotationsClaimed() {
-    return true;
+  protected boolean areAnnotationsClaimed(Set<? extends TypeElement> annotations) {
+    return false;
   }
+
+  protected void processingOver() {}
 
   private void logExceptions() {
     for (Entry<Entry<TypeElement, Element>, Exception> entry : retryNextRound.entrySet()) {
@@ -75,5 +78,5 @@ public abstract class ExceptionHandlingProcessor extends AbstractProcessor {
   }
 
   protected abstract void doProcess(TypeElement annotation, Element annotatedElement,
-      RoundEnvironment roundEnv) throws ProcessingException, MultipleProcessingExceptions;
+      RoundEnvironment roundEnv) throws Exception;
 }

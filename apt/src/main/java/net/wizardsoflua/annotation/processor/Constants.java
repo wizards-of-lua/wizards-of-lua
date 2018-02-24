@@ -6,6 +6,7 @@ import com.squareup.javapoet.ClassName;
 
 public interface Constants {
   public static final String OBJECT_CLASS = "net.wizardsoflua.lua.classes.ObjectClass";
+  public static final String JAVA_LUA_CLASS = "net.wizardsoflua.lua.classes.JavaLuaClass";
   public static final ClassName DECLARE_LUA_CLASS_CLASS_NAME =
       ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
   public static final String DECLARE_LUA_CLASS = getQualifiedName(DECLARE_LUA_CLASS_CLASS_NAME);

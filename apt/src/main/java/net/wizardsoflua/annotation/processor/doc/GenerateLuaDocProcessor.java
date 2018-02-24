@@ -1,10 +1,19 @@
 package net.wizardsoflua.annotation.processor.doc;
 
-import java.io.BufferedWriter;
+import static javax.tools.StandardLocation.SOURCE_OUTPUT;
+import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS;
+import static net.wizardsoflua.annotation.processor.Constants.JAVA_LUA_CLASS;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationValue;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.processing.Filer;
@@ -13,7 +22,10 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.StandardLocation;
 
 import net.wizardsoflua.annotation.GenerateLuaClass;
@@ -27,9 +39,12 @@ import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
 
 public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
+  private Map<Name, String> luaClassNames = new HashMap<>();
+
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     HashSet<String> result = new HashSet<>();
+    result.add(DECLARE_LUA_CLASS);
     result.add(GenerateLuaDoc.class.getName());
     return result;
   }
@@ -41,10 +56,50 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
 
   @Override
   protected void doProcess(TypeElement annotation, Element annotatedElement,
-      RoundEnvironment roundEnv) throws ProcessingException, MultipleProcessingExceptions {
-    if (annotatedElement.getKind() == ElementKind.CLASS) {
+      RoundEnvironment roundEnv)
+      throws ProcessingException, MultipleProcessingExceptions, IOException {
+    if (annotation.getQualifiedName().contentEquals(DECLARE_LUA_CLASS)
+        && annotatedElement.getKind() == ElementKind.CLASS) {
+      registerLuaClass(annotatedElement);
+    }
+    if (annotation.getQualifiedName().contentEquals(GenerateLuaDoc.class.getName())
+        && annotatedElement.getKind() == ElementKind.CLASS) {
       LuaDocModel module = analyze((TypeElement) annotatedElement);
       generate(module);
+    }
+  }
+
+  private void registerLuaClass(Element annotatedElement) throws IOException {
+    TypeElement typeElement = (TypeElement) annotatedElement;
+    DeclaredType type = (DeclaredType) typeElement.asType();
+    TypeMirror javaType = getTypeParameter(type, JAVA_LUA_CLASS, 0, processingEnv);
+    DeclaredType javaClass = (DeclaredType) javaType;
+    TypeElement javaElement = (TypeElement) javaClass.asElement();
+    AnnotationMirror declareLuaClass = getAnnotationMirror(annotatedElement, DECLARE_LUA_CLASS);
+    String name = (String) getAnnotationValue(declareLuaClass, "name", processingEnv).getValue();
+    luaClassNames.put(javaElement.getQualifiedName(), name);
+  }
+
+  @Override
+  protected void processingOver() {
+    Filer filer = processingEnv.getFiler();
+    CharSequence fileContent;
+    try {
+      fileContent =
+          filer.getResource(SOURCE_OUTPUT, "net.wizardsoflua.lua.classes", "lua-classes.properties")
+              .getCharContent(false);
+    } catch (IOException ex) {
+      fileContent = "";
+    }
+    try (Writer w = filer
+        .createResource(SOURCE_OUTPUT, "net.wizardsoflua.lua.classes", "lua-classes.properties")
+        .openWriter();) {
+      w.append(fileContent);
+      for (Entry<Name, String> entry : luaClassNames.entrySet()) {
+        w.append(entry.getKey()).append('=').append(entry.getValue()).append('\n');
+      }
+    } catch (IOException ex) {
+      throw new UndeclaredThrowableException(ex);
     }
   }
 
@@ -70,8 +125,8 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     String luaDoc = new LuaDocGenerator(model, processingEnv).generate();
 
     Filer filer = processingEnv.getFiler();
-    try (Writer docWriter = new BufferedWriter(filer.createResource(StandardLocation.SOURCE_OUTPUT,
-        model.getPackageName(), model.getName() + ".md").openWriter())) {
+    try (Writer docWriter = filer.createResource(StandardLocation.SOURCE_OUTPUT,
+        model.getPackageName(), model.getName() + ".md").openWriter()) {
       docWriter.write(luaDoc);
     } catch (IOException ex) {
       throw new UndeclaredThrowableException(ex);
