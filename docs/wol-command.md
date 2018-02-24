@@ -177,17 +177,17 @@ Please note, that this is a limited function.
 As of a restriction by GitHub, your Minecraft server can only download a maximum number of 50 Gists per hour.
 However, if you want to increase this limit, please consider [configuring a personal GitHub access token](/configuration-file#General).
 
-For example, to import the [Bomberman Gist](https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c), which has the Gist ID <tt>a62a55f14ed076ec08bccc0302d7f41c</tt>, type the following:
+For example, to import the [Tetris Gist](https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3), which has the Gist ID <tt>a86a1e7a6c02fbd850d2ef4d4b618fb3</tt>, type the following:
 
 ```
-/wol file gist get a62a55f14ed076ec08bccc0302d7f41c
+/wol file gist get a86a1e7a6c02fbd850d2ef4d4b618fb3
 ```
-This will download the file 'bomberman.lua' from the Bomberman Gist into your personal directory.
+This will download the file 'tetris.lua' from the Tetris Gist into your personal directory.
 
 Alternatively you also could use the Gist's URL instead of its ID:
 
 ```
-/wol file gist get https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c
+/wol file gist get https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3
 ```
 
 <br/>
@@ -267,17 +267,17 @@ Please note, that this is a limited function.
 As of a restriction by GitHub, your Minecraft server can only download a maximum number of 50 Gists per hour.
 However, if you want to increase this limit, please consider [configuring a personal GitHub access token](/configuration-file#General).
 
-For example, to import the [Bomberman Gist](https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c), which has the Gist ID <tt>a62a55f14ed076ec08bccc0302d7f41c</tt>, type the following:
+For example, to import the [Tetris Gist](https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3), which has the Gist ID <tt>a86a1e7a6c02fbd850d2ef4d4b618fb3</tt>, type the following:
 
 ```
-/wol shared-file gist get a62a55f14ed076ec08bccc0302d7f41c
+/wol shared-file gist get a86a1e7a6c02fbd850d2ef4d4b618fb3
 ```
-This will download the file 'bomberman.lua' from the Bomberman Gist into the shared directory.
+This will download the file 'tetris.lua' from the Tetris Gist into the shared directory.
 
 Alternatively you also could use the Gist's URL instead of its ID:
 
 ```
-/wol shared-file gist get https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c
+/wol shared-file gist get https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3
 ```
 
 <br/>
