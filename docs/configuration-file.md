@@ -19,7 +19,8 @@ General {
   luaTicksLimit=10000,
   showAboutMessage=true,
   luaLibDirHome="libs",
-  sharedLibDir="shared" }
+  sharedLibDir="shared",
+  gitHubAccessToken="5fb14281daac1ff4f16fd3e2adafbf91db3b9123" }
 RestApi {
   hostname="example.com",
   port=60080,
@@ -45,6 +46,7 @@ The contents of <tt>wizards-of-lua.luacfg</tt> is valid Lua code which is loaded
 "General", "RestApi", and "Wizard" are internal functions that accept a Lua table as parameter.
 All values (with the exception of the wizard id) are optional - in that sense that you can omit the assignment, but on the next startup Wol will choose sensible default values and store them into this file.
 
+<a name="General" style="position:relative; top:-70px; display:block;"></a>
 ### General
 This function sets the mod's general configuration.
 * **luaTicksLimit**: defines the number of Lua ticks a spell can run continuously before it must sleep at least for one game tick.
@@ -57,6 +59,11 @@ For more information about this value please have a look into the [tutorial abou
 * **sharedLibDir**: defines the relative or absolute location of the shared library directory.
 This directory is parent of all Lua modules that can be used by all spell.
 For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
+* **gitHubAccessToken**: defines the [GitHub Access Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token)
+this Minecraft server will use when a player [downloads a Gists](/wol-command#Import-Gist).
+By using an access token you can increase the request rate limit from 50 to 5000 requests per hour.
+Default is "".
+
 
 ### RestApi
 This function sets the mod's REST server configuration.

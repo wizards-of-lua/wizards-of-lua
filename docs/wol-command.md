@@ -173,6 +173,10 @@ and *&lt;target-folder&gt;* is the name of the folder, where the Gist's contents
 
 The specification of the target folder is optional. If not specified, the top-level folder is used as target folder.
 
+Please note, that this is a limited function.
+As of a restriction by GitHub, your Minecraft server can only download a maximum number of 50 Gists per hour.
+However, if you want to increase this limit, please consider [configuring a personal GitHub access token](/configuration-file#General).
+
 For example, to import the [Bomberman Gist](https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c), which has the Gist ID <tt>a62a55f14ed076ec08bccc0302d7f41c</tt>, type the following:
 
 ```
@@ -258,6 +262,10 @@ where *&lt;gist-id&gt;* is the ID of the Gist you want to import,
 and *&lt;target-folder&gt;* is the name of the folder, where the Gist's contents should be stored.
 
 The specification of the target folder is optional. If not specified, the top-level folder is used as target folder.
+
+Please note, that this is a limited function.
+As of a restriction by GitHub, your Minecraft server can only download a maximum number of 50 Gists per hour.
+However, if you want to increase this limit, please consider [configuring a personal GitHub access token](/configuration-file#General).
 
 For example, to import the [Bomberman Gist](https://gist.github.com/mkarneim/a62a55f14ed076ec08bccc0302d7f41c), which has the Gist ID <tt>a62a55f14ed076ec08bccc0302d7f41c</tt>, type the following:
 
