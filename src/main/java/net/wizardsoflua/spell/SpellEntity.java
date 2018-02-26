@@ -9,9 +9,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -121,11 +118,7 @@ public class SpellEntity extends Entity {
       setDead();
       return;
     }
-    try {
-      program.resume();
-    } catch (SpellException e) {
-      handleException(e);
-    }
+    program.resume();
     if (program.isTerminated()) {
       setDead();
     }
@@ -152,14 +145,6 @@ public class SpellEntity extends Entity {
     }
     super.setDead();
     MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
-  }
-
-  private void handleException(SpellException e) {
-    e.printStackTrace();
-    String message = String.format("Error during command execution: %s", e.getMessage());
-    TextComponentString txt = new TextComponentString(message);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-    owner.sendMessage(txt);
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {

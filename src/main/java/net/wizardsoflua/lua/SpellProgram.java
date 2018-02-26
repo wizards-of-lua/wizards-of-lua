@@ -7,7 +7,9 @@ import java.nio.file.FileSystem;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -66,6 +68,7 @@ public class SpellProgram {
   private final String code;
   private final ModuleDependencies dependencies;
   private final DirectCallExecutor executor;
+  private final DirectCallExecutor eventHandlerExecutor;
   private final StateContext stateContext;
   private final Table env;
   private final PatchedCompilerChunkLoader loader;
@@ -96,6 +99,7 @@ public class SpellProgram {
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     this.executor = DirectCallExecutor.newExecutor(createSchedulingContextFactory());
+    this.eventHandlerExecutor = DirectCallExecutor.newExecutor();
     runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
@@ -136,10 +140,24 @@ public class SpellProgram {
 
   private EventHandlers.Context createEventHandlersContext() {
     return new EventHandlers.Context() {
-
       @Override
       public long getCurrentTime() {
         return time.getGameTotalTime();
+      }
+
+      @Override
+      public void call(LuaFunction function, Object... args) {
+        if (isTerminated()) {
+          return;
+        }
+        try {
+          eventHandlerExecutor.call(stateContext, function, args);
+        } catch (CallException | CallPausedException | InterruptedException t) {
+//          state = State.FINISHED;
+          t.printStackTrace();
+          SpellException ex = exceptionFactory.create(t);
+          handleException(ex);
+        }
       }
     };
   }
@@ -187,7 +205,7 @@ public class SpellProgram {
     state = State.FINISHED;
   }
 
-  public void resume() throws SpellException {
+  public void resume() {
     try {
       switch (state) {
         case NEW:
@@ -218,8 +236,17 @@ public class SpellProgram {
           break;
       }
     } catch (Throwable t) {
-      throw exceptionFactory.create(t);
+      SpellException ex = exceptionFactory.create(t);
+      handleException(ex);
     }
+  }
+
+  private void handleException(SpellException e) {
+    e.printStackTrace();
+    String message = String.format("Error during command execution: %s", e.getMessage());
+    TextComponentString txt = new TextComponentString(message);
+    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    owner.sendMessage(txt);
   }
 
   private void compileAndRun()
