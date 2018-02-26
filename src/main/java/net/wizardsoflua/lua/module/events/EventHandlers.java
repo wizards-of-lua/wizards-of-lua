@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
@@ -16,6 +17,8 @@ public class EventHandlers {
 
   public interface Context {
     long getCurrentTime();
+
+    void call(LuaFunction function, Object... args);
   }
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
@@ -30,6 +33,7 @@ public class EventHandlers {
       return context.getCurrentTime();
     }
   };
+  private final Multimap<String, LuaFunction> eventHandlers = HashMultimap.create();
   private final LuaClassLoader classLoader;
   private final Context context;
 
@@ -44,6 +48,16 @@ public class EventHandlers {
       queues.put(name, result);
     }
     return result;
+  }
+
+  public void register(Iterable<String> eventNames, LuaFunction eventHandler) {
+    for (String eventName : eventNames) {
+      register(eventName, eventHandler);
+    }
+  }
+
+  private void register(String eventName, LuaFunction eventHandler) {
+    eventHandlers.put(eventName, eventHandler);
   }
 
   public void disconnect(EventQueue queue) {
@@ -80,9 +94,12 @@ public class EventHandlers {
   }
 
   public void onEvent(String eventName, Event event) {
+    for (LuaFunction eventHandler : eventHandlers.get(eventName)) {
+      Object luaEvent = classLoader.getConverters().toLua(event);
+      context.call(eventHandler, luaEvent);
+    }
     for (EventQueue eventQueue : queues.get(eventName)) {
       eventQueue.add(event);
     }
   }
-
 }
