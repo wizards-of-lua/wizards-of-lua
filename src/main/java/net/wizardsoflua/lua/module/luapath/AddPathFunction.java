@@ -37,7 +37,7 @@ public class AddPathFunction extends NamedFunction1 {
 
   @Override
   public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-    String nameOrUuid = converters.toJava(String.class, arg1, 1, getName());
+    String nameOrUuid = converters.toJava(String.class, arg1, 1, "nameOrUuid", getName());
     String pathElement = this.context.getLuaPathElementOfPlayer(nameOrUuid);
     this.context.addPath(pathElement);
     context.getReturnBuffer().setTo();
