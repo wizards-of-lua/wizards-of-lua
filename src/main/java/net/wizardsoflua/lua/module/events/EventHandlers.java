@@ -11,6 +11,7 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
+import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.data.Data;
 
 public class EventHandlers {
@@ -33,13 +34,29 @@ public class EventHandlers {
       return context.getCurrentTime();
     }
   };
-  private final Multimap<String, LuaFunction> eventHandlers = HashMultimap.create();
+  private final Multimap<String, EventSubscription> subscriptions = HashMultimap.create();
+  private final EventSubscription.Context subscriptionContext = new EventSubscription.Context() {
+    @Override
+    public void unsubscribe(EventSubscription subscription) {
+      for (String eventName : subscription.getEventNames()) {
+        subscriptions.remove(eventName, subscription);
+      }
+    }
+  };
+
   private final LuaClassLoader classLoader;
   private final Context context;
 
   public EventHandlers(LuaClassLoader classLoader, Context context) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
     this.context = requireNonNull(context, "context == null!");
+  }
+
+  /**
+   * @return the value of {@link #subscriptions}
+   */
+  public Multimap<String, EventSubscription> getSubscriptions() {
+    return subscriptions;
   }
 
   public EventQueue connect(Iterable<String> eventNames) {
@@ -50,14 +67,15 @@ public class EventHandlers {
     return result;
   }
 
-  public void register(Iterable<String> eventNames, LuaFunction eventHandler) {
-    for (String eventName : eventNames) {
-      register(eventName, eventHandler);
-    }
+  public EventSubscription subscribe(Iterable<String> eventNames, LuaFunction eventHandler) {
+    return subscribe(new EventSubscription(eventNames, eventHandler, subscriptionContext));
   }
 
-  private void register(String eventName, LuaFunction eventHandler) {
-    eventHandlers.put(eventName, eventHandler);
+  private EventSubscription subscribe(EventSubscription subscription) {
+    for (String eventName : subscription.getEventNames()) {
+      subscriptions.put(eventName, subscription);
+    }
+    return subscription;
   }
 
   public void disconnect(EventQueue queue) {
@@ -94,7 +112,8 @@ public class EventHandlers {
   }
 
   public void onEvent(String eventName, Event event) {
-    for (LuaFunction eventHandler : eventHandlers.get(eventName)) {
+    for (EventSubscription subscription : subscriptions.get(eventName)) {
+      LuaFunction eventHandler = subscription.getEventHandler();
       Object luaEvent = classLoader.getConverters().toLua(event);
       context.call(eventHandler, luaEvent);
     }

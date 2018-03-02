@@ -1,8 +1,7 @@
 package net.wizardsoflua.lua.module.events;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collection;
+import java.util.List;
 
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
@@ -12,7 +11,7 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
-import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
@@ -26,8 +25,10 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
   public EventsModule(LuaClassLoader classLoader, EventHandlers delegate) {
     super(classLoader, null, delegate);
-    OnFunction registerFunction = new OnFunction();
-    addImmutable(registerFunction.getName(), registerFunction);
+    SubscribeFunction subscribeFunction = new SubscribeFunction();
+    addImmutable(subscribeFunction.getName(), subscribeFunction);
+    OnFunction onFunction = new OnFunction();
+    addImmutable(onFunction.getName(), onFunction);
     ConnectFunction connectFunction = new ConnectFunction();
     addImmutable(connectFunction.getName(), connectFunction);
     FireFunction fireFunction = new FireFunction();
@@ -47,35 +48,40 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      Collection<String> eventNames =
-          getConverters().toJavaCollection(String.class, args, getName());
-
+      List<String> eventNames = getConverters().toJavaList(String.class, args, getName());
 
       Table result = new DefaultTable();
-      RunFunction runFunction = new RunFunction(eventNames);
-      result.rawset(runFunction.getName(), runFunction);
+      int idx = 1;
+      for (String eventName : eventNames) {
+        result.rawset(idx++, eventName);
+      }
+
+      Table metatable = new DefaultTable();
+      metatable.rawset("__index", metatable);
+      SubscribeFunction subscribeFunction = new SubscribeFunction();
+      metatable.rawset("call", subscribeFunction);
+      result.setMetatable(metatable);
+
       context.getReturnBuffer().setTo(result);
     }
   }
 
-  private class RunFunction extends NamedFunction1 {
-    private final Collection<String> eventNames;
-
-    public RunFunction(Collection<String> eventNames) {
-      this.eventNames = checkNotNull(eventNames, "eventNames == null!");
-    }
-
+  private class SubscribeFunction extends NamedFunction2 {
     @Override
     public String getName() {
-      return "run";
+      return "call";
     }
 
     @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
+    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
+      Collection<String> eventNames =
+          getConverters().toJavaCollection(String.class, arg1, 1, "eventNames", getName());
       LuaFunction eventHandler =
-          getConverters().toJava(LuaFunction.class, arg1, "eventHandler", getName());
+          getConverters().toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
 
-      delegate.register(eventNames, eventHandler);
+      EventSubscription subscription = delegate.subscribe(eventNames, eventHandler);
+      Object result = getConverters().toLua(subscription);
+      context.getReturnBuffer().setTo(result);
     }
   }
 
@@ -87,8 +93,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      Collection<String> eventNames =
-          getConverters().toJavaCollection(String.class, args, getName());
+      Collection<String> eventNames = getConverters().toJavaList(String.class, args, getName());
       EventQueue eventQueue = delegate.connect(eventNames);
       Object result = getConverters().toLua(eventQueue);
       context.getReturnBuffer().setTo(result);
