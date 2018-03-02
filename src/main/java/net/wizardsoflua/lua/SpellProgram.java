@@ -54,7 +54,7 @@ import net.wizardsoflua.spell.SpellExceptionFactory;
 
 public class SpellProgram {
   private enum State {
-    NEW, PAUSED, FINISHED
+    NEW, PAUSED, FINISHED;
   }
   public interface Context {
     String getLuaPathElementOfPlayer(String nameOrUuid);
@@ -66,7 +66,6 @@ public class SpellProgram {
   private final String code;
   private final ModuleDependencies dependencies;
   private final DirectCallExecutor executor;
-  private final DirectCallExecutor eventHandlerExecutor;
   private final StateContext stateContext;
   private final Table env;
   private final PatchedCompilerChunkLoader loader;
@@ -75,7 +74,7 @@ public class SpellProgram {
   private final LuaClassLoader luaClassLoader;
   private final EventHandlers eventHandlers;
   private ICommandSender owner;
-  private State state;
+  private State state = State.NEW;
 
   private Continuation continuation;
   private SpellEntity spellEntity;
@@ -95,7 +94,6 @@ public class SpellProgram {
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     this.executor = DirectCallExecutor.newExecutor(createSchedulingContextFactory());
-    this.eventHandlerExecutor = DirectCallExecutor.newExecutor();
     runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
@@ -125,8 +123,6 @@ public class SpellProgram {
     ItemsModule.installInto(env, getConverters());
     eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
     EventsModule.installInto(env, luaClassLoader, eventHandlers);
-
-    state = State.NEW;
   }
 
   private Converters getConverters() {
@@ -142,15 +138,9 @@ public class SpellProgram {
 
       @Override
       public void call(LuaFunction function, Object... args) {
-        if (isTerminated()) {
-          return;
-        }
         try {
-          eventHandlerExecutor.call(stateContext, function, args);
-        } catch (CallException | CallPausedException | InterruptedException t) {
-//          state = State.FINISHED;
-          t.printStackTrace();
-          SpellException ex = exceptionFactory.create(t);
+          executor.call(stateContext, function, args);
+        } catch (CallException | CallPausedException | InterruptedException ex) {
           handleException(ex);
         }
       }
@@ -193,52 +183,40 @@ public class SpellProgram {
   }
 
   public boolean isTerminated() {
-    return state == State.FINISHED;
+    return state == State.FINISHED && eventHandlers.getSubscriptions().isEmpty();
   }
 
   public void terminate() {
     state = State.FINISHED;
+    eventHandlers.getSubscriptions().clear();
   }
 
   public void resume() {
     try {
       switch (state) {
         case NEW:
-          try {
-            compileAndRun();
-            state = State.FINISHED;
-          } catch (CallPausedException e) {
-            continuation = e.getContinuation();
-            state = State.PAUSED;
-          } catch (Throwable t) {
-            state = State.FINISHED;
-            throw t;
-          }
+          compileAndRun();
           break;
         case PAUSED:
-          try {
-            executor.resume(continuation);
-            state = State.FINISHED;
-          } catch (CallPausedException e) {
-            continuation = e.getContinuation();
-            state = State.PAUSED;
-          } catch (Throwable t) {
-            state = State.FINISHED;
-            throw t;
-          }
+          executor.resume(continuation);
           break;
-        default:
-          break;
+        case FINISHED:
+          return;
       }
-    } catch (Throwable t) {
-      SpellException ex = exceptionFactory.create(t);
+      state = State.FINISHED;
+    } catch (CallPausedException ex) {
+      continuation = ex.getContinuation();
+      state = State.PAUSED;
+    } catch (Exception ex) {
       handleException(ex);
     }
   }
 
-  private void handleException(SpellException e) {
-    e.printStackTrace();
-    String message = String.format("Error during command execution: %s", e.getMessage());
+  private void handleException(Exception ex) {
+    terminate();
+    SpellException s = exceptionFactory.create(ex);
+    s.printStackTrace();
+    String message = String.format("Error during command execution: %s", s.getMessage());
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
