@@ -13,6 +13,8 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import com.google.common.primitives.Primitives;
+
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -260,6 +262,7 @@ public class Converters {
   }
 
   private <J> J toJava(Class<J> type, Object luaObject) throws BadArgumentException {
+    type = Primitives.wrap(type);
     if (luaObject == null) {
       throw badArgument(type, luaObject);
     }
@@ -290,16 +293,16 @@ public class Converters {
     if (type == String.class) {
       return Conversions.javaRepresentationOf(luaObject);
     }
-    if (type == Double.class || type == double.class) {
+    if (type == Double.class) {
       return castToDouble(luaObject);
     }
-    if (type == Float.class || type == float.class) {
+    if (type == Float.class) {
       return castToFloat(luaObject);
     }
-    if (type == Integer.class || type == int.class) {
+    if (type == Integer.class) {
       return castToInt(luaObject);
     }
-    if (type == Long.class || type == long.class) {
+    if (type == Long.class) {
       return castToLong(luaObject);
     }
     if (Enum.class.isAssignableFrom(type)) {
