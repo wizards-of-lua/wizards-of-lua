@@ -80,4 +80,23 @@ public class BlockPlaceEventTest extends WolTestBase {
     assertThat(mc().nextServerMessage()).isEqualTo("dirt");
   }
 
+  // /test net.wizardsoflua.tests.BlockPlaceEventTest test_cancel
+  @Test
+  public void test_cancel() {
+    // Given:
+    BlockSand sand = Blocks.SAND;
+    mc().player().setMainHandItem(new ItemStack(sand));
+    mc().player().setPosition(playerPos);
+
+    // When:
+    mc().executeCommand("lua Events.on('BlockPlaceEvent'):call(function(event)\n"//
+        + "event.canceled = true\n"//
+        + "end)\n"//
+    );
+    mc().player().rightclick(clickPos, UP);
+
+    // Then:
+    assertThat(mc().getBlock(blockPos).getBlock()).isEqualTo(Blocks.AIR);
+  }
+
 }
