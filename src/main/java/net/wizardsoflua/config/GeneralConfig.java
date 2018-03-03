@@ -20,9 +20,9 @@ public class GeneralConfig {
   }
 
   /**
-   * Max. number of Lua ticks a spell can run per game tick [range: 1000 ~ 10000000, default: 10000]
+   * Max. number of Lua ticks a spell can run per game tick [range: 1000 ~ 10000000, default: 50000]
    */
-  private int luaTicksLimit = 10000;
+  private int luaTicksLimit = 50000;
   /**
    * Shows the about message to the player at first login [default: true]
    */
