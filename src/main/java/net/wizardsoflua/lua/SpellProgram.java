@@ -144,9 +144,10 @@ public class SpellProgram {
       @Override
       public void call(LuaFunction function, Object... args) {
         try {
+          time.resetAllowance();
           executor.call(stateContext, function, args);
         } catch (CallException | CallPausedException | InterruptedException ex) {
-          handleException(ex);
+          handleException("event handling", ex);
         }
       }
     };
@@ -213,15 +214,15 @@ public class SpellProgram {
       continuation = ex.getContinuation();
       state = State.PAUSED;
     } catch (Exception ex) {
-      handleException(ex);
+      handleException("command execution", ex);
     }
   }
 
-  private void handleException(Exception ex) {
+  private void handleException(String during, Exception ex) {
     terminate();
     SpellException s = exceptionFactory.create(ex);
     s.printStackTrace();
-    String message = String.format("Error during command execution: %s", s.getMessage());
+    String message = String.format("Error during %s: %s", during, s.getMessage());
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
