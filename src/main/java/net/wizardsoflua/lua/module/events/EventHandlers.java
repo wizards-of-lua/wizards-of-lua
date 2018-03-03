@@ -113,11 +113,17 @@ public class EventHandlers {
 
   public void onEvent(String eventName, Event event) {
     for (EventSubscription subscription : subscriptions.get(eventName)) {
+      if (event.isCanceled()) {
+        return;
+      }
       LuaFunction eventHandler = subscription.getEventHandler();
       Object luaEvent = classLoader.getConverters().toLua(event);
       context.call(eventHandler, luaEvent);
     }
     for (EventQueue eventQueue : queues.get(eventName)) {
+      if (event.isCanceled()) {
+        return;
+      }
       eventQueue.add(event);
     }
   }
