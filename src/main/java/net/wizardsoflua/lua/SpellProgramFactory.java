@@ -3,7 +3,6 @@ package net.wizardsoflua.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.time.Clock;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -11,25 +10,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
-import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.system.SystemAdapter;
-import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.profiles.Profiles;
 
 public class SpellProgramFactory {
 
-  public interface Context {
-    Clock getClock();
-
-    int getLuaTicksLimit();
-
+  public interface Context extends SpellProgram.Context {
     Profiles getProfiles();
 
     String getSharedLuaPath();
-
-    String getLuaPathElementOfPlayer(String nameOrUuid);
-
-    LuaFunctionBinaryCache getLuaFunctionBinaryCache();
 
     File getScriptDir();
 
@@ -47,10 +36,9 @@ public class SpellProgramFactory {
   public SpellProgram create(World world, ICommandSender owner, String code) {
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
-    Time time = createTime(world);
     SystemAdapter systemAdapter = createSystemAdapter();
-    SpellProgram.Context context = createSpellProgramContext(world, owner);
-    return new SpellProgram(owner, code, dependencies, defaultLuaPath, time, systemAdapter, context);
+    return new SpellProgram(owner, code, dependencies, defaultLuaPath, world, systemAdapter,
+        context);
   }
 
   private String getDefaultLuaPath(ICommandSender owner) {
@@ -62,36 +50,9 @@ public class SpellProgramFactory {
     return context.getSharedLuaPath();
   }
 
-  private Time createTime(World world) {
-    Time.Context timeContext = new Time.Context() {
-      @Override
-      public Clock getClock() {
-        return context.getClock();
-      }
-    };
-    int luaTicksLimit = context.getLuaTicksLimit();
-    return new Time(world, luaTicksLimit, timeContext);
-  }
-
   private SystemAdapter createSystemAdapter() {
     return new SystemAdapter(context.isScriptGatewayEnabled(), context.getScriptTimeoutMillis(),
         context.getScriptDir());
-  }
-
-  private SpellProgram.Context createSpellProgramContext(World world, ICommandSender owner) {
-    checkNotNull(world, "world==null!");
-
-    return new SpellProgram.Context() {
-      @Override
-      public String getLuaPathElementOfPlayer(String nameOrUuid) {
-        return context.getLuaPathElementOfPlayer(nameOrUuid);
-      }
-
-      @Override
-      public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
-        return context.getLuaFunctionBinaryCache();
-      }
-    };
   }
 
   private ModuleDependencies createDependencies(ICommandSender owner) {

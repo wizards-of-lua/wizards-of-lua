@@ -5,13 +5,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import net.minecraft.world.World;
+import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 
 public class Time {
   public interface Context {
     Clock getClock();
+
+    boolean isHandlingEvent();
   }
+
   private final Context context;
-  
+
   private final World world;
   private final int luaTicksLimit;
   private final int sleepTrigger;
@@ -32,15 +36,15 @@ public class Time {
     this.allowance = luaTicksLimit;
     this.spellCreatedGameTime = world.getTotalWorldTime();
   }
-  
+
   public boolean isAutoSleep() {
     return autoSleep;
   }
-  
+
   public void setAutoSleep(boolean isAutoSleep) {
     this.autoSleep = isAutoSleep;
   }
-  
+
   public void resetAllowance() {
     this.allowance = luaTicksLimit;
   }
@@ -58,6 +62,9 @@ public class Time {
   }
 
   public void startSleep(long duration) {
+    if (context.isHandlingEvent()) {
+      throw new IllegalOperationAttemptException("attempt to sleep");
+    }
     if (duration <= 0 && allowance < sleepTrigger) {
       duration = 1;
     }
@@ -72,7 +79,7 @@ public class Time {
     luaTotalTicks += ticks;
     allowance -= ticks;
   }
-  
+
   public long getLuaTicks() {
     return luaTotalTicks;
   }
@@ -82,7 +89,7 @@ public class Time {
   }
 
   public boolean shouldPause() {
-    if ( isSleeping()) {
+    if (isSleeping()) {
       return true;
     }
     if (autoSleep) {
@@ -94,7 +101,7 @@ public class Time {
     }
     return false;
   }
-  
+
   public String getDate(String pattern) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     if (pattern != null) {
