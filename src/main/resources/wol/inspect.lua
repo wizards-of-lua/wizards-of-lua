@@ -236,9 +236,7 @@ function Inspector:putKey(k)
   self:puts("]")
 end
 
-function Inspector:putTable(t)
-  -- PATCHED by m.karneim
-  sleep(0)
+function Inspector:putTable(t)  
   if t == inspect.KEY or t == inspect.METATABLE then
     self:puts(tostring(t))
   elseif self:alreadyVisited(t) then
