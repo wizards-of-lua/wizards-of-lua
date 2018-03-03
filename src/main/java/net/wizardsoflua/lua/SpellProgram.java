@@ -43,6 +43,8 @@ import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
+import net.wizardsoflua.lua.module.system.SystemAdapter;
+import net.wizardsoflua.lua.module.system.SystemModule;
 import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.lua.module.types.TypesModule;
@@ -81,7 +83,7 @@ public class SpellProgram {
   private final Context context;
 
   SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
-      String defaultLuaPath, Time time, Context context) {
+      String defaultLuaPath, Time time, SystemAdapter systemAdapter, Context context) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
@@ -117,6 +119,7 @@ public class SpellProgram {
       }
     });
     TimeModule.installInto(env, luaClassLoader, time);
+    SystemModule.installInto(env, luaClassLoader, systemAdapter);
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());
     eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
