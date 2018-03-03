@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 
@@ -19,37 +18,62 @@ public class SystemAdapter {
   private final long scriptTimeoutMillis;
   private final Path scriptDir;
 
+  private Process currentProcess;
+  private String currentCommand;
+  private long started = Long.MAX_VALUE;
+
   public SystemAdapter(boolean enabled, long scriptTimeoutMillis, File scriptDir) {
     this.enabled = enabled;
     this.scriptTimeoutMillis = scriptTimeoutMillis;
     this.scriptDir = scriptDir.toPath().normalize();
   }
 
-  public ExecutionResult execute(Collection<String> command) {
+  public void execute(Collection<String> command) {
     if (!enabled) {
       throw new IllegalStateException(
           "Can't execute command! ScriptGateway is disabled in config.");
+    }
+    if (currentProcess != null) {
+      throw new IllegalStateException(
+          "Can't execute command! Already waiting for a command to terminate.");
     }
     if (command.isEmpty()) {
       throw new IllegalArgumentException("Can't execute empty command!");
     }
     try {
       List<String> commandList = toCommandList(command);
-
-      Process p = new ProcessBuilder(commandList).directory(scriptDir.toFile()).start();
-      boolean terminated = p.waitFor(scriptTimeoutMillis, TimeUnit.MILLISECONDS);
-      if (!terminated) {
-        p.destroy();
-        throw new RuntimeException(
-            String.format("Command '%s' did not terminate before timeout.", command));
-      } else {
-        InputStream in = p.getInputStream();
-        int exitValue = p.exitValue();
-        String response = IOUtils.toString(in, StandardCharsets.UTF_8.name());
-        return new ExecutionResult(exitValue, response);
-      }
-    } catch (IOException | InterruptedException e) {
+      currentCommand = String.join(" ", command);
+      currentProcess = new ProcessBuilder(commandList).directory(scriptDir.toFile()).start();
+      started = System.currentTimeMillis();
+    } catch (IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public ExecutionResult getExecutionResult() {
+    boolean alive = currentProcess.isAlive();
+    try {
+      if (alive) {
+        if (!isTimeoutReached()) {
+          throw new IllegalStateException("Can't get execution result! Command is still running!");
+        }
+        currentProcess.destroy();
+        throw new RuntimeException(
+            String.format("Command '%s' did not terminate before timeout.", currentCommand));
+      } else {
+        try {
+          InputStream in = currentProcess.getInputStream();
+          int exitValue = currentProcess.exitValue();
+          String response = IOUtils.toString(in, StandardCharsets.UTF_8.name());
+          return new ExecutionResult(exitValue, response);
+        } catch (IOException e) {
+          throw new RuntimeException("Error while accessing execution result!", e);
+        }
+      }
+    } finally {
+      currentProcess = null;
+      currentCommand = null;
+      started = Long.MAX_VALUE;
     }
   }
 
@@ -67,6 +91,14 @@ public class SystemAdapter {
           String.format("Invalid command! File '%s' found!", commandFile));
     }
     return commandFile.toString();
+  }
+
+  public boolean shouldPause() {
+    return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
+  }
+
+  private boolean isTimeoutReached() {
+    return (started + scriptTimeoutMillis < System.currentTimeMillis());
   }
 
 }

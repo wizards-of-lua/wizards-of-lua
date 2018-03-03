@@ -79,6 +79,7 @@ public class SpellProgram {
   private Continuation continuation;
   private SpellEntity spellEntity;
   private Time time;
+  private SystemAdapter systemAdapter;
   private String defaultLuaPath;
   private final Context context;
 
@@ -89,6 +90,7 @@ public class SpellProgram {
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");;
     this.time = checkNotNull(time, "time==null!");
+    this.systemAdapter = checkNotNull(systemAdapter, "systemAdapter==null!");;
     this.context = checkNotNull(context, "context==null!");
 
     stateContext = StateContexts.newDefaultInstance();
@@ -151,7 +153,7 @@ public class SpellProgram {
 
           @Override
           public boolean shouldPause() {
-            boolean result = time.shouldPause() || eventHandlers.shouldPause();
+            boolean result = time.shouldPause() || eventHandlers.shouldPause() || systemAdapter.shouldPause();
             return result;
           }
 
