@@ -69,7 +69,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
   private class SubscribeFunction extends NamedFunction2 {
     @Override
     public String getName() {
-      return "call";
+      return "subscribe";
     }
 
     @Override
