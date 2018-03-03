@@ -3,6 +3,7 @@ package net.wizardsoflua.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.nio.file.FileSystem;
+import java.time.Clock;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -60,6 +62,10 @@ public class SpellProgram {
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
     LuaFunctionBinaryCache getLuaFunctionBinaryCache();
+
+    Clock getClock();
+
+    int getLuaTicksLimit();
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -82,14 +88,29 @@ public class SpellProgram {
   private String defaultLuaPath;
   private final Context context;
 
+  private boolean handlingEvent;
+
   SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
-      String defaultLuaPath, Time time, Context context) {
+      String defaultLuaPath, World world, Context context) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
-    this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");;
-    this.time = checkNotNull(time, "time==null!");
+    this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");
     this.context = checkNotNull(context, "context==null!");
+
+
+    int luaTicksLimit = context.getLuaTicksLimit();
+    time = new Time(world, luaTicksLimit, new Time.Context() {
+      @Override
+      public Clock getClock() {
+        return context.getClock();
+      }
+
+      @Override
+      public boolean isHandlingEvent() {
+        return handlingEvent;
+      }
+    });
 
     stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
@@ -139,10 +160,13 @@ public class SpellProgram {
       @Override
       public void call(LuaFunction function, Object... args) {
         try {
+          handlingEvent = true;
           time.resetAllowance();
           executor.call(stateContext, function, args);
         } catch (CallException | CallPausedException | InterruptedException ex) {
           handleException("event handling", ex);
+        } finally {
+          handlingEvent = false;
         }
       }
     };
@@ -157,6 +181,9 @@ public class SpellProgram {
 
           @Override
           public boolean shouldPause() {
+            if (handlingEvent) {
+              return false;
+            }
             boolean result = time.shouldPause() || eventHandlers.shouldPause();
             return result;
           }
