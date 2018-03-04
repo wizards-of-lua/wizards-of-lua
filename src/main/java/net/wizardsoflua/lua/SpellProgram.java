@@ -161,7 +161,6 @@ public class SpellProgram {
       public void call(LuaFunction function, Object... args) {
         try {
           handlingEvent = true;
-          time.resetAllowance();
           executor.call(stateContext, function, args);
         } catch (CallException | CallPausedException | InterruptedException ex) {
           handleException("event handling", ex);
