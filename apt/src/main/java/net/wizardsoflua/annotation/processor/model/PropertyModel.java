@@ -23,15 +23,17 @@ public class PropertyModel {
       boolean nullable = false;
       String getterName = methodName;
       String setterName = null;
+      TypeMirror getterType = method.getReturnType();
       TypeMirror setterType = null;
-      return new PropertyModel(name, nullable, getterName, setterName, setterType);
+      return new PropertyModel(name, nullable, getterName, setterName, getterType, setterType);
     } else if (isSetter(method)) {
       VariableElement parameter = method.getParameters().get(0);
       boolean nullable = parameter.getAnnotation(Nullable.class) != null;
       String getterName = null;
       String setterName = methodName;
+      TypeMirror getterType = null;
       TypeMirror setterType = parameter.asType();
-      return new PropertyModel(name, nullable, getterName, setterName, setterType);
+      return new PropertyModel(name, nullable, getterName, setterName, getterType, setterType);
     } else {
       throw LuaPropertyUtils.neitherGetterNorSetter(method);
     }
@@ -41,14 +43,16 @@ public class PropertyModel {
   private boolean nullable;
   private @Nullable String getterName;
   private @Nullable String setterName;
+  private @Nullable TypeMirror getterType;
   private @Nullable TypeMirror setterType;
 
   public PropertyModel(String name, boolean nullable, @Nullable String getterName,
-      @Nullable String setterName, @Nullable TypeMirror setterType) {
+      @Nullable String setterName, @Nullable TypeMirror getterType, @Nullable TypeMirror setterType) {
     this.name = requireNonNull(name, "name == null!");
     this.nullable = nullable;
     this.getterName = getterName;
     this.setterName = setterName;
+    this.getterType = getterType;
     this.setterType = setterType;
   }
 
@@ -56,16 +60,20 @@ public class PropertyModel {
     return name;
   }
 
-  public @Nullable String getGetterName() {
-    return getterName;
-  }
-
   public boolean isNullable() {
     return nullable;
   }
 
+  public @Nullable String getGetterName() {
+    return getterName;
+  }
+
   public @Nullable String getSetterName() {
     return setterName;
+  }
+
+  public @Nullable TypeMirror getGetterType() {
+    return getterType;
   }
 
   public @Nullable TypeMirror getSetterType() {
@@ -87,6 +95,7 @@ public class PropertyModel {
     nullable |= other.nullable;
     getterName = getterName == null ? other.getterName : getterName;
     setterName = setterName == null ? other.setterName : setterName;
+    getterType = getterType == null ? other.getterType : getterType;
     setterType = setterType == null ? other.setterType : setterType;
   }
 }

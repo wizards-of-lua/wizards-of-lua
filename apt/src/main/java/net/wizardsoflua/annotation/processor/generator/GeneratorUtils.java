@@ -31,11 +31,12 @@ import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class GeneratorUtils {
   public static MethodSpec createDelegatingGetter(PropertyModel property, String delegateVariable) {
+    TypeMirror getterType = property.getGetterType();
     String getterName = property.getGetterName();
     return methodBuilder(getterName)//
         .addModifiers(PRIVATE)//
         .returns(Object.class)//
-        .addStatement("Object result = $L.$L()", delegateVariable, getterName)//
+        .addStatement("$T result = $L.$L()", getterType, delegateVariable, getterName)//
         .addStatement("return getConverters().toLuaNullable(result)") //
         .build();
   }

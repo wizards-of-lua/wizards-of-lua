@@ -1,3 +1,7 @@
+/*
+ * Recompile annotation processor after change, for use in IDE.
+ * - gradlew apt:jar
+ */
 buildscript {
     repositories {
         jcenter()
