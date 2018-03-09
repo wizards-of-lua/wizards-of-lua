@@ -29,9 +29,16 @@ Now import the project into Eclipse:
 * Open Eclipse and execute "File > Import > Existing Projects into Workspace"
 * Choose the `wizards-of-lua` directory
 
-## How to Run Minecraft from Eclipse
+## How to Run the Minecraft Client from Eclipse
 * Add a runtime configuration to the project
 * Set `GradleStart` as main class
+* Add the following programm argument: `-username=testplayer`. This will login the client with the name "testplayer" instead of a random choosen one, which ensures a constant UUID for your player, and hence, a constant personal directory on the server's file system, which you might want if you want to keep your lua files.
+* Add the following VM arguments: `-DFORGE_FORCE_FRAME_RECALC=true`
+* Set the working directory to: `${workspace_loc:wizards-of-lua}/run`
+
+## How to Run the Minecraft Server from Eclipse
+* Add a runtime configuration to the project
+* Set `GradleStartServer` as main class
 * Add the following VM arguments: `-DFORGE_FORCE_FRAME_RECALC=true`
 * Set the working directory to: `${workspace_loc:wizards-of-lua}/run`
 
@@ -42,6 +49,9 @@ Please note that you can not use the `build` task right now since the automated 
 run successfully when executed from Gradle.
 
 As a result you will find the mod JAR file in `build/libs`.
+
+## How to Run the Integration Tests
+* Start the 
 
 ## How to Install the Mod into Minecraft 
 * Install Forge
