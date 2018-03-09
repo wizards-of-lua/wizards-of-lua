@@ -15,7 +15,11 @@ public class Permissions {
   }
 
   public boolean hasOperatorPrivileges(UUID playerId) {
+    if (server.isSinglePlayer() && server.worlds[0].getWorldInfo().areCommandsAllowed()) {
+      return true;
+    }
     EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(playerId);
+    
     UserListOpsEntry entry = (UserListOpsEntry) server.getPlayerList().getOppedPlayers()
         .getEntry(player.getGameProfile());
     return entry != null;
