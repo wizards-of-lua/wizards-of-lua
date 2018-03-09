@@ -11,8 +11,7 @@ properties:
     should go to sleep automatically when its allowance is exceeded.
     If this is set to false, the spell will never go to sleep automatically,
     but instead will be broken when its allowance reaches zero.
-    Default is true normally, but in an event listener 'autosleep' is always false and can't be changed.
-    See [Events.subscribe](/modules/Events#subscribe) for more information on event listeners.
+    Default is true normally, but in an [event listener](/modules/Events#subscribe) 'autosleep' is always false and can't be changed.
     "
   - name: allowance
     type: number
