@@ -31,6 +31,10 @@ RestApi {
   webDir="www",
   uuid="fd19a362-04fa-4a92-9481-cd21a85c44d8",
   apiKey="sVu4QB1joXfQCM_DUAcFpw" }
+ScriptGateway {
+  enabled=true,
+  timeoutMillis=2000,
+  dir="scripts" }
 Wizard {
   id="0c77f1a8-943b-4f7b-aa09-f2b1737d4f03",
   libDir="0c77f1a8-943b-4f7b-aa09-f2b1737d4f03",
@@ -100,6 +104,16 @@ Default is "www".
 * **uuid**: this is the REST servers UUID. This is currently not used, but may be used in a future version of this mod for
 authentication purpose.
 * **apiKey**: this is the server's randomly generated key that is used for authenticating a REST client (e.g. the web browser). This is used if you want to edit Lua files with your web browser. You should not edit its value. If you want to change it, please do so by deleting it and restarting the server.
+
+
+### ScriptGateway
+This function sets the mod's script gateway configuration.
+* **enabled**: defines whether the script gateway is enabled. If enabled, any spell can use the [System.execute() function](/modules/System#execute) to run any program from the scripts directory on the server's operating system.
+Default is false.
+* **timeoutMillis**: defines how many milliseconds a spell will wait for the normal termination of the executed program.
+When the timeout is reached, Minecraft will try to terminate the program.
+* **dir**: defines the relative or absolute location of the directory where all executable scripts and programs are stored.
+Default is "scripts".
 
 ### Wizard
 This function adds a player-specific configuration.
