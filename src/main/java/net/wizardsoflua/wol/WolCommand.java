@@ -24,7 +24,9 @@ import net.wizardsoflua.wol.file.FileEditAction;
 import net.wizardsoflua.wol.file.FileMoveAction;
 import net.wizardsoflua.wol.file.FileSection;
 import net.wizardsoflua.wol.gist.GistGetAction;
+import net.wizardsoflua.wol.luatickslimit.PrintEventListenerLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
+import net.wizardsoflua.wol.luatickslimit.SetEventListenerLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
@@ -62,6 +64,7 @@ public class WolCommand extends CommandBase {
       put("browser", new BrowserMenu());
       put("shared-file", new SharedFileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
+      put("eventListenerLuaTicksLimit", new EventListenerLuaTicksLimitMenu());
     }
   }
   class FileMenu extends Menu {
@@ -95,6 +98,12 @@ public class WolCommand extends CommandBase {
     LuaTicksLimitMenu() {
       put(new PrintLuaTicksLimitAction(wol));
       put("set", new SetLuaTicksLimitAction(wol));
+    }
+  }
+  class EventListenerLuaTicksLimitMenu extends Menu {
+    EventListenerLuaTicksLimitMenu() {
+      put(new PrintEventListenerLuaTicksLimitAction(wol));
+      put("set", new SetEventListenerLuaTicksLimitAction(wol));
     }
   }
   class BrowserMenu extends Menu {

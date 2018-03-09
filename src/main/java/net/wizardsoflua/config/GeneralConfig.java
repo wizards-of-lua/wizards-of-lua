@@ -24,6 +24,10 @@ public class GeneralConfig {
    */
   private int luaTicksLimit = 50000;
   /**
+   * Max. number of Lua ticks a event listener can run per event [range: 1000 ~ 10000000, default: 50000]
+   */
+  private int eventListenerLuaTicksLimit = 50000;
+  /**
    * Shows the about message to the player at first login [default: true]
    */
   private boolean showAboutMessage = true;
@@ -59,6 +63,7 @@ public class GeneralConfig {
 
   public Table writeTo(Table table) {
     table.rawset("luaTicksLimit", luaTicksLimit);
+    table.rawset("eventListenerLuaTickLimit", eventListenerLuaTicksLimit);
     table.rawset("showAboutMessage", showAboutMessage);
     table.rawset("luaLibDirHome", luaLibDirHome);
     table.rawset("sharedLibDir", sharedLibDir);
@@ -80,6 +85,22 @@ public class GeneralConfig {
       context.save();
     }
     return this.luaTicksLimit;
+  }
+
+  public int getEventListenerLuaTicksLimit() {
+    return eventListenerLuaTicksLimit;
+  }
+
+  public int setEventListenerLuaTicksLimit(int eventListenerLuaTicksLimit) {
+    return setEventListenerLuaTicksLimit(eventListenerLuaTicksLimit, true);
+  }
+
+  private int setEventListenerLuaTicksLimit(int eventListenerLuaTicksLimit, boolean save) {
+    this.eventListenerLuaTicksLimit = clamp(eventListenerLuaTicksLimit, 1000, 10000000);
+    if (save) {
+      context.save();
+    }
+    return this.eventListenerLuaTicksLimit;
   }
 
   private int clamp(int value, int min, int max) {
