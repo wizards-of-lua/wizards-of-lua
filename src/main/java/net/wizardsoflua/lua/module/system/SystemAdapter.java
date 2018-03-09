@@ -85,7 +85,11 @@ public class SystemAdapter {
   }
 
   private String toFilename(String name) {
-    Path commandFile = scriptDir.resolve(name);
+    Path commandFile = scriptDir.resolve(name).normalize();
+    if (!commandFile.startsWith(scriptDir)) {
+      throw new IllegalArgumentException(
+          String.format("Illegal command! Execution of file '%s' not allowed!", commandFile));
+    }
     if (!Files.exists(commandFile)) {
       throw new IllegalArgumentException(
           String.format("Invalid command! File '%s' found!", commandFile));
