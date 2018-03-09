@@ -2,6 +2,7 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
 import java.time.Clock;
 
 import net.minecraft.command.ICommandSender;
@@ -11,6 +12,7 @@ import net.minecraft.world.World;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
+import net.wizardsoflua.lua.module.system.SystemAdapter;
 import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.profiles.Profiles;
 
@@ -28,6 +30,12 @@ public class SpellProgramFactory {
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
     LuaFunctionBinaryCache getLuaFunctionBinaryCache();
+
+    File getScriptDir();
+
+    long getScriptTimeoutMillis();
+
+    boolean isScriptGatewayEnabled();
   }
 
   private final Context context;
@@ -40,8 +48,9 @@ public class SpellProgramFactory {
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
     Time time = createTime(world);
+    SystemAdapter systemAdapter = createSystemAdapter();
     SpellProgram.Context context = createSpellProgramContext(world, owner);
-    return new SpellProgram(owner, code, dependencies, defaultLuaPath, time, context);
+    return new SpellProgram(owner, code, dependencies, defaultLuaPath, time, systemAdapter, context);
   }
 
   private String getDefaultLuaPath(ICommandSender owner) {
@@ -62,6 +71,11 @@ public class SpellProgramFactory {
     };
     int luaTicksLimit = context.getLuaTicksLimit();
     return new Time(world, luaTicksLimit, timeContext);
+  }
+
+  private SystemAdapter createSystemAdapter() {
+    return new SystemAdapter(context.isScriptGatewayEnabled(), context.getScriptTimeoutMillis(),
+        context.getScriptDir());
   }
 
   private SpellProgram.Context createSpellProgramContext(World world, ICommandSender owner) {

@@ -102,7 +102,7 @@ public class WizardsOfLua {
 
       @Override
       public boolean shouldShowAboutMessage() {
-        return config.getGeneralConfig().isShowAboutMessage();
+        return getConfig().getGeneralConfig().isShowAboutMessage();
       }
 
       @Override
@@ -143,7 +143,7 @@ public class WizardsOfLua {
 
       @Override
       public int getLuaTicksLimit() {
-        return config.getGeneralConfig().getLuaTicksLimit();
+        return getConfig().getGeneralConfig().getLuaTicksLimit();
       }
 
       @Override
@@ -158,7 +158,7 @@ public class WizardsOfLua {
 
       @Override
       public String getSharedLuaPath() {
-        return config.getSharedLuaPath();
+        return getConfig().getSharedLuaPath();
       }
 
       @Override
@@ -170,6 +170,22 @@ public class WizardsOfLua {
       public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
         return luaFunctionCache;
       }
+
+      @Override
+      public boolean isScriptGatewayEnabled() {
+        return getConfig().getScriptGatewayConfig().isEnabled();
+      }
+
+      @Override
+      public File getScriptDir() {
+        return getConfig().getScriptGatewayConfig().getDir();
+      }
+
+      @Override
+      public long getScriptTimeoutMillis() {
+        return getConfig().getScriptGatewayConfig().getTimeoutMillis();
+      }
+
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {

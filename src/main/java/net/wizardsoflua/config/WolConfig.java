@@ -57,8 +57,8 @@ public class WolConfig {
     return new WolConfig(wolConfigFile);
   }
 
-  private class SubContextImpl
-      implements RestApiConfig.Context, GeneralConfig.Context, WizardConfig.Context {
+  private class SubContextImpl implements RestApiConfig.Context, GeneralConfig.Context,
+      WizardConfig.Context, ScriptGatewayConfig.Context {
 
     @Override
     public void save() {
@@ -83,6 +83,7 @@ public class WolConfig {
 
   private GeneralConfig generalConfig;
   private RestApiConfig restApiConfig;
+  private ScriptGatewayConfig scriptGatewayConfig;
   private final Map<UUID, WizardConfig> wizards = new HashMap<>();
 
   public WolConfig(File configFile)
@@ -97,6 +98,7 @@ public class WolConfig {
     }
     generalConfig = new GeneralConfig(subContextImpl);
     restApiConfig = new RestApiConfig(subContextImpl);
+    scriptGatewayConfig = new ScriptGatewayConfig(subContextImpl);
 
     // Fix for issue #73 - Server still crashing when config file is a directory
     if (configFile.exists() && configFile.isDirectory()) {
@@ -113,6 +115,7 @@ public class WolConfig {
     Table env = state.newTable();
     env.rawset("General", new GeneralFunction());
     env.rawset("RestApi", new RestFunction());
+    env.rawset("ScriptGateway", new ScriptGatewayFunction());
     env.rawset("Wizard", new WizardFunction());
 
     ChunkLoader loader = CompilerChunkLoader.of("WolConfigFile");
@@ -131,6 +134,10 @@ public class WolConfig {
 
   public RestApiConfig getRestApiConfig() {
     return restApiConfig;
+  }
+
+  public ScriptGatewayConfig getScriptGatewayConfig() {
+    return scriptGatewayConfig;
   }
 
   public Collection<WizardConfig> getWizards() {
@@ -192,6 +199,10 @@ public class WolConfig {
     TableUtils.writeTo(out, restApiConfig.writeTo(new DefaultTable()));
     out.write("\n");
 
+    out.write("ScriptGateway ");
+    TableUtils.writeTo(out, scriptGatewayConfig.writeTo(new DefaultTable()));
+    out.write("\n");
+
     for (WizardConfig wizardConfig : wizards.values()) {
       out.write("Wizard ");
       TableUtils.writeTo(out, wizardConfig.writeTo(new DefaultTable()));
@@ -229,6 +240,23 @@ public class WolConfig {
       checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
       Table table = (Table) arg1;
       restApiConfig = new RestApiConfig(table, subContextImpl);
+      context.getReturnBuffer().setTo();
+    }
+
+    @Override
+    public void resume(ExecutionContext context, Object suspendedState) {}
+  }
+
+  private class ScriptGatewayFunction extends AbstractFunction1 {
+
+    public ScriptGatewayFunction() {}
+
+    @Override
+    public void invoke(ExecutionContext context, Object arg1) {
+      checkNotNull(arg1, "arg1==null!");
+      checkArgument(arg1 instanceof Table, "arg1 must be instance of table!");
+      Table table = (Table) arg1;
+      scriptGatewayConfig = new ScriptGatewayConfig(table, subContextImpl);
       context.getReturnBuffer().setTo();
     }
 
