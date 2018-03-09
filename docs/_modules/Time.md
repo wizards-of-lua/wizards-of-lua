@@ -10,14 +10,15 @@ properties:
     description: "The autosleep value defines whether the current spell
     should go to sleep automatically when its allowance is exceeded.
     If this is set to false, the spell will never go to sleep automatically,
-    but instead will be broken when its allowance falls below zero.
-    Default is true.
+    but instead will be broken when its allowance reaches zero.
+    Default is true normally, but in an event listener 'autosleep' is always false and can't be changed.
+    See [Events.subscribe](/modules/Events#subscribe) for more information on event listeners.
     "
   - name: allowance
     type: number
     access: r
     description: "The allowance is the number of lua ticks that are left before
-    the active spell must sleep for at least one game tick.
+    the spell or event handler is broken or sent to sleep, depending on [autosleep](#autosleep).
     "
   - name: realtime
     type: number
@@ -35,7 +36,7 @@ properties:
     type: number
     access: r
     description: "The luatime is the number of lua ticks that the current spell
-    has worked since it has been casted.
+    has worked since it has been casted. This includes lua ticks of event listeners.
     "
 functions:
   - name: getDate

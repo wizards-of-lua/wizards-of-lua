@@ -288,20 +288,29 @@ Alternatively you also could use the Gist's URL instead of its ID:
 The <tt>luaTicksLimit</tt> value defines how many Lua ticks each spell can use during
 a single game tick. When this value is exceeded, the spell will be broken or
 sent to sleep for one game tick. This depends on the [Time.autosleep](/modules/Time/#autosleep) setting.
+For event listeners use <tt>eventListenerLuaTicksLimit</tt>.
+This value defines how many Lua ticks an event handler can use for each event.
 
 ### Showing the Lua Ticks Limit
 ```
 /wol luaTicksLimit
 ```
-This will print the current value into your chat screen.
+and
+```
+/wol eventListenerLuaTicksLimit
+```
+This will print the current values into your chat screen.
 
 ### Setting the Lua Ticks Limit
 ```
 /wol luaTicksLimit set 100000
 ```
-This will set the number of Lua tick a spell can use during a single game tick to 100000.
+and
+```
+/wol eventListenerLuaTicksLimit set 100000
+```
 Allowed are values between 1000 and 10000000.
-Default is 10000.
+Default is 50000.
 
 The new value will also stored into the config file at <tt>config/wizards-of-lua/wizards-of-lua.luacfg</tt>, which means that it survives a server restart.
 

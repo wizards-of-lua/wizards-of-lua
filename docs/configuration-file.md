@@ -16,7 +16,8 @@ Otherwise your changes will be ignored and might get overwritten when the mod's 
 Here is an example of the <tt>wizards-of-lua.luacfg</tt>:
 ```lua
 General {
-  luaTicksLimit=10000,
+  luaTicksLimit=50000,
+  eventListenerLuaTicksLimit=50000,
   showAboutMessage=true,
   luaLibDirHome="libs",
   sharedLibDir="shared",
@@ -51,6 +52,8 @@ All values (with the exception of the wizard id) are optional - in that sense th
 This function sets the mod's general configuration.
 * **luaTicksLimit**: defines the number of Lua ticks a spell can run continuously before it must sleep at least for one game tick.
 This value can be modified from within the game by [/wol luaTicksLimit](/wol-command.html#Lua-Ticks-Limit).
+* **eventListenerLuaTicksLimit**: defines the number of Lua ticks an event listener can run per event.
+This value can be modified from within the game by [/wol eventListenerLuaTicksLimit](/wol-command.html#Lua-Ticks-Limit).
 * **showAboutMessage**: defines, whether the mod's about message is shown to new users when they log into the server.
 Please note, that until the next server restart the about message is only shown once to each user.
 * **luaLibDirHome**: defines the relative or absolute location of the home of all Lua library directories.
