@@ -22,7 +22,7 @@ public class SpellExceptionFactory {
       throwable = throwable.getCause();
     }
     if (throwable.getCause() instanceof UndeclaredThrowableException) {
-      throwable = ((UndeclaredThrowableException)throwable.getCause()).getUndeclaredThrowable();
+      throwable = ((UndeclaredThrowableException) throwable.getCause()).getUndeclaredThrowable();
     }
 
     String exMessage = getExceptionMessage(throwable);
@@ -41,7 +41,7 @@ public class SpellExceptionFactory {
       modules.append(" at line ").append(line).append(" of ").append(module);
     }
     if (modules.length() > 0) {
-      String message = String.format("%s\n%s!", exMessage, modules.toString());
+      String message = String.format("%s\n%s", exMessage, modules.toString());
       return new SpellException(message, throwable);
     }
     return new SpellException(exMessage, throwable);

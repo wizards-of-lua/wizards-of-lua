@@ -147,6 +147,11 @@ public class WizardsOfLua {
       }
 
       @Override
+      public int getEventListenerLuaTicksLimit() {
+        return config.getGeneralConfig().getEventListenerLuaTicksLimit();
+      }
+
+      @Override
       public @Nullable String getLuaPathElementOfPlayer(String nameOrUuid) {
         GameProfile profile = gameProfiles.getGameProfile(nameOrUuid);
         if (profile == null) {

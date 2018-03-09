@@ -13,10 +13,10 @@ import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction {
+public class PrintEventListenerLuaTicksLimitAction extends MenuEntry implements CommandAction {
   private final WizardsOfLua wol;
 
-  public PrintLuaTicksLimitAction(WizardsOfLua wol) {
+  public PrintEventListenerLuaTicksLimitAction(WizardsOfLua wol) {
     this.wol = wol;
   }
 
@@ -28,8 +28,10 @@ public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    int luaTicksLimit = wol.getConfig().getGeneralConfig().getLuaTicksLimit();
-    WolAnnouncementMessage message = new WolAnnouncementMessage("luaTicksLimit = " + luaTicksLimit);
+    int eventListenerLuaTicksLimit =
+        wol.getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
+    WolAnnouncementMessage message =
+        new WolAnnouncementMessage("eventListenerLuaTicksLimit = " + eventListenerLuaTicksLimit);
     sender.sendMessage(message);
   }
 }

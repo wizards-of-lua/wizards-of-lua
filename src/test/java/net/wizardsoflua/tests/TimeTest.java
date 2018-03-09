@@ -83,12 +83,33 @@ public class TimeTest extends WolTestBase {
   public void test_spell_will_be_broken_when_autosleep_is_off() throws Exception {
     // Given:
     int repetitions = 2000;
-    mc().setLuaTicksLimit(10000);
+    mc().setLuaTicksLimit(5 * repetitions); // 5 ticks per cycle
     // When:
-    mc().player().chat("/lua Time.autosleep=false; for i=1,%s do print(i); end", repetitions);
+    mc().player().chat("/lua Time.autosleep=false; sleep(1); for i=1,%s do print(i); end",
+        repetitions);
 
     // Then:
-    for (int i = 1; i < 2000; ++i) {
+    for (int i = 1; i < repetitions; ++i) {
+      TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+      assertThat(act.getMessage()).isEqualTo(String.valueOf(i));
+    }
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).contains("Spell has been broken automatically");
+  }
+
+  // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_broken_when_event_listener_takes_to_long
+  @Test
+  public void test_spell_will_be_broken_when_event_listener_takes_to_long() throws Exception {
+    // Given:
+    int repetitions = 1000;
+    mc().setEventListenerLuaTicksLimit(5 * repetitions); // 5 ticks per cycle
+    // When:
+    mc().player().chat(
+        "/lua Events.on('custom-event'):call(function(event) for i=1,%s do print(i); end; end); Events.fire('custom-event')",
+        repetitions);
+
+    // Then:
+    for (int i = 1; i < repetitions; ++i) {
       TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
       assertThat(act.getMessage()).isEqualTo(String.valueOf(i));
     }
