@@ -1,8 +1,10 @@
 package net.wizardsoflua.lua.scheduling;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.MAIN;
 
 import net.sandius.rembulan.runtime.SchedulingContext;
+import net.wizardsoflua.lua.scheduling.LuaExecutor.Type;
 
 public class MainSchedulingContextFactory implements LuaSchedulingContextFactory {
   private int luaTickLimit;
@@ -25,6 +27,11 @@ public class MainSchedulingContextFactory implements LuaSchedulingContextFactory
       @Override
       public void setAutosleep(boolean autosleep) {
         MainSchedulingContextFactory.this.autosleep = autosleep;
+      }
+
+      @Override
+      public Type getLuaExecutorType() {
+        return MAIN;
       }
     };
   }

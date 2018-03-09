@@ -7,6 +7,8 @@ import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.MAIN;
 import java.nio.file.FileSystem;
 import java.time.Clock;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -124,7 +126,12 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
-    luaClassLoader = new LuaClassLoader(env);
+    luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
+      @Override
+      public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
+        return executor.getCurrentSchedulingContext();
+      }
+    });
     luaClassLoader.loadStandardClasses();
     TypesModule.installInto(env, luaClassLoader.getTypes(), getConverters());
     PrintRedirector.installInto(env, new PrintRedirector.Context() {

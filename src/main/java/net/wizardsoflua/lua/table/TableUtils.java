@@ -17,13 +17,19 @@ import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
 public class TableUtils {
 
   private static final Pattern LUA_IDENTIFIER = Pattern.compile("^[_a-zA-Z][_a-zA-Z0-9]*$");
 
   private static final Converters CONVERSION =
-      new LuaClassLoader(new DefaultTable()).getConverters();
+      new LuaClassLoader(new DefaultTable(), new LuaClassLoader.Context() {
+        @Override
+        public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
+          return null;
+        }
+      }).getConverters();
 
   private TableUtils() {}
 

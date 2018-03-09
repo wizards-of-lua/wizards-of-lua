@@ -22,6 +22,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
 public class LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
@@ -71,9 +72,16 @@ public class LuaClassLoader {
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
   private final Types types = new Types(this);
   private final Converters converters = new Converters(this);
+  private final Context context;
 
-  public LuaClassLoader(Table env) {
+  public interface Context {
+    @Nullable
+    LuaSchedulingContext getCurrentSchedulingContext();
+  }
+
+  public LuaClassLoader(Table env, Context context) {
     this.env = requireNonNull(env, "env == null!");
+    this.context = requireNonNull(context, "context == null!");
   }
 
   public Table getEnv() {
@@ -207,5 +215,9 @@ public class LuaClassLoader {
     }
     Class<? super J> superClass = javaClass.getSuperclass();
     return getLuaClassForJavaClassRecursively(superClass);
+  }
+
+  public LuaSchedulingContext getCurrentSchedulingContext() {
+    return context.getCurrentSchedulingContext();
   }
 }

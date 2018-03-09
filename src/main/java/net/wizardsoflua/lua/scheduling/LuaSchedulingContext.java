@@ -40,4 +40,6 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
   public abstract boolean isAutosleep();
 
   public abstract void setAutosleep(boolean autosleep);
+
+  public abstract LuaExecutor.Type getLuaExecutorType();
 }

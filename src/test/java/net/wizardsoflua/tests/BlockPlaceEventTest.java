@@ -27,7 +27,7 @@ public class BlockPlaceEventTest extends WolTestBase {
   public void clearBlocks() {
     mc().setBlock(playerPos, Blocks.AIR);
     mc().setBlock(blockPos, Blocks.AIR);
-    mc().setBlock(clickPos, Blocks.DIRT);
+    mc().setBlock(clickPos, Blocks.STONE);
   }
 
   // /test net.wizardsoflua.tests.BlockPlaceEventTest test__BlockPlaceEvent_MAIN_HAND
@@ -52,7 +52,7 @@ public class BlockPlaceEventTest extends WolTestBase {
     assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
     assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getResourcePath());
     assertThat(mc().nextServerMessage()).isEqualTo(EnumHand.MAIN_HAND.toString());
-    assertThat(mc().nextServerMessage()).isEqualTo("dirt");
+    assertThat(mc().nextServerMessage()).isEqualTo("stone");
   }
 
   // /test net.wizardsoflua.tests.BlockPlaceEventTest test__BlockPlaceEvent_OFF_HAND
@@ -77,26 +77,98 @@ public class BlockPlaceEventTest extends WolTestBase {
     assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
     assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getResourcePath());
     assertThat(mc().nextServerMessage()).isEqualTo(EnumHand.OFF_HAND.toString());
-    assertThat(mc().nextServerMessage()).isEqualTo("dirt");
+    assertThat(mc().nextServerMessage()).isEqualTo("stone");
+  }
+
+  // /test net.wizardsoflua.tests.BlockPlaceEventTest test_cancelable
+  @Test
+  public void test_cancelable() {
+    // Given:
+    mc().player().setMainHandItem(new ItemStack(Blocks.SAND));
+    mc().player().setPosition(playerPos);
+
+    // When:
+    mc().executeCommand("lua Events.on('BlockPlaceEvent'):call(function(event)\n"//
+        + "print(event.cancelable)\n"//
+        + "end)\n"//
+    );
+    mc().player().rightclick(clickPos, UP);
+
+    // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
+    sleep(1);
+    assertThat(mc().getBlock(blockPos).getBlock()).isEqualTo(Blocks.SAND);
   }
 
   // /test net.wizardsoflua.tests.BlockPlaceEventTest test_cancel
   @Test
   public void test_cancel() {
     // Given:
-    BlockSand sand = Blocks.SAND;
-    mc().player().setMainHandItem(new ItemStack(sand));
+    mc().player().setMainHandItem(new ItemStack(Blocks.SAND));
     mc().player().setPosition(playerPos);
 
     // When:
     mc().executeCommand("lua Events.on('BlockPlaceEvent'):call(function(event)\n"//
         + "event.canceled = true\n"//
+        + "print('#'..event.name)\n"//
         + "end)\n"//
     );
     mc().player().rightclick(clickPos, UP);
 
     // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("#BlockPlaceEvent");
+    sleep(1);
     assertThat(mc().getBlock(blockPos).getBlock()).isEqualTo(Blocks.AIR);
+  }
+
+  // /test net.wizardsoflua.tests.BlockPlaceEventTest test_cancelable__Outside_of_event_listener
+  @Test
+  public void test_cancelable__Outside_of_event_listener() {
+    // Given:
+    mc().player().setMainHandItem(new ItemStack(Blocks.SAND));
+    mc().player().setPosition(playerPos);
+
+    // When:
+    mc().executeCommand("lua Events.on('BlockPlaceEvent'):call(function(e)\n"//
+        + "event = e\n"//
+        + "end)\n"//
+        + "while true do\n"//
+        + "if event ~= nil then\n"//
+        + "print(event.cancelable)\n"//
+        + "end\n"//
+        + "end"//
+    );
+    mc().player().rightclick(clickPos, UP);
+
+    // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("false");
+    sleep(1);
+    assertThat(mc().getBlock(blockPos).getBlock()).isEqualTo(Blocks.SAND);
+  }
+
+  // /test net.wizardsoflua.tests.BlockPlaceEventTest test_cancel__Outside_of_event_listener
+  @Test
+  public void test_cancel__Outside_of_event_listener() {
+    // Given:
+    mc().player().setMainHandItem(new ItemStack(Blocks.SAND));
+    mc().player().setPosition(playerPos);
+
+    // When:
+    mc().executeCommand("lua Events.on('BlockPlaceEvent'):call(function(e)\n"//
+        + "event = e\n"//
+        + "end)\n"//
+        + "while true do\n"//
+        + "if event ~= nil then\n"//
+        + "event.canceled = true\n"//
+        + "end\n"//
+        + "end"//
+    );
+    mc().player().rightclick(clickPos, UP);
+
+    // Then:
+    assertThat(mc().nextServerMessage()).contains("attempt to cancel BlockPlaceEvent\n at line 6");
+    sleep(1);
+    assertThat(mc().getBlock(blockPos).getBlock()).isEqualTo(Blocks.SAND);
   }
 
 }
