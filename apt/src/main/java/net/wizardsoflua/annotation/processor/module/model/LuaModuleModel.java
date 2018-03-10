@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor.module.model;
 
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.annotation.processor.Constants.MODULE_SUFFIX;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.checkAnnotated;
 
 import java.util.Collection;
@@ -47,7 +48,7 @@ public class LuaModuleModel {
 
   public ClassName getModuleClassName() {
     String packageName = getPackageName();
-    String simpleName = name + "Module";
+    String simpleName = name + MODULE_SUFFIX;
     return ClassName.get(packageName, simpleName);
   }
 

@@ -7,6 +7,7 @@ import com.squareup.javapoet.ClassName;
 public interface Constants {
   static final String PROXY_SUFFIX = "Proxy";
   static final String CLASS_SUFFIX = "Class";
+  static final String MODULE_SUFFIX = "Module";
   static final ClassName OBJECT_CLASS_CLASS_NAME =
       ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
   static final String OBJECT_CLASS = getQualifiedName(OBJECT_CLASS_CLASS_NAME);
