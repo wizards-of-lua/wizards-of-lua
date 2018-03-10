@@ -96,11 +96,12 @@ public class LuaDocGenerator {
         Elements elements = env.getElementUtils();
         Types types = env.getTypeUtils();
         TypeMirror stringType = elements.getTypeElement(String.class.getName()).asType();
-        TypeMirror enumType = elements.getTypeElement(Enum.class.getName()).asType();
+        TypeMirror enumType = types.erasure(elements.getTypeElement(Enum.class.getName()).asType());
         if (types.isSameType(typeMirror, stringType) || types.isSubtype(typeMirror, enumType)) {
           return "string";
         }
-        TypeMirror iterableType = elements.getTypeElement(Iterable.class.getName()).asType();
+        TypeMirror iterableType =
+            types.erasure(elements.getTypeElement(Iterable.class.getName()).asType());
         if (types.isSubtype(typeMirror, iterableType)) {
           return "table";
         }
