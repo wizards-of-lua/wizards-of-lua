@@ -53,7 +53,6 @@ public class Converters {
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
         () -> toJavaList(type, luaObject));
-
   }
 
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
@@ -68,7 +67,6 @@ public class Converters {
       throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
         () -> toJavaNullable(type, luaObject));
-
   }
 
   public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex, String argumentName,
