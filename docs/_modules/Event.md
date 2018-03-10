@@ -16,7 +16,7 @@ properties:
     access: r/w
     description: |
         Whether the event is canceled.
-        A canceled event is not passed to any other event handlers and does not affect the world.
+        A canceled event is not passed to any other [event listeners](/modules/Events#subscribe) or [EventQueues](/modules/EventQueue) and does not affect the world.
 
         #### Example
         Canceling all BlockPlaceEvents.

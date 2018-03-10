@@ -36,14 +36,13 @@ functions:
         end)
         ```
   - name: subscribe
-    parameters: eventNames (table), eventHandler (function)
+    parameters: eventNames (table), eventListener (function)
     results: "[EventSubscription](/modules/EventSubscription)"
     description: |
-        Subscribes the specified event handler to events with the specified names.
+        Subscribes the specified event listener to events with the specified names.
         It will be called immediately when an event occurs, this allows events to be canceled.
-        Because the event handler is not called during the normal program execution you cannot sleep in an event handler.
-        
-        As long as a spell has active event subscriptions it doesn't terminate so make sure to unsubscribe any event handlers that are no longer needed.
+        Events listeners do not support sleeping; therefor, [autosleep](/modules/Time#autosleep) is disabled and sleeping manually is treated as an illegal operation.
+        As long as a spell has active event subscriptions it doesn't terminate so make sure to unsubscribe any event listeners that are no longer needed.
         In order to cancel the subscription an [EventSubscription](/modules/EventSubscription) is returned.
         
         #### Example

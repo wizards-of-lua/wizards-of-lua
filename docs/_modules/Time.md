@@ -17,7 +17,7 @@ properties:
     type: number
     access: r
     description: "The allowance is the number of lua ticks that are left before
-    the spell or event handler is broken or sent to sleep, depending on [autosleep](#autosleep).
+    the spell or event listener is broken or sent to sleep, depending on [autosleep](#autosleep).
     "
   - name: realtime
     type: number

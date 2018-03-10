@@ -9,7 +9,7 @@ functions:
   - name: unsubscribe
     results: nil
     description: |
-        The 'unsubscribe' function cancels this subscription so that the corresponding function is no longer called to handle new events.
+        The 'unsubscribe' function cancels this subscription so that the corresponding function is no longer called for new events.
         #### Example
         Subscribing for the next chat event and unsubscribing once the first one occurs.
         ```lua
@@ -21,4 +21,4 @@ functions:
         ```
 ---
 
-An <span class="notranslate">EventSubscription</span> represents a subscription of an event handler. A subscription can be obtained through [Events.subscribe()](/modules/Events#subscribe).
+An <span class="notranslate">EventSubscription</span> represents a subscription of an event listener. A subscription can be obtained through [Events.subscribe()](/modules/Events#subscribe).
