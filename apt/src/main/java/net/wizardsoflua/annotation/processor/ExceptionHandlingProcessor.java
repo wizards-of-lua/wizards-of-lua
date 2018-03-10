@@ -1,5 +1,7 @@
 package net.wizardsoflua.annotation.processor;
 
+import static javax.tools.Diagnostic.Kind.ERROR;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,8 +13,8 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
 public abstract class ExceptionHandlingProcessor extends AbstractProcessor {
@@ -59,9 +61,15 @@ public abstract class ExceptionHandlingProcessor extends AbstractProcessor {
         }
       } else {
         CharSequence message = ex.getMessage();
-        message = message != null ? message : ex.toString();
+        if (message == null) {
+          message = Throwables.getStackTraceAsString(ex);
+        }
         Element annotatedElement = entry.getKey().getValue();
-        messager.printMessage(Diagnostic.Kind.ERROR, message, annotatedElement);
+        if (annotatedElement == null) {
+          messager.printMessage(ERROR, message);
+        } else {
+          messager.printMessage(ERROR, message, annotatedElement);
+        }
         ex.printStackTrace();
       }
     }
