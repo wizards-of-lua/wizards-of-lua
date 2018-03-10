@@ -7,7 +7,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@GenerateLuaClass(name = DroppedItemApi.NAME, superClass = EntityClass.class)
+@GenerateLuaClass(name = DroppedItemApi.NAME)
 @GenerateLuaDoc(subtitle = "Things That are Lying Around")
 public class DroppedItemApi<D extends EntityItem> extends EntityApi<D> {
   public static final String NAME = "DroppedItem2";

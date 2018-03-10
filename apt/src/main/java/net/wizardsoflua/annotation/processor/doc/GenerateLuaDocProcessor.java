@@ -31,6 +31,7 @@ import javax.tools.StandardLocation;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModule;
+import net.wizardsoflua.annotation.HasLuaClass;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
@@ -105,17 +106,18 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
 
   private LuaDocModel analyze(TypeElement annotatedElement)
       throws ProcessingException, MultipleProcessingExceptions {
-    GenerateLuaClass generateLuaClass = annotatedElement.getAnnotation(GenerateLuaClass.class);
-    if (generateLuaClass != null) {
-      return LuaDocModel.forLuaClass(annotatedElement, processingEnv);
-    }
-    GenerateLuaModule generateLuaModule = annotatedElement.getAnnotation(GenerateLuaModule.class);
-    if (generateLuaModule != null) {
+    if (annotatedElement.getAnnotation(GenerateLuaModule.class) != null) {
       return LuaDocModel.forLuaModule(annotatedElement, processingEnv);
     }
+    if (annotatedElement.getAnnotation(GenerateLuaClass.class) != null) {
+      return LuaDocModel.forGeneratedLuaClass(annotatedElement, processingEnv);
+    }
+    if (annotatedElement.getAnnotation(HasLuaClass.class) != null) {
+      return LuaDocModel.forManualLuaClass(annotatedElement, processingEnv);
+    }
     CharSequence msg = "Luadoc can only be generated if the class is also annotated with @"
-        + GenerateLuaClass.class.getSimpleName() + " or @"
-        + GenerateLuaModule.class.getSimpleName();
+        + GenerateLuaModule.class.getSimpleName() + " or @" + GenerateLuaClass.class.getSimpleName()
+        + " or @" + HasLuaClass.class.getSimpleName();
     Element e = annotatedElement;
     AnnotationMirror a = ProcessorUtils.getAnnotationMirror(annotatedElement, GenerateLuaDoc.class);
     throw new ProcessingException(msg, e, a);

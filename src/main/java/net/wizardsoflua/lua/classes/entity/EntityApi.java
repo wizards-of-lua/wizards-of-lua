@@ -21,14 +21,13 @@ import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.scribble.LuaApiBase;
 
 /**
  * The Entity class is the base class of all entities that populate the world.
  */
-@GenerateLuaClass(name = EntityApi.NAME, superClass = ObjectClass.class)
+@GenerateLuaClass(name = EntityApi.NAME)
 @GenerateLuaDoc(subtitle = "The Base Class of all Organic or Inorganic Entities")
 public class EntityApi<D extends Entity> extends LuaApiBase<D> {
   public static final String NAME = "Entity";

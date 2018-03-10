@@ -31,6 +31,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.annotation.OnCreateLuaProxy;
 import net.wizardsoflua.annotation.OnLoadLuaClass;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
+import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.luaclass.generator.LuaClassGenerator;
 import net.wizardsoflua.annotation.processor.luaclass.generator.LuaProxyGenerator;
@@ -57,14 +58,15 @@ public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
 
   @Override
   protected void doProcess(TypeElement annotation, Element annotatedElement,
-      RoundEnvironment roundEnv) throws ProcessingException {
+      RoundEnvironment roundEnv) throws ProcessingException, MultipleProcessingExceptions {
     if (annotatedElement.getKind() == ElementKind.CLASS) {
       LuaClassModel model = analyze((TypeElement) annotatedElement);
       generate(model);
     }
   }
 
-  private LuaClassModel analyze(TypeElement moduleElement) throws ProcessingException {
+  private LuaClassModel analyze(TypeElement moduleElement)
+      throws ProcessingException, MultipleProcessingExceptions {
     LuaClassModel model = LuaClassModel.of(moduleElement, processingEnv);
     List<ExecutableElement> methods = getRelevantMethods(moduleElement);
     for (ExecutableElement method : methods) {

@@ -6,7 +6,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@GenerateLuaClass(name = MobApi.NAME, superClass = EntityClass.class)
+@GenerateLuaClass(name = MobApi.NAME)
 @GenerateLuaDoc(subtitle = "Mobile Creatures")
 public class MobApi<D extends EntityLiving> extends EntityApi<D> {
   public static final String NAME = "Mob";

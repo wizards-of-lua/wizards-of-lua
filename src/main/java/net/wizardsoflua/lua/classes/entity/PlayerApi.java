@@ -15,7 +15,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
-@GenerateLuaClass(name = PlayerApi.NAME, superClass = EntityClass.class)
+@GenerateLuaClass(name = PlayerApi.NAME)
 @GenerateLuaDoc(subtitle = "Controlling the Player")
 public class PlayerApi<D extends EntityPlayerMP> extends EntityLivingBaseApi<D> {
   public static final String NAME = "Player";
