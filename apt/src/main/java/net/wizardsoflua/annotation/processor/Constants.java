@@ -10,7 +10,6 @@ public interface Constants {
   static final String MODULE_SUFFIX = "Module";
   static final ClassName OBJECT_CLASS_CLASS_NAME =
       ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
-  static final String OBJECT_CLASS = getQualifiedName(OBJECT_CLASS_CLASS_NAME);
   static final String JAVA_LUA_CLASS = "net.wizardsoflua.lua.classes.JavaLuaClass";
   static final ClassName DECLARE_LUA_CLASS_CLASS_NAME =
       ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
