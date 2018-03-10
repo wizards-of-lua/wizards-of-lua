@@ -57,11 +57,11 @@ public class DelegatingTable extends Table {
 
     Object p = properties.get(key);
     if (p == null)
-      throw new IllegalArgumentException("unknown table index");
+      throw new IllegalArgumentException("unknown table index " + key);
     if (p instanceof Property<?>) {
       ((Property<?>) p).set(value);
     } else {
-      throw new UnsupportedOperationException("property is readonly");
+      throw new UnsupportedOperationException("property '" + key + "' is readonly");
     }
   }
 
