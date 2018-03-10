@@ -18,8 +18,8 @@ public class TimeModule extends DelegatingProxy<Time> {
 
   public TimeModule(LuaClassLoader classLoader, Time delegate) {
     super(classLoader, null, delegate);
-    add("autosleep", () -> delegate.isAutoSleep(), this::setAutoSleep);
     addReadOnly("allowance", () -> delegate.getAllowance());
+    add("autosleep", () -> delegate.isAutosleep(), this::setAutosleep);
     addReadOnly("luatime", () -> delegate.getLuaTicks());
     addReadOnly("gametime", () -> delegate.getGameTotalTime());
     addReadOnly("realtime", () -> delegate.getRealtime());
@@ -33,9 +33,9 @@ public class TimeModule extends DelegatingProxy<Time> {
     return false;
   }
 
-  public void setAutoSleep(Object luaObj) {
+  public void setAutosleep(Object luaObj) {
     boolean value = getConverters().toJava(Boolean.class, luaObj, "autosleep");
-    delegate.setAutoSleep(value);
+    delegate.setAutosleep(value);
   }
 
   private class GetDateFunction extends AbstractFunction1 {

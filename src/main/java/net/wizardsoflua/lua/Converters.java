@@ -6,10 +6,14 @@ import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
+
+import com.google.common.primitives.Primitives;
 
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
@@ -43,9 +47,9 @@ public class Converters {
     return nbtConverter;
   }
 
-  public final <J> Collection<J> toJavaCollection(Class<J> type, Object[] args,
-      String functionOrPropertyName) throws ConversionException {
-    Collection<J> result = new ArrayList<>(args.length);
+  public final <J> List<J> toJavaList(Class<J> type, Object[] args, String functionOrPropertyName)
+      throws ConversionException {
+    List<J> result = new ArrayList<>(args.length);
     for (int i = 0; i < args.length; i++) {
       Object arg = args[i];
       int argumentIndex = i + 1;
@@ -56,123 +60,209 @@ public class Converters {
   }
 
   public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
-      String functionOrPropertyName) throws ConversionException {
-    Table table = toJava(Table.class, luaObject, functionOrPropertyName);
-    Collection<J> result = new ArrayList<>();
-    for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
-      Object key = entry.getKey();
-      String argumentName = Conversions.toHumanReadableString(key).toString();
-      Object luaValue = entry.getValue();
-      J javaValue = toJava(type, luaValue, argumentName, functionOrPropertyName);
-      result.add(javaValue);
-    }
-    return result;
-  }
-
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
       int argumentIndex, String argumentName, String functionOrPropertyName)
       throws BadArgumentException {
-    return ofNullable(
-        toJavaNullable(type, luaObject, argumentIndex, argumentName, functionOrPropertyName));
+    return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
+        () -> toJavaCollection(type, luaObject));
+
   }
 
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+  public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       int argumentIndex, String argumentName, String functionOrPropertyName)
       throws BadArgumentException {
-    requireNonNull(argumentName, "argumentName == null!");
-    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
-    if (luaObject == null) {
-      return null;
-    }
-    return toJava(type, luaObject, argumentIndex, argumentName, functionOrPropertyName);
+    return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
+        () -> toJavaOptional(type, luaObject));
   }
 
-  public final <T> T toJava(Class<T> type, Object luaObject, int argumentIndex, String argumentName,
+  public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
+      int argumentIndex, String argumentName, String functionOrPropertyName)
+      throws BadArgumentException {
+    return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
+        () -> toJavaNullable(type, luaObject));
+
+  }
+
+  public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex, String argumentName,
       String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
+        () -> toJava(type, luaObject));
+  }
+
+  private <T> T enrichBadArgException(int argumentIndex, String argumentName,
+      String functionOrPropertyName, Supplier<T> supplier) throws BadArgumentException {
     try {
-      return toJava(type, luaObject, argumentName, functionOrPropertyName);
+      return enrichBadArgException(argumentName, functionOrPropertyName, supplier);
     } catch (BadArgumentException ex) {
       ex.setArgumentIndex(argumentIndex);
       throw ex;
     }
   }
 
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
+  /**
+   * @deprecated Use {@link #toJavaCollection(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
-    return ofNullable(toJavaNullable(type, luaObject, argumentName, functionOrPropertyName));
+    return enrichBadArgException(argumentName, functionOrPropertyName,
+        () -> toJavaCollection(type, luaObject));
   }
 
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+  /**
+   * @deprecated Use {@link #toJavaOptional(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
-    requireNonNull(argumentName, "argumentName == null!");
-    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
-    if (luaObject == null) {
-      return null;
-    }
-    return toJava(type, luaObject, argumentName, functionOrPropertyName);
+    return enrichBadArgException(argumentName, functionOrPropertyName,
+        () -> toJavaOptional(type, luaObject));
   }
 
-  public final <T> T toJava(Class<T> type, Object luaObject, String argumentName,
+  /**
+   * @deprecated Use {@link #toJavaNullable(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
+      String argumentName, String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(argumentName, functionOrPropertyName,
+        () -> toJavaNullable(type, luaObject));
+  }
+
+  /**
+   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final <J> J toJava(Class<J> type, Object luaObject, String argumentName,
       String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(argumentName, functionOrPropertyName,
+        () -> toJava(type, luaObject));
+  }
+
+  private <T> T enrichBadArgException(String argumentName, String functionOrPropertyName,
+      Supplier<T> supplier) throws BadArgumentException {
     requireNonNull(argumentName, "argumentName == null!");
     try {
-      return toJava(type, luaObject, functionOrPropertyName);
+      return enrichBadArgException(functionOrPropertyName, supplier);
     } catch (BadArgumentException ex) {
       ex.setArgumentName(argumentName);
       throw ex;
     }
   }
 
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
-      int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
-    return ofNullable(toJavaNullable(type, luaObject, argumentIndex, functionOrPropertyName));
+  /**
+   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
+      int argumentIndex, String functionOrPropertyName) {
+    return enrichBadArgException(argumentIndex, functionOrPropertyName,
+        () -> toJavaCollection(type, luaObject));
   }
 
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+  /**
+   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
-    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
-    if (luaObject == null) {
-      return null;
-    }
-    return toJava(type, luaObject, argumentIndex, functionOrPropertyName);
+    return enrichBadArgException(argumentIndex, functionOrPropertyName,
+        () -> toJavaOptional(type, luaObject));
   }
 
-  public final <T> T toJava(Class<T> type, Object luaObject, int argumentIndex,
+  /**
+   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
+      int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(argumentIndex, functionOrPropertyName,
+        () -> toJavaNullable(type, luaObject));
+  }
+
+  /**
+   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
+   */
+  @Deprecated
+  public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex,
       String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(argumentIndex, functionOrPropertyName,
+        () -> toJava(type, luaObject));
+  }
+
+  private <T> T enrichBadArgException(int argumentIndex, String functionOrPropertyName,
+      Supplier<T> supplier) throws BadArgumentException {
     try {
-      return toJava(type, luaObject, functionOrPropertyName);
+      return enrichBadArgException(functionOrPropertyName, supplier);
     } catch (BadArgumentException ex) {
       ex.setArgumentIndex(argumentIndex);
       throw ex;
     }
   }
 
-  public final <T> Optional<T> toJavaOptional(Class<T> type, @Nullable Object luaObject,
+  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
-    return ofNullable(toJavaNullable(type, luaObject, functionOrPropertyName));
+    return enrichBadArgException(functionOrPropertyName, () -> toJavaCollection(type, luaObject));
   }
 
-  public final @Nullable <T> T toJavaNullable(Class<T> type, @Nullable Object luaObject,
+  public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
-    requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
-    if (luaObject == null) {
-      return null;
-    }
-    return toJava(type, luaObject, functionOrPropertyName);
+    return enrichBadArgException(functionOrPropertyName, () -> toJavaOptional(type, luaObject));
   }
 
-  public final <T> T toJava(Class<T> type, Object luaObject, String functionOrPropertyName)
+  public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
+      String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(functionOrPropertyName, () -> toJavaNullable(type, luaObject));
+  }
+
+  public final <J> J toJava(Class<J> type, Object luaObject, String functionOrPropertyName)
+      throws BadArgumentException {
+    return enrichBadArgException(functionOrPropertyName, () -> toJava(type, luaObject));
+  }
+
+  private <T> T enrichBadArgException(String functionOrPropertyName, Supplier<T> supplier)
       throws BadArgumentException {
     requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
     try {
-      return toJava(type, luaObject);
+      return supplier.get();
     } catch (BadArgumentException ex) {
       ex.setFunctionOrPropertyName(functionOrPropertyName);
       throw ex;
     }
   }
 
-  private <T> T toJava(Class<T> type, Object luaObject) throws BadArgumentException {
+  private <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject)
+      throws BadArgumentException {
+    Table table = toJava(Table.class, luaObject);
+    Collection<J> result = new ArrayList<>();
+    for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
+      Object luaValue = entry.getValue();
+      J javaValue;
+      try {
+        javaValue = toJava(type, luaValue);
+      } catch (BadArgumentException ex) {
+        ByteString key = Conversions.toHumanReadableString(entry.getKey());
+        ex.setDetailMessage(
+            "table contained illegal value for key '" + key + "' (" + ex.getDetailMessage() + ")");
+        throw ex;
+      }
+      result.add(javaValue);
+    }
+    return result;
+  }
+
+  private <J> Optional<J> toJavaOptional(Class<J> type, Object luaObject) {
+    return ofNullable(toJavaNullable(type, luaObject));
+  }
+
+  private <J> J toJavaNullable(Class<J> type, Object luaObject) {
+    if (luaObject == null) {
+      return null;
+    }
+    return toJava(type, luaObject);
+  }
+
+  private <J> J toJava(Class<J> type, Object luaObject) throws BadArgumentException {
+    type = Primitives.wrap(type);
     if (luaObject == null) {
       throw badArgument(type, luaObject);
     }
@@ -203,16 +293,16 @@ public class Converters {
     if (type == String.class) {
       return Conversions.javaRepresentationOf(luaObject);
     }
-    if (type == Double.class || type == double.class) {
+    if (type == Double.class) {
       return castToDouble(luaObject);
     }
-    if (type == Float.class || type == float.class) {
+    if (type == Float.class) {
       return castToFloat(luaObject);
     }
-    if (type == Integer.class || type == int.class) {
+    if (type == Integer.class) {
       return castToInt(luaObject);
     }
-    if (type == Long.class || type == long.class) {
+    if (type == Long.class) {
       return castToLong(luaObject);
     }
     if (Enum.class.isAssignableFrom(type)) {
@@ -262,23 +352,23 @@ public class Converters {
     }
   }
 
-  public final @Nullable <T> Optional<? extends Object> toLuaOptional(@Nullable T value)
+  public final @Nullable Optional<? extends Object> toLuaOptional(@Nullable Object value)
       throws ConversionException {
     return ofNullable(toLuaNullable(value));
   }
 
-  public final @Nullable <T> Object toLuaNullable(@Nullable T value) throws ConversionException {
+  public final @Nullable Object toLuaNullable(@Nullable Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
     return toLua(value);
   }
 
-  public <T> Object toLua(T javaObject) throws ConversionException {
+  public <J> Object toLua(J javaObject) throws ConversionException {
     requireNonNull(javaObject, "value == null!");
     @SuppressWarnings("unchecked")
-    Class<T> javaClass = (Class<T>) javaObject.getClass();
-    JavaLuaClass<? super T, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
+    Class<J> javaClass = (Class<J>) javaObject.getClass();
+    JavaLuaClass<? super J, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(javaObject);
     }

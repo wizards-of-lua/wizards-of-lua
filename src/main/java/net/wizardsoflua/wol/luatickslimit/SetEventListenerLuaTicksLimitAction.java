@@ -15,10 +15,10 @@ import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class SetLuaTicksLimitAction extends MenuEntry implements CommandAction {
+public class SetEventListenerLuaTicksLimitAction extends MenuEntry implements CommandAction {
   private final WizardsOfLua wol;
 
-  public SetLuaTicksLimitAction(WizardsOfLua wol) {
+  public SetEventListenerLuaTicksLimitAction(WizardsOfLua wol) {
     this.wol = wol;
   }
 
@@ -35,12 +35,13 @@ public class SetLuaTicksLimitAction extends MenuEntry implements CommandAction {
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     String limit = argList.poll();
     if (limit != null) {
-      Integer luaTicksLimit = Ints.tryParse(limit);
-      if (luaTicksLimit != null) {
-        luaTicksLimit = wol.getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit);
+      Integer eventListenerLuaTicksLimit = Ints.tryParse(limit);
+      if (eventListenerLuaTicksLimit != null) {
+        eventListenerLuaTicksLimit = wol.getConfig().getGeneralConfig()
+            .setEventListenerLuaTicksLimit(eventListenerLuaTicksLimit);
         // TODO I18n
-        WolAnnouncementMessage message =
-            new WolAnnouncementMessage("luaTicksLimit has been updated to " + luaTicksLimit);
+        WolAnnouncementMessage message = new WolAnnouncementMessage(
+            "eventListenerLuaTicksLimit has been updated to " + eventListenerLuaTicksLimit);
         sender.sendMessage(message);
       } else {
         // TODO I18n
