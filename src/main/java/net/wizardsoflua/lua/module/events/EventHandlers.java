@@ -8,14 +8,13 @@ import com.google.common.collect.Multimap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.data.Data;
 
-public class EventHandlers implements SchedulingContext {
+public class EventHandlers {
 
   public interface Context {
     long getCurrentTime();
@@ -85,10 +84,6 @@ public class EventHandlers implements SchedulingContext {
     }
   }
 
-  @Override
-  public void registerTicks(int ticks) {}
-
-  @Override
   public boolean shouldPause() {
     if (queues.isEmpty()) {
       // no queues -> nothing to wait for, so keep running

@@ -232,22 +232,41 @@ public class Converters {
 
   private <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject)
       throws BadArgumentException {
-    Table table = toJava(Table.class, luaObject);
-    Collection<J> result = new ArrayList<>();
-    for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
-      Object luaValue = entry.getValue();
-      J javaValue;
-      try {
-        javaValue = toJava(type, luaValue);
-      } catch (BadArgumentException ex) {
-        ByteString key = Conversions.toHumanReadableString(entry.getKey());
-        ex.setDetailMessage(
-            "table contained illegal value for key '" + key + "' (" + ex.getDetailMessage() + ")");
-        throw ex;
+    if (luaObject.getClass().isArray()) {
+      Object[] elements = (Object[]) luaObject;
+      Collection<J> result = new ArrayList<>();
+      int index = 0;
+      for (Object luaValue : elements) {
+        index++;
+        J javaValue;
+        try {
+          javaValue = toJava(type, luaValue);
+        } catch (BadArgumentException ex) {
+          ex.setDetailMessage("Arguments contained illegal value for index '" + index + "' ("
+              + ex.getDetailMessage() + ")");
+          throw ex;
+        }
+        result.add(javaValue);
       }
-      result.add(javaValue);
+      return result;
+    } else {
+      Table table = toJava(Table.class, luaObject);
+      Collection<J> result = new ArrayList<>();
+      for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
+        Object luaValue = entry.getValue();
+        J javaValue;
+        try {
+          javaValue = toJava(type, luaValue);
+        } catch (BadArgumentException ex) {
+          ByteString key = Conversions.toHumanReadableString(entry.getKey());
+          ex.setDetailMessage("table contained illegal value for key '" + key + "' ("
+              + ex.getDetailMessage() + ")");
+          throw ex;
+        }
+        result.add(javaValue);
+      }
+      return result;
     }
-    return result;
   }
 
   private <J> Optional<J> toJavaOptional(Class<J> type, Object luaObject) {

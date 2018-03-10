@@ -26,6 +26,11 @@ public class SystemAdapter {
     this.enabled = enabled;
     this.scriptTimeoutMillis = scriptTimeoutMillis;
     this.scriptDir = scriptDir.toPath().normalize();
+
+  }
+
+  public boolean shouldPause() {
+    return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
   }
 
   public void execute(Collection<String> command) {
@@ -77,6 +82,10 @@ public class SystemAdapter {
     }
   }
 
+  private boolean isTimeoutReached() {
+    return (started + scriptTimeoutMillis < System.currentTimeMillis());
+  }
+
   private ArrayList<String> toCommandList(Collection<String> command) {
     ArrayList<String> result = new ArrayList<>(command);
     String scriptName = toFilename(result.get(0));
@@ -95,14 +104,6 @@ public class SystemAdapter {
           String.format("Invalid command! File '%s' found!", commandFile));
     }
     return commandFile.toString();
-  }
-
-  public boolean shouldPause() {
-    return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
-  }
-
-  private boolean isTimeoutReached() {
-    return (started + scriptTimeoutMillis < System.currentTimeMillis());
   }
 
 }

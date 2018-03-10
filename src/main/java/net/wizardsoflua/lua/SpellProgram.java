@@ -33,6 +33,7 @@ import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
@@ -92,7 +93,6 @@ public class SpellProgram {
   private Continuation continuation;
   private SpellEntity spellEntity;
   private Time time;
-  private SystemAdapter systemAdapter;
   private String defaultLuaPath;
   private final Context context;
 
@@ -102,7 +102,6 @@ public class SpellProgram {
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");
-    this.systemAdapter = checkNotNull(systemAdapter, "systemAdapter==null!");;
     this.context = checkNotNull(context, "context==null!");
 
     int luaTicksLimit = context.getLuaTicksLimit();
@@ -157,7 +156,28 @@ public class SpellProgram {
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());
     eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
-    executor.addSchedulingContext(eventHandlers);
+    executor.addSchedulingContext(new SchedulingContext() {
+      @Override
+      public boolean shouldPause() {
+        return eventHandlers.shouldPause();
+      }
+
+      @Override
+      public void registerTicks(int ticks) {
+        // ignore, since not required here.
+      }
+    });
+    executor.addSchedulingContext(new SchedulingContext() {
+      @Override
+      public boolean shouldPause() {
+        return systemAdapter.shouldPause();
+      }
+
+      @Override
+      public void registerTicks(int ticks) {
+        // ignore, since not required here.
+      }
+    });
     EventsModule.installInto(env, luaClassLoader, eventHandlers);
   }
 
