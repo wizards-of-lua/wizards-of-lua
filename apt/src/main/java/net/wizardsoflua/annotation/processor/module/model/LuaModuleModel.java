@@ -16,6 +16,7 @@ import com.squareup.javapoet.ClassName;
 
 import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class LuaModuleModel {
@@ -32,6 +33,7 @@ public class LuaModuleModel {
   private final String name;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
+  private final SortedMap<String, ManualFunctionModel> manualFunctions = new TreeMap<>();
 
   public LuaModuleModel(ClassName moduleClassName, String name) {
     this.moduleClassName = requireNonNull(moduleClassName, "moduleClassName == null!");
@@ -75,5 +77,13 @@ public class LuaModuleModel {
 
   public Collection<FunctionModel> getFunctions() {
     return Collections.unmodifiableCollection(functions.values());
+  }
+
+  public void addManualFunction(ManualFunctionModel function) {
+    manualFunctions.put(function.getName(), function);
+  }
+
+  public Collection<ManualFunctionModel> getManualFunctions() {
+    return Collections.unmodifiableCollection(manualFunctions.values());
   }
 }

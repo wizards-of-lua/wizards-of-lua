@@ -6,7 +6,6 @@ import static net.wizardsoflua.annotation.processor.ProcessorUtils.checkAnnotate
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.processor.ProcessingException;
@@ -22,14 +21,13 @@ public class ManualFunctionModel {
       AnnotationMirror a = ProcessorUtils.getAnnotationMirror(typeElement, LuaFunction.class);
       throw new ProcessingException(msg, e, a);
     }
-    TypeMirror functionType = typeElement.asType();
-    return new ManualFunctionModel(name, functionType);
+    return new ManualFunctionModel(name, typeElement);
   }
 
   private final String name;
-  private final TypeMirror functionType;
+  private final TypeElement functionType;
 
-  public ManualFunctionModel(String name, TypeMirror functionType) {
+  public ManualFunctionModel(String name, TypeElement functionType) {
     this.name = checkNotNull(name, "name == null!");
     this.functionType = checkNotNull(functionType, "functionType == null!");
   }
@@ -38,7 +36,7 @@ public class ManualFunctionModel {
     return name;
   }
 
-  public TypeMirror getFunctionType() {
+  public TypeElement getFunctionType() {
     return functionType;
   }
 }

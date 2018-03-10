@@ -12,6 +12,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
@@ -99,7 +100,7 @@ public class LuaClassGenerator {
     }
     for (ManualFunctionModel function : model.getManualFunctions()) {
       String name = function.getName();
-      TypeMirror functionType = function.getFunctionType();
+      TypeElement functionType = function.getFunctionType();
       onLoadMethod.addStatement("add($S, new $T(this))", name, functionType);
     }
     for (ExecutableElement onLoadLuaClass : model.getOnLoadLuaClass()) {

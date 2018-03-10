@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor.module;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
+import static javax.lang.model.util.ElementFilter.typesIn;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.write;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 import net.wizardsoflua.annotation.processor.module.generator.LuaModuleGenerator;
 import net.wizardsoflua.annotation.processor.module.model.LuaModuleModel;
@@ -59,7 +61,8 @@ public class GenerateLuaModuleProcessor extends ExceptionHandlingProcessor {
 
   private LuaModuleModel analyze(TypeElement moduleElement) throws ProcessingException {
     LuaModuleModel model = LuaModuleModel.of(moduleElement, processingEnv);
-    List<ExecutableElement> methods = methodsIn(moduleElement.getEnclosedElements());
+    List<? extends Element> elements = moduleElement.getEnclosedElements();
+    List<ExecutableElement> methods = methodsIn(elements);
     for (ExecutableElement method : methods) {
       if (method.getAnnotation(LuaProperty.class) != null) {
         PropertyModel property = PropertyModel.of(method, processingEnv);
@@ -68,6 +71,13 @@ public class GenerateLuaModuleProcessor extends ExceptionHandlingProcessor {
       if (method.getAnnotation(LuaFunction.class) != null) {
         FunctionModel function = FunctionModel.of(method);
         model.addFunction(function);
+      }
+    }
+    List<TypeElement> types = typesIn(elements);
+    for (TypeElement typeElement : types) {
+      if (typeElement.getAnnotation(LuaFunction.class) != null) {
+        ManualFunctionModel function = ManualFunctionModel.of(typeElement);
+        model.addManualFunction(function);
       }
     }
     return model;

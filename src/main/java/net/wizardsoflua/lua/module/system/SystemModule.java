@@ -19,7 +19,7 @@ public class SystemModule extends DelegatingProxy<SystemAdapter> {
   }
 
   public SystemModule(LuaClassLoader classLoader, SystemAdapter delegate) {
-    super(classLoader, null, delegate);
+    super(classLoader, delegate);
     ExecuteFunction executeFunction = new ExecuteFunction();
     addImmutable(executeFunction.getName(), executeFunction);
   }

@@ -24,6 +24,7 @@ import com.squareup.javapoet.TypeSpec;
 import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 import net.wizardsoflua.annotation.processor.module.model.LuaModuleModel;
 
@@ -92,6 +93,11 @@ public class LuaModuleGenerator {
     for (FunctionModel function : model.getFunctions()) {
       String Name = Utils.capitalize(function.getName());
       constructor.addStatement("addReadOnly(new $LFunction())", Name);
+    }
+    for (ManualFunctionModel function : model.getManualFunctions()) {
+      String name = function.getName();
+      String functionTypeSimpleName = ClassName.get(function.getFunctionType()).simpleName();
+      constructor.addStatement("addReadOnly($S, delegate.new $L())", name, functionTypeSimpleName);
     }
     return constructor.build();
   }

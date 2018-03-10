@@ -15,7 +15,7 @@ public class TimeModule2 extends LuaModule<TimeApi> {
     addReadOnly("luatime", () -> delegate.getLuatime());
     addReadOnly("realtime", () -> delegate.getRealtime());
     addReadOnly(new GetDateFunction());
-    addReadOnly(delegate.new SleepFunction());
+    addReadOnly("sleep", delegate.new SleepFunction());
   }
 
   @Override

@@ -1,14 +1,16 @@
 package net.wizardsoflua.lua.module.time;
 
+import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.LuaFunction;
+import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.module.types.Types;
 
 /**
  * The Time module provides access to time related properties of the active Spell's world.
@@ -81,26 +83,20 @@ public class TimeApi {
     return delegate.getDate(pattern);
   }
 
-  public void onCreateModule(TimeModule2 module) {
-    module.addReadOnly(new SleepFunction());
-  }
-
   /**
    * Forces the current spell to sleep for the given amount of game ticks.
    */
-  @LuaFunction
-  public class SleepFunction extends NamedFunction1 {
-    @Override
-    public String getName() {
-      return "sleep";
-    }
+  @LuaFunction(name = SleepFunction.NAME)
+  @LuaFunctionDoc(args = {"ticks"}, returnType = Types.NIL_META)
+  public class SleepFunction extends AbstractFunction1 {
+    public static final String NAME = "sleep";
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
       if (arg1 == null) {
         return; // ignore call
       }
-      int ticks = getConverters().toJava(int.class, arg1, 1, "ticks", getName());
+      int ticks = getConverters().toJava(int.class, arg1, 1, "ticks", NAME);
       delegate.startSleep(ticks);
       execute(context);
     }
