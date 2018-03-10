@@ -40,6 +40,7 @@ import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class LuaClassModel {
@@ -149,6 +150,7 @@ public class LuaClassModel {
   private final ClassName superProxyClassName;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
+  private final SortedMap<String, ManualFunctionModel> manualFunctions = new TreeMap<>();
 
   private final Collection<ExecutableElement> onCreateLuaProxy = new ArrayList<>();
   private final Collection<ExecutableElement> onLoadLuaClass = new ArrayList<>();
@@ -235,6 +237,14 @@ public class LuaClassModel {
 
   public Collection<FunctionModel> getFunctions() {
     return Collections.unmodifiableCollection(functions.values());
+  }
+
+  public void addManualFunction(ManualFunctionModel function) {
+    manualFunctions.put(function.getName(), function);
+  }
+
+  public Collection<ManualFunctionModel> getManualFunctions() {
+    return Collections.unmodifiableCollection(manualFunctions.values());
   }
 
   public void addOnCreateLuaProxy(ExecutableElement method) {

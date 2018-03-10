@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor.luaclass;
 
 import static javax.lang.model.util.ElementFilter.methodsIn;
+import static javax.lang.model.util.ElementFilter.typesIn;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.write;
 
 import java.io.IOException;
@@ -37,6 +38,7 @@ import net.wizardsoflua.annotation.processor.luaclass.generator.LuaClassGenerato
 import net.wizardsoflua.annotation.processor.luaclass.generator.LuaProxyGenerator;
 import net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
@@ -68,7 +70,15 @@ public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
   private LuaClassModel analyze(TypeElement moduleElement)
       throws ProcessingException, MultipleProcessingExceptions {
     LuaClassModel model = LuaClassModel.of(moduleElement, processingEnv);
-    List<ExecutableElement> methods = getRelevantMethods(moduleElement);
+    List<Element> elements = getRelevantElements(moduleElement);
+    List<TypeElement> types = typesIn(elements);
+    for (TypeElement typeElement : types) {
+      if (typeElement.getAnnotation(LuaFunction.class) != null) {
+        ManualFunctionModel function = ManualFunctionModel.of(typeElement);
+        model.addManualFunction(function);
+      }
+    }
+    List<ExecutableElement> methods = methodsIn(elements);
     for (ExecutableElement method : methods) {
       if (method.getAnnotation(LuaProperty.class) != null) {
         PropertyModel property = PropertyModel.of(method, processingEnv);
@@ -102,29 +112,29 @@ public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
   }
 
   /**
-   * Returns all methods in that are declare in {@code moduleElement} or it's super classes. If a
-   * super class is itself a {@link GenerateLuaClass} then its methods and those of its superclasses
-   * are ignored, because they are already exported to Lua.
+   * Returns all elements in that are declared in {@code moduleElement} or it's super classes. If a
+   * super class is itself a {@link GenerateLuaClass} then its elements and those of its
+   * superclasses are ignored, because they are already exported to Lua.
    *
    * @param moduleElement
-   * @param methods
-   * @return all methods in that are declare in {@code moduleElement} or it's super classes
+   * @return all elements in that are declared in {@code moduleElement} or it's super classes
    */
-  public static List<ExecutableElement> getRelevantMethods(TypeElement moduleElement) {
-    List<ExecutableElement> methods = new ArrayList<>();
+  public static List<Element> getRelevantElements(TypeElement moduleElement) {
+    List<Element> elements = new ArrayList<>();
     while (true) {
-      methods.addAll(methodsIn(moduleElement.getEnclosedElements()));
+      elements.addAll(moduleElement.getEnclosedElements());
 
       TypeMirror superclass = moduleElement.getSuperclass();
       if (superclass.getKind() == TypeKind.DECLARED) {
         DeclaredType superType = (DeclaredType) superclass;
         moduleElement = (TypeElement) superType.asElement();
         if (moduleElement.getAnnotation(GenerateLuaClass.class) != null) {
-          return methods;
+          return elements;
         }
       } else {
-        return methods;
+        return elements;
       }
     }
   }
+
 }

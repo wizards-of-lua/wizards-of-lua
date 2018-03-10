@@ -45,7 +45,7 @@ public class LuaDocGenerator {
       doc.append("  - name: ").append(property.getName()).append('\n');
       doc.append("    type: '").append(property.getType()).append("'\n");
       doc.append("    access: ").append(property.getAccess()).append('\n');
-      doc.append("    description: |\n").append(indentDescription(property.getDescription()))
+      doc.append("    description: |\n").append(renderDescription(property.getDescription()))
           .append('\n');
     }
     doc.append("functions:\n");
@@ -54,7 +54,7 @@ public class LuaDocGenerator {
       String args = Joiner.on(", ").join(function.getArgs());
       doc.append("    parameters: ").append(args).append('\n');
       doc.append("    results: '").append(function.getReturnType()).append("'\n");
-      doc.append("    description: |\n").append(indentDescription(function.getDescription()))
+      doc.append("    description: |\n").append(renderDescription(function.getDescription()))
           .append('\n');
     }
     doc.append("---\n");
@@ -69,9 +69,10 @@ public class LuaDocGenerator {
     return Strings.nullToEmpty(docComment).trim();
   }
 
-  private static String indentDescription(String description) {
-    String indent = "        ";
-    return indent + description.replace("\n", "\n" + indent);
+  private static String renderDescription(String description) {
+    String indent = "       ";
+    return indent + ' ' + description.replace("\n", "\n" + indent).replace("<code>", "```lua")
+        .replace("</code>", "```");
   }
 
   public static String renderType(TypeMirror typeMirror, Element annotatedElement,
@@ -150,6 +151,6 @@ public class LuaDocGenerator {
   }
 
   private static String toReference(CharSequence simpleName) {
-    return simpleName.length() == 0 ? "" : "[" + simpleName + "](/modules/" + simpleName + "/)";
+    return simpleName.length() == 0 ? "" : "[" + simpleName + "](/modules/" + simpleName + ")";
   }
 }

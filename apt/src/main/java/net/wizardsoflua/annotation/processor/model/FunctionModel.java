@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor.model;
 
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.checkAnnotated;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,9 +12,15 @@ import javax.lang.model.type.TypeMirror;
 
 import com.google.common.collect.Lists;
 
+import net.wizardsoflua.annotation.LuaFunction;
+
 public class FunctionModel {
   public static FunctionModel of(ExecutableElement method) {
-    String name = method.getSimpleName().toString();
+    LuaFunction luaFunction = checkAnnotated(method, LuaFunction.class);
+    String name = luaFunction.name();
+    if (name.isEmpty()) {
+      name = method.getSimpleName().toString();
+    }
     TypeMirror returnType = method.getReturnType();
     List<ArgumentModel> args = Lists.transform(method.getParameters(), ArgumentModel::of);
     return new FunctionModel(name, returnType, args);

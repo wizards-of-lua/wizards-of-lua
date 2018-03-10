@@ -27,6 +27,7 @@ import com.squareup.javapoet.TypeSpec;
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
+import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 
 public class LuaClassGenerator {
   private final LuaClassModel model;
@@ -95,6 +96,11 @@ public class LuaClassGenerator {
     for (FunctionModel function : model.getFunctions()) {
       String Name = Utils.capitalize(function.getName());
       onLoadMethod.addStatement("add(new $LFunction())", Name);
+    }
+    for (ManualFunctionModel function : model.getManualFunctions()) {
+      String name = function.getName();
+      TypeMirror functionType = function.getFunctionType();
+      onLoadMethod.addStatement("add($S, new $T(this))", name, functionType);
     }
     for (ExecutableElement onLoadLuaClass : model.getOnLoadLuaClass()) {
       ClassName apiClassName = model.getApiClassName();
