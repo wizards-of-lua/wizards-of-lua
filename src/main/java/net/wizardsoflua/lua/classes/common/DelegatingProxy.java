@@ -16,7 +16,7 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
 
   public DelegatingProxy(LuaClassLoader classLoader, D delegate) {
     this.classLoader = checkNotNull(classLoader, "classLoader == null!");
-    setDelegate(delegate);
+    this.delegate = checkNotNull(delegate, "delegate==null!");
   }
 
   public static <D> Class<D> getDelegateClassOf(Class<? extends DelegatingProxy<D>> proxyClass) {
