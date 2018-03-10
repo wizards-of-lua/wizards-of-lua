@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Optional.ofNullable;
 
 import java.util.Collection;
 
@@ -246,7 +247,8 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
    * optionally given vertical offset.
    */
   @LuaFunction
-  public EntityItem dropItem(ItemStack item, float offsetY) {
+  public EntityItem dropItem(ItemStack item, @Nullable Float offsetY) {
+    offsetY = ofNullable(offsetY).orElse(0f);
     if (item.getCount() == 0) {
       throw new IllegalArgumentException("Can't drop an item with count==0");
     }
