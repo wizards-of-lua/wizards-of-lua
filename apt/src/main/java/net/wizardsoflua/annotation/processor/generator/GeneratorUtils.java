@@ -129,7 +129,8 @@ public class GeneratorUtils {
       invokeMethod.addStatement("context.getReturnBuffer().setTo()");
     } else {
       invokeMethod.addStatement("$T result = $L", returnType, callDelegate);
-      invokeMethod.addStatement("context.getReturnBuffer().setTo(result)");
+      invokeMethod.addStatement("Object luaResult = getConverters().toLuaNullable(result)");
+      invokeMethod.addStatement("context.getReturnBuffer().setTo(luaResult)");
     }
     return invokeMethod.build();
   }
