@@ -24,7 +24,7 @@ import net.wizardsoflua.scribble.LuaApiBase;
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
  * is connected to the event source.
  */
-@GenerateLuaClass(name = "EventQueue2")
+@GenerateLuaClass(name = "EventQueue")
 @GenerateLuaDoc(subtitle = "Collecting Events")
 public class EventQueueApi<D extends EventQueue> extends LuaApiBase<D> {
   public EventQueueApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
