@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
 
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -315,6 +316,9 @@ public class Converters {
         return result;
       }
       return ByteString.of(enumValue.name());
+    }
+    if (javaObject instanceof NBTBase) {
+      return NbtConverter.toLua((NBTBase) javaObject);
     }
     if (javaObject instanceof String) {
       return ByteString.of((String) javaObject);
