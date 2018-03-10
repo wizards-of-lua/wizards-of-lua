@@ -7,6 +7,7 @@ import static net.wizardsoflua.annotation.processor.doc.model.PropertyAccess.REA
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -25,10 +26,10 @@ import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 
 public class PropertyDocModel {
-  public static PropertyDocModel of(ExecutableElement method, ProcessingEnvironment env)
-      throws ProcessingException {
+  public static PropertyDocModel of(ExecutableElement method, Map<String, String> luaClassNames,
+      ProcessingEnvironment env) throws ProcessingException {
     String name = LuaPropertyUtils.getPropertyName(method);
-    String type = LuaPropertyUtils.getPropertyType(method, env);
+    String type = LuaPropertyUtils.getPropertyType(method, luaClassNames, env);
     PropertyAccess access = LuaPropertyUtils.getPropertyAccess(method);
     String description = LuaDocGenerator.getDescription(method, env);
     List<Element> elements = Arrays.asList(method);

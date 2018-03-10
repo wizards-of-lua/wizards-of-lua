@@ -74,12 +74,12 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
    * The 'lookVec' is a 3-dimensional vector that points into the direction this entity is looking
    * at, or nil, if it is not looking anywhere, for example, if it has no eyes.
    */
-  @LuaProperty(type = "Vec3")
+  @LuaProperty
   public @Nullable Vec3d getLookVec() {
     return delegate.getLookVec();
   }
 
-  @LuaProperty(type = "Vec3")
+  @LuaProperty
   public void setLookVec(Vec3d lookVec) {
     double pitch = Math.toDegrees(Math.asin(-lookVec.yCoord));
     double yaw = Math.toDegrees(MathHelper.atan2(-lookVec.xCoord, lookVec.zCoord));
@@ -90,7 +90,7 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
    * The 'motion' is a 3-dimensional vector that represents the velocity of this entity when it is
    * moved by some external force, e.g. when it is falling or when it is pushed by an explosion.
    */
-  @LuaProperty(type = "Vec3")
+  @LuaProperty
   public Vec3d getMotion() {
     double x = delegate.motionX;
     double y = delegate.motionY;
@@ -98,7 +98,7 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
     return new Vec3d(x, y, z);
   }
 
-  @LuaProperty(type = "Vec3")
+  @LuaProperty
   public void setMotion(Vec3d motion) {
     double x = motion.xCoord;
     double y = motion.yCoord;
@@ -153,12 +153,12 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
    * The 'pos' is short for 'position'. It is a 3-dimensional vector containing the location of the
    * entity inside the world it is living in.
    */
-  @LuaProperty(type = "Vec3")
+  @LuaProperty
   public Vec3d getPos() {
     return delegate.getPositionVector();
   }
 
-  @LuaProperty(type = "Vec3")
+  @LuaProperty
   public void setPos(Vec3d pos) {
     delegate.setPositionAndUpdate(pos.xCoord, pos.yCoord, pos.zCoord);
   }
@@ -205,7 +205,7 @@ public class EntityApi<D extends Entity> extends LuaApiBase<D> {
   /**
    * The 'tags' value is a list of strings that have been assigned to this entity.
    */
-  @LuaProperty(type = "table")
+  @LuaProperty
   public Collection<String> getTags() {
     return delegate.getTags();
   }

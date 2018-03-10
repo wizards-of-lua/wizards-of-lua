@@ -3,6 +3,7 @@ package net.wizardsoflua.annotation.processor.doc.model;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
@@ -10,12 +11,15 @@ import javax.lang.model.element.ExecutableElement;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 
 public class FunctionDocModel {
-  public static FunctionDocModel of(ExecutableElement method, ProcessingEnvironment env) {
+  public static FunctionDocModel of(ExecutableElement method, Map<String, String> luaClassNames,
+      ProcessingEnvironment env) throws ProcessingException {
     String name = method.getSimpleName().toString();
-    String returnType = LuaDocGenerator.renderType(method.getReturnType(), env);
+    String returnType =
+        LuaDocGenerator.renderType(method.getReturnType(), method, luaClassNames, env);
     List<String> args = Lists.transform(method.getParameters(), p -> p.getSimpleName().toString());
     String description = LuaDocGenerator.getDescription(method, env);
     return new FunctionDocModel(name, returnType, args, description);

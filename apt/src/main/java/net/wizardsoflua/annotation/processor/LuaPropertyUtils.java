@@ -5,10 +5,13 @@ import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotation
 import static net.wizardsoflua.annotation.processor.doc.model.PropertyAccess.READONLY;
 import static net.wizardsoflua.annotation.processor.doc.model.PropertyAccess.WRITEONLY;
 
+import java.util.Map;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
@@ -71,18 +74,20 @@ public class LuaPropertyUtils {
     return methodName;
   }
 
-  public static String getPropertyType(ExecutableElement method, ProcessingEnvironment env)
-      throws ProcessingException {
+  public static String getPropertyType(ExecutableElement method, Map<String, String> luaClassNames,
+      ProcessingEnvironment env) throws ProcessingException {
     LuaProperty luaProperty = checkAnnotated(method, LuaProperty.class);
     String type = LuaDocGenerator.renderType(luaProperty.type());
     if (!type.isEmpty()) {
       return type;
     }
     if (isGetter(method)) {
-      return LuaDocGenerator.renderType(method.getReturnType(), env);
+      TypeMirror returnType = method.getReturnType();
+      return LuaDocGenerator.renderType(returnType, method, luaClassNames, env);
     }
     if (isSetter(method)) {
-      return LuaDocGenerator.renderType(method.getParameters().get(0).asType(), env);
+      TypeMirror parameterType = method.getParameters().get(0).asType();
+      return LuaDocGenerator.renderType(parameterType, method, luaClassNames, env);
     }
     throw neitherGetterNorSetter(method);
   }

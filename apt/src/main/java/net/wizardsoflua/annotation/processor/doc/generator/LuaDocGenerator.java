@@ -2,8 +2,11 @@ package net.wizardsoflua.annotation.processor.doc.generator;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
@@ -14,17 +17,16 @@ import javax.lang.model.util.Types;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
+import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.doc.model.FunctionDocModel;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
 import net.wizardsoflua.annotation.processor.doc.model.PropertyDocModel;
 
 public class LuaDocGenerator {
   private final LuaDocModel model;
-  private final ProcessingEnvironment env;
 
-  public LuaDocGenerator(LuaDocModel model, ProcessingEnvironment env) {
+  public LuaDocGenerator(LuaDocModel model) {
     this.model = requireNonNull(model, "model == null!");
-    this.env = requireNonNull(env, "env == null!");
   }
 
   public String generate() {
@@ -72,11 +74,8 @@ public class LuaDocGenerator {
     return indent + description.replace("\n", "\n" + indent);
   }
 
-  public String renderType(TypeMirror typeMirror) {
-    return renderType(typeMirror, env);
-  }
-
-  public static String renderType(TypeMirror typeMirror, ProcessingEnvironment env) {
+  public static String renderType(TypeMirror typeMirror, Element annotatedElement,
+      Map<String, String> luaClassNames, ProcessingEnvironment env) throws ProcessingException {
     TypeKind typeKind = typeMirror.getKind();
     switch (typeKind) {
       case ARRAY:
@@ -100,12 +99,24 @@ public class LuaDocGenerator {
         if (types.isSameType(typeMirror, stringType) || types.isSubtype(typeMirror, enumType)) {
           return "string";
         }
+        TypeMirror iterableType = elements.getTypeElement(Iterable.class.getName()).asType();
+        if (types.isSubtype(typeMirror, iterableType)) {
+          return "table";
+        }
         try {
           PrimitiveType primitiveType = types.unboxedType(typeMirror);
-          return renderType(primitiveType, env);
+          return renderType(primitiveType, annotatedElement, luaClassNames, env);
         } catch (IllegalArgumentException ignore) {
         }
-        return toReference(((DeclaredType) typeMirror).asElement().getSimpleName());
+        DeclaredType declaredType = (DeclaredType) typeMirror;
+        TypeElement typeElement = (TypeElement) declaredType.asElement();
+        String javaName = typeElement.getQualifiedName().toString();
+        String luaName = luaClassNames.get(javaName);
+        if (luaName == null) {
+          CharSequence msg = "Could not determine the lua name of " + javaName;
+          throw new ProcessingException(msg, annotatedElement);
+        }
+        return toReference(luaName);
       case VOID:
         return "nil";
       case EXECUTABLE:

@@ -41,25 +41,28 @@ import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 
 public class LuaDocModel {
-  public static LuaDocModel forLuaModule(TypeElement annotatedElement, ProcessingEnvironment env)
+  public static LuaDocModel forLuaModule(TypeElement annotatedElement,
+      Map<String, String> luaClassNames, ProcessingEnvironment env)
       throws ProcessingException, MultipleProcessingExceptions {
     GenerateLuaModule generateLuaClass = checkAnnotated(annotatedElement, GenerateLuaModule.class);
     String name = generateLuaClass.name();
     String type = "module";
     String superClass = null;
     List<ExecutableElement> methods = methodsIn(annotatedElement.getEnclosedElements());
-    return of(annotatedElement, name, type, superClass, methods, env);
+    return of(annotatedElement, name, type, superClass, methods, luaClassNames, env);
   }
 
   public static LuaDocModel forGeneratedLuaClass(TypeElement annotatedElement,
-      ProcessingEnvironment env) throws ProcessingException, MultipleProcessingExceptions {
+      Map<String, String> luaClassNames, ProcessingEnvironment env)
+      throws ProcessingException, MultipleProcessingExceptions {
     GenerateLuaClass generateLuaClass = checkAnnotated(annotatedElement, GenerateLuaClass.class);
     String name = generateLuaClass.name();
-    return forLuaClass(annotatedElement, name, env);
+    return forLuaClass(annotatedElement, name, luaClassNames, env);
   }
 
   public static LuaDocModel forManualLuaClass(TypeElement annotatedElement,
-      ProcessingEnvironment env) throws ProcessingException, MultipleProcessingExceptions {
+      Map<String, String> luaClassNames, ProcessingEnvironment env)
+      throws ProcessingException, MultipleProcessingExceptions {
     checkAnnotated(annotatedElement, HasLuaClass.class);
 
     AnnotationMirror mirror =
@@ -68,11 +71,12 @@ public class LuaDocModel {
     TypeElement luaClassElement = (TypeElement) luaClassType.asElement();
     String name = getLuaClassName(luaClassElement, annotatedElement, env);
 
-    return forLuaClass(annotatedElement, name, env);
+    return forLuaClass(annotatedElement, name, luaClassNames, env);
   }
 
   private static LuaDocModel forLuaClass(TypeElement annotatedElement, String name,
-      ProcessingEnvironment env) throws ProcessingException, MultipleProcessingExceptions {
+      Map<String, String> luaClassNames, ProcessingEnvironment env)
+      throws ProcessingException, MultipleProcessingExceptions {
     Elements elements = env.getElementUtils();
 
     String type = "class";
@@ -92,7 +96,7 @@ public class LuaDocModel {
 
     List<ExecutableElement> methods = getRelevantMethods(annotatedElement);
 
-    return of(annotatedElement, name, type, superClass, methods, env);
+    return of(annotatedElement, name, type, superClass, methods, luaClassNames, env);
   }
 
   private static String getLuaClassName(TypeElement luaClassElement, TypeElement annotatedElement,
@@ -108,8 +112,8 @@ public class LuaDocModel {
   }
 
   private static LuaDocModel of(TypeElement annotatedElement, String name, String type,
-      String superClass, List<ExecutableElement> methods, ProcessingEnvironment env)
-      throws ProcessingException, MultipleProcessingExceptions {
+      String superClass, List<ExecutableElement> methods, Map<String, String> luaClassNames,
+      ProcessingEnvironment env) throws ProcessingException, MultipleProcessingExceptions {
     CharSequence packageName =
         env.getElementUtils().getPackageOf(annotatedElement).getQualifiedName();
 
@@ -123,7 +127,7 @@ public class LuaDocModel {
 
     for (ExecutableElement method : methods) {
       if (method.getAnnotation(LuaProperty.class) != null) {
-        PropertyDocModel property = PropertyDocModel.of(method, env);
+        PropertyDocModel property = PropertyDocModel.of(method, luaClassNames, env);
         PropertyDocModel existingProperty = properties.remove(property.getName());
         if (existingProperty != null) {
           property = existingProperty.merge(property);
@@ -131,7 +135,7 @@ public class LuaDocModel {
         properties.put(property.getName(), property);
       }
       if (method.getAnnotation(LuaFunction.class) != null) {
-        FunctionDocModel function = FunctionDocModel.of(method, env);
+        FunctionDocModel function = FunctionDocModel.of(method, luaClassNames, env);
         functions.put(function.getName(), function);
       }
     }
