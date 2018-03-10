@@ -18,6 +18,9 @@ properties:
         Whether the event is canceled.
         A canceled event is not passed to any other [event listeners](/modules/Events#subscribe) or [EventQueues](/modules/EventQueue) and does not affect the world.
 
+        Please note that an event can only be canceled by [event listeners](/modules/Events#subscribe), since those are called *before* the actual event is handled by Minecraft.
+        Therefore an event can't be canceled if it is already collected by an [EventQueues](/modules/EventQueue), because this happens after the event has been handled by Minecraft.
+
         #### Example
         Canceling all BlockPlaceEvents.
         ```lua
