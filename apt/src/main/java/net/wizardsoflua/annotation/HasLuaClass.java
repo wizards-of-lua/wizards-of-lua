@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * This {@link Annotation} can be used as an alternative to {@link GenerateLuaClass} if you don't
- * want to generate the lua class and lua proxy, but write them from hand. This {@link Annotation}
- * is used to find the super class and super proxy of generated sub classes.
+ * want to generate the lua class and lua instance, but write them from hand. This
+ * {@link Annotation} is used to find the super class and super instance of generated sub classes.
  *
  * @author Adrodoc55
  */
@@ -21,7 +21,7 @@ public @interface HasLuaClass {
 
   String LUA_CLASS = "luaClass";
 
-  Class<?> luaProxy();
+  Class<?> luaInstance();
 
-  String LUA_PROXY = "luaProxy";
+  String LUA_INSTANCE = "luaInstance";
 }

@@ -5,16 +5,16 @@ import com.google.common.cache.CacheBuilder;
 
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 
-public abstract class ProxyCachingLuaClass<J, P extends LuaInstance<? extends J>>
-    extends ProxyingLuaClass<J, P> {
-  private final Cache<J, P> cache = CacheBuilder.newBuilder().weakKeys().softValues().build();
+public abstract class InstanceCachingLuaClass<J, I extends LuaInstance<? extends J>>
+    extends ProxyingLuaClass<J, I> {
+  private final Cache<J, I> cache = CacheBuilder.newBuilder().weakKeys().softValues().build();
 
   @Override
-  public final P getLuaInstance(J delegate) {
+  public final I getLuaInstance(J delegate) {
     return cache.asMap().computeIfAbsent(delegate, super::getLuaInstance);
   }
 
-  public Cache<J, P> getCache() {
+  public Cache<J, I> getCache() {
     return cache;
   }
 }

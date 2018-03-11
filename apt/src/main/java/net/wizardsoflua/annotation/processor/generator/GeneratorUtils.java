@@ -3,8 +3,8 @@ package net.wizardsoflua.annotation.processor.generator;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static net.wizardsoflua.annotation.processor.Constants.EXECUTION_CONTEXT_CLASS_NAME;
-import static net.wizardsoflua.annotation.processor.Constants.RESOLVED_CONTROL_THROWABLE_CLASS_NAME;
+import static net.wizardsoflua.annotation.processor.Constants.EXECUTION_CONTEXT;
+import static net.wizardsoflua.annotation.processor.Constants.RESOLVED_CONTROL_THROWABLE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ import com.google.common.collect.Iterables;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import net.wizardsoflua.annotation.processor.Constants;
@@ -44,13 +43,13 @@ public class GeneratorUtils {
   public static MethodSpec createDelegatingSetter(PropertyModel property, String delegateVariable) {
     String name = property.getName();
     String setterName = property.getSetterName();
-    TypeName propertyType = TypeName.get(property.getSetterType());
+    TypeMirror setterType = property.getSetterType();
     String convertersMethod = property.isNullable() ? "toJavaNullable" : "toJava";
     return methodBuilder(setterName)//
         .addModifiers(PRIVATE)//
         .addParameter(Object.class, "luaObject")//
-        .addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", propertyType, name,
-            convertersMethod, propertyType, name)//
+        .addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", setterType, name,
+            convertersMethod, setterType, name)//
         .addStatement("$L.$L($L)", delegateVariable, setterName, name)//
         .build();
   }
@@ -98,8 +97,8 @@ public class GeneratorUtils {
     MethodSpec.Builder invokeMethod = methodBuilder("invoke")//
         .addAnnotation(Override.class)//
         .addModifiers(Modifier.PUBLIC)//
-        .addException(RESOLVED_CONTROL_THROWABLE_CLASS_NAME)//
-        .addParameter(EXECUTION_CONTEXT_CLASS_NAME, "context")//
+        .addException(RESOLVED_CONTROL_THROWABLE)//
+        .addParameter(EXECUTION_CONTEXT, "context")//
     ;
     List<ArgumentModel> args = function.getArgs();
     List<ArgumentModel> luaArgs = new ArrayList<>(args);

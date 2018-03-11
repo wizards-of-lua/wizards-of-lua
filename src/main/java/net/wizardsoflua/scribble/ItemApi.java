@@ -6,10 +6,11 @@ import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @GenerateLuaClass(name = "Item")
-public class ItemApi<D extends ItemStack> extends LuaApiBase<D> {
+public class ItemApi<D extends ItemStack> extends LuaClassApi<D> {
   public ItemApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }

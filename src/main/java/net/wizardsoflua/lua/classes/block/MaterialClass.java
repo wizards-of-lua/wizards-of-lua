@@ -2,12 +2,12 @@ package net.wizardsoflua.lua.classes.block;
 
 import net.minecraft.block.material.Material;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 
 @DeclareLuaClass(name = MaterialClass.NAME)
-public class MaterialClass extends ProxyCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
+public class MaterialClass extends InstanceCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
   public static final String NAME = "Material";
 
   @Override

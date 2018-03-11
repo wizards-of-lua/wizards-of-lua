@@ -22,16 +22,16 @@ import net.sandius.rembulan.LuaMathOperators;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
+import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
-import net.wizardsoflua.scribble.LuaApiBase;
-import net.wizardsoflua.scribble.LuaApiProxy;
 
 public class Converters {
   private final LuaClassLoader classLoader;
@@ -204,8 +204,8 @@ public class Converters {
         return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }
     }
-    if (LuaApiBase.class.isAssignableFrom(type) && luaObject instanceof LuaApiProxy) {
-      return ((LuaApiProxy<?, ?>) luaObject).getApi();
+    if (LuaClassApi.class.isAssignableFrom(type) && luaObject instanceof GeneratedLuaInstance) {
+      return ((GeneratedLuaInstance<?, ?>) luaObject).getApi();
     }
     if (type == String.class) {
       return Conversions.javaRepresentationOf(luaObject);

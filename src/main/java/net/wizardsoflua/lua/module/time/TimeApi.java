@@ -9,20 +9,18 @@ import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.module.LuaModuleApi;
 import net.wizardsoflua.lua.module.types.Types;
 
 /**
  * The Time module provides access to time related properties of the active Spell's world.
  */
-@GenerateLuaModule(name = "Time2")
+@GenerateLuaModule(name = "Time")
 @GenerateLuaDoc(subtitle = "Accessing the Time")
-public class TimeApi {
-  private Time delegate;
-  private Converters converters;
-
-  public Converters getConverters() {
-    return converters;
+public class TimeApi extends LuaModuleApi<Time> {
+  public TimeApi(LuaClassLoader classLoader, Time delegate) {
+    super(classLoader, delegate);
   }
 
   /**

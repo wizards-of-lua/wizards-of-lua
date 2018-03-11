@@ -4,13 +4,13 @@ import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.ObjectClass;
-import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
 import net.wizardsoflua.lua.function.NamedFunction2;
 
 @DeclareLuaClass(name = "Item", superClass = ObjectClass.class)
 public class LuaItemClass
-    extends ProxyCachingLuaClass<ItemStack, LuaItemProxy<ItemApi<ItemStack>, ItemStack>> {
+    extends InstanceCachingLuaClass<ItemStack, LuaItemProxy<ItemApi<ItemStack>, ItemStack>> {
   @Override
   protected LuaItemProxy<ItemApi<ItemStack>, ItemStack> toLua(ItemStack javaObject) {
     return new LuaItemProxy<>(new ItemApi<>(this, javaObject));

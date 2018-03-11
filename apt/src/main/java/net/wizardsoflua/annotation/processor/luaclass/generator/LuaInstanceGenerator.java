@@ -21,21 +21,21 @@ import com.squareup.javapoet.TypeVariableName;
 import net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
-public class LuaProxyGenerator {
+public class LuaInstanceGenerator {
   private final LuaClassModel model;
 
-  public LuaProxyGenerator(LuaClassModel model) {
+  public LuaInstanceGenerator(LuaClassModel model) {
     this.model = requireNonNull(model, "model == null!");
   }
 
   public JavaFile generate() {
     String packageName = model.getPackageName();
-    TypeSpec luaProxyType = createLuaProxyType();
-    return JavaFile.builder(packageName, luaProxyType).build();
+    TypeSpec luaInstanceType = createLuaInstanceType();
+    return JavaFile.builder(packageName, luaInstanceType).build();
   }
 
-  private TypeSpec createLuaProxyType() {
-    TypeSpec.Builder proxyType = classBuilder(model.getProxyClassName())//
+  private TypeSpec createLuaInstanceType() {
+    TypeSpec.Builder instanceType = classBuilder(model.getInstanceName())//
         .addAnnotation(GENERATED_ANNOTATION)//
         .addModifiers(Modifier.PUBLIC)//
         .addTypeVariable(createTypeVariableA())//
@@ -45,13 +45,13 @@ public class LuaProxyGenerator {
     ;
     for (PropertyModel property : model.getProperties()) {
       if (property.isReadable()) {
-        proxyType.addMethod(createDelegatingGetter(property, "api"));
+        instanceType.addMethod(createDelegatingGetter(property, "api"));
       }
       if (property.isWriteable()) {
-        proxyType.addMethod(createDelegatingSetter(property, "api"));
+        instanceType.addMethod(createDelegatingSetter(property, "api"));
       }
     }
-    return proxyType.build();
+    return instanceType.build();
   }
 
   private TypeVariableName createTypeVariableA() {
@@ -66,7 +66,7 @@ public class LuaProxyGenerator {
   }
 
   private ParameterizedTypeName createSuperClassTypeName() {
-    ClassName raw = model.getSuperProxyClassName();
+    ClassName raw = model.getSuperInstanceName();
     TypeVariableName a = createTypeVariableA();
     TypeVariableName d = createTypeVariableD();
     return ParameterizedTypeName.get(raw, a, d);
@@ -88,8 +88,8 @@ public class LuaProxyGenerator {
         constructor.addStatement("addReadOnly($S, this::$L)", name, getterName);
       }
     }
-    for (ExecutableElement onCreateLuaProxy : model.getOnCreateLuaProxy()) {
-      constructor.addStatement("api.$L(this)", onCreateLuaProxy.getSimpleName());
+    for (ExecutableElement onCreateLuaInstance : model.getOnCreateLuaInstance()) {
+      constructor.addStatement("api.$L(this)", onCreateLuaInstance.getSimpleName());
     }
     return constructor.build();
   }

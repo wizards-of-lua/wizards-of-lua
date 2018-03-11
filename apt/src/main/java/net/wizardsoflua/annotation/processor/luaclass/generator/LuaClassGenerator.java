@@ -3,8 +3,8 @@ package net.wizardsoflua.annotation.processor.luaclass.generator;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static java.util.Objects.requireNonNull;
-import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS_CLASS_NAME;
-import static net.wizardsoflua.annotation.processor.Constants.PROXY_CACHING_LUA_CLASS_CLASS_NAME;
+import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_CLASS_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createFunctionClass;
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.GENERATED_ANNOTATION;
 
@@ -63,29 +63,29 @@ public class LuaClassGenerator {
   }
 
   private AnnotationSpec createDeclareLuaClassAnnotation() {
-    return AnnotationSpec.builder(DECLARE_LUA_CLASS_CLASS_NAME)//
+    return AnnotationSpec.builder(DECLARE_LUA_CLASS)//
         .addMember("name", "$S", model.getName())//
         .addMember("superClass", "$T.class", model.getSuperClassName())//
         .build();
   }
 
   private ParameterizedTypeName createSuperclassTypeName() {
-    ClassName raw = PROXY_CACHING_LUA_CLASS_CLASS_NAME;
+    ClassName raw = LUA_CLASS_SUPERCLASS;
     TypeName delegate = model.getDelegateTypeName();
-    TypeName proxy = model.getParameterizedProxyTypeName();
-    return ParameterizedTypeName.get(raw, delegate, proxy);
+    TypeName instance = model.getParameterizedInstanceName();
+    return ParameterizedTypeName.get(raw, delegate, instance);
   }
 
   private MethodSpec createToLuaMethod() {
     TypeName api = model.getParameterizedApiTypeName();
     TypeName delegate = model.getDelegateTypeName();
-    TypeName proxy = model.getParameterizedProxyTypeName();
+    TypeName instance = model.getParameterizedInstanceName();
     return methodBuilder("toLua")//
         .addAnnotation(Override.class)//
         .addModifiers(Modifier.PROTECTED)//
-        .returns(proxy)//
+        .returns(instance)//
         .addParameter(delegate, "javaObject")//
-        .addStatement("return new $T(new $T(this, javaObject))", proxy, api)//
+        .addStatement("return new $T(new $T(this, javaObject))", instance, api)//
         .build();
   }
 

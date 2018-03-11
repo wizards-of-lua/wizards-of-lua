@@ -5,28 +5,28 @@ import static net.wizardsoflua.annotation.processor.Utils.getQualifiedName;
 import com.squareup.javapoet.ClassName;
 
 public interface Constants {
-  static final String PROXY_SUFFIX = "Proxy";
-  static final String CLASS_SUFFIX = "Class";
-  static final String MODULE_SUFFIX = "Module";
-  static final ClassName OBJECT_CLASS_CLASS_NAME =
-      ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
-  static final String JAVA_LUA_CLASS = "net.wizardsoflua.lua.classes.JavaLuaClass";
-  static final ClassName DECLARE_LUA_CLASS_CLASS_NAME =
+  final String LUA_CLASS_API = "net.wizardsoflua.lua.classes.LuaClassApi";
+  final ClassName OBJECT_CLASS = ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
+  final String JAVA_LUA_CLASS = "net.wizardsoflua.lua.classes.JavaLuaClass";
+  final ClassName DECLARE_LUA_CLASS =
       ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
-  static final String DECLARE_LUA_CLASS = getQualifiedName(DECLARE_LUA_CLASS_CLASS_NAME);
-  static final ClassName LUA_MODULE_CLASS_NAME =
-      ClassName.get("net.wizardsoflua.lua.classes", "LuaModule");
-  static final ClassName LUA_CLASS_LOADER_CLASS_NAME =
-      ClassName.get("net.wizardsoflua.lua.classes", "LuaClassLoader");
-  static final ClassName EXECUTION_CONTEXT_CLASS_NAME =
+  final String DECLARE_LUA_CLASS_NAME = getQualifiedName(DECLARE_LUA_CLASS);
+
+  final String MODULE_SUFFIX = "Module";
+  final String CLASS_SUFFIX = "Class";
+  final String INSTANCE_SUFFIX = "Instance";
+
+  final ClassName LUA_MODULE_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.module", "GeneratedLuaModule");
+  final ClassName LUA_CLASS_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.classes", "InstanceCachingLuaClass");
+  final ClassName LUA_INSTANCE_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.classes", "GeneratedLuaInstance");
+
+  final ClassName EXECUTION_CONTEXT =
       ClassName.get("net.sandius.rembulan.runtime", "ExecutionContext");
-  static final ClassName RESOLVED_CONTROL_THROWABLE_CLASS_NAME =
+  final ClassName RESOLVED_CONTROL_THROWABLE =
       ClassName.get("net.sandius.rembulan.runtime", "ResolvedControlThrowable");
-  static final ClassName PROXY_CACHING_LUA_CLASS_CLASS_NAME =
-      ClassName.get("net.wizardsoflua.lua.classes", "ProxyCachingLuaClass");
-  static final ClassName LUA_API_PROXY_CLASS_NAME =
-      ClassName.get("net.wizardsoflua.scribble", "LuaApiProxy");
-  static final String LUA_API_BASE = "net.wizardsoflua.scribble.LuaApiBase";
 
   static ClassName getNamedFunctionClassName(int numberOfArgs) {
     return ClassName.get("net.wizardsoflua.lua.function", "NamedFunction" + numberOfArgs);

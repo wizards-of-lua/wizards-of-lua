@@ -39,7 +39,7 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerApi;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
-import net.wizardsoflua.lua.classes.entity.PlayerProxy;
+import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
@@ -56,6 +56,7 @@ import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.system.SystemAdapter;
 import net.wizardsoflua.lua.module.system.SystemModule;
 import net.wizardsoflua.lua.module.time.Time;
+import net.wizardsoflua.lua.module.time.TimeApi;
 import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.scheduling.LuaExecutor;
@@ -155,7 +156,7 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
-    TimeModule.installInto(env, luaClassLoader, time);
+    new TimeModule(new TimeApi(luaClassLoader, time)).installInto(env);
     SystemModule.installInto(env, luaClassLoader, systemAdapter);
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());
@@ -305,11 +306,11 @@ public class SpellProgram {
       }
     }
     PlayerClass playerClass = luaClassLoader.getLuaClassOfType(PlayerClass.class);
-    Cache<EntityPlayerMP, PlayerProxy<PlayerApi<EntityPlayerMP>, EntityPlayerMP>> cache =
+    Cache<EntityPlayerMP, PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP>> cache =
         playerClass.getCache();
     for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
       if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
-        PlayerProxy<PlayerApi<EntityPlayerMP>, EntityPlayerMP> oldValue =
+        PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP> oldValue =
             cache.asMap().remove(oldPlayer);
         cache.put(newPlayer, oldValue);
         oldValue.setDelegate(newPlayer);

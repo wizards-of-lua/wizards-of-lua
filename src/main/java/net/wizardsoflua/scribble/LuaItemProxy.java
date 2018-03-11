@@ -2,8 +2,9 @@ package net.wizardsoflua.scribble;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 
-public class LuaItemProxy<A extends ItemApi<D>, D extends ItemStack> extends LuaApiProxy<A, D> {
+public class LuaItemProxy<A extends ItemApi<D>, D extends ItemStack> extends GeneratedLuaInstance<A, D> {
   public LuaItemProxy(A api) {
     super(api);
     add("damage", this::getDamage, this::setDamage);

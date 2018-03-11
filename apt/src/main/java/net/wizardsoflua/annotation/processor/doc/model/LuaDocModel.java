@@ -4,14 +4,14 @@ import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 import static javax.lang.model.util.ElementFilter.methodsIn;
 import static javax.lang.model.util.ElementFilter.typesIn;
-import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS;
-import static net.wizardsoflua.annotation.processor.Constants.OBJECT_CLASS_CLASS_NAME;
+import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS_NAME;
+import static net.wizardsoflua.annotation.processor.Constants.OBJECT_CLASS;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.checkAnnotated;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationValue;
 import static net.wizardsoflua.annotation.processor.Utils.getQualifiedName;
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.getRelevantElements;
-import static net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel.getSuperClassAndProxy;
+import static net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel.getSuperClassAndInstance;
 
 import java.util.List;
 import java.util.Map;
@@ -80,10 +80,11 @@ public class LuaDocModel {
       throws ProcessingException, MultipleProcessingExceptions {
     String type = "class";
 
-    Entry<ClassName, ClassName> superClassAndProxy = getSuperClassAndProxy(annotatedElement, env);
-    ClassName superClassName = superClassAndProxy.getKey();
+    Entry<ClassName, ClassName> superClassAndInstance =
+        getSuperClassAndInstance(annotatedElement, env);
+    ClassName superClassName = superClassAndInstance.getKey();
     String superClass;
-    if (OBJECT_CLASS_CLASS_NAME.equals(superClassName)) {
+    if (OBJECT_CLASS.equals(superClassName)) {
       superClass = null;
     } else {
       String qualifiedName = getQualifiedName(superClassName);
@@ -100,10 +101,10 @@ public class LuaDocModel {
 
   private static String getLuaClassName(TypeElement luaClassElement, TypeElement annotatedElement,
       ProcessingEnvironment env) throws ProcessingException {
-    AnnotationMirror annotation = getAnnotationMirror(luaClassElement, DECLARE_LUA_CLASS);
+    AnnotationMirror annotation = getAnnotationMirror(luaClassElement, DECLARE_LUA_CLASS_NAME);
     if (annotation == null) {
       String msg = "The class " + luaClassElement.getQualifiedName() + " must be annotated with @"
-          + DECLARE_LUA_CLASS;
+          + DECLARE_LUA_CLASS_NAME;
       AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaDoc.class);
       throw new ProcessingException(msg, annotatedElement, mirror);
     }

@@ -12,15 +12,16 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.LiveWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityApi;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
-import net.wizardsoflua.lua.classes.entity.EntityProxy;
+import net.wizardsoflua.lua.classes.entity.EntityInstance;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
 
 @DeclareLuaClass(name = SpellClass.NAME, superClass = EntityClass.class)
-public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
+public class SpellClass
+    extends InstanceCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String NAME = "Spell";
 
   @Override
@@ -33,7 +34,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
     return new Proxy<>(new EntityApi<>(this, delegate));
   }
 
-  public static class Proxy<D extends SpellEntity> extends EntityProxy<EntityApi<D>, D> {
+  public static class Proxy<D extends SpellEntity> extends EntityInstance<EntityApi<D>, D> {
     public Proxy(EntityApi<D> api) {
       super(api);
       addReadOnly("owner", this::getOwner);

@@ -3,10 +3,12 @@ package net.wizardsoflua.annotation.processor.luaclass.model;
 import static java.util.Objects.requireNonNull;
 import static javax.lang.model.type.TypeKind.DECLARED;
 import static net.wizardsoflua.annotation.processor.Constants.CLASS_SUFFIX;
-import static net.wizardsoflua.annotation.processor.Constants.LUA_API_BASE;
-import static net.wizardsoflua.annotation.processor.Constants.LUA_API_PROXY_CLASS_NAME;
-import static net.wizardsoflua.annotation.processor.Constants.OBJECT_CLASS_CLASS_NAME;
-import static net.wizardsoflua.annotation.processor.Constants.PROXY_SUFFIX;
+import static net.wizardsoflua.annotation.processor.Constants.INSTANCE_SUFFIX;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_CLASS_API;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_INSTANCE_SUPERCLASS;
+import static net.wizardsoflua.annotation.processor.Constants.OBJECT_CLASS;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getClassValue;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
 import java.util.ArrayList;
@@ -49,9 +51,8 @@ public class LuaClassModel {
     if (annotatedElement.getAnnotation(HasLuaClass.class) != null) {
       CharSequence msg = "Either use @" + HasLuaClass.class.getSimpleName() + " or @"
           + GenerateLuaClass.class.getSimpleName() + ", but not both";
-      AnnotationMirror a1 = ProcessorUtils.getAnnotationMirror(annotatedElement, HasLuaClass.class);
-      AnnotationMirror a2 =
-          ProcessorUtils.getAnnotationMirror(annotatedElement, GenerateLuaClass.class);
+      AnnotationMirror a1 = getAnnotationMirror(annotatedElement, HasLuaClass.class);
+      AnnotationMirror a2 = getAnnotationMirror(annotatedElement, GenerateLuaClass.class);
       throw new MultipleProcessingExceptions(Arrays.asList(//
           new ProcessingException(msg, annotatedElement, a1), //
           new ProcessingException(msg, annotatedElement, a2)//
@@ -62,18 +63,19 @@ public class LuaClassModel {
 
     String moduleName = annotatedElement.getAnnotation(GenerateLuaClass.class).name();
 
-    Entry<ClassName, ClassName> superClassAndProxy = getSuperClassAndProxy(annotatedElement, env);
-    ClassName superClassName = superClassAndProxy.getKey();
-    ClassName superProxyClassName = superClassAndProxy.getValue();
+    Entry<ClassName, ClassName> superClassAndInstance =
+        getSuperClassAndInstance(annotatedElement, env);
+    ClassName superClassName = superClassAndInstance.getKey();
+    ClassName superInstanceClassName = superClassAndInstance.getValue();
 
     return new LuaClassModel(annotatedElement, delegateTypeName, moduleName, superClassName,
-        superProxyClassName);
+        superInstanceClassName);
   }
 
   private static TypeName getDelegateTypeName(TypeElement moduleElement,
       ProcessingEnvironment env) {
     DeclaredType subType = (DeclaredType) moduleElement.asType();
-    String superType = LUA_API_BASE;
+    String superType = LUA_CLASS_API;
     int typeParameterIndex = 0;
     TypeMirror delegateType = getTypeParameter(subType, superType, typeParameterIndex, env);
     if (delegateType.getKind() == TypeKind.TYPEVAR) {
@@ -82,10 +84,10 @@ public class LuaClassModel {
     return TypeName.get(delegateType);
   }
 
-  public static Entry<ClassName, ClassName> getSuperClassAndProxy(TypeElement annotatedElement,
+  public static Entry<ClassName, ClassName> getSuperClassAndInstance(TypeElement annotatedElement,
       ProcessingEnvironment env) throws ProcessingException {
     TypeElement superApi = getSuperApi(annotatedElement);
-    return getLuaClassAndProxyName(superApi, env);
+    return getLuaClassAndInstanceName(superApi, env);
   }
 
   private static @Nullable TypeElement getSuperApi(TypeElement element) {
@@ -102,12 +104,12 @@ public class LuaClassModel {
     }
   }
 
-  private static Entry<ClassName, ClassName> getLuaClassAndProxyName(@Nullable TypeElement api,
+  private static Entry<ClassName, ClassName> getLuaClassAndInstanceName(@Nullable TypeElement api,
       ProcessingEnvironment env) throws ProcessingException {
     if (api == null) {
-      ClassName luaClassName = OBJECT_CLASS_CLASS_NAME;
-      ClassName luaProxyName = LUA_API_PROXY_CLASS_NAME;
-      return Maps.immutableEntry(luaClassName, luaProxyName);
+      ClassName luaClassName = OBJECT_CLASS;
+      ClassName luaInstanceName = LUA_INSTANCE_SUPERCLASS;
+      return Maps.immutableEntry(luaClassName, luaInstanceName);
     }
     HasLuaClass hasLuaClass = api.getAnnotation(HasLuaClass.class);
     GenerateLuaClass generateLuaClass = api.getAnnotation(GenerateLuaClass.class);
@@ -119,15 +121,15 @@ public class LuaClassModel {
     if (hasLuaClass != null) {
       AnnotationMirror mirror = ProcessorUtils.getAnnotationMirror(api, HasLuaClass.class);
 
-      DeclaredType luaClassType = ProcessorUtils.getClassValue(mirror, HasLuaClass.LUA_CLASS, env);
+      DeclaredType luaClassType = getClassValue(mirror, HasLuaClass.LUA_CLASS, env);
       TypeElement luaClassElement = (TypeElement) luaClassType.asElement();
       ClassName luaClassName = ClassName.get(luaClassElement);
 
-      DeclaredType luaProxyType = ProcessorUtils.getClassValue(mirror, HasLuaClass.LUA_PROXY, env);
-      TypeElement luaProxyElement = (TypeElement) luaProxyType.asElement();
-      ClassName luaProxyName = ClassName.get(luaProxyElement);
+      DeclaredType luaInstanceType = getClassValue(mirror, HasLuaClass.LUA_INSTANCE, env);
+      TypeElement luaInstanceElement = (TypeElement) luaInstanceType.asElement();
+      ClassName luaInstanceName = ClassName.get(luaInstanceElement);
 
-      return Maps.immutableEntry(luaClassName, luaProxyName);
+      return Maps.immutableEntry(luaClassName, luaInstanceName);
     }
     if (generateLuaClass != null) {
       Elements elements = env.getElementUtils();
@@ -135,8 +137,8 @@ public class LuaClassModel {
       String packageName = pkg.getQualifiedName().toString();
       String apiName = generateLuaClass.name();
       ClassName luaClassName = ClassName.get(packageName, apiName + CLASS_SUFFIX);
-      ClassName luaProxyName = ClassName.get(packageName, apiName + PROXY_SUFFIX);
-      return Maps.immutableEntry(luaClassName, luaProxyName);
+      ClassName luaInstanceName = ClassName.get(packageName, apiName + INSTANCE_SUFFIX);
+      return Maps.immutableEntry(luaClassName, luaInstanceName);
     }
     throw new IllegalStateException("Api must be annotated with @"
         + GenerateLuaClass.class.getSimpleName() + " or @" + HasLuaClass.class.getSimpleName());
@@ -147,22 +149,23 @@ public class LuaClassModel {
   private final TypeName delegateTypeName;
   private final String name;
   private final ClassName superClassName;
-  private final ClassName superProxyClassName;
+  private final ClassName superInstanceName;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
   private final SortedMap<String, ManualFunctionModel> manualFunctions = new TreeMap<>();
 
-  private final Collection<ExecutableElement> onCreateLuaProxy = new ArrayList<>();
+  private final Collection<ExecutableElement> onCreateLuaInstance = new ArrayList<>();
   private final Collection<ExecutableElement> onLoadLuaClass = new ArrayList<>();
 
   public LuaClassModel(TypeElement annotatedElement, TypeName delegateTypeName, String name,
-      ClassName superClassName, ClassName superProxyClassName) {
+      ClassName superClassName, ClassName superInstanceClassName) {
     this.annotatedElement = requireNonNull(annotatedElement, "annotatedElement == null!");
     apiClassName = ClassName.get(annotatedElement);
     this.delegateTypeName = requireNonNull(delegateTypeName, "delegateTypeName == null!");
     this.name = requireNonNull(name, "name == null!");
     this.superClassName = requireNonNull(superClassName, "superClassName == null!");
-    this.superProxyClassName = requireNonNull(superProxyClassName, "superProxyClassName == null!");
+    this.superInstanceName =
+        requireNonNull(superInstanceClassName, "superInstanceClassName == null!");
   }
 
   public TypeElement getAnnotatedElement() {
@@ -193,14 +196,14 @@ public class LuaClassModel {
     return ClassName.get(packageName, simpleName);
   }
 
-  public ClassName getProxyClassName() {
+  public ClassName getInstanceName() {
     String packageName = getPackageName();
-    String simpleName = name + PROXY_SUFFIX;
+    String simpleName = name + INSTANCE_SUFFIX;
     return ClassName.get(packageName, simpleName);
   }
 
-  public ParameterizedTypeName getParameterizedProxyTypeName() {
-    ClassName raw = getProxyClassName();
+  public ParameterizedTypeName getParameterizedInstanceName() {
+    ClassName raw = getInstanceName();
     TypeName delegate = getDelegateTypeName();
     TypeName api = getParameterizedApiTypeName();
     return ParameterizedTypeName.get(raw, api, delegate);
@@ -214,8 +217,8 @@ public class LuaClassModel {
     return superClassName;
   }
 
-  public ClassName getSuperProxyClassName() {
-    return superProxyClassName;
+  public ClassName getSuperInstanceName() {
+    return superInstanceName;
   }
 
   public void addProperty(PropertyModel property) {
@@ -247,12 +250,12 @@ public class LuaClassModel {
     return Collections.unmodifiableCollection(manualFunctions.values());
   }
 
-  public void addOnCreateLuaProxy(ExecutableElement method) {
-    onCreateLuaProxy.add(method);
+  public void addOnCreateLuaInstance(ExecutableElement method) {
+    onCreateLuaInstance.add(method);
   }
 
-  public Collection<ExecutableElement> getOnCreateLuaProxy() {
-    return Collections.unmodifiableCollection(onCreateLuaProxy);
+  public Collection<ExecutableElement> getOnCreateLuaInstance() {
+    return Collections.unmodifiableCollection(onCreateLuaInstance);
   }
 
   public void addOnLoadLuaClass(ExecutableElement method) {

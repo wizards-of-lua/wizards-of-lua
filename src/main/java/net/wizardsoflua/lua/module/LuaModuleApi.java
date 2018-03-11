@@ -1,21 +1,22 @@
-package net.wizardsoflua.scribble;
+package net.wizardsoflua.lua.module;
 
 import static java.util.Objects.requireNonNull;
 
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.Transferable;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 
-public class LuaApiBase<D> {
-  protected final ProxyingLuaClass<?, ?> luaClass;
+public class LuaModuleApi<D> implements Transferable {
+  protected final LuaClassLoader classLoader;
   protected D delegate;
 
-  public LuaApiBase(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-    this.luaClass = requireNonNull(luaClass, "luaClass == null!");
+  public LuaModuleApi(LuaClassLoader classLoader, D delegate) {
+    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
     this.delegate = requireNonNull(delegate, "delegate == null!");
   }
 
-  public ProxyingLuaClass<?, ?> getLuaClass() {
-    return luaClass;
+  public LuaClassLoader getClassLoader() {
+    return classLoader;
   }
 
   public D getDelegate() {
@@ -30,10 +31,11 @@ public class LuaApiBase<D> {
   }
 
   public Converters getConverters() {
-    return luaClass.getClassLoader().getConverters();
+    return classLoader.getConverters();
   }
 
+  @Override
   public boolean isTransferable() {
-    return true;
+    return false;
   }
 }

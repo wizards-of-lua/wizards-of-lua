@@ -47,7 +47,8 @@ public class PropertyModel {
   private @Nullable TypeMirror setterType;
 
   public PropertyModel(String name, boolean nullable, @Nullable String getterName,
-      @Nullable String setterName, @Nullable TypeMirror getterType, @Nullable TypeMirror setterType) {
+      @Nullable String setterName, @Nullable TypeMirror getterType,
+      @Nullable TypeMirror setterType) {
     this.name = requireNonNull(name, "name == null!");
     this.nullable = nullable;
     this.getterName = getterName;

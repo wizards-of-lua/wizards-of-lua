@@ -8,9 +8,10 @@ import java.lang.reflect.Type;
 import com.google.common.reflect.TypeToken;
 
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 
-public abstract class DelegatingProxy<D> extends DelegatingTable {
+public abstract class DelegatingProxy<D> extends DelegatingTable implements Transferable {
   private final LuaClassLoader classLoader;
   protected D delegate;
 
@@ -40,6 +41,4 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
   public D getDelegate() {
     return delegate;
   }
-
-  public abstract boolean isTransferable();
 }

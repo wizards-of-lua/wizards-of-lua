@@ -9,22 +9,22 @@ import net.wizardsoflua.lua.classes.common.LuaInstance;
 
 public abstract class ProxyingLuaClass<J, P extends LuaInstance<? extends J>>
     extends JavaLuaClass<J, P> {
-  private @Nullable Class<P> proxyClass;
+  private @Nullable Class<P> instanceClass;
 
-  public Class<P> getProxyClass() {
-    if (proxyClass == null) {
+  public Class<P> getInstanceClass() {
+    if (instanceClass == null) {
       @SuppressWarnings("serial")
       TypeToken<P> token = new TypeToken<P>(getClass()) {};
       @SuppressWarnings("unchecked")
       Class<P> rawType = (Class<P>) token.getRawType();
-      proxyClass = rawType;
+      instanceClass = rawType;
     }
-    return proxyClass;
+    return instanceClass;
   }
 
   @Override
   public J toJava(Table luaObj) throws ClassCastException {
-    P proxy = getProxyClass().cast(luaObj);
-    return proxy.getDelegate();
+    P instance = getInstanceClass().cast(luaObj);
+    return instance.getDelegate();
   }
 }

@@ -1,7 +1,7 @@
 package net.wizardsoflua.annotation.processor.doc;
 
 import static javax.tools.StandardLocation.SOURCE_OUTPUT;
-import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS;
+import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS_NAME;
 import static net.wizardsoflua.annotation.processor.Constants.JAVA_LUA_CLASS;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationValue;
@@ -63,7 +63,7 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     HashSet<String> result = new HashSet<>();
-    result.add(DECLARE_LUA_CLASS);
+    result.add(DECLARE_LUA_CLASS_NAME);
     result.add(GenerateLuaDoc.class.getName());
     return result;
   }
@@ -77,7 +77,7 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   protected void doProcess(TypeElement annotation, Element annotatedElement,
       RoundEnvironment roundEnv)
       throws ProcessingException, MultipleProcessingExceptions, IOException {
-    if (annotation.getQualifiedName().contentEquals(DECLARE_LUA_CLASS)
+    if (annotation.getQualifiedName().contentEquals(DECLARE_LUA_CLASS_NAME)
         && annotatedElement.getKind() == ElementKind.CLASS) {
       registerLuaClass(annotatedElement);
     }
@@ -94,8 +94,8 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     TypeMirror javaType = getTypeParameter(type, JAVA_LUA_CLASS, 0, processingEnv);
     DeclaredType javaClass = (DeclaredType) javaType;
     TypeElement javaElement = (TypeElement) javaClass.asElement();
-    AnnotationMirror declareLuaClass = getAnnotationMirror(annotatedElement, DECLARE_LUA_CLASS);
-    String name = (String) getAnnotationValue(declareLuaClass, "name", processingEnv).getValue();
+    AnnotationMirror mirror = getAnnotationMirror(annotatedElement, DECLARE_LUA_CLASS_NAME);
+    String name = (String) getAnnotationValue(mirror, "name", processingEnv).getValue();
     getLuaClassNames().put(javaElement.getQualifiedName().toString(), name);
   }
 

@@ -16,9 +16,9 @@ import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.event.EventClass;
-import net.wizardsoflua.scribble.LuaApiBase;
 
 /**
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
@@ -26,7 +26,7 @@ import net.wizardsoflua.scribble.LuaApiBase;
  */
 @GenerateLuaClass(name = "EventQueue")
 @GenerateLuaDoc(subtitle = "Collecting Events")
-public class EventQueueApi<D extends EventQueue> extends LuaApiBase<D> {
+public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
   public EventQueueApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }

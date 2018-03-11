@@ -3,6 +3,7 @@ package net.wizardsoflua.annotation.processor.module.generator;
 import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_MODULE_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingGetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createFunctionClass;
@@ -21,7 +22,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
@@ -66,19 +66,17 @@ public class LuaModuleGenerator {
   }
 
   private ParameterizedTypeName createSuperclassTypeName() {
-    ClassName raw = Constants.LUA_MODULE_CLASS_NAME;
+    ClassName raw = LUA_MODULE_SUPERCLASS;
     TypeName delegate = model.getClassName();
     return ParameterizedTypeName.get(raw, delegate);
   }
 
   private MethodSpec createConstructor() {
-    ClassName luaClassLoader = Constants.LUA_CLASS_LOADER_CLASS_NAME;
     TypeName delegate = model.getClassName();
     Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
-        .addParameter(luaClassLoader, "classLoader")//
         .addParameter(delegate, "delegate")//
-        .addStatement("super(classLoader, delegate)")//
+        .addStatement("super(delegate)")//
     ;
     for (PropertyModel property : model.getProperties()) {
       String name = property.getName();
