@@ -213,7 +213,7 @@ public class EntityApi<D extends Entity> extends LuaClassApi<D> {
 
   @LuaProperty(type = "table")
   public void setTags(Object luaObj) {
-    Collection<String> tags = getConverters().toJavaCollection(String.class, luaObj, "tags");
+    Collection<String> tags = getConverters().toJavaList(String.class, luaObj, "tags");
 
     for (String oldTag : Lists.newArrayList(delegate.getTags())) {
       delegate.removeTag(oldTag);
