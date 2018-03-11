@@ -39,12 +39,12 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public boolean isAutosleep() {
-    return delegate.isAutoSleep();
+    return delegate.isAutosleep();
   }
 
   @LuaProperty
   public void setAutosleep(boolean autosleep) {
-    delegate.setAutoSleep(autosleep);
+    delegate.setAutosleep(autosleep);
   }
 
   /**
