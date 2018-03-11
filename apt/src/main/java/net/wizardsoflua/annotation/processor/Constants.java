@@ -23,11 +23,6 @@ public interface Constants {
   final ClassName LUA_INSTANCE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.classes", "GeneratedLuaInstance");
 
-  final ClassName EXECUTION_CONTEXT =
-      ClassName.get("net.sandius.rembulan.runtime", "ExecutionContext");
-  final ClassName RESOLVED_CONTROL_THROWABLE =
-      ClassName.get("net.sandius.rembulan.runtime", "ResolvedControlThrowable");
-
   static ClassName getNamedFunctionClassName(int numberOfArgs) {
     return ClassName.get("net.wizardsoflua.lua.function", "NamedFunction" + numberOfArgs);
   }

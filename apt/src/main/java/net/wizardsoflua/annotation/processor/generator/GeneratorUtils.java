@@ -3,8 +3,6 @@ package net.wizardsoflua.annotation.processor.generator;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static net.wizardsoflua.annotation.processor.Constants.EXECUTION_CONTEXT;
-import static net.wizardsoflua.annotation.processor.Constants.RESOLVED_CONTROL_THROWABLE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +20,8 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.model.ArgumentModel;
@@ -97,8 +97,8 @@ public class GeneratorUtils {
     MethodSpec.Builder invokeMethod = methodBuilder("invoke")//
         .addAnnotation(Override.class)//
         .addModifiers(Modifier.PUBLIC)//
-        .addException(RESOLVED_CONTROL_THROWABLE)//
-        .addParameter(EXECUTION_CONTEXT, "context")//
+        .addException(ResolvedControlThrowable.class)//
+        .addParameter(ExecutionContext.class, "context")//
     ;
     List<ArgumentModel> args = function.getArgs();
     List<ArgumentModel> luaArgs = new ArrayList<>(args);
