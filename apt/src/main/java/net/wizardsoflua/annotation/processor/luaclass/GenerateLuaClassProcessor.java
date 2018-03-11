@@ -29,8 +29,6 @@ import com.squareup.javapoet.JavaFile;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.annotation.OnCreateLuaInstance;
-import net.wizardsoflua.annotation.OnLoadLuaClass;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
@@ -87,12 +85,6 @@ public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
       if (method.getAnnotation(LuaFunction.class) != null) {
         FunctionModel function = FunctionModel.of(method);
         model.addFunction(function);
-      }
-      if (method.getAnnotation(OnCreateLuaInstance.class) != null) {
-        model.addOnCreateLuaInstance(method);
-      }
-      if (method.getAnnotation(OnLoadLuaClass.class) != null) {
-        model.addOnLoadLuaClass(method);
       }
     }
     return model;

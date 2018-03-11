@@ -9,9 +9,7 @@ import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.cre
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.GENERATED_ANNOTATION;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -104,11 +102,6 @@ public class LuaClassGenerator {
       String name = function.getName();
       TypeElement functionType = function.getFunctionType();
       onLoadMethod.addStatement("add($S, new $T(this))", name, functionType);
-    }
-    for (ExecutableElement onLoadLuaClass : model.getOnLoadLuaClass()) {
-      ClassName apiClassName = model.getApiClassName();
-      Name method = onLoadLuaClass.getSimpleName();
-      onLoadMethod.addStatement("$T.$L(this)", apiClassName, method);
     }
     return onLoadMethod.build();
   }

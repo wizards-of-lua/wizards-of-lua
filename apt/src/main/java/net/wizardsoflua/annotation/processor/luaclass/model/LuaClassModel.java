@@ -11,7 +11,6 @@ import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotation
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getClassValue;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +21,6 @@ import java.util.TreeMap;
 import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -154,9 +152,6 @@ public class LuaClassModel {
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
   private final SortedMap<String, ManualFunctionModel> manualFunctions = new TreeMap<>();
 
-  private final Collection<ExecutableElement> onCreateLuaInstance = new ArrayList<>();
-  private final Collection<ExecutableElement> onLoadLuaClass = new ArrayList<>();
-
   public LuaClassModel(TypeElement annotatedElement, TypeName delegateTypeName, String name,
       ClassName superClassName, ClassName superInstanceClassName) {
     this.annotatedElement = requireNonNull(annotatedElement, "annotatedElement == null!");
@@ -248,21 +243,5 @@ public class LuaClassModel {
 
   public Collection<ManualFunctionModel> getManualFunctions() {
     return Collections.unmodifiableCollection(manualFunctions.values());
-  }
-
-  public void addOnCreateLuaInstance(ExecutableElement method) {
-    onCreateLuaInstance.add(method);
-  }
-
-  public Collection<ExecutableElement> getOnCreateLuaInstance() {
-    return Collections.unmodifiableCollection(onCreateLuaInstance);
-  }
-
-  public void addOnLoadLuaClass(ExecutableElement method) {
-    onLoadLuaClass.add(method);
-  }
-
-  public Collection<ExecutableElement> getOnLoadLuaClass() {
-    return Collections.unmodifiableCollection(onLoadLuaClass);
   }
 }

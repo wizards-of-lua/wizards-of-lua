@@ -8,7 +8,6 @@ import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.cre
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.GENERATED_ANNOTATION;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import com.squareup.javapoet.ClassName;
@@ -90,9 +89,6 @@ public class LuaInstanceGenerator {
       } else {
         constructor.addStatement("addReadOnly($S, this::$L)", name, getterName);
       }
-    }
-    for (ExecutableElement onCreateLuaInstance : model.getOnCreateLuaInstance()) {
-      constructor.addStatement("api.$L(this)", onCreateLuaInstance.getSimpleName());
     }
     return constructor.build();
   }
