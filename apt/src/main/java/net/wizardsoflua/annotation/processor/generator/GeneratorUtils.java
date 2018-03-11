@@ -3,7 +3,8 @@ package net.wizardsoflua.annotation.processor.generator;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAllSuperTypes;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.isJavaLangObject;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.isLuaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
@@ -26,10 +24,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeSpec;
 
-import net.sandius.rembulan.ByteString;
-import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
-import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
@@ -59,14 +54,19 @@ public class GeneratorUtils {
     String name = property.getName();
     String setterName = property.getSetterName();
     TypeMirror setterType = property.getSetterType();
-    String convertersMethod = property.isNullable() ? "toJavaNullable" : "toJava";
-    return methodBuilder(setterName)//
+    Builder setter = methodBuilder(setterName)//
         .addModifiers(PRIVATE)//
         .addParameter(Object.class, "luaObject")//
-        .addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", setterType, name,
-            convertersMethod, setterType, name)//
-        .addStatement("$L.$L($L)", delegateVariable, setterName, name)//
-        .build();
+    ;
+    if (isJavaLangObject(setterType)) {
+      setter.addStatement("$T $L = luaObject", setterType, name);
+    } else {
+      String convertersMethod = property.isNullable() ? "toJavaNullable" : "toJava";
+      setter.addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", setterType, name,
+          convertersMethod, setterType, name);
+    }
+    setter.addStatement("$L.$L($L)", delegateVariable, setterName, name);
+    return setter.build();
   }
 
   /**
@@ -130,9 +130,13 @@ public class GeneratorUtils {
       TypeMirror rawArgType = types.erasure(argType);
       String argName = arg.getName();
       boolean nullable = arg.isNullable();
-      String convertersMethod = nullable ? "toJavaNullable" : "toJava";
-      invokeMethod.addStatement("$T $L = getConverters().$L($T.class, arg$L, $L, $S, getName())",
-          argType, argName, convertersMethod, rawArgType, argIndex, argIndex, argName);
+      if (isJavaLangObject(argType)) {
+        invokeMethod.addStatement("$T $L = arg$L", argType, argName, argIndex);
+      } else {
+        String convertersMethod = nullable ? "toJavaNullable" : "toJava";
+        invokeMethod.addStatement("$T $L = getConverters().$L($T.class, arg$L, $L, $S, getName())",
+            argType, argName, convertersMethod, rawArgType, argIndex, argIndex, argName);
+      }
       argIndex++;
     }
     String arguments = Joiner.on(", ").join(Iterables.transform(args, ArgumentModel::getName));
@@ -151,28 +155,5 @@ public class GeneratorUtils {
       invokeMethod.addStatement("context.getReturnBuffer().setTo(luaResult)");
     }
     return invokeMethod.build();
-  }
-
-  private static boolean isLuaType(TypeMirror typeMirror, ProcessingEnvironment env) {
-    TypeKind kind = typeMirror.getKind();
-    if (kind.isPrimitive()) {
-      return kind != TypeKind.CHAR;
-    }
-    // Using getAllSuperTypes, because Types.isSubType() does not work across processing rounds
-    for (TypeMirror superType : getAllSuperTypes(typeMirror, env)) {
-      if (superType.getKind() == TypeKind.DECLARED) {
-        TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
-        Name qualifiedName = superElement.getQualifiedName();
-        if (qualifiedName.contentEquals(Table.class.getName())//
-            || qualifiedName.contentEquals(ByteString.class.getName())//
-            || qualifiedName.contentEquals(Number.class.getName())//
-            || qualifiedName.contentEquals(Boolean.class.getName())//
-            || qualifiedName.contentEquals(LuaFunction.class.getName())//
-        ) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }

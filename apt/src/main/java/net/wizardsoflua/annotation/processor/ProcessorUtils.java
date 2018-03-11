@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static javax.lang.model.type.TypeKind.DECLARED;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,14 +23,19 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 import com.squareup.javapoet.JavaFile;
 
+import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Table;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 
 public class ProcessorUtils {
@@ -124,6 +130,38 @@ public class ProcessorUtils {
       }
     }
     return result;
+  }
+
+  public static boolean isJavaLangObject(TypeMirror typeMirror) {
+    if (typeMirror.getKind() == DECLARED) {
+      DeclaredType declaredType = (DeclaredType) typeMirror;
+      TypeElement typeElement = (TypeElement) declaredType.asElement();
+      return typeElement.getQualifiedName().contentEquals(java.lang.Object.class.getName());
+    }
+    return false;
+  }
+
+  public static boolean isLuaType(TypeMirror typeMirror, ProcessingEnvironment env) {
+    TypeKind kind = typeMirror.getKind();
+    if (kind.isPrimitive()) {
+      return kind != TypeKind.CHAR;
+    }
+    // Using getAllSuperTypes, because Types.isSubType() does not work across processing rounds
+    for (TypeMirror superType : getAllSuperTypes(typeMirror, env)) {
+      if (superType.getKind() == TypeKind.DECLARED) {
+        TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
+        Name qualifiedName = superElement.getQualifiedName();
+        if (qualifiedName.contentEquals(Table.class.getName())//
+            || qualifiedName.contentEquals(ByteString.class.getName())//
+            || qualifiedName.contentEquals(Number.class.getName())//
+            || qualifiedName.contentEquals(Boolean.class.getName())//
+            || qualifiedName.contentEquals(LuaFunction.class.getName())//
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public static void write(JavaFile file, Filer filer) throws IOException {
