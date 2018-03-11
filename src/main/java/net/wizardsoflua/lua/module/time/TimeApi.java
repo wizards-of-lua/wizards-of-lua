@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.module.time;
 
+import javax.annotation.Nullable;
+
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
@@ -77,7 +79,7 @@ public class TimeApi extends LuaModuleApi<Time> {
    * providing an optional format string.
    */
   @LuaFunction
-  public String getDate(String pattern) {
+  public String getDate(@Nullable String pattern) {
     return delegate.getDate(pattern);
   }
 
