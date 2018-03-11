@@ -9,13 +9,13 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import net.minecraft.block.Block;
@@ -181,7 +181,7 @@ public class MinecraftBackdoor {
 
   public void deleteTeams() {
     Scoreboard scoreBoard = testEnv.getTestPlayer().getWorldScoreboard();
-    for (ScorePlayerTeam team : Lists.newArrayList(scoreBoard.getTeams())) {
+    for (ScorePlayerTeam team : new ArrayList<>(scoreBoard.getTeams())) {
       scoreBoard.removeTeam(team);
     }
   }

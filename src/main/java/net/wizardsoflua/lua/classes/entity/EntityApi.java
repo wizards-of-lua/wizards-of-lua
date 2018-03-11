@@ -3,11 +3,10 @@ package net.wizardsoflua.lua.classes.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Optional.ofNullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -215,7 +214,7 @@ public class EntityApi<D extends Entity> extends LuaClassApi<D> {
   public void setTags(Object luaObj) {
     Collection<String> tags = getConverters().toJavaList(String.class, luaObj, "tags");
 
-    for (String oldTag : Lists.newArrayList(delegate.getTags())) {
+    for (String oldTag : new ArrayList<>(delegate.getTags())) {
       delegate.removeTag(oldTag);
     }
     for (String newTag : tags) {
