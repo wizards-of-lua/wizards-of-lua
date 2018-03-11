@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,23 +46,10 @@ public class Converters {
     return nbtConverter;
   }
 
-  public final <J> List<J> toJavaList(Class<J> type, Object[] args, String functionOrPropertyName)
-      throws ConversionException {
-    List<J> result = new ArrayList<>(args.length);
-    for (int i = 0; i < args.length; i++) {
-      Object arg = args[i];
-      int argumentIndex = i + 1;
-      J javaObject = toJava(type, arg, argumentIndex, functionOrPropertyName);
-      result.add(javaObject);
-    }
-    return result;
-  }
-
-  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
-      int argumentIndex, String argumentName, String functionOrPropertyName)
-      throws BadArgumentException {
+  public final <J> List<J> toJavaList(Class<J> type, Object luaObject, int argumentIndex,
+      String argumentName, String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
-        () -> toJavaCollection(type, luaObject));
+        () -> toJavaList(type, luaObject));
 
   }
 
@@ -90,100 +76,16 @@ public class Converters {
 
   private <T> T enrichBadArgException(int argumentIndex, String argumentName,
       String functionOrPropertyName, Supplier<T> supplier) throws BadArgumentException {
-    try {
-      return enrichBadArgException(argumentName, functionOrPropertyName, supplier);
-    } catch (BadArgumentException ex) {
-      ex.setArgumentIndex(argumentIndex);
-      throw ex;
-    }
-  }
-
-  /**
-   * @deprecated Use {@link #toJavaCollection(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
-      String argumentName, String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(argumentName, functionOrPropertyName,
-        () -> toJavaCollection(type, luaObject));
-  }
-
-  /**
-   * @deprecated Use {@link #toJavaOptional(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
-      String argumentName, String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(argumentName, functionOrPropertyName,
-        () -> toJavaOptional(type, luaObject));
-  }
-
-  /**
-   * @deprecated Use {@link #toJavaNullable(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
-      String argumentName, String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(argumentName, functionOrPropertyName,
-        () -> toJavaNullable(type, luaObject));
-  }
-
-  /**
-   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> J toJava(Class<J> type, Object luaObject, String argumentName,
-      String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(argumentName, functionOrPropertyName,
-        () -> toJava(type, luaObject));
-  }
-
-  private <T> T enrichBadArgException(String argumentName, String functionOrPropertyName,
-      Supplier<T> supplier) throws BadArgumentException {
     requireNonNull(argumentName, "argumentName == null!");
     try {
-      return enrichBadArgException(functionOrPropertyName, supplier);
+      return enrichBadArgException(argumentIndex, functionOrPropertyName, supplier);
     } catch (BadArgumentException ex) {
       ex.setArgumentName(argumentName);
       throw ex;
     }
   }
 
-  /**
-   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
-      int argumentIndex, String functionOrPropertyName) {
-    return enrichBadArgException(argumentIndex, functionOrPropertyName,
-        () -> toJavaCollection(type, luaObject));
-  }
-
-  /**
-   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
-      int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(argumentIndex, functionOrPropertyName,
-        () -> toJavaOptional(type, luaObject));
-  }
-
-  /**
-   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
-      int argumentIndex, String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(argumentIndex, functionOrPropertyName,
-        () -> toJavaNullable(type, luaObject));
-  }
-
-  /**
-   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex,
+  private <J> J toJava(Class<J> type, Object luaObject, int argumentIndex,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, functionOrPropertyName,
         () -> toJava(type, luaObject));
@@ -199,9 +101,21 @@ public class Converters {
     }
   }
 
-  public final <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject,
+  public final <J> List<J> toJavaList(Class<J> type, Object[] args, String functionOrPropertyName)
+      throws ConversionException {
+    List<J> result = new ArrayList<>(args.length);
+    for (int i = 0; i < args.length; i++) {
+      Object arg = args[i];
+      int argumentIndex = i + 1;
+      J javaObject = toJava(type, arg, argumentIndex, functionOrPropertyName);
+      result.add(javaObject);
+    }
+    return result;
+  }
+
+  public final <J> List<J> toJavaList(Class<J> type, Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
-    return enrichBadArgException(functionOrPropertyName, () -> toJavaCollection(type, luaObject));
+    return enrichBadArgException(functionOrPropertyName, () -> toJavaList(type, luaObject));
   }
 
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
@@ -230,43 +144,23 @@ public class Converters {
     }
   }
 
-  private <J> Collection<J> toJavaCollection(Class<J> type, Object luaObject)
-      throws BadArgumentException {
-    if (luaObject.getClass().isArray()) {
-      Object[] elements = (Object[]) luaObject;
-      Collection<J> result = new ArrayList<>();
-      int index = 0;
-      for (Object luaValue : elements) {
-        index++;
-        J javaValue;
-        try {
-          javaValue = toJava(type, luaValue);
-        } catch (BadArgumentException ex) {
-          ex.setDetailMessage("Arguments contained illegal value for index '" + index + "' ("
-              + ex.getDetailMessage() + ")");
-          throw ex;
-        }
-        result.add(javaValue);
+  private <J> List<J> toJavaList(Class<J> type, Object luaObject) throws BadArgumentException {
+    Table table = toJava(Table.class, luaObject);
+    List<J> result = new ArrayList<>();
+    for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
+      Object luaValue = entry.getValue();
+      J javaValue;
+      try {
+        javaValue = toJava(type, luaValue);
+      } catch (BadArgumentException ex) {
+        ByteString key = Conversions.toHumanReadableString(entry.getKey());
+        ex.setDetailMessage(
+            "table contained illegal value for key '" + key + "' (" + ex.getDetailMessage() + ")");
+        throw ex;
       }
-      return result;
-    } else {
-      Table table = toJava(Table.class, luaObject);
-      Collection<J> result = new ArrayList<>();
-      for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
-        Object luaValue = entry.getValue();
-        J javaValue;
-        try {
-          javaValue = toJava(type, luaValue);
-        } catch (BadArgumentException ex) {
-          ByteString key = Conversions.toHumanReadableString(entry.getKey());
-          ex.setDetailMessage("table contained illegal value for key '" + key + "' ("
-              + ex.getDetailMessage() + ")");
-          throw ex;
-        }
-        result.add(javaValue);
-      }
-      return result;
+      result.add(javaValue);
     }
+    return result;
   }
 
   private <J> Optional<J> toJavaOptional(Class<J> type, Object luaObject) {
