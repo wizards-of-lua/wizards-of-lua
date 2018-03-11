@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,30 +76,16 @@ public class Converters {
 
   private <T> T enrichBadArgException(int argumentIndex, String argumentName,
       String functionOrPropertyName, Supplier<T> supplier) throws BadArgumentException {
-    try {
-      return enrichBadArgException(argumentName, functionOrPropertyName, supplier);
-    } catch (BadArgumentException ex) {
-      ex.setArgumentIndex(argumentIndex);
-      throw ex;
-    }
-  }
-
-  private <T> T enrichBadArgException(String argumentName, String functionOrPropertyName,
-      Supplier<T> supplier) throws BadArgumentException {
     requireNonNull(argumentName, "argumentName == null!");
     try {
-      return enrichBadArgException(functionOrPropertyName, supplier);
+      return enrichBadArgException(argumentIndex, functionOrPropertyName, supplier);
     } catch (BadArgumentException ex) {
       ex.setArgumentName(argumentName);
       throw ex;
     }
   }
 
-  /**
-   * @deprecated Use {@link #toJava(Class, Object, int, String, String)}
-   */
-  @Deprecated
-  public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex,
+  private <J> J toJava(Class<J> type, Object luaObject, int argumentIndex,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, functionOrPropertyName,
         () -> toJava(type, luaObject));
@@ -127,7 +112,7 @@ public class Converters {
     }
     return result;
   }
-  
+
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaList(type, luaObject));
