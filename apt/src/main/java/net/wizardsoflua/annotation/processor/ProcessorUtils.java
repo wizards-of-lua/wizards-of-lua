@@ -6,8 +6,13 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
@@ -104,6 +109,21 @@ public class ProcessorUtils {
       }
     }
     return null;
+  }
+
+  public static Set<TypeMirror> getAllSuperTypes(TypeMirror typeMirror, ProcessingEnvironment env) {
+    Types types = env.getTypeUtils();
+    Set<TypeMirror> result = new HashSet<>();
+    Deque<TypeMirror> todos = new ArrayDeque<>();
+    todos.add(typeMirror);
+    while (!todos.isEmpty()) {
+      TypeMirror todo = todos.pop();
+      if (result.add(todo)) {
+        List<? extends TypeMirror> directSupertypes = types.directSupertypes(todo);
+        todos.addAll(directSupertypes);
+      }
+    }
+    return result;
   }
 
   public static void write(JavaFile file, Filer filer) throws IOException {

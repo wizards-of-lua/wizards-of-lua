@@ -107,12 +107,6 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   protected void processingOver() {
     Filer filer = processingEnv.getFiler();
     Properties properties = new Properties();
-    // try (InputStream in = filer.getResource(PROPERTY_LOCATION, PROPERTY_PKG,
-    // PROPERTY_RELATIVE_NAME)
-    // .openInputStream()) {
-    // properties.load(in);
-    // } catch (IOException ignore) {
-    // }
     properties.putAll(getLuaClassNames());
     try (OutputStream out =
         filer.createResource(PROPERTY_LOCATION, PROPERTY_PKG, PROPERTY_RELATIVE_NAME)

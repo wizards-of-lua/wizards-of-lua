@@ -1,6 +1,7 @@
 package net.wizardsoflua.annotation.processor.doc.generator;
 
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAllSuperTypes;
 
 import java.util.Map;
 
@@ -93,25 +94,29 @@ public class LuaDocGenerator {
       case CHAR:
         return "string";
       case DECLARED:
-        Elements elements = env.getElementUtils();
-        Types types = env.getTypeUtils();
-        TypeMirror stringType = elements.getTypeElement(String.class.getName()).asType();
-        TypeMirror enumType = types.erasure(elements.getTypeElement(Enum.class.getName()).asType());
-        if (types.isSameType(typeMirror, stringType) || types.isSubtype(typeMirror, enumType)) {
+        DeclaredType declaredType = (DeclaredType) typeMirror;
+        TypeElement typeElement = (TypeElement) declaredType.asElement();
+        if (typeElement.getQualifiedName().contentEquals(String.class.getName())) {
           return "string";
         }
-        TypeMirror iterableType =
-            types.erasure(elements.getTypeElement(Iterable.class.getName()).asType());
-        if (types.isSubtype(typeMirror, iterableType)) {
-          return "table";
+        // Using getAllSuperTypes, because Types.isSubType() does not work across processing rounds
+        for (TypeMirror superType : getAllSuperTypes(typeMirror, env)) {
+          if (superType.getKind() == TypeKind.DECLARED) {
+            TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
+            if (superElement.getQualifiedName().contentEquals(Enum.class.getName())) {
+              return "string";
+            }
+            if (superElement.getQualifiedName().contentEquals(Iterable.class.getName())) {
+              return "table";
+            }
+          }
         }
         try {
+          Types types = env.getTypeUtils();
           PrimitiveType primitiveType = types.unboxedType(typeMirror);
           return renderType(primitiveType, annotatedElement, luaClassNames, env);
         } catch (IllegalArgumentException ignore) {
         }
-        DeclaredType declaredType = (DeclaredType) typeMirror;
-        TypeElement typeElement = (TypeElement) declaredType.asElement();
         String javaName = typeElement.getQualifiedName().toString();
         String luaName = luaClassNames.get(javaName);
         if (luaName == null) {
