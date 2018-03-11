@@ -75,7 +75,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
       Collection<String> eventNames =
-          getConverters().toJavaCollection(String.class, arg1, 1, "eventNames", getName());
+          getConverters().toJavaList(String.class, arg1, 1, "eventNames", getName());
       LuaFunction eventHandler =
           getConverters().toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
 

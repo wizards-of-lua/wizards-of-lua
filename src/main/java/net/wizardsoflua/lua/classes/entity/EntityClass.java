@@ -179,7 +179,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
     }
 
     public void setTags(Object luaObj) {
-      Collection<String> tags = getConverters().toJavaCollection(String.class, luaObj, "tags");
+      Collection<String> tags = getConverters().toJavaList(String.class, luaObj, "tags");
 
       for (String oldTag : Lists.newArrayList(delegate.getTags())) {
         delegate.removeTag(oldTag);
