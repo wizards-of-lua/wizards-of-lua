@@ -8,7 +8,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 @GenerateLuaClass(name = MobApi.NAME)
 @GenerateLuaDoc(subtitle = "Mobile Creatures")
-public class MobApi<D extends EntityLiving> extends EntityApi<D> {
+public class MobApi<D extends EntityLiving> extends EntityLivingBaseApi<D> {
   public static final String NAME = "Mob";
 
   public MobApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
