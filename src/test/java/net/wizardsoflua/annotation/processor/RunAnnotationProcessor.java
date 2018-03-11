@@ -1,4 +1,4 @@
-package net.wizardsoflua.scribble;
+package net.wizardsoflua.annotation.processor;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -18,6 +18,11 @@ import net.wizardsoflua.annotation.processor.doc.GenerateLuaDocProcessor;
 import net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor;
 import net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor;
 
+/**
+ * Useful for debugging the annotation processors.
+ *
+ * @author Adrodoc55
+ */
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {
     runAnnoationProcessor();
