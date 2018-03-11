@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-public class SystemAdapter {
+import net.sandius.rembulan.runtime.SchedulingContext;
+
+public class SystemAdapter implements SchedulingContext {
 
   private final boolean enabled;
   private final long scriptTimeoutMillis;
@@ -97,9 +99,13 @@ public class SystemAdapter {
     return commandFile.toString();
   }
 
+  @Override
   public boolean shouldPause() {
     return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
   }
+
+  @Override
+  public void registerTicks(int ticks) {}
 
   private boolean isTimeoutReached() {
     return (started + scriptTimeoutMillis < System.currentTimeMillis());

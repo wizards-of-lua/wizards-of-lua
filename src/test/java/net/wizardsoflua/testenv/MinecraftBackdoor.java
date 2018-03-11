@@ -147,13 +147,22 @@ public class MinecraftBackdoor {
     testEnv.getServer().getEntityWorld().setSpawnPoint(pos);
   }
 
+  public int getLuaTicksLimit() {
+    return testEnv.getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
+  }
+
   public void setLuaTicksLimit(int luaTicksLimit) {
     testEnv.runAndWait(
         () -> testEnv.getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
-  public int getLuaTicksLimit() {
-    return testEnv.getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
+  public int getEventListenerLuaTicksLimit() {
+    return testEnv.getWol().getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
+  }
+
+  public void setEventListenerLuaTicksLimit(int eventListenerluaTicksLimit) {
+    testEnv.runAndWait(() -> testEnv.getWol().getConfig().getGeneralConfig()
+        .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }
 
   public @Nullable List<Entity> findEntities(String target) {

@@ -35,4 +35,22 @@ public class EventsTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.EventsTest test_on_Event_call__Two_custom_Events
+  @Test
+  public void test_on_Event_call__Two_custom_Events() {
+    // When:
+    mc().executeCommand("lua Events.on('custom-event'):call(function(event)\n"//
+        + "print(event.data)\n"//
+        + "end)\n"//
+    );
+    mc().executeCommand("lua Events.fire('custom-event', 1)");
+    mc().executeCommand("lua Events.fire('custom-event', 2)");
+
+    // Then:
+    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act1.getMessage()).isEqualTo("1");
+    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act2.getMessage()).isEqualTo("2");
+  }
+
 }
