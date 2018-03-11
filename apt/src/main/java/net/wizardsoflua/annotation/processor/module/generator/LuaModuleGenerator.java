@@ -12,7 +12,6 @@ import static net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProc
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Types;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -30,11 +29,11 @@ import net.wizardsoflua.annotation.processor.module.model.LuaModuleModel;
 
 public class LuaModuleGenerator {
   private final LuaModuleModel model;
-  private final Types types;
+  private final ProcessingEnvironment env;
 
   public LuaModuleGenerator(LuaModuleModel model, ProcessingEnvironment env) {
     this.model = requireNonNull(model, "model == null!");
-    this.types = env.getTypeUtils();
+    this.env = requireNonNull(env, "env == null!");
   }
 
   public JavaFile generate() {
@@ -53,14 +52,14 @@ public class LuaModuleGenerator {
     ;
     for (PropertyModel property : model.getProperties()) {
       if (property.isReadable()) {
-        luaModuleType.addMethod(createDelegatingGetter(property, "delegate"));
+        luaModuleType.addMethod(createDelegatingGetter(property, "delegate", env));
       }
       if (property.isWriteable()) {
         luaModuleType.addMethod(createDelegatingSetter(property, "delegate"));
       }
     }
     for (FunctionModel function : model.getFunctions()) {
-      luaModuleType.addType(createFunctionClass(function, "delegate", null, types));
+      luaModuleType.addType(createFunctionClass(function, "delegate", null, env));
     }
     return luaModuleType.build();
   }

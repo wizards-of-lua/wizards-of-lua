@@ -7,6 +7,7 @@ import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.cre
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.GENERATED_ANNOTATION;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
@@ -23,9 +24,11 @@ import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class LuaInstanceGenerator {
   private final LuaClassModel model;
+  private final ProcessingEnvironment env;
 
-  public LuaInstanceGenerator(LuaClassModel model) {
+  public LuaInstanceGenerator(LuaClassModel model, ProcessingEnvironment env) {
     this.model = requireNonNull(model, "model == null!");
+    this.env = requireNonNull(env, "env == null!");
   }
 
   public JavaFile generate() {
@@ -45,7 +48,7 @@ public class LuaInstanceGenerator {
     ;
     for (PropertyModel property : model.getProperties()) {
       if (property.isReadable()) {
-        instanceType.addMethod(createDelegatingGetter(property, "api"));
+        instanceType.addMethod(createDelegatingGetter(property, "api", env));
       }
       if (property.isWriteable()) {
         instanceType.addMethod(createDelegatingSetter(property, "api"));

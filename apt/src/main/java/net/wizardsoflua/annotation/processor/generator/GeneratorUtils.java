@@ -3,12 +3,17 @@ package net.wizardsoflua.annotation.processor.generator;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAllSuperTypes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
@@ -18,9 +23,13 @@ import com.google.common.collect.Iterables;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.TypeSpec;
 
+import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
@@ -29,15 +38,21 @@ import net.wizardsoflua.annotation.processor.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class GeneratorUtils {
-  public static MethodSpec createDelegatingGetter(PropertyModel property, String delegateVariable) {
+  public static MethodSpec createDelegatingGetter(PropertyModel property, String delegateVariable,
+      ProcessingEnvironment env) {
     TypeMirror getterType = property.getGetterType();
     String getterName = property.getGetterName();
-    return methodBuilder(getterName)//
+    Builder getter = methodBuilder(getterName)//
         .addModifiers(PRIVATE)//
         .returns(Object.class)//
-        .addStatement("$T result = $L.$L()", getterType, delegateVariable, getterName)//
-        .addStatement("return getConverters().toLuaNullable(result)") //
-        .build();
+    ;
+    if (isLuaType(getterType, env)) {
+      getter.addStatement("return $L.$L()", delegateVariable, getterName);
+    } else {
+      getter.addStatement("$T result = $L.$L()", getterType, delegateVariable, getterName);
+      getter.addStatement("return getConverters().toLuaNullable(result)");
+    }
+    return getter.build();
   }
 
   public static MethodSpec createDelegatingSetter(PropertyModel property, String delegateVariable) {
@@ -62,11 +77,11 @@ public class GeneratorUtils {
    * @param function
    * @param delegateVariable
    * @param delegateType the self type or {@code null}
-   * @param types
+   * @param env
    * @return a named lua function class
    */
   public static TypeSpec createFunctionClass(FunctionModel function, String delegateVariable,
-      @Nullable TypeMirror delegateType, Types types) {
+      @Nullable TypeMirror delegateType, ProcessingEnvironment env) {
     String name = function.getName();
     String Name = Utils.capitalize(name);
     int numberOfArgs = function.getArgs().size();
@@ -79,7 +94,7 @@ public class GeneratorUtils {
         .addModifiers(Modifier.PRIVATE)//
         .superclass(superclass)//
         .addMethod(createGetNameMethod(name))//
-        .addMethod(createInvokeMethod(function, delegateVariable, delegateType, types))//
+        .addMethod(createInvokeMethod(function, delegateVariable, delegateType, env))//
         .build();
   }
 
@@ -93,7 +108,8 @@ public class GeneratorUtils {
   }
 
   private static MethodSpec createInvokeMethod(FunctionModel function, String delegateVariable,
-      @Nullable TypeMirror delegateType, Types types) {
+      @Nullable TypeMirror delegateType, ProcessingEnvironment env) {
+    Types types = env.getTypeUtils();
     MethodSpec.Builder invokeMethod = methodBuilder("invoke")//
         .addAnnotation(Override.class)//
         .addModifiers(Modifier.PUBLIC)//
@@ -126,11 +142,37 @@ public class GeneratorUtils {
     if (returnType.getKind() == TypeKind.VOID) {
       invokeMethod.addStatement(callDelegate);
       invokeMethod.addStatement("context.getReturnBuffer().setTo()");
+    } else if (isLuaType(returnType, env)) {
+      invokeMethod.addStatement("$T result = $L", returnType, callDelegate);
+      invokeMethod.addStatement("context.getReturnBuffer().setTo(result)");
     } else {
       invokeMethod.addStatement("$T result = $L", returnType, callDelegate);
       invokeMethod.addStatement("Object luaResult = getConverters().toLuaNullable(result)");
       invokeMethod.addStatement("context.getReturnBuffer().setTo(luaResult)");
     }
     return invokeMethod.build();
+  }
+
+  private static boolean isLuaType(TypeMirror typeMirror, ProcessingEnvironment env) {
+    TypeKind kind = typeMirror.getKind();
+    if (kind.isPrimitive()) {
+      return kind != TypeKind.CHAR;
+    }
+    // Using getAllSuperTypes, because Types.isSubType() does not work across processing rounds
+    for (TypeMirror superType : getAllSuperTypes(typeMirror, env)) {
+      if (superType.getKind() == TypeKind.DECLARED) {
+        TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
+        Name qualifiedName = superElement.getQualifiedName();
+        if (qualifiedName.contentEquals(Table.class.getName())//
+            || qualifiedName.contentEquals(ByteString.class.getName())//
+            || qualifiedName.contentEquals(Number.class.getName())//
+            || qualifiedName.contentEquals(Boolean.class.getName())//
+            || qualifiedName.contentEquals(LuaFunction.class.getName())//
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

@@ -32,10 +32,12 @@ import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 
 public class LuaClassGenerator {
   private final LuaClassModel model;
+  private final ProcessingEnvironment env;
   private final Types types;
 
   public LuaClassGenerator(LuaClassModel model, ProcessingEnvironment env) {
     this.model = requireNonNull(model, "model == null!");
+    this.env = requireNonNull(env, "env == null!");
     this.types = env.getTypeUtils();
   }
 
@@ -57,7 +59,7 @@ public class LuaClassGenerator {
     for (FunctionModel function : model.getFunctions()) {
       WildcardType wildcard = types.getWildcardType(null, null);
       TypeMirror selfType = types.getDeclaredType(model.getAnnotatedElement(), wildcard);
-      luaClassType.addType(createFunctionClass(function, "self", selfType, types));
+      luaClassType.addType(createFunctionClass(function, "self", selfType, env));
     }
     return luaClassType.build();
   }

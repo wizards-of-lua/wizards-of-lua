@@ -99,7 +99,7 @@ public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
   }
 
   private void generate(LuaClassModel module) {
-    JavaFile luaInstance = new LuaInstanceGenerator(module).generate();
+    JavaFile luaInstance = new LuaInstanceGenerator(module, processingEnv).generate();
     JavaFile luaClass = new LuaClassGenerator(module, processingEnv).generate();
 
     Filer filer = processingEnv.getFiler();
