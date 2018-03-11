@@ -19,6 +19,9 @@ public class EntityLivingBaseApi<D extends EntityLivingBase> extends EntityApi<D
     return MathHelper.wrapDegrees(delegate.renderYawOffset);
   }
 
+  /**
+   * This is the [item](/modules/Item) this entity is holding in its main hand.
+   */
   @LuaProperty
   public @Nullable ItemStack getMainhand() {
     ItemStack itemStack = delegate.getHeldItemMainhand();
@@ -36,6 +39,9 @@ public class EntityLivingBaseApi<D extends EntityLivingBase> extends EntityApi<D
     delegate.setHeldItem(EnumHand.MAIN_HAND, mainhand);
   }
 
+  /**
+   * This is the [item](/modules/Item) this entity is holding in his off hand.
+   */
   @LuaProperty
   public @Nullable ItemStack getOffhand() {
     ItemStack itemStack = delegate.getHeldItemOffhand();
