@@ -169,4 +169,51 @@ public class Spell_specifics_Test extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("true");
   }
 
+  // @formatter:off
+  // /test net.wizardsoflua.tests.Spell_specifics_Test test_The_specifics_of_another_Spell_is_always_the_same_Object
+  // @formatter:on
+  @Test
+  public void test_The_specifics_of_another_Spell_is_always_the_same_Object() {
+    // When:
+    mc().executeCommand("lua spell.name = 'other'\n"//
+        + "sleep(1)\n"//
+    );
+    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+        + "print(other.specifics == other.specifics)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // @formatter:off
+  // /test net.wizardsoflua.tests.Spell_specifics_Test test_if_the_same_Table_is_added_and_accessed_multiple_times_it_stays_the_same_Table
+  // @formatter:on
+  @Test
+  public void test_if_the_same_Table_is_added_and_accessed_multiple_times_it_stays_the_same_Table() {
+    // When:
+    mc().executeCommand("lua spell.name = 'other'\n"//
+        + "local otherTable = {data = 'ab'}"//
+        + "spell.specifics.a = otherTable\n"//
+        + "spell.specifics.b = otherTable\n"//
+        + "print('other spell a==b: '..tostring(spell.specifics.a == spell.specifics.b))\n"//
+        + "sleep(1)\n"//
+        + "print('other spell c==d: '..tostring(spell.specifics.c == spell.specifics.d))\n"//
+    );
+    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+        + "print('main spell a==b: '..tostring(other.specifics.a == other.specifics.b))\n"//
+        + "local aTable = {data = 'cd'}"//
+        + "other.specifics.c = aTable\n"//
+        + "other.specifics.d = aTable\n"//
+        + "print('main spell c==d: '..tostring(other.specifics.c == other.specifics.d))\n"//
+    );
+
+    // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("other spell a==b: true");
+    assertThat(mc().nextServerMessage()).isEqualTo("main spell a==b: true");
+    assertThat(mc().nextServerMessage()).isEqualTo("main spell c==d: true");
+    assertThat(mc().nextServerMessage()).isEqualTo("other spell c==d: true");
+  }
+
 }
