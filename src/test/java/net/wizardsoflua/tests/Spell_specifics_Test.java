@@ -78,6 +78,27 @@ public class Spell_specifics_Test extends WolTestBase {
   }
 
   // @formatter:off
+  // /test net.wizardsoflua.tests.Spell_specifics_Test test_specifics_can_contain_a_Table_that_contains_itself
+  // @formatter:on
+  @Test
+  public void test_specifics_can_contain_a_Table_that_contains_itself() {
+    // When:
+    mc().executeCommand("lua spell.name = 'other'\n"//
+        + "local data = {}\n"//
+        + "data.bla = data\n"//
+        + "spell.specifics.blub = data\n"//
+        + "sleep(2)\n"//
+    );
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+        + "local data = other.specifics.blub\n"//
+        + "print(data == data.bla)\n"//
+    );
+
+    // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
+  }
+
+  // @formatter:off
   // /test net.wizardsoflua.tests.Spell_specifics_Test test_if_Dataclass_is_known_to_both_Classloaders_its_replaced_by_the_corresponding_Class
   // @formatter:on
   @Test
