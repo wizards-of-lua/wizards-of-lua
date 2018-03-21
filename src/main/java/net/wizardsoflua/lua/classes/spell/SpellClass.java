@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
@@ -38,6 +39,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
       add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);
       addReadOnly("sid", () -> delegate.getSid());
+      addReadOnly("specifics", this::getSpecifics);
     }
 
     public @Nullable Object getOwner() {
@@ -95,6 +97,10 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
 
     public boolean isVisible() {
       return delegate.isVisible();
+    }
+
+    public Table getSpecifics() {
+      return delegate.getSpecifics(classLoader);
     }
 
     public int execute(String command) {

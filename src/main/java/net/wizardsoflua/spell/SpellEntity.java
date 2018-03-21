@@ -12,8 +12,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public class SpellEntity extends Entity {
   public static final String NAME = "Spell";
@@ -35,6 +37,7 @@ public class SpellEntity extends Entity {
   private long sid; // immutable spell id
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
   private boolean visible = false;
+  private Specifics specifics;
 
   public SpellEntity(World world) {
     // Used by MC when loading this entity from persistent data
@@ -47,6 +50,7 @@ public class SpellEntity extends Entity {
     this.owner = checkNotNull(owner, "owner==null!");
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
+    specifics = new Specifics(program.getLuaClassLoader());
     setPositionAndRotation(posRot);
     String name = SpellEntity.NAME + "-" + sid;
     setCustomNameTag(name);
@@ -87,6 +91,10 @@ public class SpellEntity extends Entity {
 
   public void setVisible(boolean visible) {
     this.visible = visible;
+  }
+
+  public Table getSpecifics(LuaClassLoader viewingClassLoader) {
+    return specifics.getView(viewingClassLoader);
   }
 
   @Override

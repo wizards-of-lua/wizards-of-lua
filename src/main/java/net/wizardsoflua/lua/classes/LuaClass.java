@@ -54,7 +54,7 @@ public abstract class LuaClass {
    *
    * @return the value of {@link #metaTable}
    */
-  public Table getMetaTable() throws IllegalStateException {
+  public Table getMetaTable() {
     return metaTable;
   }
 
