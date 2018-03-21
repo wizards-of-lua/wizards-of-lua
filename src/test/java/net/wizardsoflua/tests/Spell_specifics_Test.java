@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class Spell_specifics_Test extends WolTestBase {
@@ -21,8 +20,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("bla");
+    assertThat(mc().nextServerMessage()).isEqualTo("bla");
   }
 
   // @formatter:off
@@ -40,8 +38,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("bla");
+    assertThat(mc().nextServerMessage()).isEqualTo("bla");
   }
 
   // @formatter:off
@@ -59,8 +56,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("bla");
+    assertThat(mc().nextServerMessage()).isEqualTo("bla");
   }
 
   // @formatter:off
@@ -78,8 +74,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("bla");
+    assertThat(mc().nextServerMessage()).isEqualTo("bla");
   }
 
   // @formatter:off
@@ -103,8 +98,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // @formatter:off
@@ -127,8 +121,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("nil");
+    assertThat(mc().nextServerMessage()).isEqualTo("nil");
   }
 
   // @formatter:off
@@ -146,8 +139,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // @formatter:off
@@ -165,8 +157,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // @formatter:off
@@ -183,8 +174,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // @formatter:off
