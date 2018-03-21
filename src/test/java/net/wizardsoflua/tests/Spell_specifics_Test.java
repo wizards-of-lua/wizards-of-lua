@@ -32,9 +32,9 @@ public class Spell_specifics_Test extends WolTestBase {
   public void test_Spell_can_read_and_write_Specifics_of_other_Spell() {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "other.specifics.blub = 'bla'\n"//
         + "print(other.specifics.blub)\n"//
     );
@@ -51,10 +51,10 @@ public class Spell_specifics_Test extends WolTestBase {
   public void test_other_Spell_can_read_its_own_Specifics_when_written_by_different_Spell() {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
         + "print(spell.specifics.blub)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "other.specifics.blub = 'bla'\n"//
     );
 
@@ -71,9 +71,9 @@ public class Spell_specifics_Test extends WolTestBase {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
         + "spell.specifics.blub = 'bla'\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "print(other.specifics.blub)\n"//
     );
 
@@ -93,9 +93,9 @@ public class Spell_specifics_Test extends WolTestBase {
         + "local data = {}"//
         + "setmetatable(data, MyClass)"//
         + "spell.specifics.blub = data\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "declare 'MyClass'"//
         + "local data = other.specifics.blub"//
         + "local mt = getmetatable(data)"//
@@ -118,9 +118,9 @@ public class Spell_specifics_Test extends WolTestBase {
         + "local data = {}"//
         + "setmetatable(data, MyClass)"//
         + "spell.specifics.blub = data\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "local data = other.specifics.blub"//
         + "local mt = getmetatable(data)"//
         + "print(mt)\n"//
@@ -139,9 +139,9 @@ public class Spell_specifics_Test extends WolTestBase {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
         + "spell.specifics.blub = spell\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "print(other.specifics.blub == other)\n"//
     );
 
@@ -158,9 +158,9 @@ public class Spell_specifics_Test extends WolTestBase {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
         + "spell.specifics.blub = {bla = spell}\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "print(other.specifics.blub.bla == other)\n"//
     );
 
@@ -176,9 +176,9 @@ public class Spell_specifics_Test extends WolTestBase {
   public void test_The_specifics_of_another_Spell_is_always_the_same_Object() {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "print(other.specifics == other.specifics)\n"//
     );
 
@@ -198,10 +198,10 @@ public class Spell_specifics_Test extends WolTestBase {
         + "spell.specifics.a = otherTable\n"//
         + "spell.specifics.b = otherTable\n"//
         + "print('other spell a==b: '..tostring(spell.specifics.a == spell.specifics.b))\n"//
-        + "sleep(1)\n"//
+        + "sleep(2)\n"//
         + "print('other spell c==d: '..tostring(spell.specifics.c == spell.specifics.d))\n"//
     );
-    mc().executeCommand("lua local other = Entities.find(@e[type=wol:spell,name=other])\n"//
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "print('main spell a==b: '..tostring(other.specifics.a == other.specifics.b))\n"//
         + "local aTable = {data = 'cd'}"//
         + "other.specifics.c = aTable\n"//
