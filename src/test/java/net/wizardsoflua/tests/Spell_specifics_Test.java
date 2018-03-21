@@ -84,17 +84,19 @@ public class Spell_specifics_Test extends WolTestBase {
   public void test_if_Dataclass_is_known_to_both_Classloaders_its_replaced_by_the_corresponding_Class() {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
-        + "declare 'MyClass'"//
-        + "local data = {}"//
-        + "setmetatable(data, MyClass)"//
+        + "declare 'MyClass'\n"//
+        + "local data = {}\n"//
+        + "setmetatable(data, MyClass)\n"//
         + "spell.specifics.blub = data\n"//
         + "sleep(2)\n"//
     );
     mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
-        + "declare 'MyClass'"//
-        + "local data = other.specifics.blub"//
-        + "local mt = getmetatable(data)"//
+        + "declare 'MyClass'\n"//
+        + "local data = other.specifics.blub\n"//
+        + "local mt = getmetatable(data)\n"//
         + "print(mt == MyClass)\n"//
+        + "print(str(mt))\n"//
+        + "print(str(MyClass))\n"//
     );
 
     // Then:
@@ -108,15 +110,15 @@ public class Spell_specifics_Test extends WolTestBase {
   public void test_if_Dataclass_is_not_known_to_target_Classloader_the_Metatable_is_nil() {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
-        + "declare 'MyClass'"//
-        + "local data = {}"//
-        + "setmetatable(data, MyClass)"//
+        + "declare 'MyClass'\n"//
+        + "local data = {}\n"//
+        + "setmetatable(data, MyClass)\n"//
         + "spell.specifics.blub = data\n"//
         + "sleep(2)\n"//
     );
     mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
-        + "local data = other.specifics.blub"//
-        + "local mt = getmetatable(data)"//
+        + "local data = other.specifics.blub\n"//
+        + "local mt = getmetatable(data)\n"//
         + "print(mt)\n"//
     );
 
@@ -184,7 +186,7 @@ public class Spell_specifics_Test extends WolTestBase {
   public void test_if_the_same_Table_is_added_and_accessed_multiple_times_it_stays_the_same_Table() {
     // When:
     mc().executeCommand("lua spell.name = 'other'\n"//
-        + "local otherTable = {data = 'ab'}"//
+        + "local otherTable = {data = 'ab'}\n"//
         + "spell.specifics.a = otherTable\n"//
         + "spell.specifics.b = otherTable\n"//
         + "print('other spell a==b: '..tostring(spell.specifics.a == spell.specifics.b))\n"//
@@ -193,7 +195,7 @@ public class Spell_specifics_Test extends WolTestBase {
     );
     mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
         + "print('main spell a==b: '..tostring(other.specifics.a == other.specifics.b))\n"//
-        + "local aTable = {data = 'cd'}"//
+        + "local aTable = {data = 'cd'}\n"//
         + "other.specifics.c = aTable\n"//
         + "other.specifics.d = aTable\n"//
         + "print('main spell c==d: '..tostring(other.specifics.c == other.specifics.d))\n"//
