@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
@@ -99,7 +98,7 @@ public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Pro
       return delegate.isVisible();
     }
 
-    public Table getSpecifics() {
+    public Object getSpecifics() {
       return delegate.getSpecifics(classLoader);
     }
 

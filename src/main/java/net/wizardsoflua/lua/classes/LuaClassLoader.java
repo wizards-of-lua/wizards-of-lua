@@ -21,7 +21,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.InstanceReceiver;
+import net.wizardsoflua.lua.TransferenceProxyFactory;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
@@ -73,7 +73,7 @@ public class LuaClassLoader {
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
   private final Types types = new Types(this);
   private final Converters converters = new Converters(this);
-  private final InstanceReceiver instanceReceiver = new InstanceReceiver(this);
+  private final TransferenceProxyFactory transferenceProxyFactory = new TransferenceProxyFactory(this);
   private final Context context;
 
   public interface Context {
@@ -98,8 +98,8 @@ public class LuaClassLoader {
     return converters;
   }
 
-  public InstanceReceiver getInstanceReceiver() {
-    return instanceReceiver;
+  public TransferenceProxyFactory getTransferenceProxyFactory() {
+    return transferenceProxyFactory;
   }
 
   public void loadStandardClasses() {

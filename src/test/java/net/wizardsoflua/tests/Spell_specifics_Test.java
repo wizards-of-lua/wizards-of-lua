@@ -210,6 +210,7 @@ public class Spell_specifics_Test extends WolTestBase {
         + "local otherTable = {data = 'ab'}\n"//
         + "spell.specifics.a = otherTable\n"//
         + "spell.specifics.b = otherTable\n"//
+        + "print('other spell a==otherTable: '..tostring(spell.specifics.a == otherTable))\n"//
         + "print('other spell a==b: '..tostring(spell.specifics.a == spell.specifics.b))\n"//
         + "sleep(2)\n"//
         + "print('other spell c==d: '..tostring(spell.specifics.c == spell.specifics.d))\n"//
@@ -219,12 +220,15 @@ public class Spell_specifics_Test extends WolTestBase {
         + "local aTable = {data = 'cd'}\n"//
         + "other.specifics.c = aTable\n"//
         + "other.specifics.d = aTable\n"//
+        + "print('main spell c==aTable: '..tostring(other.specifics.c == aTable))\n"//
         + "print('main spell c==d: '..tostring(other.specifics.c == other.specifics.d))\n"//
     );
 
     // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("other spell a==otherTable: true");
     assertThat(mc().nextServerMessage()).isEqualTo("other spell a==b: true");
     assertThat(mc().nextServerMessage()).isEqualTo("main spell a==b: true");
+    assertThat(mc().nextServerMessage()).isEqualTo("main spell c==aTable: true");
     assertThat(mc().nextServerMessage()).isEqualTo("main spell c==d: true");
     assertThat(mc().nextServerMessage()).isEqualTo("other spell c==d: true");
   }
