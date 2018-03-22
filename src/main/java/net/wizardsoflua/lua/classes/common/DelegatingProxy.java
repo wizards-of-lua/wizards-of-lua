@@ -33,6 +33,10 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
     return typeArg0;
   }
 
+  public LuaClassLoader getClassLoader() {
+    return classLoader;
+  }
+
   public Converters getConverters() {
     return classLoader.getConverters();
   }
