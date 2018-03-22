@@ -233,4 +233,57 @@ public class Spell_specifics_Test extends WolTestBase {
     assertThat(mc().nextServerMessage()).isEqualTo("other spell c==d: true");
   }
 
+  // @formatter:off
+  // /test net.wizardsoflua.tests.Spell_specifics_Test test_Calling_a_function_from_a_different_Spell_is_not_allowed
+  // @formatter:on
+  @Test
+  public void test_Calling_a_function_from_a_different_Spell_is_not_allowed() {
+    // When:
+    mc().executeCommand("lua spell.name = 'other'\n"//
+        + "spell.specifics.func = function() print('executed func') end\n"//
+        + "print('other')\n"//
+        + "spell.specifics.func()\n"//
+        + "sleep(2)\n"//
+    );
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+        + "local func = other.specifics.func\n"//
+        + "print(type(func))\n"//
+        + "func()\n"//
+    );
+
+    // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("other");
+    assertThat(mc().nextServerMessage()).isEqualTo("executed func");
+    assertThat(mc().nextServerMessage()).isEqualTo("function");
+    assertThat(mc().nextServerMessage())
+        .contains("attempt to call a function from a different spell");
+  }
+
+  // @formatter:off
+  // /test net.wizardsoflua.tests.Spell_specifics_Test test_Setting_the_Metatable_of_a_Table_from_a_different_Spell_is_not_allowed
+  // @formatter:on
+  @Test
+  public void test_Setting_the_Metatable_of_a_Table_from_a_different_Spell_is_not_allowed() {
+    // When:
+    mc().executeCommand("lua spell.name = 'other'\n"//
+        + "spell.specifics.tbl = {}\n"//
+        + "local mt = {}\n"//
+        + "print('other')\n"//
+        + "setmetatable(spell.specifics.tbl, mt)\n"//
+        + "sleep(2)\n"//
+    );
+    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+        + "local tbl = other.specifics.tbl\n"//
+        + "local mt = {}\n"//
+        + "print('main')\n"//
+        + "setmetatable(tbl, mt)\n"//
+    );
+
+    // Then:
+    assertThat(mc().nextServerMessage()).isEqualTo("other");
+    assertThat(mc().nextServerMessage()).isEqualTo("main");
+    assertThat(mc().nextServerMessage())
+        .contains("attempt to set the metatable of a table from a different spell");
+  }
+
 }
