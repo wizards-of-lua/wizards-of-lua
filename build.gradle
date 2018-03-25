@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -23,13 +23,13 @@ compileJava {
 }
 
 
-version = "1.11.2-1.16.0-alpha"
+version = "1.12.2-1.16.0-alpha"
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
 
 minecraft {
-    version = "1.11.2-13.20.1.2454"
+    version = '1.12.2-14.23.2.2635'
     runDir = "run"
     replace "@MOD_VERSION@", project.version
     replaceIn "WizardsOfLua.java"
@@ -38,7 +38,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20161220"
+    mappings = "snapshot_20180325"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
@@ -65,7 +65,7 @@ dependencies {
     testCompile 'org.assertj:assertj-core:2.5.0'
     testCompile 'org.mockito:mockito-core:1.+'
 
-    embed 'net.sandius.rembulan:rembulan-compiler:0.1-SNAPSHOT'
+    embed 'net.sandius.rembulan:rembulan-compiler:0.1-SNAPSHOT', { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
     embed 'net.sandius.rembulan:rembulan-stdlib:0.1-SNAPSHOT'
 
     compile 'commons-io:commons-io:2.4'

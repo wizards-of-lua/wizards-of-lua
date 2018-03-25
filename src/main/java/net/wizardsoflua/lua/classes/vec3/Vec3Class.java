@@ -14,9 +14,9 @@ public class Vec3Class extends JavaLuaClass<Vec3d, Table> {
   @Override
   public Table toLua(Vec3d javaObj) {
     DefaultTableBuilder builder = new DefaultTableBuilder();
-    builder.add("x", javaObj.xCoord);
-    builder.add("y", javaObj.yCoord);
-    builder.add("z", javaObj.zCoord);
+    builder.add("x", javaObj.x);
+    builder.add("y", javaObj.y);
+    builder.add("z", javaObj.z);
     builder.setMetatable(getMetaTable());
     return builder.build();
   }

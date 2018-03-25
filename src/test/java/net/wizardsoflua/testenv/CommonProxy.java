@@ -15,7 +15,7 @@ public abstract class CommonProxy implements PacketDispatcherContext {
    */
   @Override
   public EntityPlayer getPlayerEntity(MessageContext ctx) {
-    return ctx.getServerHandler().playerEntity;
+    return ctx.getServerHandler().player;
   }
 
   /**
@@ -24,7 +24,7 @@ public abstract class CommonProxy implements PacketDispatcherContext {
    */
   @Override
   public IThreadListener getThreadFromContext(MessageContext ctx) {
-    return ctx.getServerHandler().playerEntity.getServer();
+    return ctx.getServerHandler().player.getServer();
   }
 
 }

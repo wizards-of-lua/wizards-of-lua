@@ -37,10 +37,10 @@ public class EntityTest extends WolTestBase {
   public void test_nbt_pos_is_readable() throws Exception {
     // Given:
     Vec3d pos = new Vec3d(1, 2, 3);
-    String expected = String.format("{ %s, %s, %s }", pos.xCoord, pos.yCoord, pos.zCoord);
+    String expected = String.format("{ %s, %s, %s }", pos.x, pos.y, pos.z);
     // When:
-    mc().executeCommand("/lua spell.pos=Vec3(%s,%s,%s); print(str(spell.nbt.Pos))", pos.xCoord,
-        pos.yCoord, pos.zCoord);
+    mc().executeCommand("/lua spell.pos=Vec3(%s,%s,%s); print(str(spell.nbt.Pos))", pos.x, pos.y,
+        pos.z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -69,8 +69,8 @@ public class EntityTest extends WolTestBase {
     String expected = format(posB);
     // When:
     mc().executeCommand(
-        "/lua spell.pos=Vec3(%s,%s,%s); spell:putNbt({Pos={%s, %s, %s}}); print(spell.pos)",
-        posA.xCoord, posA.yCoord, posA.zCoord, posB.xCoord, posB.yCoord, posB.zCoord);
+        "/lua spell.pos=Vec3(%s,%s,%s); spell:putNbt({Pos={%s, %s, %s}}); print(spell.pos)", posA.x,
+        posA.y, posA.z, posB.x, posB.y, posB.z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -105,7 +105,7 @@ public class EntityTest extends WolTestBase {
     BlockPos pos = mc().getWorldSpawnPoint();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:45f,1:45f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[45f,45f]}",
         pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
@@ -119,9 +119,9 @@ public class EntityTest extends WolTestBase {
     ServerLog4jEvent actZ = mc().waitFor(ServerLog4jEvent.class);
     List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
-    String expectedX = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().xCoord);
-    String expectedY = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().yCoord);
-    String expectedZ = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().zCoord);
+    String expectedX = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().x);
+    String expectedY = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().y);
+    String expectedZ = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().z);
     assertThat(actX.getMessage()).isEqualTo(expectedX);
     assertThat(actY.getMessage()).isEqualTo(expectedY);
     assertThat(actZ.getMessage()).isEqualTo(expectedZ);
@@ -135,7 +135,7 @@ public class EntityTest extends WolTestBase {
     String expected = "true";
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:45f,1:45f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[45f,45f]}",
         pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
@@ -313,7 +313,7 @@ public class EntityTest extends WolTestBase {
     String tag = "demotag";
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[\"%s\"]}",
         pos.getX(), pos.getY(), pos.getZ(), tag);
     mc().clearEvents();
 
@@ -334,7 +334,7 @@ public class EntityTest extends WolTestBase {
     String newTag2 = "newtag2";
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[\"%s\"]}",
         pos.getX(), pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
@@ -361,7 +361,7 @@ public class EntityTest extends WolTestBase {
 
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[\"%s\"]}",
         pos.getX(), pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
@@ -386,7 +386,7 @@ public class EntityTest extends WolTestBase {
 
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[0:\"%s\"]}",
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,Tags:[\"%s\"]}",
         pos.getX(), pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
@@ -412,7 +412,7 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.west();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
         pos.getX(), pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
@@ -438,7 +438,7 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.east();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
         pos.getX(), pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
@@ -463,7 +463,7 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.south();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
         pos.getX(), pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
@@ -488,7 +488,7 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.north();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
         pos.getX(), pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
@@ -516,7 +516,7 @@ public class EntityTest extends WolTestBase {
     String expected = "anvil";
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[0:%sf,1:0f]}",
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
         pigpos.getX(), pigpos.getY(), pigpos.getZ(), rotation);
     mc().clearEvents();
 

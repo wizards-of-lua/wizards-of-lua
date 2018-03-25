@@ -40,8 +40,8 @@ public class SpellUtil {
 
   public static Vec3d getPositionAtLookDistance(Entity entity) {
     Vec3d startPos = new Vec3d(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-    Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().xCoord * LOOK_DISTANCE,
-        entity.getLookVec().yCoord * LOOK_DISTANCE, entity.getLookVec().zCoord * LOOK_DISTANCE));
+    Vec3d endPos = startPos.add(new Vec3d(entity.getLookVec().x * LOOK_DISTANCE,
+        entity.getLookVec().y * LOOK_DISTANCE, entity.getLookVec().z * LOOK_DISTANCE));
     return endPos;
   }
 

@@ -100,7 +100,7 @@ public class PlayerBackdoor {
     if (team == null) {
       return null;
     } else {
-      return team.getRegisteredName();
+      return team.getName();
     }
   }
 

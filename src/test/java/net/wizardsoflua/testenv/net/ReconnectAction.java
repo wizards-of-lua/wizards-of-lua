@@ -39,9 +39,9 @@ public class ReconnectAction extends ClientAction {
     Minecraft.getMinecraft().addScheduledTask(() -> {
       nm.closeChannel(null);
     });
-    
+
     // connect
-    new Thread(()-> {
+    new Thread(() -> {
       sleep(1000);
       Minecraft.getMinecraft().addScheduledTask(() -> {
         String ip = addr.getHostString();
@@ -51,7 +51,7 @@ public class ReconnectAction extends ClientAction {
         } catch (UnknownHostException e) {
           throw new RuntimeException(e);
         }
-      });      
+      });
     }).start();
   }
 
@@ -67,7 +67,7 @@ public class ReconnectAction extends ClientAction {
         NetworkManager.createNetworkManagerAndConnect(inetaddress, port, isUsingNativeTransport);
     networkManager
         .setNetHandler(new NetHandlerLoginClient(networkManager, minecraft, previousGuiScreen));
-    networkManager.sendPacket(new C00Handshake(316, ip, port, EnumConnectionState.LOGIN, true));
+    networkManager.sendPacket(new C00Handshake(ip, port, EnumConnectionState.LOGIN, true));
     networkManager.sendPacket(new CPacketLoginStart(minecraft.getSession().getProfile()));
   }
 

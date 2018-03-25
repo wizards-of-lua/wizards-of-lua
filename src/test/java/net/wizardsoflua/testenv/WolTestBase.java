@@ -67,7 +67,7 @@ public class WolTestBase extends TestDataFactory {
   }
 
   protected String format(Vec3d pos) {
-    return formatPos(pos.xCoord, pos.yCoord, pos.zCoord);
+    return formatPos(pos.x, pos.y, pos.z);
   }
 
   protected String formatPos(int x, int y, int z) {

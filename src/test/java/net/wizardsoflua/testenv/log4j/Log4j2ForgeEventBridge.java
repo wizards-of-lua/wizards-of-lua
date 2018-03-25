@@ -16,19 +16,16 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
  * {@link ServerLog4jEvent}s.
  */
 public class Log4j2ForgeEventBridge {
-
   private final String loggerName;
-  private final Appender appender =
-      new AbstractAppender(Log4j2ForgeEventBridge.class.getSimpleName(), null,
-          PatternLayout.createLayout("%msg", null, null, null, null)) {
-        @Override
-        public void append(LogEvent event) {
-          Message message = event.getMessage();
-          String text = message.getFormattedMessage();
-          MinecraftForge.EVENT_BUS
-              .post(new ServerLog4jEvent(text));
-        }
-      };
+  private final Appender appender = new AbstractAppender(
+      Log4j2ForgeEventBridge.class.getSimpleName(), null, PatternLayout.createDefaultLayout()) {
+    @Override
+    public void append(LogEvent event) {
+      Message message = event.getMessage();
+      String text = message.getFormattedMessage();
+      MinecraftForge.EVENT_BUS.post(new ServerLog4jEvent(text));
+    }
+  };
 
   public Log4j2ForgeEventBridge(String loggerName) {
     this.loggerName = loggerName;
@@ -39,5 +36,4 @@ public class Log4j2ForgeEventBridge {
     appender.start();
     coreLogger.addAppender(appender);
   }
-
 }

@@ -62,7 +62,7 @@ public class SpellEntity extends Entity {
     Vec3d pos = posRot.getPos();
     float yaw = posRot.getRotationYaw();
     float pitch = posRot.getRotationPitch();
-    setPositionAndRotation(pos.xCoord, pos.yCoord, pos.zCoord, yaw, pitch);
+    setPositionAndRotation(pos.x, pos.y, pos.z, yaw, pitch);
   }
 
   public ICommandSender getOwner() {

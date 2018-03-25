@@ -23,13 +23,13 @@ public class DroppedItemClass
     }
 
     public Object getItem() {
-      ItemStack stack = delegate.getEntityItem();
+      ItemStack stack = delegate.getItem();
       return getConverters().toLua(stack);
     }
 
     public void setItem(Object luaObj) {
       ItemStack stack = getConverters().toJava(ItemStack.class, luaObj, "item");
-      delegate.setEntityItemStack(stack);
+      delegate.setItem(stack);
     }
   }
 }

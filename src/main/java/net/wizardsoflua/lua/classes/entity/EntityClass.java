@@ -89,7 +89,7 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     public void setPos(Object luaObj) {
       Vec3d pos = getConverters().toJava(Vec3d.class, luaObj, "pos");
-      delegate.setPositionAndUpdate(pos.xCoord, pos.yCoord, pos.zCoord);
+      delegate.setPositionAndUpdate(pos.x, pos.y, pos.z);
     }
 
     public Object getFacing() {
@@ -104,8 +104,8 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     public void setLookVec(Object luaObject) {
       Vec3d lookVec = getConverters().toJava(Vec3d.class, luaObject, "lookVec");
-      double pitch = Math.toDegrees(Math.asin(-lookVec.yCoord));
-      double yaw = Math.toDegrees(MathHelper.atan2(-lookVec.xCoord, lookVec.zCoord));
+      double pitch = Math.toDegrees(Math.asin(-lookVec.y));
+      double yaw = Math.toDegrees(MathHelper.atan2(-lookVec.x, lookVec.z));
       setRotationYawAndPitch((float) yaw, (float) pitch);
     }
 
@@ -153,9 +153,9 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
 
     public void setMotion(Object luaObj) {
       Vec3d v = getConverters().toJava(Vec3d.class, luaObj, "motion");
-      double x = v.xCoord;
-      double y = v.yCoord;
-      double z = v.zCoord;
+      double x = v.x;
+      double y = v.y;
+      double z = v.z;
 
       // see SPacketEntityVelocity
       double maxLen = 3.9;
@@ -222,9 +222,9 @@ public class EntityClass extends ProxyCachingLuaClass<Entity, EntityClass.Proxy<
         distance = 1d;
       }
       Vec3d vec = direction.getDirectionVec(getRotationYaw());
-      double x = delegate.posX + vec.xCoord * distance;
-      double y = delegate.posY + vec.yCoord * distance;
-      double z = delegate.posZ + vec.zCoord * distance;
+      double x = delegate.posX + vec.x * distance;
+      double y = delegate.posY + vec.y * distance;
+      double z = delegate.posZ + vec.z * distance;
       delegate.setPositionAndUpdate(x, y, z);
     }
 

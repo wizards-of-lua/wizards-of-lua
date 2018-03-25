@@ -47,9 +47,9 @@ public class RightClickAction extends ClientAction {
     buffer.writeInt(pos.getY());
     buffer.writeInt(pos.getZ());
     buffer.writeInt(face.ordinal());
-    buffer.writeDouble(vec.xCoord);
-    buffer.writeDouble(vec.yCoord);
-    buffer.writeDouble(vec.zCoord);
+    buffer.writeDouble(vec.x);
+    buffer.writeDouble(vec.y);
+    buffer.writeDouble(vec.z);
   }
 
   @Override

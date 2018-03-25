@@ -91,25 +91,25 @@ public class ChunkLoaderTicketSupport {
   /**
    * This loads the neighborhood of the chunk at the given position. This ensures that the
    * decoration elements of the world generation process are added to the chunk in the center.
-   * 
+   *
    * @param center
    * @see https://www.reddit.com/r/feedthebeast/comments/5x0twz/investigating_extreme_worldgen_lag/
    */
   private void loadChunkProximity(ChunkPos center) {
     IChunkProvider p = entity.getEntityWorld().getChunkProvider();
-    loadChunk(p, new ChunkPos(center.chunkXPos + 1, center.chunkZPos + 1));
-    loadChunk(p, new ChunkPos(center.chunkXPos + 1, center.chunkZPos));
-    loadChunk(p, new ChunkPos(center.chunkXPos, center.chunkZPos + 1));
-    loadChunk(p, new ChunkPos(center.chunkXPos - 1, center.chunkZPos + 1));
-    loadChunk(p, new ChunkPos(center.chunkXPos + 1, center.chunkZPos - 1));
-    loadChunk(p, new ChunkPos(center.chunkXPos, center.chunkZPos - 1));
-    loadChunk(p, new ChunkPos(center.chunkXPos - 1, center.chunkZPos - 1));
-    loadChunk(p, new ChunkPos(center.chunkXPos - 1, center.chunkZPos));
+    loadChunk(p, new ChunkPos(center.x + 1, center.z + 1));
+    loadChunk(p, new ChunkPos(center.x + 1, center.z));
+    loadChunk(p, new ChunkPos(center.x, center.z + 1));
+    loadChunk(p, new ChunkPos(center.x - 1, center.z + 1));
+    loadChunk(p, new ChunkPos(center.x + 1, center.z - 1));
+    loadChunk(p, new ChunkPos(center.x, center.z - 1));
+    loadChunk(p, new ChunkPos(center.x - 1, center.z - 1));
+    loadChunk(p, new ChunkPos(center.x - 1, center.z));
   }
 
   private void loadChunk(IChunkProvider p, ChunkPos pos) {
-    int x = chunkPos.chunkXPos;
-    int z = chunkPos.chunkZPos;
+    int x = chunkPos.x;
+    int z = chunkPos.z;
     if (p.getLoadedChunk(x, z) == null) {
       p.provideChunk(x, z);
     }

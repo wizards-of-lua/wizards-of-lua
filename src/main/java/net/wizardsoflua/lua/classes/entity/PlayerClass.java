@@ -94,7 +94,7 @@ public class PlayerClass
       if (team == null) {
         return null;
       }
-      return ByteString.of(team.getRegisteredName());
+      return ByteString.of(team.getName());
     }
 
     public void setTeam(Object luaObj) {
