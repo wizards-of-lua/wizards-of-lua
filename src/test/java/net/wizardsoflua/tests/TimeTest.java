@@ -67,15 +67,91 @@ public class TimeTest extends WolTestBase {
   public void test_sleep() throws Exception {
     // Given:
     long sleepTime = 10;
+
     // When:
-    mc().executeCommand("/lua print(Time.gametime); Time.sleep(%s); print(Time.gametime)",
-        sleepTime);
+    mc().executeCommand("/lua \n"//
+        + "print(Time.gametime)\n"//
+        + "Time.sleep(" + sleepTime + ")\n"//
+        + "print(Time.gametime)\n"//
+    );
 
     // Then:
-    ServerLog4jEvent message1 = mc().waitFor(ServerLog4jEvent.class);
-    ServerLog4jEvent message2 = mc().waitFor(ServerLog4jEvent.class);
-    long actual = Long.parseLong(message2.getMessage()) - Long.parseLong(message1.getMessage());
+    String message1 = mc().nextServerMessage();
+    String message2 = mc().nextServerMessage();
+    long actual = Long.parseLong(message2) - Long.parseLong(message1);
     assertThat(actual).isEqualTo(sleepTime);
+  }
+
+  // /test net.wizardsoflua.tests.TimeTest test_sleep__With_zero
+  @Test
+  public void test_sleep__With_zero() throws Exception {
+    // Given:
+    long sleepTime = 0;
+
+    // When:
+    mc().executeCommand("/lua \n"//
+        + "print(Time.gametime)\n"//
+        + "Time.sleep(" + sleepTime + ")\n"//
+        + "print(Time.gametime)\n"//
+    );
+
+    // Then:
+    String message1 = mc().nextServerMessage();
+    String message2 = mc().nextServerMessage();
+    long actual = Long.parseLong(message2) - Long.parseLong(message1);
+    assertThat(actual).isEqualTo(sleepTime);
+  }
+
+  // /test net.wizardsoflua.tests.TimeTest test_sleep__With_negative_arg
+  @Test
+  public void test_sleep__With_negative_arg() throws Exception {
+    // Given:
+    long sleepTime = -1;
+
+    // When:
+    mc().executeCommand("/lua Time.sleep(%s)", sleepTime);
+
+    // Then:
+    assertThat(mc().nextServerMessage()).contains("attempt to sleep a negative amount of ticks");
+  }
+
+  // /test net.wizardsoflua.tests.TimeTest test_sleep__With_nil__Allowance_is_above_sleep_trigger
+  @Test
+  public void test_sleep__With_nil__Allowance_is_above_sleep_trigger() throws Exception {
+    // When:
+    mc().executeCommand("/lua \n"//
+        + "print(Time.gametime)\n"//
+        + "Time.sleep()\n"//
+        + "print(Time.gametime)\n"//
+    );
+
+    // Then:
+    String message1 = mc().nextServerMessage();
+    String message2 = mc().nextServerMessage();
+    long actual = Long.parseLong(message2) - Long.parseLong(message1);
+    assertThat(actual).isZero();
+  }
+
+  // /test net.wizardsoflua.tests.TimeTest test_sleep__With_nil__Allowance_is_below_sleep_trigger
+  @Test
+  public void test_sleep__With_nil__Allowance_is_below_sleep_trigger() throws Exception {
+    // Given:
+    int repetitions = 400;
+    mc().setLuaTicksLimit(2 * repetitions * 3); // 3 ticks per cycle
+
+    // When:
+    mc().executeCommand("/lua \n"//
+        + "for consumeTicks=1," + repetitions + " do end\n"//
+        + "print(Time.gametime)\n"//
+        + "Time.sleep()\n"//
+        + "print(Time.gametime)\n"//
+    );
+
+    // Then:
+    String message1 = mc().nextServerMessage();
+    String message2 = mc().nextServerMessage();
+    long actual = Long.parseLong(message2) - Long.parseLong(message1);
+    assertThat(actual).isEqualTo(1);
   }
 
   // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_broken_when_autosleep_is_off
@@ -84,6 +160,7 @@ public class TimeTest extends WolTestBase {
     // Given:
     int repetitions = 2000;
     mc().setLuaTicksLimit(5 * repetitions); // 5 ticks per cycle
+
     // When:
     mc().player().chat("/lua Time.autosleep=false; sleep(1); for i=1,%s do print(i); end",
         repetitions);
@@ -97,12 +174,15 @@ public class TimeTest extends WolTestBase {
     assertThat(act.getMessage()).contains("Spell has been broken automatically");
   }
 
+  // @formatter:off
   // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_broken_when_event_listener_takes_to_long
+  // @formatter:on
   @Test
   public void test_spell_will_be_broken_when_event_listener_takes_to_long() throws Exception {
     // Given:
     int repetitions = 1000;
     mc().setEventListenerLuaTicksLimit(5 * repetitions); // 5 ticks per cycle
+
     // When:
     mc().player().chat(
         "/lua Events.on('custom-event'):call(function(event) for i=1,%s do print(i); end; end); Events.fire('custom-event')",

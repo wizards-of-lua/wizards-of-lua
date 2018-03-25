@@ -93,10 +93,7 @@ public class TimeApi extends LuaModuleApi<Time> {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      if (arg1 == null) {
-        return; // ignore call
-      }
-      int ticks = getConverters().toJava(int.class, arg1, 1, "ticks", NAME);
+      Integer ticks = getConverters().toJavaNullable(Integer.class, arg1, 1, "ticks", NAME);
       delegate.startSleep(ticks);
       execute(context);
     }
