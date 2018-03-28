@@ -186,6 +186,10 @@ public class SpellProgram {
     EventsModule.installInto(env, luaClassLoader, eventHandlers);
   }
 
+  public LuaClassLoader getLuaClassLoader() {
+    return luaClassLoader;
+  }
+
   private Converters getConverters() {
     return luaClassLoader.getConverters();
   }

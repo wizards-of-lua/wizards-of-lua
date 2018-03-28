@@ -41,6 +41,7 @@ public class SpellClass
       add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);
       addReadOnly("sid", () -> delegate.getSid());
+      addReadOnly("data", this::getData);
     }
 
     public @Nullable Object getOwner() {
@@ -98,6 +99,10 @@ public class SpellClass
 
     public boolean isVisible() {
       return delegate.isVisible();
+    }
+
+    public Object getData() {
+      return delegate.getData(classLoader);
     }
 
     public int execute(String command) {
