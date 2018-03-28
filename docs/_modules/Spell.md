@@ -26,6 +26,44 @@ properties:
     description: The 'visible' property defines if this spell is visible for players.
     examples:
       - url: Spell/visible.md
+  - name: data
+    type: table
+    access: r/w
+    description: |
+      The 'data' property is a spell-specific table that can hold custom key-value pairs.
+      These entries are modifiable not only by the owning spell itself but also by all other spells.
+      Therefore the data property is very well suited for exchanging information between spells.
+
+      #### Example
+      Storing a copy of the block at the spell's position into the 'block' entry of the spell's data property.
+      ```lua
+      spell.data.block = spell.block:copy()
+      ```
+
+      #### Example
+      Creating a spell called 'rain-spell' that is dropping a lot of copies of a specific item that is defined in the
+      'item' entry of the spell's data property.
+      ```lua
+      spell.name = 'rain-spell'
+      spell.visible = true
+      while true do
+        local item = spell.data.item
+        if item then
+          spell:dropItem(item)
+        end
+        local dx = math.random(-1,1)
+        local dz = math.random(-1,1)
+        spell.pos = spell.pos + Vec3(dx,0,dz)
+        sleep(math.random(10,60))
+      end
+      ```
+
+      Finding the (first) spell called 'rain-spell' and setting the item that is 'raining' down.
+      ```lua
+      local otherSpellName = 'rain-spell'
+      local otherSpell = Entities.find('@e[type=wol:spell,name='..otherSpellName..']')[1]
+      otherSpell.data.item = Items.get('diamond_axe')
+      ```
 functions:
   - name: execute
     parameters: command, ...
