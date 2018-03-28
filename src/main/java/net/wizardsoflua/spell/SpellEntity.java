@@ -38,7 +38,7 @@ public class SpellEntity extends Entity {
   private long sid; // immutable spell id
   private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
   private boolean visible = false;
-  private Table specifics = new DefaultTable();
+  private Table data = new DefaultTable();
 
   public SpellEntity(World world) {
     // Used by MC when loading this entity from persistent data
@@ -93,12 +93,12 @@ public class SpellEntity extends Entity {
     this.visible = visible;
   }
 
-  public Object getSpecifics(LuaClassLoader viewingClassLoader) {
+  public Object getData(LuaClassLoader viewingClassLoader) {
     LuaClassLoader spellClassLoader = program.getLuaClassLoader();
     if (viewingClassLoader == spellClassLoader) {
-      return specifics;
+      return data;
     }
-    return viewingClassLoader.getTransferenceProxyFactory().getProxy(specifics, spellClassLoader);
+    return viewingClassLoader.getTransferenceProxyFactory().getProxy(data, spellClassLoader);
   }
 
   @Override
