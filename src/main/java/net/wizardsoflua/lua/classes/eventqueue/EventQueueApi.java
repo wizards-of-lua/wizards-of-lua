@@ -160,7 +160,7 @@ public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
     private void execute(ExecutionContext context, EventQueue eventQueue)
         throws ResolvedControlThrowable {
       try {
-        context.pauseIfRequested();
+        luaClass.getClassLoader().getCurrentSchedulingContext().pauseIfRequested(context);
       } catch (UnresolvedControlThrowable e) {
         throw e.resolve(NextFunction.this, eventQueue);
       }

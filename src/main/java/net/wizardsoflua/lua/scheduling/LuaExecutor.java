@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.scheduling;
 
+import static net.sandius.rembulan.exec.DirectCallExecutor.newExecutor;
+
 import javax.annotation.Nullable;
 
 import net.sandius.rembulan.StateContext;
@@ -34,10 +36,9 @@ public class LuaExecutor {
 
   public LuaExecutor(int mainLuaTickLimit, int eventListenerLuaTickLimit) {
     context = new AggregatingSchedulingContext();
-    mainExecutor = DirectCallExecutor
-        .newExecutor(wrap(new MainSchedulingContextFactory(mainLuaTickLimit, context)));
-    eventListenerExecutor = DirectCallExecutor.newExecutor(
-        wrap(new EventListenerSchedulingContextFactory(eventListenerLuaTickLimit, context)));
+    mainExecutor = newExecutor(wrap(new MainSchedulingContextFactory(mainLuaTickLimit, context)));
+    eventListenerExecutor =
+        newExecutor(wrap(new EventListenerSchedulingContextFactory(eventListenerLuaTickLimit)));
   }
 
   private LuaSchedulingContextFactory wrap(LuaSchedulingContextFactory delegate) {
