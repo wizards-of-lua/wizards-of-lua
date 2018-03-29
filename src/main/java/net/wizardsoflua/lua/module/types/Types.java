@@ -134,12 +134,9 @@ public class Types {
    * @return the name of the {@link LuaClass} of the specified {@link Table} or {@code null}
    */
   public @Nullable String getClassname(Table table) {
-    Table metatable = table.getMetatable();
-    if (metatable != null) {
-      LuaClass luaClass = classLoader.getLuaClassForMetaTable(metatable);
-      if (luaClass != null) {
-        return luaClass.getName();
-      }
+    LuaClass luaClass = classLoader.getLuaClassOf(table);
+    if (luaClass != null) {
+      return luaClass.getName();
     }
     return null;
   }
