@@ -2,35 +2,20 @@ package net.wizardsoflua.lua.scheduling;
 
 import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.EVENT_LISTENER;
 
+import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
-import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.lua.scheduling.LuaExecutor.Type;
 
 public class EventListenerSchedulingContextFactory implements LuaSchedulingContextFactory {
   private int luaTickLimit;
-  private final SchedulingContext context;
 
-  public EventListenerSchedulingContextFactory(int luaTickLimit, SchedulingContext context) {
+  public EventListenerSchedulingContextFactory(int luaTickLimit) {
     this.luaTickLimit = luaTickLimit;
-    this.context = new SchedulingContext() {
-      @Override
-      public boolean shouldPause() {
-        if (context.shouldPause()) {
-          throw new IllegalOperationAttemptException("attempt to sleep");
-        }
-        return false;
-      }
-
-      @Override
-      public void registerTicks(int ticks) {
-        context.registerTicks(ticks);
-      }
-    };
   }
 
   @Override
   public LuaSchedulingContext newInstance() {
-    return new LuaSchedulingContext(luaTickLimit, context) {
+    return new LuaSchedulingContext(luaTickLimit) {
       @Override
       public boolean isAutosleep() {
         return false;
@@ -44,6 +29,11 @@ public class EventListenerSchedulingContextFactory implements LuaSchedulingConte
       @Override
       public Type getLuaExecutorType() {
         return EVENT_LISTENER;
+      }
+
+      @Override
+      public void pauseIfRequested(ExecutionContext context) {
+        throw new IllegalOperationAttemptException("attempt to sleep");
       }
     };
   }

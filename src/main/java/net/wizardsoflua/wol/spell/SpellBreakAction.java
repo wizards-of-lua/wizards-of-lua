@@ -53,8 +53,7 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
     if (ALL.equalsIgnoreCase(option)) {
       wol.getSpellRegistry().breakAll();
       // TODO I18n
-      sender.getEntityWorld().getMinecraftServer().getPlayerList()
-          .sendMessage(new WolAnnouncementMessage("Broke all spells"));
+      sender.sendMessage(new WolAnnouncementMessage("Broke all spells"));
     } else if (BY_SID.equalsIgnoreCase(option)) {
       String sidString = argList.poll();
       // TODO throw command exception if value is not an integer or null
@@ -62,8 +61,7 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
       boolean found = wol.getSpellRegistry().breakBySid(sid);
       if (found) {
         // TODO I18n
-        sender.getEntityWorld().getMinecraftServer().getPlayerList()
-            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", 1)));
+        sender.sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", 1)));
       } else {
         throw new CommandException("No matching spell found!");
       }
@@ -74,12 +72,10 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
       int count = wol.getSpellRegistry().breakByName(name);
       if (count == 1) {
         // TODO I18n
-        sender.getEntityWorld().getMinecraftServer().getPlayerList()
-            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", count)));
+        sender.sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", count)));
       } else if (count > 1) {
         // TODO I18n
-        sender.getEntityWorld().getMinecraftServer().getPlayerList()
-            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spells", count)));
+        sender.sendMessage(new WolAnnouncementMessage(String.format("Broke %s spells", count)));
       } else {
         throw new CommandException("No matching spells found!");
       }
@@ -89,12 +85,10 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
       int count = wol.getSpellRegistry().breakByOwner(ownerName);
       if (count == 1) {
         // TODO I18n
-        sender.getEntityWorld().getMinecraftServer().getPlayerList()
-            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", count)));
+        sender.sendMessage(new WolAnnouncementMessage(String.format("Broke %s spell", count)));
       } else if (count > 1) {
         // TODO I18n
-        sender.getEntityWorld().getMinecraftServer().getPlayerList()
-            .sendMessage(new WolAnnouncementMessage(String.format("Broke %s spells", count)));
+        sender.sendMessage(new WolAnnouncementMessage(String.format("Broke %s spells", count)));
       } else {
         throw new CommandException("No matching spells found!");
       }
