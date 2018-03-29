@@ -138,7 +138,6 @@ public class SpellBreakAction extends MenuEntry implements CommandAction {
   }
 
   private void send(ICommandSender sender, String message) {
-    sender.getEntityWorld().getMinecraftServer().getPlayerList()
-        .sendMessage(new WolAnnouncementMessage(message));
+    sender.sendMessage(new WolAnnouncementMessage(message));
   }
 }

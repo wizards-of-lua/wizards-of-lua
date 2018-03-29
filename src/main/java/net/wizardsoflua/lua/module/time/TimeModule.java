@@ -68,22 +68,20 @@ public class TimeModule extends DelegatingProxy<Time> {
       int ticks = ((Number) arg1).intValue();
 
       delegate.startSleep(ticks);
-      try {
-        context.pauseIfRequested();
-      } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(SleepFunction.this, "Sleeping");
-      }
-
-      context.getReturnBuffer().setTo();
+      execute(context);
     }
 
     @Override
     public void resume(ExecutionContext context, Object suspendedState)
         throws ResolvedControlThrowable {
+      execute(context);
+    }
+
+    private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
-        context.pauseIfRequested();
+        getClassLoader().getCurrentSchedulingContext().pauseIfRequested(context);
       } catch (UnresolvedControlThrowable e) {
-        throw e.resolve(SleepFunction.this, "Sleeping");
+        throw e.resolve(SleepFunction.this, null);
       }
       context.getReturnBuffer().setTo();
     }
