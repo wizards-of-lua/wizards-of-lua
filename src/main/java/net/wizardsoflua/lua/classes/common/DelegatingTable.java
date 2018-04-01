@@ -15,15 +15,14 @@ import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.lua.table.Property;
 
 public class DelegatingTable extends Table {
-
   private final TraversableHashMap<Object, Object> properties = new TraversableHashMap<>();
-
-  public DelegatingTable(Table metatable) {
-    setMetatable(metatable);
-  }
 
   public DelegatingTable() {
     this(null);
+  }
+
+  public DelegatingTable(Table metatable) {
+    setMetatable(metatable);
   }
 
   private static void checkKey(Object key) {
@@ -58,11 +57,11 @@ public class DelegatingTable extends Table {
 
     Object p = properties.get(key);
     if (p == null)
-      throw new IllegalArgumentException("unknown table index");
+      throw new IllegalArgumentException("unknown table index " + key);
     if (p instanceof Property<?>) {
       ((Property<?>) p).set(value);
     } else {
-      throw new UnsupportedOperationException("property is readonly");
+      throw new UnsupportedOperationException("property '" + key + "' is readonly");
     }
   }
 

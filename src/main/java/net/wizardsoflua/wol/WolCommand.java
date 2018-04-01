@@ -133,6 +133,7 @@ public class WolCommand extends CommandBase {
   /**
    * Return the required permission level for this command.
    */
+  @Override
   public int getRequiredPermissionLevel() {
     // TODO add real permission checking somewhere
     return 2;

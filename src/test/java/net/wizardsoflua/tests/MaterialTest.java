@@ -1,11 +1,18 @@
 package net.wizardsoflua.tests;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.wizardsoflua.lua.classes.block.MaterialClass;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -26,10 +33,9 @@ public class MaterialTest extends WolTestBase {
     mc().setBlock(posP, Blocks.PLANKS);
 
     // When:
-    mc().player()
-        .chat(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; cls=type(m); print(cls)",
-            posP.getX(), posP.getY(), posP.getZ());
+    mc().player().chat(
+        "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; cls=type(m); print(cls)",
+        posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -47,16 +53,16 @@ public class MaterialTest extends WolTestBase {
         + "  canBurn = true,\n" //
         + "  liquid = false,\n" //
         + "  mobility = \"NORMAL\",\n" //
+        + "  name = \"WOOD\",\n" //
         + "  opaque = true,\n" //
         + "  replaceable = false,\n" //
         + "  requiresNoTool = true,\n" //
         + "  solid = true\n" //
         + "}";
     // When:
-    mc().player()
-        .chat(
-            "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(str(m))",
-            posP.getX(), posP.getY(), posP.getZ());
+    mc().player().chat(
+        "/lua spell.pos = Vec3.from(%s,%s,%s); m=spell.block.material; print(str(m))", posP.getX(),
+        posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -75,6 +81,32 @@ public class MaterialTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.MaterialTest test_all_material_names_are_mapped
+  @Test
+  public void test_all_material_names_are_mapped() throws Exception {
+    // Given:
+    Map<Material, String> expectedNames = new HashMap<>();
+    Field[] fields = Material.class.getFields();
+    for (Field field : fields) {
+      int modifiers = field.getModifiers();
+      if (Material.class.isAssignableFrom(field.getType())//
+          && Modifier.isPublic(modifiers)//
+          && Modifier.isStatic(modifiers)//
+          && Modifier.isFinal(modifiers)//
+      ) {
+        Material material = (Material) field.get(null);
+        String name = field.getName();
+        expectedNames.put(material, name);
+      }
+    }
+    // When:
+    for (Map.Entry<Material, String> entry : expectedNames.entrySet()) {
+      String act = MaterialClass.GET_NAME(entry.getKey());
+      // Then
+      assertThat(act).isEqualTo(entry.getValue());
+    }
   }
 
 }

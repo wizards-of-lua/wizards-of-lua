@@ -12,28 +12,31 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.LiveWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyCachingLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.entity.EntityApi;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
+import net.wizardsoflua.lua.classes.entity.EntityInstance;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
 
 @DeclareLuaClass(name = SpellClass.NAME, superClass = EntityClass.class)
-public class SpellClass extends ProxyCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
+public class SpellClass
+    extends InstanceCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String NAME = "Spell";
 
-  public SpellClass() {
+  @Override
+  protected void onLoad() {
     add(new ExecuteFunction());
   }
 
   @Override
   public Proxy<SpellEntity> toLua(SpellEntity delegate) {
-    return new Proxy<>(this, delegate);
+    return new Proxy<>(new EntityApi<>(this, delegate));
   }
 
-  public static class Proxy<D extends SpellEntity> extends EntityClass.Proxy<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
+  public static class Proxy<D extends SpellEntity> extends EntityInstance<EntityApi<D>, D> {
+    public Proxy(EntityApi<D> api) {
+      super(api);
       addReadOnly("owner", this::getOwner);
       add("block", this::getBlock, this::setBlock);
       add("visible", this::isVisible, this::setVisible);

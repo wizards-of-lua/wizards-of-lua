@@ -1,0 +1,6 @@
+if (project != rootProject) {
+  eclipse.project.name = rootProject.name + project.path.replace(':', '-')
+  eclipseProject.doFirst {
+    logger.info "[eclipse] Using name '${eclipse.project.name}'"
+  }
+}

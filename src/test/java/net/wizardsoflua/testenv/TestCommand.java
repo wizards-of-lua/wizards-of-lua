@@ -1,12 +1,11 @@
 package net.wizardsoflua.testenv;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -92,7 +91,7 @@ public class TestCommand extends CommandBase {
   }
 
   private ITextComponent toTestEnvMessage(TestResults result) {
-    return toTestEnvMessage(Lists.newArrayList(result));
+    return toTestEnvMessage(Arrays.asList(result));
   }
 
   private ITextComponent toTestEnvMessage(Iterable<TestResults> results) {

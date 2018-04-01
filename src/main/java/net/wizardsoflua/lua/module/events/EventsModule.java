@@ -24,7 +24,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
   }
 
   public EventsModule(LuaClassLoader classLoader, EventHandlers delegate) {
-    super(classLoader, null, delegate);
+    super(classLoader, delegate);
     SubscribeFunction subscribeFunction = new SubscribeFunction();
     addImmutable(subscribeFunction.getName(), subscribeFunction);
     OnFunction onFunction = new OnFunction();

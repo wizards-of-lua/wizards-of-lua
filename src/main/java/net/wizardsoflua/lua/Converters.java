@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
 
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -21,8 +22,10 @@ import net.sandius.rembulan.LuaMathOperators;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
+import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
@@ -50,7 +53,6 @@ public class Converters {
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
         () -> toJavaList(type, luaObject));
-
   }
 
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
@@ -65,7 +67,6 @@ public class Converters {
       throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
         () -> toJavaNullable(type, luaObject));
-
   }
 
   public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex, String argumentName,
@@ -203,6 +204,9 @@ public class Converters {
         return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }
     }
+    if (LuaClassApi.class.isAssignableFrom(type) && luaObject instanceof GeneratedLuaInstance) {
+      return ((GeneratedLuaInstance<?, ?>) luaObject).getApi();
+    }
     if (type == String.class) {
       return Conversions.javaRepresentationOf(luaObject);
     }
@@ -217,6 +221,9 @@ public class Converters {
     }
     if (type == Long.class) {
       return castToLong(luaObject);
+    }
+    if (type == Boolean.class || type == boolean.class) {
+      return luaObject;
     }
     if (Enum.class.isAssignableFrom(type)) {
       String name = (String) Conversions.javaRepresentationOf(luaObject);
@@ -307,6 +314,9 @@ public class Converters {
         return result;
       }
       return ByteString.of(enumValue.name());
+    }
+    if (javaObject instanceof NBTBase) {
+      return NbtConverter.toLua((NBTBase) javaObject);
     }
     if (javaObject instanceof String) {
       return ByteString.of((String) javaObject);

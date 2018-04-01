@@ -14,7 +14,7 @@ import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.spell.TransferenceTableProxy;
 
@@ -51,8 +51,8 @@ public class TransferenceProxyFactory {
       return FUNCTION_PROXY;
     }
     if (luaObject instanceof Table) {
-      if (luaObject instanceof LuaInstanceProxy) {
-        LuaInstanceProxy<?> instance = (LuaInstanceProxy<?>) luaObject;
+      if (luaObject instanceof LuaInstance) {
+        LuaInstance<?> instance = (LuaInstance<?>) luaObject;
         Object delegate = instance.getDelegate();
         return classLoader.getConverters().toLua(delegate);
       }

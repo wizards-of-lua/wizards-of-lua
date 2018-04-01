@@ -124,6 +124,10 @@ function Vec3:normalize()
   return result
 end
 
+function Vec3:floor()
+  return Vec3( math.floor(self.x), math.floor(self.y), math.floor(self.z))
+end
+
 -- Here is some example code of how you could create a subclass of Vec3
 --[[
 declare("Vec3n",Vec3)

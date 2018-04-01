@@ -15,7 +15,7 @@ import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
@@ -25,7 +25,8 @@ import net.wizardsoflua.lua.table.PatchedImmutableTable;
 public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
   public static final String NAME = "Block";
 
-  public BlockClass() {
+  @Override
+  protected void onLoad() {
     add(new WithDataFunction());
     add(new WithNbtFunction());
     add(new CopyFunction());
@@ -37,7 +38,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends WolBlock> extends LuaInstanceProxy<D> {
+  public static class Proxy<D extends WolBlock> extends LuaInstance<D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addReadOnly("name", this::getName);
