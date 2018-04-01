@@ -26,6 +26,7 @@ public class Menu extends MenuEntry {
     rootAction = action;
   }
 
+  @Override
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       Deque<String> argList, BlockPos targetPos) {
     if (!argList.isEmpty()) {

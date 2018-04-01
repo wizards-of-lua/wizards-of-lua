@@ -42,13 +42,13 @@ public class EventSubscriptionTest extends WolTestBase {
         + "end)\n"//
     );
     sleep(1000);
-    mc().executeCommand("wol spell list");
+    mc().executeCommand("wol spell list all");
     mc().executeCommand("lua Events.fire('unsub-1')");
     sleep(1000);
-    mc().executeCommand("wol spell list");
+    mc().executeCommand("wol spell list all");
     mc().executeCommand("lua Events.fire('unsub-2')");
     sleep(1000);
-    mc().executeCommand("wol spell list");
+    mc().executeCommand("wol spell list all");
 
     // Then:
     ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
