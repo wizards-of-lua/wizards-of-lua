@@ -19,7 +19,7 @@ public class SystemModule extends DelegatingProxy<SystemAdapter> {
   }
 
   public SystemModule(LuaClassLoader classLoader, SystemAdapter delegate) {
-    super(classLoader, null, delegate);
+    super(classLoader, delegate);
     ExecuteFunction executeFunction = new ExecuteFunction();
     addImmutable(executeFunction.getName(), executeFunction);
   }
@@ -50,7 +50,7 @@ public class SystemModule extends DelegatingProxy<SystemAdapter> {
 
     private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
-        context.pauseIfRequested();
+        getClassLoader().getCurrentSchedulingContext().pauseIfRequested(context);
       } catch (UnresolvedControlThrowable e) {
         throw e.resolve(ExecuteFunction.this, null);
       }

@@ -21,6 +21,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.TransferenceProxyFactory;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
@@ -72,6 +73,7 @@ public class LuaClassLoader {
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
   private final Types types = new Types(this);
   private final Converters converters = new Converters(this);
+  private final TransferenceProxyFactory transferenceProxyFactory = new TransferenceProxyFactory(this);
   private final Context context;
 
   public interface Context {
@@ -96,6 +98,10 @@ public class LuaClassLoader {
     return converters;
   }
 
+  public TransferenceProxyFactory getTransferenceProxyFactory() {
+    return transferenceProxyFactory;
+  }
+
   public void loadStandardClasses() {
     load(ObjectClass.class);
     for (Class<? extends JavaLuaClass<?, ?>> luaClassClass : JAVA_LUA_CLASS_CLASSES) {
@@ -115,7 +121,7 @@ public class LuaClassLoader {
     if (luaClassByName.containsKey(luaClass.getName())) {
       return; // LuaClass is already loaded
     }
-    luaClass.init(this);
+    luaClass.load(this);
     luaClassByType.put(luaClass.getClass(), luaClass);
     luaClassByName.put(luaClass.getName(), luaClass);
     luaClassByMetaTable.put(luaClass.getMetaTable(), luaClass);

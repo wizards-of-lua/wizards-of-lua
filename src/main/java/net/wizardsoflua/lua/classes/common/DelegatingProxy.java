@@ -5,20 +5,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.annotation.Nullable;
-
 import com.google.common.reflect.TypeToken;
 
-import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 
-public abstract class DelegatingProxy<D> extends DelegatingTable {
-  private final LuaClassLoader classLoader;
+public abstract class DelegatingProxy<D> extends DelegatingTable implements Transferable {
+  protected final LuaClassLoader classLoader;
   protected D delegate;
 
-  public DelegatingProxy(LuaClassLoader classLoader, @Nullable Table metaTable, D delegate) {
-    super(metaTable);
+  public DelegatingProxy(LuaClassLoader classLoader, D delegate) {
     this.classLoader = checkNotNull(classLoader, "classLoader == null!");
     this.delegate = checkNotNull(delegate, "delegate==null!");
   }
@@ -33,6 +30,10 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
     return typeArg0;
   }
 
+  public LuaClassLoader getClassLoader() {
+    return classLoader;
+  }
+
   public Converters getConverters() {
     return classLoader.getConverters();
   }
@@ -44,6 +45,4 @@ public abstract class DelegatingProxy<D> extends DelegatingTable {
   public D getDelegate() {
     return delegate;
   }
-
-  public abstract boolean isTransferable();
 }

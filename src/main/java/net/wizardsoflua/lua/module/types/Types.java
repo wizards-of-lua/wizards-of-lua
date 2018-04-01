@@ -17,12 +17,12 @@ import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 
 public class Types {
-  private static final String NIL_META = "nil";
-  private static final String BOOLEAN_META = "boolean";
-  private static final String FUNCTION_META = "function";
-  private static final String NUMBER_META = "number";
-  private static final String STRING_META = "string";
-  private static final String TABLE_META = "table";
+  public static final String NIL_META = "nil";
+  public static final String BOOLEAN_META = "boolean";
+  public static final String FUNCTION_META = "function";
+  public static final String NUMBER_META = "number";
+  public static final String STRING_META = "string";
+  public static final String TABLE_META = "table";
 
   private final LuaClassLoader classLoader;
 
@@ -134,12 +134,9 @@ public class Types {
    * @return the name of the {@link LuaClass} of the specified {@link Table} or {@code null}
    */
   public @Nullable String getClassname(Table table) {
-    Table metatable = table.getMetatable();
-    if (metatable != null) {
-      LuaClass luaClass = classLoader.getLuaClassForMetaTable(metatable);
-      if (luaClass != null) {
-        return luaClass.getName();
-      }
+    LuaClass luaClass = classLoader.getLuaClassOf(table);
+    if (luaClass != null) {
+      return luaClass.getName();
     }
     return null;
   }

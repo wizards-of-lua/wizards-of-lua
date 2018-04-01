@@ -1,22 +1,19 @@
 package net.wizardsoflua.lua.scheduling;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.SchedulingContext;
+import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 public abstract class LuaSchedulingContext implements SchedulingContext {
   private int allowance;
-  private final SchedulingContext context;
 
-  public LuaSchedulingContext(int luaTickLimit, SchedulingContext context) {
+  public LuaSchedulingContext(int luaTickLimit) {
     this.allowance = luaTickLimit;
-    this.context = checkNotNull(context, "context == null!");
   }
 
   @Override
   public void registerTicks(int ticks) {
     allowance -= ticks;
-    context.registerTicks(ticks);
   }
 
   @Override
@@ -29,7 +26,7 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
             "Spell has been broken automatically since it has exceeded its tick allowance!");
       }
     } else {
-      return context.shouldPause();
+      return false;
     }
   }
 
@@ -42,4 +39,6 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
   public abstract void setAutosleep(boolean autosleep);
 
   public abstract LuaExecutor.Type getLuaExecutorType();
+
+  public abstract void pauseIfRequested(ExecutionContext context) throws UnresolvedControlThrowable;
 }

@@ -1,59 +1,79 @@
+/*
+ * Recompile annotation processor after change, for use in IDE.
+ * - gradlew apt:jar
+ */
 buildscript {
-    repositories {
-        jcenter()
-        maven {
-          name = "forge"
-          url = "http://files.minecraftforge.net/maven"
-        }
+  repositories {
+    jcenter()
+    maven {
+      name = "forge"
+      url = "http://files.minecraftforge.net/maven"
     }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-    }
+  }
+  dependencies { classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT' }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.4.1'
-}
+task wrapper(type: Wrapper) { gradleVersion = '4.4.1' }
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
-}
+compileJava { sourceCompatibility = targetCompatibility = "1.8" }
 
 
-version = "1.11.2-1.16.0-alpha"
+version = "1.11.2-1.17.1-alpha"
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
 
 minecraft {
-    version = "1.11.2-13.20.1.2454"
-    runDir = "run"
-    replace "@MOD_VERSION@", project.version
-    replaceIn "WizardsOfLua.java"
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20161220"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+  version = "1.11.2-13.20.1.2454"
+  runDir = "run"
+  replace "@MOD_VERSION@", project.version
+  replaceIn "WizardsOfLua.java"
+  // the mappings can be changed at any time, and must be in the following format.
+  // snapshot_YYYYMMDD   snapshot are built nightly.
+  // stable_#            stables are built at the discretion of the MCP team.
+  // Use non-default mappings at your own risk. they may not always work.
+  // simply re-run your setup task after changing the mappings to update your workspace.
+  mappings = "snapshot_20161220"
+  // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
-repositories {
-  jcenter()
-  mavenCentral()
-  maven {
-    name = "sonatype-ossrh-snapshots"
-    url = "https://oss.sonatype.org/content/repositories/snapshots"
-  }
-  maven {
-    name = "java-download"
-    url = "http://download.java.net/maven/2/"
+allprojects {
+  repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+      name = "sonatype-ossrh-snapshots"
+      url = "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven {
+      name = "java-download"
+      url = "http://download.java.net/maven/2/"
+    }
   }
 }
+
+apply from: file('gradle-snippets/annotation-processing.gradle')
+allprojects {
+  plugins.withId('eclipse') {
+    project.apply from: rootProject.file('gradle-snippets/eclipse/rename-subproject.gradle')
+  }
+}
+
+ext.libs = [
+  assertj_core:         'org.assertj:assertj-core:2.5.0',
+  commons_io:           'commons-io:commons-io:2.4',
+  guava:                'com.google.guava:guava:17.0',
+  javapoet:             'com.squareup:javapoet:1.10.0',
+  jsr305:               'com.google.code.findbugs:jsr305:3.0.1',
+  junit:                'junit:junit:4.12',
+  mockito:              'org.mockito:mockito-core:1.+',
+  rembulan_compiler:    'net.sandius.rembulan:rembulan-compiler:0.1-SNAPSHOT',
+  rembulan_runtime:     'net.sandius.rembulan:rembulan-runtime:0.1-SNAPSHOT',
+  rembulan_stdlib:      'net.sandius.rembulan:rembulan-stdlib:0.1-SNAPSHOT',
+]
 
 configurations {
   embed
@@ -61,62 +81,59 @@ configurations {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:2.5.0'
-    testCompile 'org.mockito:mockito-core:1.+'
+  compileOnly project(':apt')
+  annotationProccessing project(':apt')
 
-    embed 'net.sandius.rembulan:rembulan-compiler:0.1-SNAPSHOT'
-    embed 'net.sandius.rembulan:rembulan-stdlib:0.1-SNAPSHOT'
+  embed libs.rembulan_compiler
+  embed libs.rembulan_stdlib
 
-    compile 'commons-io:commons-io:2.4'
+  testCompile libs.assertj_core
+  testCompile libs.junit
+  testCompile libs.mockito
 
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
+  // you may put jars on which you depend on in ./libs
+  // or you may define them like so..
+  //compile "some.group:artifact:version:classifier"
+  //compile "some.group:artifact:version"
 
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
+  // real examples
+  //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
+  //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
 
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+  // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
+  //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+  // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
+  // except that these dependencies get remapped to your current MCP mappings
+  //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+  //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+  // for more info...
+  // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
+  // http://www.gradle.org/docs/current/userguide/dependency_management.html
 }
 
 jar {
   from configurations.embed.collect {
-    it.isDirectory()?it:zipTree(it)
+    it.isDirectory() ? it : zipTree(it)
   }
   exclude('META-INF/**')
   exclude('LICENSE.txt')
 }
 
-
 processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+  // this will ensure that this task is redone when the versions change.
+  inputs.property 'version', project.version
+  inputs.property 'mcversion', project.minecraft.version
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+  // replace stuff in mcmod.info, nothing else
+  from(sourceSets.main.resources.srcDirs) {
+    include 'mcmod.info'
 
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
+    // replace version and mcversion
+    expand version: project.version, mcversion: project.minecraft.version
+  }
 
-    // copy everything else except the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+  // copy everything else except the mcmod.info
+  from(sourceSets.main.resources.srcDirs) { exclude 'mcmod.info' }
 }
