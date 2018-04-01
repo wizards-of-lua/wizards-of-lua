@@ -12,7 +12,7 @@ import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public abstract class DelegatingProxy<D> extends DelegatingTable implements Transferable {
-  private final LuaClassLoader classLoader;
+  protected final LuaClassLoader classLoader;
   protected D delegate;
 
   public DelegatingProxy(LuaClassLoader classLoader, D delegate) {
@@ -28,6 +28,10 @@ public abstract class DelegatingProxy<D> extends DelegatingTable implements Tran
     @SuppressWarnings("unchecked")
     Class<D> typeArg0 = (Class<D>) TypeToken.of(arg0).getRawType();
     return typeArg0;
+  }
+
+  public LuaClassLoader getClassLoader() {
+    return classLoader;
   }
 
   public Converters getConverters() {

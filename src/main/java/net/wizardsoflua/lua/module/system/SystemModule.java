@@ -50,7 +50,7 @@ public class SystemModule extends DelegatingProxy<SystemAdapter> {
 
     private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
-        context.pauseIfRequested();
+        getClassLoader().getCurrentSchedulingContext().pauseIfRequested(context);
       } catch (UnresolvedControlThrowable e) {
         throw e.resolve(ExecuteFunction.this, null);
       }

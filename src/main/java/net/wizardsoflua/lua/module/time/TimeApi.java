@@ -106,7 +106,7 @@ public class TimeApi extends LuaModuleApi<Time> {
 
     private void execute(ExecutionContext context) throws ResolvedControlThrowable {
       try {
-        context.pauseIfRequested();
+        getClassLoader().getCurrentSchedulingContext().pauseIfRequested(context);
       } catch (UnresolvedControlThrowable ex) {
         throw ex.resolve(this, null);
       }
