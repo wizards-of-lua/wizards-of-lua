@@ -47,6 +47,7 @@ public class MaterialTest extends WolTestBase {
         + "  canBurn = true,\n" //
         + "  liquid = false,\n" //
         + "  mobility = \"NORMAL\",\n" //
+        + "  name = \"WOOD\",\n" //
         + "  opaque = true,\n" //
         + "  replaceable = false,\n" //
         + "  requiresNoTool = true,\n" //
