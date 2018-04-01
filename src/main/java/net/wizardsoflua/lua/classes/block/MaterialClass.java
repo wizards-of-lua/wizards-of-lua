@@ -1,11 +1,5 @@
 package net.wizardsoflua.lua.classes.block;
 
-import static java.lang.reflect.Modifier.isFinal;
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -20,27 +14,49 @@ import net.wizardsoflua.lua.classes.common.LuaInstance;
 @DeclareLuaClass(name = MaterialClass.NAME)
 public class MaterialClass
     extends InstanceCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
-
   private static final Map<Material, String> NAMES = new IdentityHashMap<>();
 
   static {
-    Field[] fields = Material.class.getFields();
-    for (Field field : fields) {
-      int modifiers = field.getModifiers();
-      if (Material.class.isAssignableFrom(field.getType())//
-          && isPublic(modifiers)//
-          && isStatic(modifiers)//
-          && isFinal(modifiers)//
-      ) {
-        try {
-          Material material = (Material) field.get(null);
-          String name = field.getName();
-          NAMES.put(material, name);
-        } catch (IllegalAccessException ex) {
-          throw new UndeclaredThrowableException(ex);
-        }
-      }
-    }
+    NAMES.put(Material.AIR, "AIR");
+    NAMES.put(Material.GRASS, "GRASS");
+    NAMES.put(Material.GROUND, "GROUND");
+    NAMES.put(Material.WOOD, "WOOD");
+    NAMES.put(Material.ROCK, "ROCK");
+    NAMES.put(Material.IRON, "IRON");
+    NAMES.put(Material.ANVIL, "ANVIL");
+    NAMES.put(Material.WATER, "WATER");
+    NAMES.put(Material.LAVA, "LAVA");
+    NAMES.put(Material.LEAVES, "LEAVES");
+    NAMES.put(Material.PLANTS, "PLANTS");
+    NAMES.put(Material.VINE, "VINE");
+    NAMES.put(Material.SPONGE, "SPONGE");
+    NAMES.put(Material.CLOTH, "CLOTH");
+    NAMES.put(Material.FIRE, "FIRE");
+    NAMES.put(Material.SAND, "SAND");
+    NAMES.put(Material.CIRCUITS, "CIRCUITS");
+    NAMES.put(Material.CARPET, "CARPET");
+    NAMES.put(Material.GLASS, "GLASS");
+    NAMES.put(Material.REDSTONE_LIGHT, "REDSTONE_LIGHT");
+    NAMES.put(Material.TNT, "TNT");
+    NAMES.put(Material.CORAL, "CORAL");
+    NAMES.put(Material.ICE, "ICE");
+    NAMES.put(Material.PACKED_ICE, "PACKED_ICE");
+    NAMES.put(Material.SNOW, "SNOW");
+    NAMES.put(Material.CRAFTED_SNOW, "CRAFTED_SNOW");
+    NAMES.put(Material.CACTUS, "CACTUS");
+    NAMES.put(Material.CLAY, "CLAY");
+    NAMES.put(Material.GOURD, "GOURD");
+    NAMES.put(Material.DRAGON_EGG, "DRAGON_EGG");
+    NAMES.put(Material.PORTAL, "PORTAL");
+    NAMES.put(Material.CAKE, "CAKE");
+    NAMES.put(Material.WEB, "WEB");
+    NAMES.put(Material.PISTON, "PISTON");
+    NAMES.put(Material.BARRIER, "BARRIER");
+    NAMES.put(Material.STRUCTURE_VOID, "STRUCTURE_VOID");
+  }
+
+  public static String GET_NAME(Material material) {
+    return NAMES.get(material);
   }
 
   public static final String NAME = "Material";
@@ -75,7 +91,7 @@ public class MaterialClass
     }
 
     private @Nullable String getName() {
-      return NAMES.get(delegate);
+      return GET_NAME(delegate);
     }
   }
 }
