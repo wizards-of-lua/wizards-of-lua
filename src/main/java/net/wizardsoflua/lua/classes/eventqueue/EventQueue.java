@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableSet;
 
+import net.minecraftforge.fml.common.eventhandler.Event;
+
 public class EventQueue {
 
   public interface Context {
@@ -19,7 +21,7 @@ public class EventQueue {
 
   private final ImmutableSet<String> names;
   private final Context context;
-  private Deque<Object> elements = new ArrayDeque<>();
+  private Deque<Event> elements = new ArrayDeque<>();
   private long waitUntil = -1;
 
   public EventQueue(Iterable<String> names, Context context) {
@@ -55,22 +57,21 @@ public class EventQueue {
     elements.clear();
   }
 
-  public Object latest() {
+  public Event latest() {
     return elements.peekLast();
   }
 
-  public Object pop() {
-    Object result = elements.pop();
+  public Event pop() {
+    Event result = elements.pop();
     stopWaitingForEvents();
     return result;
   }
 
-  public void add(Object event) {
+  public void add(Event event) {
     elements.addLast(event);
   }
 
   private void stopWaitingForEvents() {
     waitUntil = -1;
   }
-
 }

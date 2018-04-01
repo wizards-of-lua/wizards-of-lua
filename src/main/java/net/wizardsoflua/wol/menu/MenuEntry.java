@@ -1,13 +1,12 @@
 package net.wizardsoflua.wol.menu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -19,7 +18,7 @@ public abstract class MenuEntry {
       Deque<String> argList, BlockPos targetPos);
 
   protected List<String> getMatchingTokens(@Nullable String actual, String... options) {
-    return getMatchingTokens(actual, Lists.newArrayList(options));
+    return getMatchingTokens(actual, Arrays.asList(options));
   }
 
   protected List<String> getMatchingTokens(@Nullable String actual, Iterable<String> options) {

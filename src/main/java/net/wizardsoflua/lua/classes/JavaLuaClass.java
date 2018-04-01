@@ -48,7 +48,8 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     return getClassLoader().getLuaClassOfType(superClassClass);
   }
 
-  public static <J> Class<J> getJavaClassOf(Class<? extends JavaLuaClass<J, ?>> luaClass) {
+  public static <C extends JavaLuaClass<J, L>, J, L extends Table> Class<J> getJavaClassOf(
+      Class<C> luaClass) {
     TypeToken<? extends JavaLuaClass<?, ?>> token = TypeToken.of(luaClass);
     Type superType = token.getSupertype(JavaLuaClass.class).getType();
     ParameterizedType parameterizedSuperType = (ParameterizedType) superType;
@@ -73,15 +74,15 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     return getClassLoader().getConverters();
   }
 
-  public L getLuaInstance(J javaObj) {
-    return toLua(javaObj);
+  public L getLuaInstance(J javaObject) {
+    return toLua(javaObject);
   }
 
-  public J getJavaInstance(Table luaObj) throws ClassCastException {
-    return toJava(luaObj);
+  public J getJavaInstance(Table luaObject) throws ClassCastException {
+    return toJava(luaObject);
   }
 
-  protected abstract L toLua(J javaObj);
+  protected abstract L toLua(J javaObject);
 
-  protected abstract J toJava(Table luaObj) throws ClassCastException;
+  protected abstract J toJava(Table luaObject) throws ClassCastException;
 }

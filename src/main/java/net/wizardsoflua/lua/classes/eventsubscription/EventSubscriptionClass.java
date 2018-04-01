@@ -3,7 +3,7 @@ package net.wizardsoflua.lua.classes.eventsubscription;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.function.NamedFunction1;
 
 @DeclareLuaClass(name = EventSubscriptionClass.NAME)
@@ -20,7 +20,7 @@ public class EventSubscriptionClass
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends EventSubscription> extends LuaInstanceProxy<D> {
+  public static class Proxy<D extends EventSubscription> extends LuaInstance<D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
     }

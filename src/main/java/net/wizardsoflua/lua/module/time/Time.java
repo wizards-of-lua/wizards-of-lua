@@ -6,6 +6,8 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.world.World;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
@@ -79,7 +81,7 @@ public class Time implements SchedulingContext {
     return luaTotalTicks;
   }
 
-  public String getDate(String pattern) {
+  public String getDate(@Nullable String pattern) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     if (pattern != null) {
       formatter = DateTimeFormatter.ofPattern(pattern);

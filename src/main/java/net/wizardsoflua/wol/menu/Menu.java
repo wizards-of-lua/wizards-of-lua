@@ -1,13 +1,12 @@
 package net.wizardsoflua.wol.menu;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -42,7 +41,7 @@ public class Menu extends MenuEntry {
   }
 
   private List<String> sort(Set<String> set) {
-    List<String> result = Lists.newArrayList(set);
+    List<String> result = new ArrayList<>(set);
     Collections.sort(result);
     return result;
   }
