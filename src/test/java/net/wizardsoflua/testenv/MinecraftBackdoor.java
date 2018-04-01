@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +38,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.player.PlayerBackdoor;
 
 public class MinecraftBackdoor {
@@ -73,6 +75,10 @@ public class MinecraftBackdoor {
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }
+  }
+
+  public String nextClientMessage() {
+    return waitFor(TestPlayerReceivedChatEvent.class).getMessage();
   }
 
   public String nextServerMessage() {
@@ -113,7 +119,12 @@ public class MinecraftBackdoor {
   }
 
   public void breakAllSpells() {
-    testEnv.runAndWait(() -> testEnv.getWol().getSpellRegistry().breakAll());
+    testEnv.runAndWait(() -> {
+      Collection<SpellEntity> spells = testEnv.getWol().getSpellRegistry().getAll();
+      for (SpellEntity spell : spells) {
+        spell.setDead();
+      }
+    });
   }
 
   public Iterable<SpellEntity> spells() {
