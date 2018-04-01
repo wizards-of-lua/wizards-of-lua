@@ -48,8 +48,14 @@ functions:
   - name: sleep
     parameters: number
     results: nil
-    description: "Forces the current spell to sleep for the given amount of
-    game ticks."
+    description: |
+      Forces the current spell to sleep for the given number of game ticks.
+      If the number is 0, the spell won't sleep.
+      If the number is negative, this function will issue an error.
+      If the number is nil, the spell might go to sleep or not.
+      This depends on the number of lua ticks that are already consumed by this spell.
+      The rule is as follows: the spell will be sent to sleep if the spell's allowance falls below the half value
+      of the spell's initial allowance.
     examples:
       - url: Time/sleep.md
 ---

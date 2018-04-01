@@ -15,6 +15,34 @@ control over the Winzards of Lua mod.*
 This will print the list of all active spells.
 For each spell you will get the spell ID (SID), followed by the first 40 characters of its code.
 
+### Listing all Active Spells by Owner
+
+```
+/wol spell list byOwner mickkay
+```
+This will print the list of all active spells owned by player mickkay.
+
+A shortcut to this is
+```
+/wol spell list
+```
+
+### Listing all Active Spells by Name
+
+```
+/wol spell list byName funny-name
+```
+This will print the list of all active spells called 'funny-name'.
+
+### Listing all Active Spells by Name
+
+```
+/wol spell list bySid 1234
+```
+This will print the list of all active spells with spell ID 1234.
+Since spell IDs are unique, this will give you 1 match at most.
+
+
 <br/>
 
 ## Breaking Spells
