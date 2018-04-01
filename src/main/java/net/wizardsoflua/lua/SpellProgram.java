@@ -9,6 +9,8 @@ import java.time.Clock;
 
 import javax.annotation.Nullable;
 
+import com.google.common.cache.Cache;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -35,7 +37,9 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.classes.entity.PlayerApi;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
+import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.module.blocks.BlocksModule;
@@ -52,6 +56,7 @@ import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.system.SystemAdapter;
 import net.wizardsoflua.lua.module.system.SystemModule;
 import net.wizardsoflua.lua.module.time.Time;
+import net.wizardsoflua.lua.module.time.TimeApi;
 import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.scheduling.LuaExecutor;
@@ -151,7 +156,7 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
-    TimeModule.installInto(env, luaClassLoader, time);
+    new TimeModule(new TimeApi(luaClassLoader, time)).installInto(env);
     SystemModule.installInto(env, luaClassLoader, systemAdapter);
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());
@@ -298,13 +303,22 @@ public class SpellProgram {
     TableLib.installInto(stateContext, env);
   }
 
-  public void replacePlayerInstance(EntityPlayerMP player) {
+  public void replacePlayerInstance(EntityPlayerMP newPlayer) {
     if (this.owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      if (this.owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
-        this.owner = player;
+      if (this.owner.getCommandSenderEntity().getUniqueID().equals(newPlayer.getUniqueID())) {
+        this.owner = newPlayer;
       }
     }
     PlayerClass playerClass = luaClassLoader.getLuaClassOfType(PlayerClass.class);
-    playerClass.replaceDelegate(player);
+    Cache<EntityPlayerMP, PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP>> cache =
+        playerClass.getCache();
+    for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
+      if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
+        PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP> oldValue =
+            cache.asMap().remove(oldPlayer);
+        cache.put(newPlayer, oldValue);
+        oldValue.setDelegate(newPlayer);
+      }
+    }
   }
 }

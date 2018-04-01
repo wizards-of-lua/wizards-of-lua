@@ -17,9 +17,9 @@ public class SwingArmEventClass
   public static class Proxy<D extends SwingArmEvent> extends EventClass.Proxy<D> {
     public Proxy(ProxyingLuaClass<D, ? extends Proxy<D>> luaClass, D delegate) {
       super(luaClass, delegate);
-      addImmutable("player", getConverters().toLua(delegate.getPlayer()));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));
       addImmutable("item", getConverters().toLua(delegate.getItemStack()));
+      addImmutable("player", getConverters().toLua(delegate.getPlayer()));
     }
   }
 }

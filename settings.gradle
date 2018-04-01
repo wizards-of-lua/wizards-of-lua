@@ -1,0 +1,13 @@
+include 'apt'
+
+void subprojects(ProjectDescriptor project = rootProject, Closure closure) {
+  project.children.each {
+    closure.delegate = it
+    closure(it)
+    subprojects(it, closure)
+  }
+}
+
+subprojects {
+  buildFileName = path.replace(':', '-').substring(1) + '.gradle'
+}

@@ -4,7 +4,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstanceProxy;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 
 @DeclareLuaClass(name = BlockHitClass.NAME)
 public class BlockHitClass
@@ -16,7 +16,7 @@ public class BlockHitClass
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends RayTraceResult> extends LuaInstanceProxy<D> {
+  public static class Proxy<D extends RayTraceResult> extends LuaInstance<D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addImmutable("hitVec", getConverters().toLuaNullable(delegate.hitVec));

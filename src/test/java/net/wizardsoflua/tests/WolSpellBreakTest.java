@@ -50,7 +50,8 @@ public class WolSpellBreakTest extends WolTestBase {
     mc().player().chat("/wol spell break");
 
     // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo("[WoL] Broke 1 spell");
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).startsWith("[WoL] Broke 1 spell");
     Iterable<SpellEntity> spells = mc().spells();
     assertThat(spells).hasSize(1);
     assertThat(spells.iterator().next().getProgram().getCode()).isEqualTo(serverCode);
@@ -70,7 +71,8 @@ public class WolSpellBreakTest extends WolTestBase {
     mc().player().chat("/wol spell break byOwner %s", mc().player().getName());
 
     // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo("[WoL] Broke 1 spell");
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).startsWith("[WoL] Broke 1 spell");
     Iterable<SpellEntity> spells = mc().spells();
     assertThat(spells).hasSize(1);
     assertThat(spells.iterator().next().getProgram().getCode()).isEqualTo(serverCode);
@@ -90,7 +92,8 @@ public class WolSpellBreakTest extends WolTestBase {
     mc().player().chat("/wol spell break all");
 
     // Then:
-    assertThat(mc().nextServerMessage()).startsWith("[WoL] Broke 2 spells");
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).startsWith("[WoL] Broke 2 spells");
     assertThat(mc().spells()).isEmpty();
   }
 
