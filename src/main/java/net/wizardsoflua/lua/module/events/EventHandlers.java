@@ -3,6 +3,7 @@ package net.wizardsoflua.lua.module.events;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -34,7 +35,11 @@ public class EventHandlers {
       return context.getCurrentTime();
     }
   };
-  private final Multimap<String, EventSubscription> subscriptions = HashMultimap.create();
+  /**
+   * Using a linked multimap, because the order of subscriptions matters as later event listeners
+   * are not called if the event was canceled by a previous one.
+   */
+  private final Multimap<String, EventSubscription> subscriptions = LinkedHashMultimap.create();
   private final EventSubscription.Context subscriptionContext = new EventSubscription.Context() {
     @Override
     public void unsubscribe(EventSubscription subscription) {
