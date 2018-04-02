@@ -1,0 +1,37 @@
+eclipse.jdt.file.withProperties { properties ->
+  properties << ['org.eclipse.jdt.core.compiler.processAnnotations': 'enabled']
+}
+
+eclipse.classpath.file.whenMerged { cp ->
+  def folder = cp.entries.find { it.path == '.apt_generated' }
+  if (folder != null) {
+    folder.entryAttributes << ['ignore_optional_problems': true]
+  }
+}
+
+task eclipseFactorypath doLast {
+  def writer = new StringWriter()
+  def xml = new groovy.xml.MarkupBuilder(writer)
+  xml.factorypath {
+    sourceSets.each {
+      it.annotationProcessorPath.each {
+        factorypathentry kind: 'EXTJAR', id: it, enabled: true, runInBatchMode: false
+      }
+    }
+  }
+  File factorypath = file('.factorypath')
+  factorypath.text = writer.toString()
+}
+tasks.eclipse.dependsOn eclipseFactorypath
+
+task eclipseApt doLast {
+  File jdtAptCorePrefs = file('.settings/org.eclipse.jdt.apt.core.prefs')
+  jdtAptCorePrefs.parentFile.mkdir()
+  jdtAptCorePrefs.text = """\
+eclipse.preferences.version=1
+org.eclipse.jdt.apt.aptEnabled=true
+org.eclipse.jdt.apt.genSrcDir=.apt_generated
+org.eclipse.jdt.apt.reconcileEnabled=true
+"""
+}
+tasks.eclipse.dependsOn eclipseApt

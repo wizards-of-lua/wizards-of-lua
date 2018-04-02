@@ -57,7 +57,7 @@ allprojects {
   }
 }
 
-apply from: file('gradle-snippets/annotation-processing.gradle')
+apply from: file('gradle-snippets/eclipse/annotation-processing.gradle')
 allprojects {
   plugins.withId('eclipse') {
     project.apply from: rootProject.file('gradle-snippets/eclipse/rename-subproject.gradle')
@@ -82,9 +82,11 @@ configurations {
   compile.extendsFrom(embed)
 }
 
+eclipseApt.dependsOn ':apt:jar'
+
 dependencies {
+  annotationProcessor project(':apt')
   compileOnly project(':apt')
-  annotationProccessing project(':apt')
 
   embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
   embed libs.rembulan_stdlib
