@@ -174,7 +174,7 @@ public class PlayerTest extends WolTestBase {
     assertThat(mc().player().getMainHandItem().getItem().getRegistryName()).isEqualTo(expected);
   }
 
-  /// test net.wizardsoflua.tests.PlayerTest test_offhand_is_readable
+  // / test net.wizardsoflua.tests.PlayerTest test_offhand_is_readable
   @Test
   public void test_offhand_is_readable() throws Exception {
     // Given:
@@ -203,6 +203,19 @@ public class PlayerTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
     assertThat(mc().player().getOffHandItem().getItem().getRegistryName()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_sneaking_is_readable
+  @Test
+  public void test_sneaking_is_readable() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.sneaking)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("false");
   }
 
 }

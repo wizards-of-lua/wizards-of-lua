@@ -67,7 +67,7 @@ allprojects {
 ext.libs = [
   assertj_core:         'org.assertj:assertj-core:2.5.0',
   commons_io:           'commons-io:commons-io:2.4',
-  guava:                'com.google.guava:guava:17.0',
+  guava:                'com.google.guava:guava:21.0',
   javapoet:             'com.squareup:javapoet:1.10.0',
   jsr305:               'com.google.code.findbugs:jsr305:3.0.1',
   junit:                'junit:junit:4.12',
@@ -86,13 +86,15 @@ dependencies {
   compileOnly project(':apt')
   annotationProccessing project(':apt')
 
-  embed 'net.sandius.rembulan:rembulan-compiler:0.1-SNAPSHOT', { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
-  embed 'net.sandius.rembulan:rembulan-stdlib:0.1-SNAPSHOT'
+  embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
+  embed libs.rembulan_stdlib
 
   testCompile libs.assertj_core
   testCompile libs.junit
   testCompile libs.mockito
 
+  compile libs.commons_io
+    
   // you may put jars on which you depend on in ./libs
   // or you may define them like so..
   //compile "some.group:artifact:version:classifier"

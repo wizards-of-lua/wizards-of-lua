@@ -127,21 +127,21 @@ public class BlockPlaceEventTest extends WolTestBase {
     // Given:
     mc().player().setMainHandItem(new ItemStack(Blocks.SAND));
     mc().player().setPosition(playerPos);
-
+    
     // When:
     mc().executeCommand("lua Events.on('BlockPlaceEvent'):call(function(e)\n"//
         + "event = e\n"//
         + "end)\n"//
         + "while true do\n"//
         + "if event ~= nil then\n"//
-        + "print(event.cancelable)\n"//
+        + "print('test-output: event.cancelable='..tostring(event.cancelable))\n"//
         + "end\n"//
         + "end"//
     );
     mc().player().rightclick(clickPos, UP);
 
     // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo("false");
+    assertThat(mc().nextServerMessage()).isEqualTo("test-output: event.cancelable=false");
     sleep(1);
     assertThat(mc().getBlock(blockPos).getBlock()).isEqualTo(Blocks.SAND);
   }

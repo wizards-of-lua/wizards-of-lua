@@ -201,6 +201,14 @@ public class EntityApi<D extends Entity> extends LuaClassApi<D> {
     delegate.setRenderYawOffset(yaw);
     delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw, pitch);
   }
+  
+  /**
+   * This is true, if this entity is currently sneaking, false otherwise.
+   */
+  @LuaProperty
+  public boolean isSneaking() {
+    return delegate.isSneaking();
+  }
 
   /**
    * The 'tags' value is a list of strings that have been assigned to this entity.
