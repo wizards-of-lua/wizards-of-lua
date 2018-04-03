@@ -15,9 +15,10 @@ public class PlayerInteractEventClass extends
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends PlayerInteractEvent> extends EventClass.Proxy<D> {
+  public static class Proxy<D extends PlayerInteractEvent>
+      extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
+      super(new EventApi<>(luaClass, delegate));
       addImmutable("player", getConverters().toLua(delegate.getEntityPlayer()));
       addImmutableNullable("face", getConverters().toLuaNullable(delegate.getFace()));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));

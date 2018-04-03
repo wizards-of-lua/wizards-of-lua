@@ -14,9 +14,10 @@ public class PlayerLoggedInEventClass extends
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends PlayerEvent.PlayerLoggedInEvent> extends EventClass.Proxy<D> {
+  public static class Proxy<D extends PlayerEvent.PlayerLoggedInEvent>
+      extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
+      super(new EventApi<>(luaClass, delegate));
       addImmutable("player", getConverters().toLua(delegate.player));
     }
   }

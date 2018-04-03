@@ -18,9 +18,9 @@ public class BlockEventClass
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends BlockEvent> extends EventClass.Proxy<D> {
+  public static class Proxy<D extends BlockEvent> extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
+      super(new EventApi<>(luaClass, delegate));
       addReadOnly("pos", this::getPos);
       addReadOnly("block", this::getBlock);
     }

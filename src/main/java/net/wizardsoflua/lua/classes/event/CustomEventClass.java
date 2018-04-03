@@ -14,9 +14,9 @@ public class CustomEventClass
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends CustomLuaEvent> extends EventClass.Proxy<D> {
+  public static class Proxy<D extends CustomLuaEvent> extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
+      super(new EventApi<>(luaClass, delegate));
       Object content = delegate.getData().getContent();
       addImmutableNullable("data", getConverters().toLuaNullable(content));
     }

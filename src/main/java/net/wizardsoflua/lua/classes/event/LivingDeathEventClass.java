@@ -15,9 +15,10 @@ public class LivingDeathEventClass
     return new Proxy<>(this, javaObj);
   }
 
-  public static class Proxy<D extends LivingDeathEvent> extends LivingEventClass.Proxy<D> {
+  public static class Proxy<D extends LivingDeathEvent>
+      extends LivingEventClass.Proxy<LivingEventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
+      super(new LivingEventApi<>(luaClass, delegate));
       addReadOnly("cause", this::getCause);
     }
 
