@@ -6,7 +6,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 /**
- * The <span class="notranslate">UseItemEvent</span> class is fired when a [Mob](/modules/Mob)
+ * The <span class="notranslate">UseItemStartEvent</span> class is fired when a [Mob](/modules/Mob)
  * starts using an [Item](/modules/Item).
  */
 @GenerateLuaClass(name = UseItemStartEventApi.NAME)
