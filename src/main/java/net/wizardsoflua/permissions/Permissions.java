@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.UserListOps;
 import net.minecraft.server.management.UserListOpsEntry;
 
 public class Permissions {
@@ -19,9 +20,11 @@ public class Permissions {
       return true;
     }
     EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(playerId);
-    
-    UserListOpsEntry entry = (UserListOpsEntry) server.getPlayerList().getOppedPlayers()
-        .getEntry(player.getGameProfile());
+    if (player == null) {
+      return false;
+    }
+    UserListOps oppedPlayers = server.getPlayerList().getOppedPlayers();
+    UserListOpsEntry entry = (UserListOpsEntry) oppedPlayers.getEntry(player.getGameProfile());
     return entry != null;
   }
 }
