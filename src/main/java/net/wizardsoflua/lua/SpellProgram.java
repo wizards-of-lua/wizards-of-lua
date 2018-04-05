@@ -209,6 +209,11 @@ public class SpellProgram {
           handleException("event handling", ex);
         }
       }
+
+      @Override
+      public boolean isSpellTerminated() {
+        return isTerminated();
+      }
     };
   }
 
