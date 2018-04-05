@@ -10,8 +10,9 @@ import com.google.common.reflect.TypeToken;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.table.PropertyTable;
 
-public abstract class DelegatingProxy<D> extends DelegatingTable implements Transferable {
+public abstract class DelegatingProxy<D> extends PropertyTable implements Transferable {
   protected final LuaClassLoader classLoader;
   protected D delegate;
 
