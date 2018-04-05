@@ -4,7 +4,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
 
 public class AddPathFunction extends NamedFunction1 {
 

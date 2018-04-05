@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.module.blocks;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,23 +15,48 @@ import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
-import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.spi.LuaModule;
+import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
-public class BlocksModule {
-  public static BlocksModule installInto(Table env, Converters converters) {
-    BlocksModule result = new BlocksModule(converters);
-    env.rawset("Blocks", result.getLuaTable());
-    return result;
+@AutoService(LuaModule.class)
+public class BlocksModule extends AbstractLuaModule {
+  private final Table table = new DefaultTable();
+  private Converter converter;
+
+  @Override
+  public void initialize(InitializationContext context) {
+    converter = context.getConverter();
+    add(new GetFunction());
   }
 
-  private final Converters converters;
-  private final Table luaTable = DefaultTable.factory().newTable();
+  @Override
+  public String getName() {
+    return "Blocks";
+  }
 
-  public BlocksModule(Converters converters) {
-    this.converters = converters;
-    Get get = new Get();
-    luaTable.rawset(get.getName(), get);
+  @Override
+  public Table getTable() {
+    return table;
+  }
+
+  private ImmutableWolBlock get(String name) {
+    Block block = getBlockByName(name);
+
+    IBlockState blockState = block.getDefaultState();
+
+    NBTTagCompound nbt = null;
+    if (blockState.getBlock().hasTileEntity(blockState)) {
+      World world = null; // This is safe in vanilla MC 1.11.2 as the world value is not used.
+      // TODO alternatively pass the 'default' world
+      TileEntity tileEntity = blockState.getBlock().createTileEntity(world, blockState);
+      nbt = new NBTTagCompound();
+      tileEntity.writeToNBT(nbt);
+      patch(tileEntity, nbt);
+    }
+    return new ImmutableWolBlock(blockState, nbt);
   }
 
   private Block getBlockByName(String blockName) {
@@ -42,11 +69,17 @@ public class BlocksModule {
     return block;
   }
 
-  public Table getLuaTable() {
-    return luaTable;
+  // This is a work around for the TileEntityShulkerBox, since it doesn't write the Items tag
+  // if the items are empty.
+  private void patch(TileEntity tileEntity, NBTTagCompound origData) {
+    if (tileEntity instanceof TileEntityShulkerBox) {
+      if (origData.getTag("Items") == null) {
+        origData.setTag("Items", new NBTTagList());
+      }
+    }
   }
 
-  private class Get extends NamedFunction1 {
+  private class GetFunction extends NamedFunction1 {
     @Override
     public String getName() {
       return "get";
@@ -54,34 +87,10 @@ public class BlocksModule {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String blockId = converters.toJava(String.class, arg1, 1, "blockId", getName());
-      Block block = getBlockByName(blockId);
-
-      IBlockState blockState = block.getDefaultState();
-
-      NBTTagCompound nbt = null;
-      if (blockState.getBlock().hasTileEntity(blockState)) {
-        World world = null; // This is safe in vanilla MC 1.11.2 as the world value is not used.
-        // TODO alternatively pass the 'default' world
-        TileEntity tileEntity = blockState.getBlock().createTileEntity(world, blockState);
-        nbt = new NBTTagCompound();
-        tileEntity.writeToNBT(nbt);
-        patch(tileEntity, nbt);
-      }
-      ImmutableWolBlock wolBlock = new ImmutableWolBlock(blockState, nbt);
-
-      Object result = converters.toLua(wolBlock);
-      context.getReturnBuffer().setTo(result);
-    }
-
-    // This is a work around for the TileEntityShulkerBox, since it doesn't write the Items tag
-    // if the items are empty.
-    private void patch(TileEntity tileEntity, NBTTagCompound origData) {
-      if (tileEntity instanceof TileEntityShulkerBox) {
-        if (origData.getTag("Items") == null) {
-          origData.setTag("Items", new NBTTagList());
-        }
-      }
+      String name = converter.toJava(String.class, arg1, 1, "name", getName());
+      ImmutableWolBlock result = get(name);
+      Object luaResult = converter.toLua(result);
+      context.getReturnBuffer().setTo(luaResult);
     }
   }
 }

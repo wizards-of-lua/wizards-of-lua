@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.common.Named;
+import net.wizardsoflua.lua.extension.api.Named;
 
 public abstract class LuaClass implements Named {
   /**

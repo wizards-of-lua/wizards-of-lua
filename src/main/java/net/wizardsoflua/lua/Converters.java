@@ -29,11 +29,12 @@ import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
+import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
 
-public class Converters {
+public class Converters implements Converter {
   private final LuaClassLoader classLoader;
   private final NbtConverter nbtConverter;
   private final TableDataConverter tableDataConverter;
@@ -49,12 +50,14 @@ public class Converters {
     return nbtConverter;
   }
 
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject, int argumentIndex,
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
         () -> toJavaList(type, luaObject));
   }
 
+  @Override
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       int argumentIndex, String argumentName, String functionOrPropertyName)
       throws BadArgumentException {
@@ -62,6 +65,7 @@ public class Converters {
         () -> toJavaOptional(type, luaObject));
   }
 
+  @Override
   public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
       int argumentIndex, String argumentName, String functionOrPropertyName)
       throws BadArgumentException {
@@ -69,6 +73,7 @@ public class Converters {
         () -> toJavaNullable(type, luaObject));
   }
 
+  @Override
   public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex, String argumentName,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
@@ -102,8 +107,9 @@ public class Converters {
     }
   }
 
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object[] args, String functionOrPropertyName)
-      throws ConversionException {
+      throws BadArgumentException {
     List<J> result = new ArrayList<>(args.length);
     for (int i = 0; i < args.length; i++) {
       Object arg = args[i];
@@ -114,21 +120,25 @@ public class Converters {
     return result;
   }
 
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaList(type, luaObject));
   }
 
+  @Override
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaOptional(type, luaObject));
   }
 
+  @Override
   public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaNullable(type, luaObject));
   }
 
+  @Override
   public final <J> J toJava(Class<J> type, Object luaObject, String functionOrPropertyName)
       throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJava(type, luaObject));
@@ -272,11 +282,13 @@ public class Converters {
     }
   }
 
+  @Override
   public final @Nullable Optional<? extends Object> toLuaOptional(@Nullable Object value)
       throws ConversionException {
     return ofNullable(toLuaNullable(value));
   }
 
+  @Override
   public final @Nullable Object toLuaNullable(@Nullable Object value) throws ConversionException {
     if (value == null) {
       return null;
@@ -284,6 +296,7 @@ public class Converters {
     return toLua(value);
   }
 
+  @Override
   public <J> Object toLua(J javaObject) throws ConversionException {
     requireNonNull(javaObject, "value == null!");
     @SuppressWarnings("unchecked")

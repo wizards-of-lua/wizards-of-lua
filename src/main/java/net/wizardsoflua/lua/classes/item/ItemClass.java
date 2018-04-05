@@ -9,7 +9,7 @@ import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 @DeclareLuaClass(name = ItemClass.NAME)

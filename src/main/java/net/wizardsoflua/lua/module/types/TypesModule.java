@@ -7,8 +7,8 @@ import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.function.NamedFunction1;
-import net.wizardsoflua.lua.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
 
 public class TypesModule {
   public static TypesModule installInto(Table env, Types types, Converters converters) {

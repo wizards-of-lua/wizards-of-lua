@@ -12,8 +12,8 @@ import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
-import net.wizardsoflua.lua.function.NamedFunction2;
-import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.api.function.NamedFunctionAnyArg;
 
 public class EventsModule extends DelegatingProxy<EventHandlers> {
   public static EventsModule installInto(Table env, LuaClassLoader classLoader,

@@ -4,7 +4,7 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
 
 @DeclareLuaClass(name = EventSubscriptionClass.NAME)
 public class EventSubscriptionClass

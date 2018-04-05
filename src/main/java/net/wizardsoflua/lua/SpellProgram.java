@@ -42,11 +42,12 @@ import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
-import net.wizardsoflua.lua.module.blocks.BlocksModule;
+import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.module.LuaModuleLoader;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
-import net.wizardsoflua.lua.module.items.ItemsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
@@ -156,10 +157,9 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
+    LuaModuleLoader.installModulesInto(env, createModuleInitializationContext());
     new TimeModule(new TimeApi(luaClassLoader, time)).installInto(env);
     SystemModule.installInto(env, luaClassLoader, systemAdapter);
-    BlocksModule.installInto(env, getConverters());
-    ItemsModule.installInto(env, getConverters());
     eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
     executor.addSchedulingContext(new SchedulingContext() {
       @Override
@@ -184,6 +184,15 @@ public class SpellProgram {
       }
     });
     EventsModule.installInto(env, luaClassLoader, eventHandlers);
+  }
+
+  private InitializationContext createModuleInitializationContext() {
+    return new InitializationContext() {
+      @Override
+      public Converter getConverter() {
+        return luaClassLoader.getConverters();
+      }
+    };
   }
 
   public LuaClassLoader getLuaClassLoader() {

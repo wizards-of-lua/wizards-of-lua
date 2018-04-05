@@ -2,39 +2,45 @@ package net.wizardsoflua.lua.module.items;
 
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.spi.LuaModule;
+import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
-public class ItemsModule {
-  public static ItemsModule installInto(Table env, Converters converters) {
-    ItemsModule result = new ItemsModule(converters);
-    env.rawset("Items", result.getLuaTable());
-    return result;
+@AutoService(LuaModule.class)
+public class ItemsModule extends AbstractLuaModule {
+  private final Table table = new DefaultTable();
+  private Converter converter;
+
+  @Override
+  public void initialize(InitializationContext context) {
+    converter = context.getConverter();
+    add(new GetFunction());
   }
 
-  private final Converters converters;
-  private final Table luaTable = DefaultTable.factory().newTable();
-
-  public ItemsModule(Converters converters) {
-    this.converters = converters;
-    GetFunction getFunction = new GetFunction();
-    luaTable.rawset(getFunction.getName(), getFunction);
+  @Override
+  public String getName() {
+    return "Items";
   }
 
-  public Table getLuaTable() {
-    return luaTable;
+  @Override
+  public Table getTable() {
+    return table;
   }
 
-  public @Nullable Object get(String itemId, int amount) {
-    Item item = Item.getByNameOrId(itemId);
-    ItemStack result = new ItemStack(item, amount);
-    return converters.toLuaNullable(result);
+  public Object get(String name, @Nullable Integer amount) {
+    amount = amount != null ? amount : 1;
+    Item item = Item.getByNameOrId(name);
+    return new ItemStack(item, amount);
   }
 
   private class GetFunction extends NamedFunction2 {
@@ -46,10 +52,11 @@ public class ItemsModule {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      String itemId = converters.toJava(String.class, arg1, 1, "itemId", getName());
-      int amount = converters.toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
-      Object result = get(itemId, amount);
-      context.getReturnBuffer().setTo(result);
+      String name = converter.toJava(String.class, arg1, 1, "name", getName());
+      Integer amount = converter.toJavaNullable(Integer.class, arg2, 2, "amount", getName());
+      Object result = get(name, amount);
+      Object luaResult = converter.toLua(result);
+      context.getReturnBuffer().setTo(luaResult);
     }
   }
 }

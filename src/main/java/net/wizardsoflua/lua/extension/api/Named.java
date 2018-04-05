@@ -1,4 +1,4 @@
-package net.wizardsoflua.common;
+package net.wizardsoflua.lua.extension.api;
 
 public interface Named {
   String getName();

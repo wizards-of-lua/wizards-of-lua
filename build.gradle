@@ -65,6 +65,7 @@ allprojects {
 }
 
 ext.libs = [
+  auto_service:         'com.google.auto.service:auto-service:1.0-rc4',
   assertj_core:         'org.assertj:assertj-core:2.5.0',
   commons_io:           'commons-io:commons-io:2.4',
   guava:                'com.google.guava:guava:21.0',
@@ -86,7 +87,9 @@ eclipseApt.dependsOn ':apt:jar'
 
 dependencies {
   annotationProcessor project(':apt')
+  annotationProcessor libs.auto_service
   compileOnly project(':apt')
+  compileOnly libs.auto_service
 
   embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
   embed libs.rembulan_stdlib
