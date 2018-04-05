@@ -21,6 +21,9 @@ public class EventHandlers {
     long getCurrentTime();
 
     void call(LuaFunction function, Object... args);
+
+    @Deprecated // TODO Adrodoc: There must be a better way to do this
+    boolean isSpellTerminated();
   }
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
@@ -124,7 +127,7 @@ public class EventHandlers {
       LuaFunction eventHandler = subscription.getEventHandler();
       Object luaEvent = classLoader.getConverters().toLua(event);
       context.call(eventHandler, luaEvent);
-      if (event.isCanceled()) {
+      if (event.isCanceled() || context.isSpellTerminated()) {
         return;
       }
     }
