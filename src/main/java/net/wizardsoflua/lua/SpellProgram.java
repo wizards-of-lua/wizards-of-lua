@@ -211,7 +211,12 @@ public class SpellProgram {
 
       @Override
       public ExceptionHandler getExceptionHandler() {
-        return t -> handleException("in module", t);
+        return new ExceptionHandler() {
+          @Override
+          public void handle(String contextMessage, Throwable t) {
+            handleException(contextMessage, t);
+          }
+        };
       }
 
       @Override
@@ -312,15 +317,15 @@ public class SpellProgram {
       continuation = ex.getContinuation();
       state = State.PAUSED;
     } catch (Exception ex) {
-      handleException("spell execution", ex);
+      handleException("Error during spell execution", ex);
     }
   }
 
-  private void handleException(String during, Throwable t) {
+  private void handleException(String contextMessage, Throwable t) {
     terminate();
     SpellException s = exceptionFactory.create(t);
     s.printStackTrace();
-    String message = String.format("Error during %s: %s", during, s.getMessage());
+    String message = String.format("%s: %s", contextMessage, s.getMessage());
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);

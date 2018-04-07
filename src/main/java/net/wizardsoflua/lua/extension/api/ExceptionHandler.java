@@ -1,5 +1,9 @@
 package net.wizardsoflua.lua.extension.api;
 
 public interface ExceptionHandler {
-  void handle(Throwable t);
+  default void handle(Throwable t) {
+    handle("Error in module", t);
+  }
+
+  void handle(String contextMessage, Throwable t);
 }

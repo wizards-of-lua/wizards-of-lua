@@ -160,7 +160,7 @@ public class EventHandlers {
       try {
         callDuringEventIntercepting(eventHandler, luaEvent);
       } catch (CallException | InterruptedException ex) {
-        exceptionHandler.handle(ex);
+        exceptionHandler.handle("Error in event interceptor", ex);
         return;
       }
       if (event.isCanceled()) {

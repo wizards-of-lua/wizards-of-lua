@@ -1,5 +1,6 @@
 package net.wizardsoflua.lua.scheduling;
 
+import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
@@ -22,7 +23,7 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
       if (isAutosleep()) {
         return true;
       } else {
-        throw new IllegalStateException(
+        throw new LuaRuntimeException(
             "Spell has been broken automatically since it has exceeded its tick allowance!");
       }
     } else {
