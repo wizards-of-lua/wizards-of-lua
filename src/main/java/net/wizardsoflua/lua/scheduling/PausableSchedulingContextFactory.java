@@ -3,15 +3,23 @@ package net.wizardsoflua.lua.scheduling;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.runtime.ExecutionContext;
-import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 public class PausableSchedulingContextFactory implements LuaSchedulingContextFactory {
   private long luaTickLimit;
-  private final SchedulingContext context;
-  private boolean autosleep = true;
+  private final Context context;
 
-  public PausableSchedulingContextFactory(long luaTickLimit, SchedulingContext context) {
+  public interface Context {
+    void registerTicks(int ticks);
+
+    boolean shouldPause();
+
+    boolean isAutosleep();
+
+    void setAutosleep(boolean autosleep);
+  }
+
+  public PausableSchedulingContextFactory(long luaTickLimit, Context context) {
     this.luaTickLimit = luaTickLimit;
     this.context = checkNotNull(context, "context == null!");
   }
@@ -32,12 +40,12 @@ public class PausableSchedulingContextFactory implements LuaSchedulingContextFac
 
       @Override
       public boolean isAutosleep() {
-        return autosleep;
+        return context.isAutosleep();
       }
 
       @Override
       public void setAutosleep(boolean autosleep) {
-        PausableSchedulingContextFactory.this.autosleep = autosleep;
+        context.setAutosleep(autosleep);
       }
 
       @Override

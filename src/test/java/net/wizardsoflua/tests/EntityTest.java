@@ -57,7 +57,8 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).contains("Exception").contains("property is readonly");
+    assertThat(act.getMessage())
+        .startsWith("Error during spell execution: attempt to modify read-only table index");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_putNbt_setting_pos
@@ -105,8 +106,8 @@ public class EntityTest extends WolTestBase {
     BlockPos pos = mc().getWorldSpawnPoint();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[45f,45f]}",
-        pos.getX(), pos.getY(), pos.getZ());
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[45f,45f]}", pos.getX(),
+        pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
@@ -135,8 +136,8 @@ public class EntityTest extends WolTestBase {
     String expected = "true";
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[45f,45f]}",
-        pos.getX(), pos.getY(), pos.getZ());
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[45f,45f]}", pos.getX(),
+        pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
@@ -412,8 +413,8 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.west();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
-        pos.getX(), pos.getY(), pos.getZ(), rotation);
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}", pos.getX(),
+        pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
     // When:
@@ -438,8 +439,8 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.east();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
-        pos.getX(), pos.getY(), pos.getZ(), rotation);
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}", pos.getX(),
+        pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
     // When:
@@ -463,8 +464,8 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.south();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
-        pos.getX(), pos.getY(), pos.getZ(), rotation);
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}", pos.getX(),
+        pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
     // When:
@@ -488,8 +489,8 @@ public class EntityTest extends WolTestBase {
     BlockPos expectedPos = pos.north();
 
     mc().executeCommand(
-        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}",
-        pos.getX(), pos.getY(), pos.getZ(), rotation);
+        "/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1,Rotation:[%sf,0f]}", pos.getX(),
+        pos.getY(), pos.getZ(), rotation);
     mc().clearEvents();
 
     // When:

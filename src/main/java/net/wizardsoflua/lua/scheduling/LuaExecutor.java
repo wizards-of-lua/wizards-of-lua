@@ -17,16 +17,39 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 
 public class LuaExecutor implements net.wizardsoflua.lua.extension.api.LuaExecutor {
   private final StateContext stateContext;
-  private final AggregatingSchedulingContext context;
+  private final AggregatingSchedulingContext aggregatingContext;
+  private final PausableSchedulingContextFactory.Context context;
   private @Nullable LuaSchedulingContext currentSchedulingContext;
+  private boolean autosleep = true;
 
   public LuaExecutor(StateContext stateContext) {
     this.stateContext = checkNotNull(stateContext, "stateContext == null!");
-    context = new AggregatingSchedulingContext();
+    aggregatingContext = new AggregatingSchedulingContext();
+    context = new PausableSchedulingContextFactory.Context() {
+      @Override
+      public boolean shouldPause() {
+        return aggregatingContext.shouldPause();
+      }
+
+      @Override
+      public void registerTicks(int ticks) {
+        aggregatingContext.registerTicks(ticks);
+      }
+
+      @Override
+      public void setAutosleep(boolean autosleep) {
+        LuaExecutor.this.autosleep = autosleep;
+      }
+
+      @Override
+      public boolean isAutosleep() {
+        return autosleep;
+      }
+    };
   }
 
   public void addSchedulingContext(SchedulingContext context) {
-    this.context.addSchedulingContext(context);
+    this.aggregatingContext.addSchedulingContext(context);
   }
 
   @Override

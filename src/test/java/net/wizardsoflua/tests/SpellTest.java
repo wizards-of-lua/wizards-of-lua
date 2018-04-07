@@ -85,7 +85,7 @@ public class SpellTest extends WolTestBase {
 
     // When:
     mc().player().chat("/lua p=spell.pos; print(p)");
-    
+
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -171,7 +171,8 @@ public class SpellTest extends WolTestBase {
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).contains("Error").contains("property is readonly");
+    assertThat(act.getMessage())
+        .startsWith("Error during spell execution: attempt to modify read-only table index");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_can_be_found_with_selector

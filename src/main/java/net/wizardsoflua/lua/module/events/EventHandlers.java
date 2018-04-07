@@ -1,5 +1,8 @@
 package net.wizardsoflua.lua.module.events;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -93,13 +96,6 @@ public class EventHandlers {
     }
   };
 
-  /**
-   * @return the value of {@link #subscriptions}
-   */
-  public Multimap<String, EventSubscription> getSubscriptions() {
-    return subscriptions;
-  }
-
   public EventQueue connect(Iterable<String> eventNames) {
     EventQueue result = new EventQueue(eventNames, eventQueueContext);
     for (String name : eventNames) {
@@ -156,7 +152,9 @@ public class EventHandlers {
     if (event.isCanceled()) {
       return;
     }
-    for (EventSubscription subscription : subscriptions.get(eventName)) {
+    // Avoid ConcurrentModificationException when unsubscribing within the interceptor
+    List<EventSubscription> subscriptions = new ArrayList<>(this.subscriptions.get(eventName));
+    for (EventSubscription subscription : subscriptions) {
       LuaFunction eventHandler = subscription.getEventHandler();
       Object luaEvent = converter.toLua(event);
       try {

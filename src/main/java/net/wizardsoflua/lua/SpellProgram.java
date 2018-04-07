@@ -137,7 +137,6 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
     moduleLoader = new LuaModuleLoader(env, createModuleInitializationContext());
-    moduleLoader.installModules();
     luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
       @Override
       public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
@@ -149,6 +148,7 @@ public class SpellProgram {
         return moduleLoader.getModule(EventsModule.class);
       }
     });
+    moduleLoader.installModules();
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
