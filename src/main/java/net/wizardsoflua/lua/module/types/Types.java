@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.module.types;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
@@ -12,9 +13,9 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.classes.CustomLuaClass;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.extension.api.LuaClassLoader;
 
 public class Types {
   public static final String NIL_META = "nil";
@@ -24,9 +25,11 @@ public class Types {
   public static final String STRING_META = "string";
   public static final String TABLE_META = "table";
 
+  private final Table env;
   private final LuaClassLoader classLoader;
 
-  public Types(LuaClassLoader classLoader) {
+  public Types(Table env, LuaClassLoader classLoader) {
+    this.env = checkNotNull(env, "env == null!");
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
   }
 
@@ -38,13 +41,12 @@ public class Types {
    */
   public void declareClass(String luaClassName, @Nullable Table superClassMetaTable) {
     requireNonNull(luaClassName, "luaClassName == null!");
-    Table env = classLoader.getEnv();
     checkState(env.rawget(luaClassName) == null,
         "bad argument #%s: a global variable with name '%s' is already defined", 1, luaClassName);
 
     LuaClass superClass;
     if (superClassMetaTable != null) {
-      superClass = classLoader.getLuaClassForMetaTable(superClassMetaTable);
+      superClass = classLoader.getLuaClassForClassTable(superClassMetaTable);
       checkArgument(superClass != null,
           "The table '%s' does not represent a LuaClass loaded by this LuaClassLoader",
           superClassMetaTable);
@@ -134,7 +136,7 @@ public class Types {
    * @return the name of the {@link LuaClass} of the specified {@link Table} or {@code null}
    */
   public @Nullable String getClassname(Table table) {
-    LuaClass luaClass = classLoader.getLuaClassOf(table);
+    LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
     if (luaClass != null) {
       return luaClass.getName();
     }

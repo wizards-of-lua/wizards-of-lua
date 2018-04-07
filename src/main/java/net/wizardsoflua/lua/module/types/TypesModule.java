@@ -1,39 +1,48 @@
 package net.wizardsoflua.lua.module.types;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.auto.service.AutoService;
 
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.LuaClassLoader;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.spi.LuaModule;
+import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
-public class TypesModule {
-  public static TypesModule installInto(Table env, Types types, Converters converters) {
-    TypesModule result = new TypesModule(types, converters);
-    env.rawset("Types", result.getLuaTable());
-    return result;
+@AutoService(LuaModule.class)
+public class TypesModule extends AbstractLuaModule {
+  private Table table;
+  private Converter converter;
+  private Types delegate;
+
+  @Override
+  public void initialize(InitializationContext context) {
+    table = context.getTableFactory().newTable();
+    converter = context.getConverter();
+    Table env = context.getEnv();
+    LuaClassLoader classLoader = context.getClassLoader();
+    delegate = new Types(env, classLoader);
+    add(new DeclareFunction());
+    add(new InstanceOfFunction());
+    add(new GetTypenameFunction());
   }
 
-  private final Converters converters;
-  private final Types types;
-  private final Table luaTable = DefaultTable.factory().newTable();
-
-  public TypesModule(Types types, Converters converters) {
-    this.converters = checkNotNull(converters, "converters==null!");
-    this.types = types;
-    DeclareFunction declareFunction = new DeclareFunction();
-    luaTable.rawset(declareFunction.getName(), declareFunction);
-    InstanceOfFunction instanceOfFunction = new InstanceOfFunction();
-    luaTable.rawset(instanceOfFunction.getName(), instanceOfFunction);
-    GetTypenameFunction getTypenameFunction = new GetTypenameFunction();
-    luaTable.rawset(getTypenameFunction.getName(), getTypenameFunction);
+  @Override
+  public String getName() {
+    return "Types";
   }
 
-  public Table getLuaTable() {
-    return luaTable;
+  @Override
+  public Table getTable() {
+    return table;
+  }
+
+  public Types getDelegate() {
+    return delegate;
   }
 
   private class DeclareFunction extends NamedFunction2 {
@@ -45,9 +54,9 @@ public class TypesModule {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      String className = converters.toJava(String.class, arg1, 1, "className", getName());
-      Table metatable = converters.toJavaNullable(Table.class, arg2, 2, "metatable", getName());
-      types.declareClass(className, metatable);
+      String className = converter.toJava(String.class, arg1, 1, "className", getName());
+      Table metatable = converter.toJavaNullable(Table.class, arg2, 2, "metatable", getName());
+      delegate.declareClass(className, metatable);
       context.getReturnBuffer().setTo();
     }
   }
@@ -61,8 +70,8 @@ public class TypesModule {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      Table classMetaTable = converters.toJavaNullable(Table.class, arg1, 1, "class", getName());
-      boolean result = types.isInstanceOf(classMetaTable, arg2);
+      Table classMetaTable = converter.toJavaNullable(Table.class, arg1, 1, "class", getName());
+      boolean result = delegate.isInstanceOf(classMetaTable, arg2);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -75,7 +84,7 @@ public class TypesModule {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String result = types.getTypename(arg1);
+      String result = delegate.getTypename(arg1);
       context.getReturnBuffer().setTo(result);
     }
   }

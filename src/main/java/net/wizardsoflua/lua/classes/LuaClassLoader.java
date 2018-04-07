@@ -22,10 +22,12 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.TransferenceProxyFactory;
+import net.wizardsoflua.lua.extension.api.LuaModuleLoader;
+import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
-public class LuaClassLoader {
+public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
 
   private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
@@ -71,19 +73,23 @@ public class LuaClassLoader {
   private final Map<String, LuaClass> luaClassByName = new HashMap<>();
   private final Map<Table, LuaClass> luaClassByMetaTable = new HashMap<>();
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
-  private final Types types = new Types(this);
+  private final Types types;
   private final Converters converters = new Converters(this);
-  private final TransferenceProxyFactory transferenceProxyFactory = new TransferenceProxyFactory(this);
+  private final TransferenceProxyFactory transferenceProxyFactory =
+      new TransferenceProxyFactory(this);
   private final Context context;
 
   public interface Context {
     @Nullable
     LuaSchedulingContext getCurrentSchedulingContext();
+
+    EventsModule getEventsModule();
   }
 
   public LuaClassLoader(Table env, Context context) {
     this.env = requireNonNull(env, "env == null!");
     this.context = requireNonNull(context, "context == null!");
+    types = new Types(env, this);
   }
 
   public Table getEnv() {
@@ -117,6 +123,7 @@ public class LuaClassLoader {
     }
   }
 
+  @Override
   public void load(LuaClass luaClass) {
     if (luaClassByName.containsKey(luaClass.getName())) {
       return; // LuaClass is already loaded
@@ -132,12 +139,7 @@ public class LuaClassLoader {
     env.rawset(luaClass.getName(), luaClass.getMetaTable());
   }
 
-  /**
-   * Returns the {@link LuaClass} instance of the specified type, loading it if neccessary.
-   *
-   * @param luaClassClass
-   * @return the {@link LuaClass} instance
-   */
+  @Override
   public <LC extends LuaClass> LC getLuaClassOfType(Class<LC> luaClassClass) {
     requireNonNull(luaClassClass, "luaClassClass == null!");
     LuaClass luaClass = luaClassByType.get(luaClassClass);
@@ -162,40 +164,28 @@ public class LuaClassLoader {
     return luaClassByName.get(luaClassName);
   }
 
-  /**
-   * Returns the {@link LuaClass} with the specified meta table or {@code null} if no such
-   * {@link LuaClass} was loaded by {@code this} {@link LuaClassLoader}.
-   *
-   * @param luaClassMetaTable the meta table of the {@link LuaClass}
-   * @return the {@link LuaClass} with the specified meta table or {@code null}
-   * @throws NullPointerException if the specified meta table is {@code null}
-   */
-  public @Nullable LuaClass getLuaClassForMetaTable(Table luaClassMetaTable)
+  @Override
+  public @Nullable LuaClass getLuaClassForClassTable(Table luaClassMetaTable)
       throws NullPointerException {
     requireNonNull(luaClassMetaTable, "luaClassMetaTable == null!");
     LuaClass luaClass = luaClassByMetaTable.get(luaClassMetaTable);
     return luaClass;
   }
 
-  /**
-   * Returns the {@link LuaClass} of the specified {@link Table}. If {@code luaObject} is not an
-   * instance of a class then {@code null} is returned.
-   *
-   * @param luaObject
-   * @return the {@link LuaClass} or {@code null}
-   */
-  public @Nullable LuaClass getLuaClassOf(Table luaObject) {
-    LuaClass result = getLuaClassForMetaTable(luaObject);
+  @Override
+  public @Nullable LuaClass getLuaClassOfInstance(Table luaObject) {
+    LuaClass result = getLuaClassForClassTable(luaObject);
     if (result != null) {
       return null; // luaObject is a class itself and we don't want to return the superclass
     }
     Table metatable = luaObject.getMetatable();
     if (metatable != null) {
-      return getLuaClassForMetaTable(metatable);
+      return getLuaClassForClassTable(metatable);
     }
     return null;
   }
 
+  @Override
   public @Nullable <J> JavaLuaClass<J, ?> getLuaClassForJavaClass(Class<J> javaClass) {
     requireNonNull(javaClass, "javaClass == null!");
     @SuppressWarnings("unchecked")
@@ -225,5 +215,13 @@ public class LuaClassLoader {
 
   public LuaSchedulingContext getCurrentSchedulingContext() {
     return context.getCurrentSchedulingContext();
+  }
+
+  /**
+   * @deprecated Use {@link LuaModuleLoader#getModule(Class)}
+   */
+  @Deprecated
+  public EventsModule getEventsModule() {
+    return context.getEventsModule();
   }
 }

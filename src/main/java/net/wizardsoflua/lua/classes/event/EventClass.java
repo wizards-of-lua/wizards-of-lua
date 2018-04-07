@@ -1,13 +1,12 @@
 package net.wizardsoflua.lua.classes.event;
 
-import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.EVENT_LISTENER;
-
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.classes.ProxyingLuaClass;
-import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
+import net.wizardsoflua.lua.module.events.EventHandlers;
+import net.wizardsoflua.lua.module.events.EventsModule;
 
 @DeclareLuaClass(name = EventClass.NAME)
 public class EventClass extends ProxyingLuaClass<Event, EventClass.Proxy<EventApi<Event>, Event>> {
@@ -37,8 +36,9 @@ public class EventClass extends ProxyingLuaClass<Event, EventClass.Proxy<EventAp
     }
 
     public boolean isCancelable() {
-      LuaSchedulingContext context = getLuaClass().getClassLoader().getCurrentSchedulingContext();
-      if (context.getLuaExecutorType() != EVENT_LISTENER) {
+      EventsModule module = getLuaClass().getClassLoader().getEventsModule();
+      EventHandlers events = module.getDelegate();
+      if (!events.isDuringEventIntercepting()) {
         return false;
       }
       return delegate.isCancelable();

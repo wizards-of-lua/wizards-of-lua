@@ -9,9 +9,9 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.event.CustomLuaEvent;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.event.CustomEventClass;
+import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class Data {
@@ -23,8 +23,8 @@ public class Data {
     return new Data(javaObj);
   }
 
-  public static Data createData(Object luaObj, LuaClassLoader classLoader) {
-    return new Data(transferObj(luaObj, new IdentityHashMap<>(), classLoader));
+  public static Data createData(Object luaObj, Types types) {
+    return new Data(transferObj(luaObj, new IdentityHashMap<>(), types));
   }
 
   private final @Nullable Object content;
@@ -38,7 +38,7 @@ public class Data {
   }
 
   private static Object transferObj(Object luaObj, IdentityHashMap<Object, Object> copies,
-      LuaClassLoader classLoader) {
+      Types types) {
     if (luaObj == null) {
       return null;
     }
@@ -58,7 +58,7 @@ public class Data {
     if (luaObj instanceof CustomEventClass.Proxy) {
       CustomEventClass.Proxy<?> proxy = (CustomEventClass.Proxy<?>) luaObj;
       CustomLuaEvent delegate = proxy.getDelegate();
-      Data data = Data.createData(proxy.rawget("data"), classLoader);
+      Data data = Data.createData(proxy.rawget("data"), types);
       // return a new event object with the (modified) data
       CustomLuaEvent result = new CustomLuaEvent(delegate.getName(), data);
       copies.put(luaObj, result);
@@ -74,16 +74,15 @@ public class Data {
     }
     if (luaObj instanceof Table) {
       Table table = (Table) luaObj;
-      TableData result = transferTable(table, copies, classLoader);
+      TableData result = transferTable(table, copies, types);
       return result;
     }
-    throw new IllegalArgumentException(
-        String.format("Can't transfer Lua object. Unsupported data type: %s",
-            classLoader.getTypes().getTypename(luaObj)));
+    throw new IllegalArgumentException(String
+        .format("Can't transfer Lua object. Unsupported data type: %s", types.getTypename(luaObj)));
   }
 
   private static TableData transferTable(Table table, IdentityHashMap<Object, Object> copies,
-      LuaClassLoader classLoader) {
+      Types types) {
     if (table == null) {
       return null;
     }
@@ -94,13 +93,13 @@ public class Data {
     }
 
     TraversableHashMap<Object, Object> contents = new TraversableHashMap<>();
-    String classname = classLoader.getTypes().getClassname(table);
+    String classname = types.getClassname(table);
     TableData result = new TableData(contents, classname);
     copies.put(table, result);
 
     for (Entry<Object, Object> entry : new TableIterable(table)) {
-      Object newKey = transferObj(entry.getKey(), copies, classLoader);
-      Object newValue = transferObj(entry.getValue(), copies, classLoader);
+      Object newKey = transferObj(entry.getKey(), copies, types);
+      Object newValue = transferObj(entry.getValue(), copies, types);
       contents.put(newKey, newValue);
     }
     return result;

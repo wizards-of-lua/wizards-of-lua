@@ -54,7 +54,7 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public long getGametime() {
-    return delegate.getGameTotalTime();
+    return delegate.getTotalWorldTime();
   }
 
   /**

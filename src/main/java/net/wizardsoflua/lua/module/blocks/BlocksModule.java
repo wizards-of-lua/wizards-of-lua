@@ -11,7 +11,6 @@ import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
@@ -23,11 +22,12 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
 @AutoService(LuaModule.class)
 public class BlocksModule extends AbstractLuaModule {
-  private final Table table = new DefaultTable();
+  private Table table;
   private Converter converter;
 
   @Override
   public void initialize(InitializationContext context) {
+    table = context.getTableFactory().newTable();
     converter = context.getConverter();
     add(new GetFunction());
   }

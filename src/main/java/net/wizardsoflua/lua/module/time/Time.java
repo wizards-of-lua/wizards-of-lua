@@ -13,7 +13,7 @@ import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
-public class Time implements SchedulingContext {
+public class Time implements SchedulingContext, net.wizardsoflua.lua.extension.api.Time {
   public interface Context {
     Clock getClock();
 
@@ -23,13 +23,13 @@ public class Time implements SchedulingContext {
   private final Context context;
 
   private final World world;
-  private final int sleepTrigger;
+  private final long sleepTrigger;
   private int luaTotalTicks = 0;
 
   // Time measured in Game-Ticks:
   private long nextSpellWakeUpGameTime;
 
-  public Time(World world, int luaTicksLimit, Context context) {
+  public Time(World world, long luaTicksLimit, Context context) {
     this.world = world;
     this.context = context;
     this.sleepTrigger = luaTicksLimit / 2;
@@ -41,7 +41,7 @@ public class Time implements SchedulingContext {
     return result;
   }
 
-  public int getAllowance() {
+  public long getAllowance() {
     return getCurrentSchedulingContext().getAllowance();
   }
 
@@ -53,7 +53,8 @@ public class Time implements SchedulingContext {
     getCurrentSchedulingContext().setAutosleep(autosleep);
   }
 
-  public long getGameTotalTime() {
+  @Override
+  public long getTotalWorldTime() {
     return world.getTotalWorldTime();
   }
 

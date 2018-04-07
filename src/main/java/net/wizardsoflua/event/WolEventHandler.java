@@ -13,6 +13,9 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.lua.extension.api.LuaModuleLoader;
+import net.wizardsoflua.lua.module.events.EventHandlers;
+import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class WolEventHandler {
@@ -42,7 +45,10 @@ public class WolEventHandler {
     if (context.isSupportedLuaEvent(event)) {
       for (SpellEntity spellEntity : context.getSpells()) {
         String eventName = context.getEventName(event);
-        spellEntity.getProgram().getEventHandlers().onEvent(eventName, event);
+        LuaModuleLoader moduleLoader = spellEntity.getProgram().getModuleLoader();
+        EventsModule eventsModule = moduleLoader.getModule(EventsModule.class);
+        EventHandlers eventHandlers = eventsModule.getDelegate();
+        eventHandlers.onEvent(eventName, event);
       }
     }
   }
@@ -83,7 +89,8 @@ public class WolEventHandler {
         handler = new WolChannelInboundHandlerAdapter(player);
         pipeline.addBefore(VANILLA_PACKET_HANDLER_NAME, WOL_PACKET_HANDLER_NAME, handler);
       } else {
-        WizardsOfLua.instance.logger.error("Can't add WolPacketHandler: vanilla packet handler '"+VANILLA_PACKET_HANDLER_NAME+"' not found!");
+        WizardsOfLua.instance.logger.error("Can't add WolPacketHandler: vanilla packet handler '"
+            + VANILLA_PACKET_HANDLER_NAME + "' not found!");
         throw new RuntimeException("Can't add WolPacketHandler!");
       }
     } else {

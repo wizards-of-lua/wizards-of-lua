@@ -7,7 +7,6 @@ import com.google.auto.service.AutoService;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.extension.api.Converter;
@@ -18,11 +17,12 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
 @AutoService(LuaModule.class)
 public class ItemsModule extends AbstractLuaModule {
-  private final Table table = new DefaultTable();
+  private Table table;
   private Converter converter;
 
   @Override
   public void initialize(InitializationContext context) {
+    table = context.getTableFactory().newTable();
     converter = context.getConverter();
     add(new GetFunction());
   }

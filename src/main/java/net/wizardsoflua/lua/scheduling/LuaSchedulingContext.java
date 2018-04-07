@@ -5,9 +5,9 @@ import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
 public abstract class LuaSchedulingContext implements SchedulingContext {
-  private int allowance;
+  private long allowance;
 
-  public LuaSchedulingContext(int luaTickLimit) {
+  public LuaSchedulingContext(long luaTickLimit) {
     this.allowance = luaTickLimit;
   }
 
@@ -30,7 +30,7 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
     }
   }
 
-  public int getAllowance() {
+  public long getAllowance() {
     return allowance;
   }
 
@@ -38,7 +38,7 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
 
   public abstract void setAutosleep(boolean autosleep);
 
-  public abstract LuaExecutor.Type getLuaExecutorType();
+  public abstract void pause(ExecutionContext context) throws UnresolvedControlThrowable;
 
   public abstract void pauseIfRequested(ExecutionContext context) throws UnresolvedControlThrowable;
 }

@@ -1,11 +1,11 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.EVENT_LISTENER;
-import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.MAIN;
 
 import java.nio.file.FileSystem;
 import java.time.Clock;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.annotation.Nullable;
 
@@ -20,6 +20,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.TableFactory;
 import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.env.RuntimeEnvironment;
 import net.sandius.rembulan.env.RuntimeEnvironments;
@@ -42,11 +43,14 @@ import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
+import net.wizardsoflua.lua.extension.api.Config;
 import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
+import net.wizardsoflua.lua.extension.api.Spell;
 import net.wizardsoflua.lua.module.LuaModuleLoader;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
-import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
@@ -59,7 +63,6 @@ import net.wizardsoflua.lua.module.system.SystemModule;
 import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.lua.module.time.TimeApi;
 import net.wizardsoflua.lua.module.time.TimeModule;
-import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.scheduling.LuaExecutor;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.spell.SpellEntity;
@@ -68,7 +71,7 @@ import net.wizardsoflua.spell.SpellExceptionFactory;
 
 public class SpellProgram {
   private enum State {
-    NEW, PAUSED, FINISHED;
+    NEW, PAUSED, FINISHED, TERMINATED;
   }
   public interface Context {
     String getLuaPathElementOfPlayer(String nameOrUuid);
@@ -92,7 +95,9 @@ public class SpellProgram {
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
   private final LuaClassLoader luaClassLoader;
-  private final EventHandlers eventHandlers;
+  private final LuaModuleLoader moduleLoader;
+  private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
+  private final long luaTickLimit;
   private ICommandSender owner;
   private State state = State.NEW;
 
@@ -110,10 +115,10 @@ public class SpellProgram {
     this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");
     this.context = checkNotNull(context, "context==null!");
 
-    int luaTicksLimit = context.getLuaTicksLimit();
-    int eventListenerLuaTicksLimit = context.getEventListenerLuaTicksLimit();
-    executor = new LuaExecutor(luaTicksLimit, eventListenerLuaTicksLimit);
-    time = new Time(world, luaTicksLimit, new Time.Context() {
+    luaTickLimit = context.getLuaTicksLimit();
+    stateContext = StateContexts.newDefaultInstance();
+    executor = new LuaExecutor(stateContext);
+    time = new Time(world, luaTickLimit, new Time.Context() {
       @Override
       public Clock getClock() {
         return context.getClock();
@@ -126,20 +131,25 @@ public class SpellProgram {
     });
     executor.addSchedulingContext(time);
 
-    stateContext = StateContexts.newDefaultInstance();
     env = stateContext.newTable();
     runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
+    moduleLoader = new LuaModuleLoader(env, createModuleInitializationContext());
+    moduleLoader.installModules();
     luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
       @Override
       public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
         return executor.getCurrentSchedulingContext();
       }
+
+      @Override
+      public EventsModule getEventsModule() {
+        return moduleLoader.getModule(EventsModule.class);
+      }
     });
     luaClassLoader.loadStandardClasses();
-    TypesModule.installInto(env, luaClassLoader.getTypes(), getConverters());
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
       public void send(String message) {
@@ -157,21 +167,8 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
-    LuaModuleLoader.installModulesInto(env, createModuleInitializationContext());
     new TimeModule(new TimeApi(luaClassLoader, time)).installInto(env);
     SystemModule.installInto(env, luaClassLoader, systemAdapter);
-    eventHandlers = new EventHandlers(luaClassLoader, createEventHandlersContext());
-    executor.addSchedulingContext(new SchedulingContext() {
-      @Override
-      public boolean shouldPause() {
-        return eventHandlers.shouldPause();
-      }
-
-      @Override
-      public void registerTicks(int ticks) {
-        // ignore, since not required here.
-      }
-    });
     executor.addSchedulingContext(new SchedulingContext() {
       @Override
       public boolean shouldPause() {
@@ -183,14 +180,73 @@ public class SpellProgram {
         // ignore, since not required here.
       }
     });
-    EventsModule.installInto(env, luaClassLoader, eventHandlers);
   }
 
   private InitializationContext createModuleInitializationContext() {
     return new InitializationContext() {
       @Override
+      public net.wizardsoflua.lua.extension.api.LuaClassLoader getClassLoader() {
+        return luaClassLoader;
+      }
+
+      @Override
+      public Config getConfig() {
+        return new Config() {
+          @Override
+          public long getEventInterceptorTickLimit() {
+            return context.getEventListenerLuaTicksLimit();
+          }
+        };
+      }
+
+      @Override
       public Converter getConverter() {
         return luaClassLoader.getConverters();
+      }
+
+      @Override
+      public Table getEnv() {
+        return env;
+      }
+
+      @Override
+      public ExceptionHandler getExceptionHandler() {
+        return t -> handleException("in module", t);
+      }
+
+      @Override
+      public net.wizardsoflua.lua.extension.api.LuaExecutor getLuaExecutor() {
+        return executor;
+      }
+
+      @Override
+      public net.wizardsoflua.lua.extension.api.LuaModuleLoader getModuleLoader() {
+        return moduleLoader;
+      }
+
+      @Override
+      public Spell getSpell() {
+        return new Spell() {
+          @Override
+          public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
+            parallelTaskFactories.add(parallelTaskFactory);
+          }
+
+          @Override
+          public void addSchedulingContext(SchedulingContext context) {
+            executor.addSchedulingContext(context);
+          };
+        };
+      }
+
+      @Override
+      public TableFactory getTableFactory() {
+        return stateContext;
+      }
+
+      @Override
+      public net.wizardsoflua.lua.extension.api.Time getTime() {
+        return time;
       }
     };
   }
@@ -203,27 +259,8 @@ public class SpellProgram {
     return luaClassLoader.getConverters();
   }
 
-  private EventHandlers.Context createEventHandlersContext() {
-    return new EventHandlers.Context() {
-      @Override
-      public long getCurrentTime() {
-        return time.getGameTotalTime();
-      }
-
-      @Override
-      public void call(LuaFunction function, Object... args) {
-        try {
-          executor.call(EVENT_LISTENER, stateContext, function, args);
-        } catch (CallException | CallPausedException | InterruptedException ex) {
-          handleException("event handling", ex);
-        }
-      }
-
-      @Override
-      public boolean isSpellTerminated() {
-        return isTerminated();
-      }
-    };
+  public LuaModuleLoader getModuleLoader() {
+    return moduleLoader;
   }
 
   public void setSpellEntity(SpellEntity spellEntity) {
@@ -234,17 +271,27 @@ public class SpellProgram {
     return code;
   }
 
-  public EventHandlers getEventHandlers() {
-    return eventHandlers;
-  }
-
   public boolean isTerminated() {
-    return state == State.FINISHED && eventHandlers.getSubscriptions().isEmpty();
+    if (state == State.TERMINATED) {
+      return true;
+    }
+    if (state == State.FINISHED) {
+      for (ParallelTaskFactory parallelTaskFactory : parallelTaskFactories) {
+        if (!parallelTaskFactory.isFinished()) {
+          return false;
+        }
+      }
+      terminate();
+      return true;
+    }
+    return false;
   }
 
   public void terminate() {
-    state = State.FINISHED;
-    eventHandlers.getSubscriptions().clear();
+    state = State.TERMINATED;
+    for (ParallelTaskFactory parallelTaskFactory : parallelTaskFactories) {
+      parallelTaskFactory.terminate();
+    }
   }
 
   public void resume() {
@@ -254,9 +301,10 @@ public class SpellProgram {
           compileAndRun();
           break;
         case PAUSED:
-          executor.resume(MAIN, continuation);
+          executor.resume(luaTickLimit, continuation);
           break;
         case FINISHED:
+        case TERMINATED:
           return;
       }
       state = State.FINISHED;
@@ -268,9 +316,9 @@ public class SpellProgram {
     }
   }
 
-  private void handleException(String during, Exception ex) {
+  private void handleException(String during, Throwable t) {
     terminate();
-    SpellException s = exceptionFactory.create(ex);
+    SpellException s = exceptionFactory.create(t);
     s.printStackTrace();
     String message = String.format("Error during %s: %s", during, s.getMessage());
     TextComponentString txt = new TextComponentString(message);
@@ -284,10 +332,10 @@ public class SpellProgram {
     SpellModule.installInto(env, getConverters(), spellEntity);
     EntitiesModule.installInto(env, getConverters(), spellEntity);
 
-    dependencies.installModules(env, executor, stateContext);
+    dependencies.installModules(env, executor, luaTickLimit);
 
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
-    executor.call(MAIN, stateContext, commandLineFunc);
+    executor.call(luaTickLimit, commandLineFunc);
   }
 
   private void installSystemLibraries() {

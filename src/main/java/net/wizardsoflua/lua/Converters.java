@@ -209,7 +209,7 @@ public class Converters implements Converter {
       throws ClassCastException, BadArgumentException {
     if (LuaClassLoader.isSupported(type) && luaObject instanceof Table) {
       Table table = (Table) luaObject;
-      LuaClass luaClass = classLoader.getLuaClassOf(table);
+      LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
       if (luaClass instanceof JavaLuaClass) {
         return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }

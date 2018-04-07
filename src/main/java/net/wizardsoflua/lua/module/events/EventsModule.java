@@ -3,41 +3,51 @@ package net.wizardsoflua.lua.module.events;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.auto.service.AutoService;
+
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
+import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
 import net.wizardsoflua.lua.extension.api.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.extension.spi.LuaModule;
+import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
-public class EventsModule extends DelegatingProxy<EventHandlers> {
-  public static EventsModule installInto(Table env, LuaClassLoader classLoader,
-      EventHandlers eventHandlers) {
-    EventsModule result = new EventsModule(classLoader, eventHandlers);
-    env.rawset("Events", result);
-    return result;
+@AutoService(LuaModule.class)
+public class EventsModule extends AbstractLuaModule {
+  private Table table;
+  private Converter converter;
+  private EventHandlers delegate;
+
+  @Override
+  public void initialize(InitializationContext context) {
+    table = context.getTableFactory().newTable();
+    converter = context.getConverter();
+    delegate = new EventHandlers(context);
+    add(new SubscribeFunction());
+    add(new OnFunction());
+    add(new ConnectFunction());
+    add(new FireFunction());
   }
 
-  public EventsModule(LuaClassLoader classLoader, EventHandlers delegate) {
-    super(classLoader, delegate);
-    SubscribeFunction subscribeFunction = new SubscribeFunction();
-    addImmutable(subscribeFunction.getName(), subscribeFunction);
-    OnFunction onFunction = new OnFunction();
-    addImmutable(onFunction.getName(), onFunction);
-    ConnectFunction connectFunction = new ConnectFunction();
-    addImmutable(connectFunction.getName(), connectFunction);
-    FireFunction fireFunction = new FireFunction();
-    addImmutable(fireFunction.getName(), fireFunction);
+  public EventHandlers getDelegate() {
+    return delegate;
   }
 
   @Override
-  public boolean isTransferable() {
-    return false;
+  public String getName() {
+    return "Events";
+  }
+
+  @Override
+  public Table getTable() {
+    return table;
   }
 
   private class OnFunction extends NamedFunctionAnyArg {
@@ -48,7 +58,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      List<String> eventNames = getConverters().toJavaList(String.class, args, getName());
+      List<String> eventNames = converter.toJavaList(String.class, args, getName());
 
       Table result = new DefaultTable();
       int idx = 1;
@@ -75,12 +85,12 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
       Collection<String> eventNames =
-          getConverters().toJavaList(String.class, arg1, 1, "eventNames", getName());
+          converter.toJavaList(String.class, arg1, 1, "eventNames", getName());
       LuaFunction eventHandler =
-          getConverters().toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
+          converter.toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
 
       EventSubscription subscription = delegate.subscribe(eventNames, eventHandler);
-      Object result = getConverters().toLua(subscription);
+      Object result = converter.toLua(subscription);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -93,9 +103,9 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      Collection<String> eventNames = getConverters().toJavaList(String.class, args, getName());
+      Collection<String> eventNames = converter.toJavaList(String.class, args, getName());
       EventQueue eventQueue = delegate.connect(eventNames);
-      Object result = getConverters().toLua(eventQueue);
+      Object result = converter.toLua(eventQueue);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -108,7 +118,7 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      String eventName = getConverters().toJava(String.class, arg1, 1, "eventName", getName());
+      String eventName = converter.toJava(String.class, arg1, 1, "eventName", getName());
       delegate.fire(eventName, arg2);
       context.getReturnBuffer().setTo();
     }

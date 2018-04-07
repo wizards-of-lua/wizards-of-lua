@@ -1,15 +1,13 @@
 package net.wizardsoflua.lua.scheduling;
 
-import static net.wizardsoflua.lua.scheduling.LuaExecutor.Type.EVENT_LISTENER;
-
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
-import net.wizardsoflua.lua.scheduling.LuaExecutor.Type;
+import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
-public class EventListenerSchedulingContextFactory implements LuaSchedulingContextFactory {
-  private int luaTickLimit;
+public class UnpausableSchedulingContextFactory implements LuaSchedulingContextFactory {
+  private long luaTickLimit;
 
-  public EventListenerSchedulingContextFactory(int luaTickLimit) {
+  public UnpausableSchedulingContextFactory(long luaTickLimit) {
     this.luaTickLimit = luaTickLimit;
   }
 
@@ -27,8 +25,8 @@ public class EventListenerSchedulingContextFactory implements LuaSchedulingConte
       }
 
       @Override
-      public Type getLuaExecutorType() {
-        return EVENT_LISTENER;
+      public void pause(ExecutionContext context) throws UnresolvedControlThrowable {
+        throw new IllegalOperationAttemptException("attempt to sleep");
       }
 
       @Override
