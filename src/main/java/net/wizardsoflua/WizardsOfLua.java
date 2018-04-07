@@ -293,7 +293,8 @@ public class WizardsOfLua {
     MinecraftForge.EVENT_BUS.register(getSpellRegistry());
     MinecraftForge.EVENT_BUS.register(aboutMessage);
     MinecraftForge.EVENT_BUS.register(eventHandler);
-    SpellEntity.register();
+    
+    //SpellEntity.register();
   }
 
   @EventHandler

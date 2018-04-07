@@ -11,7 +11,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.WizardsOfLua;
@@ -21,17 +20,8 @@ import net.wizardsoflua.lua.classes.LuaClassLoader;
 public class SpellEntity extends Entity {
   public static final String NAME = "Spell";
   public static final int ID = 1;
-  private static final ResourceLocation RES_LOCATION =
+  public static final ResourceLocation RES_LOCATION =
       new ResourceLocation(WizardsOfLua.MODID + ":" + SpellEntity.NAME);
-
-  public static void register() {
-    Object mod = WizardsOfLua.instance;
-    int trackingRange = 0;
-    int updateFrequency = 1;
-    boolean sendsVelocityUpdates = false;
-    EntityRegistry.registerModEntity(RES_LOCATION, SpellEntity.class, NAME, ID, mod, trackingRange,
-        updateFrequency, sendsVelocityUpdates);
-  }
 
   private ICommandSender owner;
   private SpellProgram program;
