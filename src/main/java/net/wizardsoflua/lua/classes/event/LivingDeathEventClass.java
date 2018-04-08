@@ -24,7 +24,7 @@ public class LivingDeathEventClass
 
     protected Object getCause() {
       DamageSource source = delegate.getSource();
-      return getConverters().toLua(source.damageType);
+      return getConverter().toLua(source.damageType);
     }
   }
 }

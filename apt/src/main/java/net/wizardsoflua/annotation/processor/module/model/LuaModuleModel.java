@@ -54,10 +54,6 @@ public class LuaModuleModel {
     return ClassName.get(packageName, simpleName);
   }
 
-  public String getName() {
-    return name;
-  }
-
   public void addProperty(PropertyModel property) {
     PropertyModel existing = properties.get(property.getName());
     if (existing != null) {

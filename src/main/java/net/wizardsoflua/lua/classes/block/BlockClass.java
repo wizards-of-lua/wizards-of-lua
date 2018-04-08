@@ -63,7 +63,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
 
     private Object getMaterial() {
       Material mat = delegate.getBlockState().getMaterial();
-      return getConverters().toLua(mat);
+      return getConverter().toLua(mat);
     }
 
     private Object getData() {
@@ -95,9 +95,9 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(self.getBlockState(), self.getNbt());
-      Object result = getConverters().toLua(newWolBlock);
+      Object result = getConverter().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -111,8 +111,8 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
-      Table data = getConverters().toJava(Table.class, arg2, 2, "data", getName());
+      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
+      Table data = getConverter().toJava(Table.class, arg2, 2, "data", getName());
 
       IBlockState state = self.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
@@ -123,7 +123,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       }
 
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(state, self.getNbt());
-      Object result = getConverters().toLua(newWolBlock);
+      Object result = getConverter().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -143,13 +143,13 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
-      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
+      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
+      Table nbt = getConverter().toJava(Table.class, arg2, 2, "nbt", getName());
 
       NBTTagCompound oldNbt = self.getNbt();
       NBTTagCompound newNbt;
       if (oldNbt != null) {
-        newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
+        newNbt = getClassLoader().getConverters().getNbtConverter().merge(oldNbt, nbt);
       } else {
         // newNbt = oldNbt;
         throw new IllegalArgumentException(String.format("Can't set nbt for block '%s'",
@@ -157,7 +157,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       }
 
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(self.getBlockState(), newNbt);
-      Object result = getConverters().toLua(newWolBlock);
+      Object result = getConverter().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -171,11 +171,11 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
       int amount =
-          getConverters().toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
+          getConverter().toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
       ItemStack itemStack = self.asItemStack(amount);
-      Object result = getConverters().toLua(itemStack);
+      Object result = getConverter().toLua(itemStack);
       context.getReturnBuffer().setTo(result);
     }
   }

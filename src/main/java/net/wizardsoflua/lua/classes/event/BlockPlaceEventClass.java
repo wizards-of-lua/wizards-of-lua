@@ -29,21 +29,21 @@ public class BlockPlaceEventClass extends
     protected Object getBlock() {
       IBlockState blockState = delegate.getState();
       NBTTagCompound nbt = delegate.getBlockSnapshot().getNbt();
-      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
+      return getConverter().toLua(new ImmutableWolBlock(blockState, nbt));
     }
 
     protected Object getHand() {
-      return getConverters().toLua(delegate.getHand());
+      return getConverter().toLua(delegate.getHand());
     }
 
     protected Object getPlacedAgainst() {
       IBlockState blockState = delegate.getPlacedAgainst();
       NBTTagCompound nbt = null;
-      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
+      return getConverter().toLua(new ImmutableWolBlock(blockState, nbt));
     }
 
     protected Object getPlayer() {
-      return getConverters().toLua(delegate.getPlayer());
+      return getConverter().toLua(delegate.getPlayer());
     }
   }
 }

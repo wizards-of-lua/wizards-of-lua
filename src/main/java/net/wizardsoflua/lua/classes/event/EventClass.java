@@ -49,7 +49,7 @@ public class EventClass extends ProxyingLuaClass<Event, EventClass.Proxy<EventAp
     }
 
     public void setCanceled(Object arg) {
-      boolean canceled = getConverters().toJava(boolean.class, arg, "canceled");
+      boolean canceled = getConverter().toJava(boolean.class, arg, "canceled");
       if (!isCancelable()) {
         throw new IllegalOperationAttemptException("attempt to cancel " + getName());
       }

@@ -23,16 +23,16 @@ import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.api.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.Time;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
-import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
+import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.module.types.Types;
 
 /**
  * The Time module provides access to time related properties of the active Spell's world.
  */
-@AutoService(LuaExtension.class)
-@GenerateLuaModule(name = TimeApi.NAME)
+@GenerateLuaModule(name = TimeExtension.NAME)
 @GenerateLuaDoc(subtitle = "Accessing the Time")
-public class TimeApi extends AbstractLuaModule {
+@AutoService(LuaExtension.class)
+public class TimeExtension implements LuaTableExtension {
   public static final String NAME = "Time";
   private Converter converter;
   private LuaScheduler scheduler;
@@ -46,7 +46,7 @@ public class TimeApi extends AbstractLuaModule {
     converter = context.getConverter();
     scheduler = context.getScheduler();
     time = context.getTime();
-    table = new TimeModule(this);
+    table = new TimeModule(this, converter);
     Config config = context.getConfig();
     sleepTrigger = config.getLuaTickLimit() / 2;
   }
@@ -57,7 +57,7 @@ public class TimeApi extends AbstractLuaModule {
   }
 
   @Override
-  public TimeModule getLuaObject() {
+  public TimeModule getTable() {
     return table;
   }
 

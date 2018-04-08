@@ -19,9 +19,9 @@ public class BlockHitClass
   public static class Proxy<D extends RayTraceResult> extends LuaInstance<D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
-      addImmutable("hitVec", getConverters().toLuaNullable(delegate.hitVec));
-      addImmutable("pos", getConverters().toLuaNullable(new Vec3d(delegate.getBlockPos())));
-      addImmutable("sideHit", getConverters().toLuaNullable(delegate.sideHit));
+      addImmutable("hitVec", getConverter().toLuaNullable(delegate.hitVec));
+      addImmutable("pos", getConverter().toLuaNullable(new Vec3d(delegate.getBlockPos())));
+      addImmutable("sideHit", getConverter().toLuaNullable(delegate.sideHit));
     }
 
     @Override

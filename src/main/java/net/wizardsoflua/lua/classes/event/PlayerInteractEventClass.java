@@ -19,11 +19,11 @@ public class PlayerInteractEventClass extends
       extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
-      addImmutable("player", getConverters().toLua(delegate.getEntityPlayer()));
-      addImmutableNullable("face", getConverters().toLuaNullable(delegate.getFace()));
-      addImmutable("hand", getConverters().toLua(delegate.getHand()));
-      addImmutable("pos", getConverters().toLua(new Vec3d(delegate.getPos())));
-      addImmutable("item", getConverters().toLua(delegate.getItemStack()));
+      addImmutable("player", getConverter().toLua(delegate.getEntityPlayer()));
+      addImmutableNullable("face", getConverter().toLuaNullable(delegate.getFace()));
+      addImmutable("hand", getConverter().toLua(delegate.getHand()));
+      addImmutable("pos", getConverter().toLua(new Vec3d(delegate.getPos())));
+      addImmutable("item", getConverter().toLua(delegate.getItemStack()));
     }
   }
 }

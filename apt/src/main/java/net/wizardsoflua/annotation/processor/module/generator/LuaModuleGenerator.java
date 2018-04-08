@@ -3,11 +3,11 @@ package net.wizardsoflua.annotation.processor.module.generator;
 import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.annotation.processor.Constants.CONVERTER_CLASS;
 import static net.wizardsoflua.annotation.processor.Constants.LUA_MODULE_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingGetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createFunctionClass;
-import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createGetNameMethod;
 import static net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor.GENERATED_ANNOTATION;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -48,18 +48,17 @@ public class LuaModuleGenerator {
         .addModifiers(Modifier.PUBLIC)//
         .superclass(createSuperclassTypeName())//
         .addMethod(createConstructor())//
-        .addMethod(createGetNameMethod(model.getName()))//
     ;
     for (PropertyModel property : model.getProperties()) {
       if (property.isReadable()) {
-        luaModuleType.addMethod(createDelegatingGetter(property, "delegate", env));
+        luaModuleType.addMethod(createDelegatingGetter(property, "getDelegate()", env));
       }
       if (property.isWriteable()) {
-        luaModuleType.addMethod(createDelegatingSetter(property, "delegate"));
+        luaModuleType.addMethod(createDelegatingSetter(property, "getDelegate()"));
       }
     }
     for (FunctionModel function : model.getFunctions()) {
-      luaModuleType.addType(createFunctionClass(function, "delegate", null, env));
+      luaModuleType.addType(createFunctionClass(function, "getDelegate()", null, env));
     }
     return luaModuleType.build();
   }
@@ -72,10 +71,12 @@ public class LuaModuleGenerator {
 
   private MethodSpec createConstructor() {
     TypeName delegate = model.getClassName();
+    TypeName converter = CONVERTER_CLASS;
     Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
         .addParameter(delegate, "delegate")//
-        .addStatement("super(delegate)")//
+        .addParameter(converter, "converter")//
+        .addStatement("super(delegate, converter)")//
     ;
     for (PropertyModel property : model.getProperties()) {
       String name = property.getName();

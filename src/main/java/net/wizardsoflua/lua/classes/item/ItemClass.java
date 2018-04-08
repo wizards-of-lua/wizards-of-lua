@@ -60,33 +60,33 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Prox
     }
 
     private void setDisplayName(Object luaObject) {
-      String displayName = getConverters().toJava(String.class, luaObject, "displayName");
+      String displayName = getConverter().toJava(String.class, luaObject, "displayName");
       delegate.setStackDisplayName(displayName);
     }
 
     private void setDamage(Object luaObject) {
-      int damage = getConverters().toJava(Integer.class, luaObject, "damage");
+      int damage = getConverter().toJava(Integer.class, luaObject, "damage");
       delegate.setItemDamage(damage);
     }
 
     private void setRepairCost(Object luaObject) {
-      int repairCost = getConverters().toJava(Integer.class, luaObject, "repairCost");
+      int repairCost = getConverter().toJava(Integer.class, luaObject, "repairCost");
       delegate.setRepairCost(repairCost);
     }
 
     private Object getRepairCost() {
       int cost = delegate.getRepairCost();
-      return getConverters().toLua(cost);
+      return getConverter().toLua(cost);
     }
 
     private void setCount(Object luaObj) {
-      int count = getConverters().toJava(Integer.class, luaObj, "count");
+      int count = getConverter().toJava(Integer.class, luaObj, "count");
       delegate.setCount(count);
     }
 
     public void putNbt(Table nbt) {
       NBTTagCompound oldNbt = delegate.serializeNBT();
-      NBTTagCompound newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
+      NBTTagCompound newNbt = getClassLoader().getConverters().getNbtConverter().merge(oldNbt, nbt);
       delegate.deserializeNBT(newNbt);
     }
   }
@@ -99,8 +99,8 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Prox
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
-      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
+      Proxy proxy = getConverter().toJava(Proxy.class, arg1, 1, "self", getName());
+      Table nbt = getConverter().toJava(Table.class, arg2, 2, "nbt", getName());
       proxy.putNbt(nbt);
       context.getReturnBuffer().setTo();
     }

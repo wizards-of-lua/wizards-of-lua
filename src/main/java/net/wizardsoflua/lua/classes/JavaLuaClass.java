@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.extension.api.Converter;
 
 /**
  * A {@link LuaClass} that represents a Java{@link Class} in Lua and can convert java instances to
@@ -70,7 +70,7 @@ public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
     return luaClassClass;
   }
 
-  public Converters getConverters() {
+  public Converter getConverter() {
     return getClassLoader().getConverters();
   }
 

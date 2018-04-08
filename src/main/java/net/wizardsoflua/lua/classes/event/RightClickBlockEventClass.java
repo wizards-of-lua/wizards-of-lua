@@ -19,7 +19,7 @@ public class RightClickBlockEventClass extends
       extends PlayerInteractEventClass.Proxy<D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
-      addImmutableNullable("hitVec", getConverters().toLuaNullable(delegate.getHitVec()));
+      addImmutableNullable("hitVec", getConverter().toLuaNullable(delegate.getHitVec()));
     }
   }
 }

@@ -18,7 +18,7 @@ public class PlayerLoggedOutEventClass extends
       extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
-      addImmutable("player", getConverters().toLua(delegate.player));
+      addImmutable("player", getConverter().toLua(delegate.player));
     }
   }
 }

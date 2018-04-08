@@ -1,15 +1,16 @@
 package net.wizardsoflua.lua.extension.util;
 
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.extension.api.Named;
 
-public abstract class AbstractLuaModule implements AbstractLuaUtility {
+public abstract class AbstractLuaModule implements LuaTableExtension {
   @Override
-  public abstract Table getLuaObject();
+  public abstract Table getTable();
 
-  protected void add(Named named) {
-    Table table = getLuaObject();
-    String name = named.getName();
-    table.rawset(name, named);
+  protected <F extends LuaFunction & Named> void add(F function) {
+    Table table = getTable();
+    String name = function.getName();
+    table.rawset(name, function);
   }
 }

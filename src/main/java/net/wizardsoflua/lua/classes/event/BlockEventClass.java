@@ -26,13 +26,13 @@ public class BlockEventClass
     }
 
     protected Object getPos() {
-      return getConverters().toLua(new Vec3d(delegate.getPos()));
+      return getConverter().toLua(new Vec3d(delegate.getPos()));
     }
 
     protected Object getBlock() {
       IBlockState blockState = delegate.getState();
       NBTTagCompound nbt = null;
-      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
+      return getConverter().toLua(new ImmutableWolBlock(blockState, nbt));
     }
   }
 }

@@ -40,7 +40,7 @@ public class EventSubscriptionClass
     @Override
     public void invoke(ExecutionContext context, Object arg1) {
       EventSubscription self =
-          getConverters().toJava(EventSubscription.class, arg1, 1, "self", getName());
+          getConverter().toJava(EventSubscription.class, arg1, 1, "self", getName());
       self.unsubscribe();
       context.getReturnBuffer().setTo();
     }

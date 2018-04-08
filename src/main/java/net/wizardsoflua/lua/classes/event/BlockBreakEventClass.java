@@ -26,7 +26,7 @@ public class BlockBreakEventClass extends
     }
 
     private Object getPlayer() {
-      return getConverters().toLua(delegate.getPlayer());
+      return getConverter().toLua(delegate.getPlayer());
     }
   }
 }

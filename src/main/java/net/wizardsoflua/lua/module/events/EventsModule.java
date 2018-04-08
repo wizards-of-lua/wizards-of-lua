@@ -46,7 +46,7 @@ public class EventsModule extends AbstractLuaModule {
   }
 
   @Override
-  public Table getLuaObject() {
+  public Table getTable() {
     return table;
   }
 

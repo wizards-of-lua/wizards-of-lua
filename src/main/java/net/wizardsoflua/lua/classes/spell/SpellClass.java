@@ -46,7 +46,7 @@ public class SpellClass
 
     public @Nullable Object getOwner() {
       Entity ownerEntity = delegate.getOwnerEntity();
-      return getConverters().toLuaNullable(ownerEntity);
+      return getConverter().toLuaNullable(ownerEntity);
     }
 
     public Object getBlock() {
@@ -58,7 +58,7 @@ public class SpellClass
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       World world = delegate.getEntityWorld();
       LiveWolBlock block = new LiveWolBlock(pos, world);
-      return getConverters().toLua(block);
+      return getConverter().toLua(block);
     }
 
     public void setBlock(Object luaObj) {
@@ -66,7 +66,7 @@ public class SpellClass
       // World world = delegate.getEntityWorld();
       // BlockPos pos = new BlockPos(delegate.getPositionVector());
       // wolBlock.setBlock(world, pos);
-      WolBlock block = getConverters().toJava(WolBlock.class, luaObj, "block");
+      WolBlock block = getConverter().toJava(WolBlock.class, luaObj, "block");
       World world = delegate.getEntityWorld();
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       block.setBlock(world, pos);
@@ -93,7 +93,7 @@ public class SpellClass
     // }
 
     public void setVisible(Object luaObj) {
-      boolean value = getConverters().toJava(Boolean.class, luaObj, "visible");
+      boolean value = getConverter().toJava(Boolean.class, luaObj, "visible");
       delegate.setVisible(value);
     }
 
@@ -120,13 +120,13 @@ public class SpellClass
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       Object arg0 = args[0];
-      Proxy<?> proxy = getConverters().toJava(Proxy.class, arg0, 1, "self", getName());
+      Proxy<?> proxy = getConverter().toJava(Proxy.class, arg0, 1, "self", getName());
       if (args.length < 2) {
         throw new IllegalArgumentException("Expected command, but got nil");
       }
       if (args.length == 2) {
         Object arg1 = args[1];
-        String command = getConverters().toJava(String.class, arg1, 1, "command", getName());
+        String command = getConverter().toJava(String.class, arg1, 1, "command", getName());
         int result = proxy.execute(command);
         context.getReturnBuffer().setTo(result);
       } else if (args.length > 2) {

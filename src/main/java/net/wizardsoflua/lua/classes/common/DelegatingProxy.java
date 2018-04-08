@@ -7,9 +7,9 @@ import java.lang.reflect.Type;
 
 import com.google.common.reflect.TypeToken;
 
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.table.PropertyTable;
 
 public abstract class DelegatingProxy<D> extends PropertyTable implements Transferable {
@@ -35,7 +35,7 @@ public abstract class DelegatingProxy<D> extends PropertyTable implements Transf
     return classLoader;
   }
 
-  public Converters getConverters() {
+  public Converter getConverter() {
     return classLoader.getConverters();
   }
 

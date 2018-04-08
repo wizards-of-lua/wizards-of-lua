@@ -5,6 +5,8 @@ import static net.wizardsoflua.annotation.processor.Utils.getQualifiedName;
 import com.squareup.javapoet.ClassName;
 
 public interface Constants {
+  final ClassName CONVERTER_CLASS =
+      ClassName.get("net.wizardsoflua.lua.extension.api", "Converter");
   final String LUA_CLASS_API = "net.wizardsoflua.lua.classes.LuaClassApi";
   final ClassName OBJECT_CLASS = ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
   final String JAVA_LUA_CLASS = "net.wizardsoflua.lua.classes.JavaLuaClass";

@@ -37,7 +37,7 @@ public class SystemModule extends DelegatingProxy<SystemAdapter> {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      Collection<String> command = getConverters().toJavaList(String.class, args, getName());
+      Collection<String> command = getConverter().toJavaList(String.class, args, getName());
       delegate.execute(command);
       execute(context);
     }

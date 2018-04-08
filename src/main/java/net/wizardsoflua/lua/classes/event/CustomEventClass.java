@@ -18,7 +18,7 @@ public class CustomEventClass
     public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
       Object content = delegate.getData().getContent();
-      addImmutableNullable("data", getConverters().toLuaNullable(content));
+      addImmutableNullable("data", getConverter().toLuaNullable(content));
     }
 
     @Override
