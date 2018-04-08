@@ -3,9 +3,13 @@ package net.wizardsoflua.lua.extension.api;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
+import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 
-public interface LuaExecutor {
+public interface LuaScheduler {
+  void addPauseContext(PauseContext context);
+
   Object[] call(long luaTickLimit, LuaFunction function, Object... args)
       throws CallException, CallPausedException, InterruptedException;
 
@@ -17,4 +21,18 @@ public interface LuaExecutor {
 
   Object[] resumeUnpausable(long luaTickLimit, Continuation continuation)
       throws CallException, InterruptedException;
+
+  void pause(ExecutionContext context) throws UnresolvedControlThrowable;
+
+  void pauseIfRequested(ExecutionContext context) throws UnresolvedControlThrowable;
+
+  void sleep(ExecutionContext context, int ticks) throws UnresolvedControlThrowable;
+
+  long getAllowance();
+
+  boolean isAutosleep();
+
+  void setAutosleep(boolean autosleep);
+
+  long getTotalLuaTicks();
 }

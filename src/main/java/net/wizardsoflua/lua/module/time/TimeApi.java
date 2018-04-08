@@ -1,9 +1,15 @@
 package net.wizardsoflua.lua.module.time;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import javax.annotation.Nullable;
+
+import com.google.auto.service.AutoService;
 
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -11,18 +17,48 @@ import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.module.LuaModuleApi;
+import net.wizardsoflua.lua.extension.api.Config;
+import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.LuaScheduler;
+import net.wizardsoflua.lua.extension.api.Time;
+import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 import net.wizardsoflua.lua.module.types.Types;
 
 /**
  * The Time module provides access to time related properties of the active Spell's world.
  */
-@GenerateLuaModule(name = "Time")
+@AutoService(LuaExtension.class)
+@GenerateLuaModule(name = TimeApi.NAME)
 @GenerateLuaDoc(subtitle = "Accessing the Time")
-public class TimeApi extends LuaModuleApi<Time> {
-  public TimeApi(LuaClassLoader classLoader, Time delegate) {
-    super(classLoader, delegate);
+public class TimeApi extends AbstractLuaModule {
+  public static final String NAME = "Time";
+  private Converter converter;
+  private LuaScheduler scheduler;
+  private Time time;
+
+  private TimeModule table;
+  private long sleepTrigger;
+
+  @Override
+  public void initialize(InitializationContext context) {
+    converter = context.getConverter();
+    scheduler = context.getScheduler();
+    time = context.getTime();
+    table = new TimeModule(this);
+    Config config = context.getConfig();
+    sleepTrigger = config.getLuaTickLimit() / 2;
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public TimeModule getLuaObject() {
+    return table;
   }
 
   /**
@@ -31,7 +67,7 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public long getAllowance() {
-    return delegate.getAllowance();
+    return scheduler.getAllowance();
   }
 
   /**
@@ -41,12 +77,12 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public boolean isAutosleep() {
-    return delegate.isAutosleep();
+    return scheduler.isAutosleep();
   }
 
   @LuaProperty
   public void setAutosleep(boolean autosleep) {
-    delegate.setAutosleep(autosleep);
+    scheduler.setAutosleep(autosleep);
   }
 
   /**
@@ -54,7 +90,7 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public long getGametime() {
-    return delegate.getTotalWorldTime();
+    return time.getTotalWorldTime();
   }
 
   /**
@@ -63,7 +99,7 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public long getLuatime() {
-    return delegate.getLuaTicks();
+    return scheduler.getTotalLuaTicks();
   }
 
   /**
@@ -71,7 +107,7 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaProperty
   public long getRealtime() {
-    return delegate.getRealtime();
+    return time.getClock().millis();
   }
 
   /**
@@ -80,7 +116,27 @@ public class TimeApi extends LuaModuleApi<Time> {
    */
   @LuaFunction
   public String getDate(@Nullable String pattern) {
-    return delegate.getDate(pattern);
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    if (pattern != null) {
+      formatter = DateTimeFormatter.ofPattern(pattern);
+    }
+    String result = LocalDateTime.now(time.getClock()).format(formatter);
+    return result;
+  }
+
+  public void sleep(ExecutionContext context, @Nullable Integer ticks)
+      throws UnresolvedControlThrowable {
+    if (ticks == null) {
+      if (getAllowance() < sleepTrigger) {
+        ticks = 1;
+      } else {
+        return;
+      }
+    }
+    if (ticks < 0) {
+      throw new IllegalOperationAttemptException("attempt to sleep a negative amount of ticks");
+    }
+    scheduler.sleep(context, ticks);
   }
 
   /**
@@ -93,8 +149,12 @@ public class TimeApi extends LuaModuleApi<Time> {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      Integer ticks = getConverters().toJavaNullable(Integer.class, arg1, 1, "ticks", NAME);
-      delegate.startSleep(ticks);
+      Integer ticks = converter.toJavaNullable(Integer.class, arg1, 1, "ticks", NAME);
+      try {
+        sleep(context, ticks);
+      } catch (UnresolvedControlThrowable t) {
+        t.resolve(this, null);
+      }
       execute(context);
     }
 
@@ -104,12 +164,7 @@ public class TimeApi extends LuaModuleApi<Time> {
       execute(context);
     }
 
-    private void execute(ExecutionContext context) throws ResolvedControlThrowable {
-      try {
-        getClassLoader().getCurrentSchedulingContext().pauseIfRequested(context);
-      } catch (UnresolvedControlThrowable ex) {
-        throw ex.resolve(this, null);
-      }
+    private void execute(ExecutionContext context) {
       context.getReturnBuffer().setTo();
     }
   }

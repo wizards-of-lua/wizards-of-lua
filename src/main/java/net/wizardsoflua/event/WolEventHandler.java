@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.lua.extension.api.LuaModuleLoader;
+import net.wizardsoflua.lua.extension.api.LuaExtensionLoader;
 import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.spell.SpellEntity;
@@ -45,8 +45,8 @@ public class WolEventHandler {
     if (context.isSupportedLuaEvent(event)) {
       for (SpellEntity spellEntity : context.getSpells()) {
         String eventName = context.getEventName(event);
-        LuaModuleLoader moduleLoader = spellEntity.getProgram().getModuleLoader();
-        EventsModule eventsModule = moduleLoader.getModule(EventsModule.class);
+        LuaExtensionLoader extensionLoader = spellEntity.getProgram().getLuaExtensionLoader();
+        EventsModule eventsModule = extensionLoader.getLuaExtension(EventsModule.class);
         EventHandlers eventHandlers = eventsModule.getDelegate();
         eventHandlers.onEvent(eventName, event);
       }

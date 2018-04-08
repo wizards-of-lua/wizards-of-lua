@@ -22,7 +22,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.TransferenceProxyFactory;
-import net.wizardsoflua.lua.extension.api.LuaModuleLoader;
+import net.wizardsoflua.lua.extension.api.LuaExtensionLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
@@ -218,7 +218,7 @@ public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.LuaCla
   }
 
   /**
-   * @deprecated Use {@link LuaModuleLoader#getModule(Class)}
+   * @deprecated Use {@link LuaExtensionLoader#getLuaExtension(Class)}
    */
   @Deprecated
   public EventsModule getEventsModule() {

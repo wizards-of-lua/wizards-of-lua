@@ -10,10 +10,10 @@ import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.api.LuaClassLoader;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
-import net.wizardsoflua.lua.extension.spi.LuaModule;
+import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
-@AutoService(LuaModule.class)
+@AutoService(LuaExtension.class)
 public class TypesModule extends AbstractLuaModule {
   private Table table;
   private Converter converter;
@@ -37,7 +37,7 @@ public class TypesModule extends AbstractLuaModule {
   }
 
   @Override
-  public Table getTable() {
+  public Table getLuaObject() {
     return table;
   }
 

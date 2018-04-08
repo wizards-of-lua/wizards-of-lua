@@ -1,20 +1,36 @@
 package net.wizardsoflua.lua.scheduling;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.lua.extension.api.LuaScheduler;
 
 public abstract class LuaSchedulingContext implements SchedulingContext {
-  private long allowance;
+  public interface Context {
+    void registerTicks(int ticks);
+  }
 
-  public LuaSchedulingContext(long luaTickLimit) {
+  private final Context context;
+  private long allowance;
+  /**
+   * This is set by {@link LuaScheduler#sleep(ExecutionContext, int)} and will cause a
+   * {@link CallFellAsleepException} if greater than zero.
+   */
+  private int sleepDuration;
+
+  public LuaSchedulingContext(long luaTickLimit, Context context) {
+    this.context = checkNotNull(context, "context == null!");
     this.allowance = luaTickLimit;
   }
 
   @Override
   public void registerTicks(int ticks) {
     allowance -= ticks;
+    context.registerTicks(ticks);
   }
 
   @Override
@@ -33,6 +49,15 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
 
   public long getAllowance() {
     return allowance;
+  }
+
+  public int getSleepDuration() {
+    return sleepDuration;
+  }
+
+  public void setSleepDuration(int sleepDuration) {
+    checkArgument(sleepDuration >= 0, "Can't sleep a negative amount of time");
+    this.sleepDuration = sleepDuration;
   }
 
   public abstract boolean isAutosleep();

@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-public class SystemAdapter {
+import net.wizardsoflua.lua.extension.api.PauseContext;
+
+public class SystemAdapter implements PauseContext {
 
   private final boolean enabled;
   private final long scriptTimeoutMillis;
@@ -26,9 +28,9 @@ public class SystemAdapter {
     this.enabled = enabled;
     this.scriptTimeoutMillis = scriptTimeoutMillis;
     this.scriptDir = scriptDir.toPath().normalize();
-
   }
 
+  @Override
   public boolean shouldPause() {
     return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
   }

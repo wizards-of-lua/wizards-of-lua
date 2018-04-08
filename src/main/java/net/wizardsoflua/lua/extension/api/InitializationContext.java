@@ -14,9 +14,9 @@ public interface InitializationContext {
 
   ExceptionHandler getExceptionHandler();
 
-  LuaExecutor getLuaExecutor();
+  LuaExtensionLoader getLuaExtensionLoader();
 
-  LuaModuleLoader getModuleLoader();
+  LuaScheduler getScheduler();
 
   Spell getSpell();
 

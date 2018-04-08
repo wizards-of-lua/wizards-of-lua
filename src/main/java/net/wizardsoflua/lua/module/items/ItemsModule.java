@@ -12,10 +12,10 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
-import net.wizardsoflua.lua.extension.spi.LuaModule;
+import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
 
-@AutoService(LuaModule.class)
+@AutoService(LuaExtension.class)
 public class ItemsModule extends AbstractLuaModule {
   private Table table;
   private Converter converter;
@@ -33,7 +33,7 @@ public class ItemsModule extends AbstractLuaModule {
   }
 
   @Override
-  public Table getTable() {
+  public Table getLuaObject() {
     return table;
   }
 

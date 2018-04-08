@@ -9,9 +9,7 @@ public class PausableSchedulingContextFactory implements LuaSchedulingContextFac
   private long luaTickLimit;
   private final Context context;
 
-  public interface Context {
-    void registerTicks(int ticks);
-
+  public interface Context extends LuaSchedulingContext.Context {
     boolean shouldPause();
 
     boolean isAutosleep();
@@ -26,7 +24,7 @@ public class PausableSchedulingContextFactory implements LuaSchedulingContextFac
 
   @Override
   public LuaSchedulingContext newInstance() {
-    return new LuaSchedulingContext(luaTickLimit) {
+    return new LuaSchedulingContext(luaTickLimit, context) {
       @Override
       public void registerTicks(int ticks) {
         super.registerTicks(ticks);

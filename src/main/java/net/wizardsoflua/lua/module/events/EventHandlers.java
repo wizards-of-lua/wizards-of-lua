@@ -11,7 +11,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.sandius.rembulan.runtime.SchedulingContext;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
@@ -20,32 +19,33 @@ import net.wizardsoflua.lua.extension.api.Config;
 import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.extension.api.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.LuaExecutor;
-import net.wizardsoflua.lua.extension.api.LuaModuleLoader;
+import net.wizardsoflua.lua.extension.api.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
+import net.wizardsoflua.lua.extension.api.PauseContext;
 import net.wizardsoflua.lua.extension.api.Spell;
 import net.wizardsoflua.lua.extension.api.Time;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
-public class EventHandlers {
+public class EventHandlers implements PauseContext {
   private final Converter converter;
   private final ExceptionHandler exceptionHandler;
-  private final LuaExecutor executor;
+  private final LuaScheduler scheduler;
   private final Time time;
   private final Types types;
   private final long luaTickLimit;
   private boolean duringEventIntercepting;
 
   public EventHandlers(InitializationContext context) {
-    LuaModuleLoader moduleLoader = context.getModuleLoader();
-    TypesModule typesModule = moduleLoader.getModule(TypesModule.class);
+    LuaExtensionLoader extensionLoader = context.getLuaExtensionLoader();
+    TypesModule typesModule = extensionLoader.getLuaExtension(TypesModule.class);
     types = typesModule.getDelegate();
     converter = context.getConverter();
     exceptionHandler = context.getExceptionHandler();
-    executor = context.getLuaExecutor();
     Config config = context.getConfig();
     luaTickLimit = config.getEventInterceptorTickLimit();
+    scheduler = context.getScheduler();
     Spell spell = context.getSpell();
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override
@@ -58,15 +58,7 @@ public class EventHandlers {
         return subscriptions.isEmpty();
       }
     });
-    spell.addSchedulingContext(new SchedulingContext() {
-      @Override
-      public boolean shouldPause() {
-        return EventHandlers.this.shouldPause();
-      }
-
-      @Override
-      public void registerTicks(int ticks) {}
-    });
+    scheduler.addPauseContext(this);
     time = context.getTime();
   }
 
@@ -121,6 +113,7 @@ public class EventHandlers {
     }
   }
 
+  @Override
   public boolean shouldPause() {
     if (queues.isEmpty()) {
       // no queues -> nothing to wait for, so keep running
@@ -177,7 +170,7 @@ public class EventHandlers {
     boolean wasDuringEventIntercepting = duringEventIntercepting;
     duringEventIntercepting = true;
     try {
-      executor.callUnpausable(luaTickLimit, function, args);
+      scheduler.callUnpausable(luaTickLimit, function, args);
     } finally {
       duringEventIntercepting = wasDuringEventIntercepting;
     }

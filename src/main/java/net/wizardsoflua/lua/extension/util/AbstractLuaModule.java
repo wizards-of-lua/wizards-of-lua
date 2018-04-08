@@ -2,11 +2,13 @@ package net.wizardsoflua.lua.extension.util;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.extension.api.Named;
-import net.wizardsoflua.lua.extension.spi.LuaModule;
 
-public abstract class AbstractLuaModule implements LuaModule {
+public abstract class AbstractLuaModule implements AbstractLuaUtility {
+  @Override
+  public abstract Table getLuaObject();
+
   protected void add(Named named) {
-    Table table = getTable();
+    Table table = getLuaObject();
     String name = named.getName();
     table.rawset(name, named);
   }
