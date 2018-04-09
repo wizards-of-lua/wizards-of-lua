@@ -17,7 +17,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassApi;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.event.EventClass;
 
 /**
@@ -27,7 +27,7 @@ import net.wizardsoflua.lua.classes.event.EventClass;
 @GenerateLuaClass(name = "EventQueue")
 @GenerateLuaDoc(subtitle = "Collecting Events")
 public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
-  public EventQueueApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public EventQueueApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

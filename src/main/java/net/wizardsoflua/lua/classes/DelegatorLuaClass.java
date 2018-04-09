@@ -5,18 +5,18 @@ import javax.annotation.Nullable;
 import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.classes.common.LuaInstance;
+import net.wizardsoflua.lua.classes.common.Delegator;
 
-public abstract class ProxyingLuaClass<J, P extends LuaInstance<? extends J>>
-    extends JavaLuaClass<J, P> {
-  private @Nullable Class<P> instanceClass;
+public abstract class DelegatorLuaClass<J, L extends Table & Delegator<? extends J>>
+    extends JavaLuaClass<J, L> {
+  private @Nullable Class<L> instanceClass;
 
-  public Class<P> getInstanceClass() {
+  public Class<L> getInstanceClass() {
     if (instanceClass == null) {
       @SuppressWarnings("serial")
-      TypeToken<P> token = new TypeToken<P>(getClass()) {};
+      TypeToken<L> token = new TypeToken<L>(getClass()) {};
       @SuppressWarnings("unchecked")
-      Class<P> rawType = (Class<P>) token.getRawType();
+      Class<L> rawType = (Class<L>) token.getRawType();
       instanceClass = rawType;
     }
     return instanceClass;
@@ -24,7 +24,7 @@ public abstract class ProxyingLuaClass<J, P extends LuaInstance<? extends J>>
 
   @Override
   public J toJava(Table luaObj) throws ClassCastException {
-    P instance = getInstanceClass().cast(luaObj);
+    L instance = getInstanceClass().cast(luaObj);
     return instance.getDelegate();
   }
 }

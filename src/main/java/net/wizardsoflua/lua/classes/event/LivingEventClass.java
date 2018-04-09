@@ -3,11 +3,11 @@ package net.wizardsoflua.lua.classes.event;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = LivingEventClass.NAME, superClass = EventClass.class)
 public class LivingEventClass extends
-    ProxyingLuaClass<LivingEvent, LivingEventClass.Proxy<LivingEventApi<LivingEvent>, LivingEvent>> {
+    DelegatorLuaClass<LivingEvent, LivingEventClass.Proxy<LivingEventApi<LivingEvent>, LivingEvent>> {
   public static final String NAME = "LivingEvent";
 
   @Override

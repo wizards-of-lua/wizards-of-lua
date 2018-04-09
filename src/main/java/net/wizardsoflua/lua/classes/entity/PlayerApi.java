@@ -13,14 +13,14 @@ import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @GenerateLuaClass(name = PlayerApi.NAME)
 @GenerateLuaDoc(subtitle = "Controlling the Player")
 public class PlayerApi<D extends EntityPlayerMP> extends EntityLivingBaseApi<D> {
   public static final String NAME = "Player";
 
-  public PlayerApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public PlayerApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

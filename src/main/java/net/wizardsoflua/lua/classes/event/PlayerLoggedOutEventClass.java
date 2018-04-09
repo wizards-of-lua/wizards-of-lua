@@ -2,11 +2,11 @@ package net.wizardsoflua.lua.classes.event;
 
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = PlayerLoggedOutEventClass.NAME, superClass = EventClass.class)
 public class PlayerLoggedOutEventClass extends
-    ProxyingLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Proxy<PlayerEvent.PlayerLoggedOutEvent>> {
+    DelegatorLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Proxy<PlayerEvent.PlayerLoggedOutEvent>> {
   public static final String NAME = "PlayerLoggedOutEvent";
 
   @Override
@@ -16,7 +16,7 @@ public class PlayerLoggedOutEventClass extends
 
   public static class Proxy<D extends PlayerEvent.PlayerLoggedOutEvent>
       extends EventClass.Proxy<EventApi<D>, D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
       addImmutable("player", getConverter().toLua(delegate.player));
     }

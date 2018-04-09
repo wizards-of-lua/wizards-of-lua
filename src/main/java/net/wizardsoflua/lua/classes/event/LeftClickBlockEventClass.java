@@ -2,11 +2,11 @@ package net.wizardsoflua.lua.classes.event;
 
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = LeftClickBlockEventClass.NAME, superClass = PlayerInteractEventClass.class)
 public class LeftClickBlockEventClass extends
-    ProxyingLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Proxy<PlayerInteractEvent.LeftClickBlock>> {
+    DelegatorLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Proxy<PlayerInteractEvent.LeftClickBlock>> {
   public static final String NAME = "LeftClickBlockEvent";
 
   @Override
@@ -17,7 +17,7 @@ public class LeftClickBlockEventClass extends
 
   public static class Proxy<D extends PlayerInteractEvent.LeftClickBlock>
       extends PlayerInteractEventClass.Proxy<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addImmutableNullable("hitVec", getConverter().toLuaNullable(delegate.getHitVec()));
     }

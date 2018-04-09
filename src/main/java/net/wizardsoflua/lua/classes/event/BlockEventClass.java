@@ -6,11 +6,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.world.BlockEvent;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = BlockEventClass.NAME, superClass = EventClass.class)
 public class BlockEventClass
-    extends ProxyingLuaClass<BlockEvent, BlockEventClass.Proxy<BlockEvent>> {
+    extends DelegatorLuaClass<BlockEvent, BlockEventClass.Proxy<BlockEvent>> {
   public static final String NAME = "BlockEvent";
 
   @Override
@@ -19,7 +19,7 @@ public class BlockEventClass
   }
 
   public static class Proxy<D extends BlockEvent> extends EventClass.Proxy<EventApi<D>, D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
       addReadOnly("pos", this::getPos);
       addReadOnly("block", this::getBlock);

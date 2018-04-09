@@ -14,7 +14,7 @@ import net.wizardsoflua.lua.classes.CustomLuaClass;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.ObjectClass;
-import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.api.LuaClassLoader;
 
 public class Types {
@@ -97,8 +97,10 @@ public class Types {
   }
 
   public @Nullable String getTypename(Class<?> type) {
-    if (DelegatingProxy.class.isAssignableFrom(type)) {
-      type = unproxy(type);
+    if (Delegator.class.isAssignableFrom(type)) {
+      @SuppressWarnings("unchecked")
+      Class<? extends Delegator<?>> delegatorClass = (Class<? extends Delegator<?>>) type;
+      type = Delegator.getDelegateClassOf(delegatorClass);
     }
     JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(type);
     if (luaClass != null) {
@@ -120,12 +122,6 @@ public class Types {
       return FUNCTION_META;
     }
     return type.getName();
-  }
-
-  private <T> Class<T> unproxy(Class<?> type) {
-    @SuppressWarnings("unchecked")
-    Class<? extends DelegatingProxy<T>> proxyClass = (Class<? extends DelegatingProxy<T>>) type;
-    return DelegatingProxy.getDelegateClassOf(proxyClass);
   }
 
   /**

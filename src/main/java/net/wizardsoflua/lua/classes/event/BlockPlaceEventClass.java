@@ -5,11 +5,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.world.BlockEvent;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = BlockPlaceEventClass.NAME, superClass = BlockEventClass.class)
 public class BlockPlaceEventClass extends
-    ProxyingLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Proxy<BlockEvent.PlaceEvent>> {
+    DelegatorLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Proxy<BlockEvent.PlaceEvent>> {
   public static final String NAME = "BlockPlaceEvent";
 
   @Override
@@ -18,7 +18,7 @@ public class BlockPlaceEventClass extends
   }
 
   public static class Proxy<D extends BlockEvent.PlaceEvent> extends BlockEventClass.Proxy<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addReadOnly("hand", this::getHand);
       addReadOnly("placedAgainst", this::getPlacedAgainst);

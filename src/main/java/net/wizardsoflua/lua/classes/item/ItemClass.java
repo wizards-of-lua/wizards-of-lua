@@ -7,7 +7,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
@@ -27,7 +27,7 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Prox
   }
 
   public static class Proxy extends LuaInstance<ItemStack> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, ItemStack delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, ItemStack delegate) {
       super(luaClass, delegate);
       addReadOnly("id", this::getId);
       add("displayName", delegate::getDisplayName, this::setDisplayName);

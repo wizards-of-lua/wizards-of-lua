@@ -2,13 +2,13 @@ package net.wizardsoflua.lua.classes.eventsubscription;
 
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
 
 @DeclareLuaClass(name = EventSubscriptionClass.NAME)
 public class EventSubscriptionClass
-    extends ProxyingLuaClass<EventSubscription, EventSubscriptionClass.Proxy<EventSubscription>> {
+    extends DelegatorLuaClass<EventSubscription, EventSubscriptionClass.Proxy<EventSubscription>> {
   public static final String NAME = "EventSubscription";
 
   public EventSubscriptionClass() {
@@ -21,7 +21,7 @@ public class EventSubscriptionClass
   }
 
   public static class Proxy<D extends EventSubscription> extends LuaInstance<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
     }
 

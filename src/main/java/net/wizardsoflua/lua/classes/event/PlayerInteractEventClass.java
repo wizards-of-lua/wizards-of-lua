@@ -3,11 +3,11 @@ package net.wizardsoflua.lua.classes.event;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = PlayerInteractEventClass.NAME, superClass = EventClass.class)
 public class PlayerInteractEventClass extends
-    ProxyingLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Proxy<PlayerInteractEvent>> {
+    DelegatorLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Proxy<PlayerInteractEvent>> {
   public static final String NAME = "PlayerInteractEvent";
 
   @Override
@@ -17,7 +17,7 @@ public class PlayerInteractEventClass extends
 
   public static class Proxy<D extends PlayerInteractEvent>
       extends EventClass.Proxy<EventApi<D>, D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
       addImmutable("player", getConverter().toLua(delegate.getEntityPlayer()));
       addImmutableNullable("face", getConverter().toLuaNullable(delegate.getFace()));

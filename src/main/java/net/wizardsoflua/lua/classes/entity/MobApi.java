@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityLiving;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 /**
  * The <span class="notranslate">Mob</span> class represents mobile creatures that are
@@ -15,7 +15,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 public class MobApi<D extends EntityLiving> extends EntityLivingBaseApi<D> {
   public static final String NAME = "Mob";
 
-  public MobApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public MobApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

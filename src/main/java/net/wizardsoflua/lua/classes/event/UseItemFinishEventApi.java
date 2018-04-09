@@ -5,7 +5,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 /**
  * The <span class="notranslate">UseItemFinishEvent</span> class is fired after a
@@ -41,7 +41,7 @@ public class UseItemFinishEventApi<D extends LivingEntityUseItemEvent.Finish>
     extends UseItemEventApi<D> {
   public static final String NAME = "UseItemFinishEvent";
 
-  public UseItemFinishEventApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public UseItemFinishEventApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 
