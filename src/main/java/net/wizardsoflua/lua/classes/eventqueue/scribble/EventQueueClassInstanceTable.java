@@ -16,10 +16,10 @@ public class EventQueueClassInstanceTable extends GeneratedLuaTable<EventQueueCl
   public EventQueueClassInstanceTable(EventQueueClass.Instance<?> delegate, Converter converter) {
     super(delegate, converter, false);
     addReadOnly("names", this::getNames);
-    addReadOnly(new DisconnectFunction());
-    addReadOnly(new IsEmptyFunction());
-    addReadOnly(new LatestFunction());
-    addReadOnly("next", delegate.new NextFunction());
+    addFunction(new DisconnectFunction());
+    addFunction(new IsEmptyFunction());
+    addFunction(new LatestFunction());
+    addFunction("next", delegate.new NextFunction());
   }
 
   private Object getNames() {

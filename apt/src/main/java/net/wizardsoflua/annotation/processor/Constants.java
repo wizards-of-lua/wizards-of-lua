@@ -18,6 +18,8 @@ public interface Constants {
   final String CLASS_SUFFIX = "Class";
   final String INSTANCE_SUFFIX = "Instance";
 
+  final ClassName LUA_TABLE_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaTable");
   final ClassName LUA_MODULE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.module", "GeneratedLuaModule");
   final ClassName LUA_CLASS_SUPERCLASS =
