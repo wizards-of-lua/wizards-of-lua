@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +31,8 @@ import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.spi.ConverterExtension;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
@@ -205,8 +208,81 @@ public class Converters implements Converter {
     return new BadArgumentException(expected, actual);
   }
 
+  LuaExtensionLoader extensionLoader;
+
+  private final Map<Class<?>, ConverterExtension<?, ?>> convertersByJavaClass = new HashMap<>();
+  private final Map<Class<?>, ConverterExtension<?, ?>> convertersByLuaClass = new HashMap<>();
+
+  public void addConverterExtension(ConverterExtension<?, ?> extension) {
+    convertersByJavaClass.put(extension.getJavaClass(), extension);
+    convertersByLuaClass.put(extension.getLuaClass(), extension);
+  }
+
+  private @Nullable <J> ConverterExtension<J, ?> getConverterForJavaClass(Class<J> javaClass) {
+    @SuppressWarnings("unchecked")
+    ConverterExtension<J, ?> result =
+        (ConverterExtension<J, ?>) convertersByJavaClass.get(javaClass);
+    return result;
+  }
+
+  public @Nullable <J> ConverterExtension<? super J, ?> getConverterForJavaClassRecursively(
+      Class<J> javaClass) {
+    Class<? super J> cls = javaClass;
+    while (cls != null) {
+      ConverterExtension<? super J, ?> result = getConverterForJavaClass(cls);
+      if (result != null) {
+        return result;
+      }
+      cls = cls.getSuperclass();
+    }
+    return null;
+  }
+
+  private @Nullable <J> Object convertToLua(J javaObject) {
+    @SuppressWarnings("unchecked")
+    Class<J> javaClass = (Class<J>) javaObject.getClass();
+    ConverterExtension<? super J, ?> converter = getConverterForJavaClassRecursively(javaClass);
+    if (converter != null) {
+      return converter.getLuaInstance(javaObject);
+    }
+    return null;
+  }
+
+  private @Nullable <L> ConverterExtension<?, L> getConverterForLuaClass(Class<L> luaClass) {
+    @SuppressWarnings("unchecked")
+    ConverterExtension<?, L> result = (ConverterExtension<?, L>) convertersByLuaClass.get(luaClass);
+    return result;
+  }
+
+  public @Nullable <L> ConverterExtension<?, ? super L> getConverterForLuaClassRecursively(
+      Class<L> javaClass) {
+    Class<? super L> cls = javaClass;
+    while (cls != null) {
+      ConverterExtension<?, ? super L> result = getConverterForLuaClass(cls);
+      if (result != null) {
+        return result;
+      }
+      cls = cls.getSuperclass();
+    }
+    return null;
+  }
+
+  private @Nullable <L> Object convertToJava(L luaObject) {
+    @SuppressWarnings("unchecked")
+    Class<L> luaClass = (Class<L>) luaObject.getClass();
+    ConverterExtension<?, ? super L> converter = getConverterForLuaClassRecursively(luaClass);
+    if (converter != null) {
+      return converter.getJavaInstance(luaObject);
+    }
+    return null;
+  }
+
   private Object convertTo(Class<?> type, Object luaObject)
       throws ClassCastException, BadArgumentException {
+    Object result = convertToJava(luaObject);
+    if (result != null) {
+      return result;
+    }
     if (LuaClassLoader.isSupported(type) && luaObject instanceof Table) {
       Table table = (Table) luaObject;
       LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
@@ -298,7 +374,12 @@ public class Converters implements Converter {
 
   @Override
   public <J> Object toLua(J javaObject) throws ConversionException {
-    requireNonNull(javaObject, "value == null!");
+    requireNonNull(javaObject, "javaObject == null!");
+    Object converterResult = convertToLua(javaObject);
+    if (converterResult != null) {
+      return converterResult;
+    }
+
     @SuppressWarnings("unchecked")
     Class<J> javaClass = (Class<J>) javaObject.getClass();
     JavaLuaClass<? super J, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);

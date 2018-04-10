@@ -127,7 +127,6 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
     installSystemLibraries();
-    extensionLoader = new LuaExtensionLoader(env, createExtensionInitializationContext());
     luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
       @Override
       public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
@@ -139,7 +138,9 @@ public class SpellProgram {
         return extensionLoader.getLuaExtension(EventsModule.class);
       }
     });
-    extensionLoader.installLuaExtensions();
+    extensionLoader = new LuaExtensionLoader(env, createExtensionInitializationContext(),
+        luaClassLoader.getConverters());
+    extensionLoader.installExtensions();
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
