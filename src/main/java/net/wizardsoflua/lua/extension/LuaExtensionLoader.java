@@ -2,19 +2,15 @@ package net.wizardsoflua.lua.extension;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.ServiceConfigurationError;
+import java.util.Set;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 
 public class LuaExtensionLoader implements net.wizardsoflua.lua.extension.api.LuaExtensionLoader {
-  private final Map<Class<? extends LuaExtension>, LuaExtension> registeredExtensions =
-      new HashMap<>();
-  private final Map<Class<? extends LuaExtension>, LuaExtension> installedExtensions =
-      new HashMap<>();
+  private final ClassIndex extensions = new ClassIndex();
   private final Table env;
   private final InitializationContext initializationContext;
 
@@ -25,43 +21,30 @@ public class LuaExtensionLoader implements net.wizardsoflua.lua.extension.api.Lu
   }
 
   public void installLuaExtensions() {
-    ServiceLoader<LuaExtension> extensions = ServiceLoader.load(LuaExtension.class);
-    for (LuaExtension extension : extensions) {
-      register(extension);
+    Set<Class<? extends LuaExtension>> extensions = ServiceLoader.load(LuaExtension.class);
+    for (Class<? extends LuaExtension> extension : extensions) {
+      getLuaExtension(extension);
     }
-    for (Class<? extends LuaExtension> extensionType : registeredExtensions.keySet()) {
-      getLuaExtension(extensionType);
-    }
-  }
-
-  private <E extends LuaExtension> E getRegisteredLuaExtension(Class<E> extensionType) {
-    LuaExtension extension = registeredExtensions.get(extensionType);
-    return extensionType.cast(extension);
-  }
-
-  private void register(LuaExtension extension) {
-    registeredExtensions.put(extension.getClass(), extension);
-  }
-
-  private <E extends LuaExtension> E getInstalledLuaExtension(Class<E> extensionType) {
-    LuaExtension extension = installedExtensions.get(extensionType);
-    return extensionType.cast(extension);
-  }
-
-  private <E extends LuaExtension> E install(Class<E> extensionType) {
-    E extension = getRegisteredLuaExtension(extensionType);
-    extension.initialize(initializationContext);
-    extension.installInto(env);
-    installedExtensions.put(extension.getClass(), extension);
-    return extension;
   }
 
   @Override
   public <E extends LuaExtension> E getLuaExtension(Class<E> extensionType) {
-    E extension = getInstalledLuaExtension(extensionType);
-    if (extension == null) {
-      return install(extensionType);
+    E extension = extensions.get(extensionType);
+    if (extensionType == null) {
+      extension = newInstance(extensionType);
+      extensions.add(extension);
+      extension.initialize(initializationContext);
+      extension.installInto(env);
     }
     return extension;
+  }
+
+  private static <P> P newInstance(Class<P> cls) throws ServiceConfigurationError {
+    try {
+      return cls.newInstance();
+    } catch (InstantiationException | IllegalAccessException ex) {
+      String message = "Provider " + cls + " could not be instantiated";
+      throw new ServiceConfigurationError(LuaExtension.class.getName() + ": " + message, ex);
+    }
   }
 }

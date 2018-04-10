@@ -4,6 +4,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.extension.api.Named;
 
+@Deprecated
 public abstract class AbstractLuaModule implements LuaTableExtension {
   @Override
   public abstract Table getTable();
