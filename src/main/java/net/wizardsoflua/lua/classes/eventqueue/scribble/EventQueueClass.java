@@ -18,7 +18,6 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
-import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.api.LuaScheduler;
 import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
@@ -27,7 +26,7 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
  * is connected to the event source.
  */
-@GenerateLuaTable(additionalFunctions = EventQueueClass.Instance.class)
+@GenerateLuaTable(modifiable = true, additionalFunctions = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
 public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClassInstanceTable> {
   public static final String NAME = "EventQueue2Class";
@@ -51,19 +50,13 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
 
   @Override
   protected EventQueueClassInstanceTable toLua(EventQueue javaInstance) {
-    return new EventQueueClassInstanceTable(new Instance<>(javaInstance, getConverter(), scheduler),
-        getConverter());
+    return new EventQueueClassInstanceTable(new Instance<>(javaInstance), getConverter());
   }
 
-  @GenerateLuaTable(includeFunctions = false)
+  @GenerateLuaTable(modifiable = false, includeFunctions = false)
   public static class Instance<D extends EventQueue> extends ModifiableDelegator<D> {
-    private final Converter converter;
-    private final LuaScheduler scheduler;
-
-    public Instance(D delegate, Converter converter, LuaScheduler scheduler) {
+    public Instance(D delegate) {
       super(delegate);
-      this.converter = requireNonNull(converter, "converter == null!");
-      this.scheduler = requireNonNull(scheduler, "scheduler == null!");
     }
 
     /**
@@ -165,14 +158,20 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
      */
     @LuaFunction(name = NextFunction.NAME)
     @LuaFunctionDoc(returnType = EventClass.NAME, args = {"timeout"})
-    class NextFunction extends AbstractFunction2 {
+    static class NextFunction extends AbstractFunction2 {
       public static final String NAME = "next";
+      private final EventQueueClass luaClass;
+
+      public NextFunction(EventQueueClass luaClass) {
+        this.luaClass = requireNonNull(luaClass, "luaClass == null!");
+      }
 
       @Override
       public void invoke(ExecutionContext context, Object arg1, Object arg2)
           throws ResolvedControlThrowable {
-        EventQueue eventQueue = converter.toJava(EventQueue.class, arg1, 1, "self", NAME);
-        Long timeout = converter.toJavaNullable(Long.class, arg2, 2, "timeout", NAME);
+        EventQueue eventQueue =
+            luaClass.getConverter().toJava(EventQueue.class, arg1, 1, "self", NAME);
+        Long timeout = luaClass.getConverter().toJavaNullable(Long.class, arg2, 2, "timeout", NAME);
         eventQueue.waitForEvents(timeout);
         execute(context, eventQueue);
       }
@@ -187,14 +186,14 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
       private void execute(ExecutionContext context, EventQueue eventQueue)
           throws ResolvedControlThrowable {
         try {
-          scheduler.pauseIfRequested(context);
+          luaClass.scheduler.pauseIfRequested(context);
         } catch (UnresolvedControlThrowable e) {
           throw e.resolve(NextFunction.this, eventQueue);
         }
 
         if (!eventQueue.isEmpty()) {
           Object event = eventQueue.pop();
-          Object result = converter.toLua(event);
+          Object result = luaClass.getConverter().toLua(event);
           context.getReturnBuffer().setTo(result);
         } else {
           context.getReturnBuffer().setTo();
