@@ -171,7 +171,7 @@ public class SpellTest extends WolTestBase {
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).contains("Error").contains("property is readonly");
+    assertThat(act.getMessage()).contains("Error").contains("attempt to modify read-only table index");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_can_be_found_with_selector

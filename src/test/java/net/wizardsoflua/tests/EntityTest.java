@@ -57,7 +57,7 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).contains("Exception").contains("property is readonly");
+    assertThat(act.getMessage()).contains("Error").contains("attempt to modify read-only table index");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_putNbt_setting_pos

@@ -33,6 +33,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
@@ -59,6 +60,18 @@ public class MinecraftBackdoor {
 
   public String getWorldName() {
     return testEnv.getServer().getEntityWorld().getWorldInfo().getWorldName();
+  }
+
+  public int getWorldDimension() {
+    return testEnv.getServer().getEntityWorld().provider.getDimension();
+  }
+
+  public EnumDifficulty getDifficulty() {
+    return testEnv.getServer().getEntityWorld().getWorldInfo().getDifficulty();
+  }
+
+  public void setDifficulty(EnumDifficulty newDifficulty) {
+    testEnv.getServer().getEntityWorld().getWorldInfo().setDifficulty(newDifficulty);
   }
 
   public void post(Event event) {
@@ -242,4 +255,7 @@ public class MinecraftBackdoor {
       setBlock(pos, blockType);
     }
   }
+
+
+
 }
