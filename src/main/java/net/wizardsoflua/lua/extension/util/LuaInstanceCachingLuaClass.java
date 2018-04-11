@@ -16,15 +16,8 @@ public abstract class LuaInstanceCachingLuaClass<J, L> extends LuaClass<J, L> {
   public L getLuaInstance(J javaInstance) {
     Cache<J, L> cache = getCache();
     ConcurrentMap<J, L> map = cache.asMap();
-    return map.computeIfAbsent(javaInstance, this::toLua);
+    return map.computeIfAbsent(javaInstance, this::toLuaInstance);
   }
 
-  protected abstract L toLua(J javaInstance);
-
-  @Override
-  public J getJavaInstance(L luaInstance) {
-    return toJava(luaInstance);
-  }
-
-  protected abstract J toJava(L luaInstance);
+  protected abstract L toLuaInstance(J javaInstance);
 }

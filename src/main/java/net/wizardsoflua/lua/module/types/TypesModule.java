@@ -37,7 +37,7 @@ public class TypesModule extends AbstractLuaModule {
   }
 
   @Override
-  public Table getTable() {
+  public Table createTable() {
     return table;
   }
 

@@ -7,11 +7,11 @@ public interface LuaTableExtension extends LuaExtension {
   @Override
   default void installInto(Table env) {
     String name = getName();
-    Table table = getTable();
+    Table table = createTable();
     env.rawset(name, table);
   }
 
   String getName();
 
-  Table getTable();
+  Table createTable();
 }

@@ -21,7 +21,7 @@ public abstract class AbstractLuaClass<J, L extends Delegator<? extends Delegato
   }
 
   @Override
-  protected J toJava(L luaInstance) {
+  public J getJavaInstance(L luaInstance) {
     Delegator<? extends J> delegate = luaInstance.getDelegate();
     J result = delegate.getDelegate();
     return result;

@@ -33,7 +33,7 @@ public class ItemsModule extends AbstractLuaModule {
   }
 
   @Override
-  public Table getTable() {
+  public Table createTable() {
     return table;
   }
 

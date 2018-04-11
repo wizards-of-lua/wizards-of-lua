@@ -44,12 +44,12 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
   }
 
   @Override
-  public Table getTable() {
+  public Table createTable() {
     return new EventQueueClassTable(this, getConverter());
   }
 
   @Override
-  protected EventQueueClassInstanceTable toLua(EventQueue javaInstance) {
+  protected EventQueueClassInstanceTable toLuaInstance(EventQueue javaInstance) {
     return new EventQueueClassInstanceTable(new Instance<>(javaInstance), getConverter());
   }
 
