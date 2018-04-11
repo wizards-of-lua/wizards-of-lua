@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
@@ -120,6 +122,33 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand(
         "/lua v=spell.pos; v.y=250; spell.pos=v+Vec3(0,2,0); spell.block=Blocks.get('dirt'); ; w=spell.world; b=w:canSeeSky(v); print(b)");
 
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+  
+  // /test net.wizardsoflua.tests.WorldTest test_getNearestVillage
+  @Test 
+  public void test_getNearestVillage() {
+    // Given:
+    BlockPos pos = mc().getWorldSpawnPoint();
+    
+    mc().setBlock(pos.up().up(), Blocks.GRASS);
+    mc().setBlock(pos.up().up().north(), Blocks.GRASS);
+    mc().setBlock(pos, Blocks.DARK_OAK_DOOR);
+    mc().setBlock(pos.up(), Blocks.DARK_OAK_DOOR);
+    mc().executeCommand("/summon minecraft:villager %s %s %s", pos.getX(), pos.getY(), pos.getZ());
+    
+    sleep(50); // wait for at least a game tick so that the new villlage can be detected
+    
+    mc().clearEvents();
+    
+    BlockPos center = mc().getNearestVillageCenter(pos, 1);
+    String expected = center==null?"nil":format(center);
+    
+    // When:
+    mc().executeCommand("/lua spell.pos=Vec3(%s,%s,%s); v=spell.world:getNearestVillage(spell.pos, 1); print(v);", pos.getX(), pos.getY(), pos.getZ());
+    
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);

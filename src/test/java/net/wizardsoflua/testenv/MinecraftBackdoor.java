@@ -33,6 +33,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.Village;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -169,6 +170,15 @@ public class MinecraftBackdoor {
 
   public void setWorldSpawnPoint(BlockPos pos) {
     testEnv.getServer().getEntityWorld().setSpawnPoint(pos);
+  }
+
+  public BlockPos getNearestVillageCenter(BlockPos pos, int radius) {
+    Village v =
+        testEnv.getServer().getEntityWorld().getVillageCollection().getNearestVillage(pos, radius);
+    if (v == null) {
+      return null;
+    }
+    return v.getCenter();
   }
 
   public int getLuaTicksLimit() {
