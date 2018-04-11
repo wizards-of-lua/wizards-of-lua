@@ -14,6 +14,7 @@ public interface Constants {
       ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
   final String DECLARE_LUA_CLASS_NAME = getQualifiedName(DECLARE_LUA_CLASS);
 
+  final String TABLE_SUFFIX = "Table";
   final String MODULE_SUFFIX = "Module";
   final String CLASS_SUFFIX = "Class";
   final String INSTANCE_SUFFIX = "Instance";

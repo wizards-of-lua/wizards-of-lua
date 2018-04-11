@@ -1,7 +1,11 @@
 apply plugin: 'eclipse'
 apply plugin: 'java'
 
+apply from: rootProject.file('gradle-snippets/eclipse/annotation-processing.gradle')
+
 dependencies {
+  annotationProcessor libs.auto_service
+  compileOnly libs.auto_service
   compile libs.guava
   compile libs.javapoet
   compile libs.jsr305

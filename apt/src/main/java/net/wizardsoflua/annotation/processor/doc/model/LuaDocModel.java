@@ -66,8 +66,7 @@ public class LuaDocModel {
       throws ProcessingException, MultipleProcessingExceptions {
     checkAnnotated(annotatedElement, HasLuaClass.class);
 
-    AnnotationMirror mirror =
-        ProcessorUtils.getAnnotationMirror(annotatedElement, HasLuaClass.class);
+    AnnotationMirror mirror = getAnnotationMirror(annotatedElement, HasLuaClass.class);
     DeclaredType luaClassType = ProcessorUtils.getClassValue(mirror, HasLuaClass.LUA_CLASS, env);
     TypeElement luaClassElement = (TypeElement) luaClassType.asElement();
     String name = getLuaClassName(luaClassElement, annotatedElement, env);

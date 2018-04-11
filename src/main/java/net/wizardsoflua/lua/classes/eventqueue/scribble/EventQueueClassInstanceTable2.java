@@ -8,8 +8,8 @@ import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.table.GeneratedLuaTable;
 
 @Generated("GenerateLuaTable")
-public class EventQueueClassInstanceTable extends GeneratedLuaTable<EventQueueClass.Instance<?>> {
-  public EventQueueClassInstanceTable(EventQueueClass.Instance<?> delegate, Converter converter) {
+public class EventQueueClassInstanceTable2 extends GeneratedLuaTable<EventQueueClass.Instance<?>> {
+  public EventQueueClassInstanceTable2(EventQueueClass.Instance<?> delegate, Converter converter) {
     super(delegate, converter, false);
     addReadOnly("names", this::getNames);
   }

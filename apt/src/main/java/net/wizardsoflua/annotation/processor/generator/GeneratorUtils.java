@@ -33,7 +33,7 @@ import net.wizardsoflua.annotation.processor.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class GeneratorUtils {
-  public static MethodSpec createDelegatingGetter(PropertyModel property, String delegateVariable,
+  public static MethodSpec createDelegatingGetter(PropertyModel property, String delegateExpression,
       ProcessingEnvironment env) {
     TypeMirror getterType = property.getGetterType();
     String getterName = property.getGetterName();
@@ -42,15 +42,15 @@ public class GeneratorUtils {
         .returns(Object.class)//
     ;
     if (isLuaType(getterType, env)) {
-      getter.addStatement("return $L.$L()", delegateVariable, getterName);
+      getter.addStatement("return $L.$L()", delegateExpression, getterName);
     } else {
-      getter.addStatement("$T result = $L.$L()", getterType, delegateVariable, getterName);
+      getter.addStatement("$T result = $L.$L()", getterType, delegateExpression, getterName);
       getter.addStatement("return getConverter().toLuaNullable(result)");
     }
     return getter.build();
   }
 
-  public static MethodSpec createDelegatingSetter(PropertyModel property, String delegateVariable) {
+  public static MethodSpec createDelegatingSetter(PropertyModel property, String delegateExpression) {
     String name = property.getName();
     String setterName = property.getSetterName();
     TypeMirror setterType = property.getSetterType();
@@ -65,22 +65,22 @@ public class GeneratorUtils {
       setter.addStatement("$T $L = getConverter().$L($T.class, luaObject, $S)", setterType, name,
           convertersMethod, setterType, name);
     }
-    setter.addStatement("$L.$L($L)", delegateVariable, setterName, name);
+    setter.addStatement("$L.$L($L)", delegateExpression, setterName, name);
     return setter.build();
   }
 
   /**
    * Create a named lua function class that delegates calls to {@code function} via
-   * {@code delegateVariable}. If {@code delegateType} is specified the first argument of the
-   * function will be a self argument with name {@code delegateVariable}.
+   * {@code delegateExpression}. If {@code delegateType} is specified the first argument of the
+   * function will be a self argument with name {@code delegateExpression}.
    *
    * @param function
-   * @param delegateVariable
+   * @param delegateExpression
    * @param delegateType the self type or {@code null}
    * @param env
    * @return a named lua function class
    */
-  public static TypeSpec createFunctionClass(FunctionModel function, String delegateVariable,
+  public static TypeSpec createFunctionClass(FunctionModel function, String delegateExpression,
       @Nullable TypeMirror delegateType, ProcessingEnvironment env) {
     String name = function.getName();
     String Name = Utils.capitalize(name);
@@ -94,7 +94,7 @@ public class GeneratorUtils {
         .addModifiers(Modifier.PRIVATE)//
         .superclass(superclass)//
         .addMethod(createGetNameMethod(name))//
-        .addMethod(createInvokeMethod(function, delegateVariable, delegateType, env))//
+        .addMethod(createInvokeMethod(function, delegateExpression, delegateType, env))//
         .build();
   }
 

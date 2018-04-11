@@ -8,12 +8,12 @@ import java.lang.annotation.Target;
 
 @Retention(SOURCE)
 @Target(TYPE)
-public @interface GenerateLuaDoc {
-  // TODO Adrodoc55 10.04.2018: Hier sollte kein default sein
-  String name() default "";
+public @interface GenerateLuaTable {
+  boolean modifiable();
 
-  /**
-   * The subtitle of the module.
-   */
-  String subtitle();
+  String ADDITIONAL_FUNCTIONS = "additionalFunctions";
+
+  Class<?> additionalFunctions() default Void.class;
+
+  boolean includeFunctions() default true;
 }

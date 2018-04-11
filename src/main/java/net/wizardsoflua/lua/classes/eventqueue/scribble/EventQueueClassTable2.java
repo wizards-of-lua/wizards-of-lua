@@ -10,8 +10,8 @@ import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
 import net.wizardsoflua.lua.table.GeneratedLuaTable;
 
 @Generated("GenerateLuaTable")
-public class EventQueueClassTable extends GeneratedLuaTable<EventQueueClass> {
-  public EventQueueClassTable(EventQueueClass delegate, Converter converter) {
+public class EventQueueClassTable2 extends GeneratedLuaTable<EventQueueClass> {
+  public EventQueueClassTable2(EventQueueClass delegate, Converter converter) {
     super(delegate, converter, true);
     addFunction(new DisconnectFunction());
     addFunction(new IsEmptyFunction());

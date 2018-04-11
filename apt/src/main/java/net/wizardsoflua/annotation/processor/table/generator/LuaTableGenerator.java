@@ -12,6 +12,8 @@ import static net.wizardsoflua.annotation.processor.table.GenerateLuaTableProces
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -37,13 +39,13 @@ public class LuaTableGenerator {
   }
 
   public JavaFile generate() {
-    String packageName = model.getPackageName();
+    String packageName = model.getGeneratedPackageName();
     TypeSpec luaModuleType = createLuaTable();
     return JavaFile.builder(packageName, luaModuleType).build();
   }
 
   private TypeSpec createLuaTable() {
-    TypeSpec.Builder luaModuleType = classBuilder(model.getGeneratedClassName())//
+    TypeSpec.Builder luaModuleType = classBuilder(model.getGeneratedSimpleName())//
         .addAnnotation(GENERATED_ANNOTATION)//
         .addModifiers(Modifier.PUBLIC)//
         .superclass(createSuperclassTypeName())//
@@ -60,17 +62,21 @@ public class LuaTableGenerator {
     for (FunctionModel function : model.getFunctions()) {
       luaModuleType.addType(createFunctionClass(function, "getDelegate()", null, env));
     }
+    for (FunctionModel function : model.getAdditionalFunctions()) {
+      TypeMirror delegateType = model.getAdditionalFunctionsType();
+      luaModuleType.addType(createFunctionClass(function, "self", delegateType, env));
+    }
     return luaModuleType.build();
   }
 
   private ParameterizedTypeName createSuperclassTypeName() {
     ClassName raw = LUA_TABLE_SUPERCLASS;
-    TypeName delegate = model.getSourceClassName();
+    TypeName delegate = model.getParameterizedSourceClassName();
     return ParameterizedTypeName.get(raw, delegate);
   }
 
   private MethodSpec createConstructor() {
-    TypeName delegate = model.getSourceClassName();
+    TypeName delegate = model.getParameterizedSourceClassName();
     TypeName converter = CONVERTER_CLASS;
     Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
@@ -92,10 +98,20 @@ public class LuaTableGenerator {
       String Name = Utils.capitalize(function.getName());
       constructor.addStatement("addFunction(new $LFunction())", Name);
     }
+    for (FunctionModel function : model.getAdditionalFunctions()) {
+      String Name = Utils.capitalize(function.getName());
+      constructor.addStatement("addFunction(new $LFunction())", Name);
+    }
     for (ManualFunctionModel function : model.getManualFunctions()) {
       String name = function.getName();
-      String functionTypeSimpleName = ClassName.get(function.getFunctionType()).simpleName();
-      constructor.addStatement("addFunction($S, delegate.new $L())", name, functionTypeSimpleName);
+      TypeElement functionType = function.getFunctionType();
+      if (functionType.getModifiers().contains(Modifier.STATIC)) {
+        constructor.addStatement("addFunction($S, new $T(delegate))", name, functionType);
+      } else {
+        String functionTypeSimpleName = ClassName.get(functionType).simpleName();
+        constructor.addStatement("addFunction($S, delegate.new $L())", name,
+            functionTypeSimpleName);
+      }
     }
     return constructor.build();
   }
