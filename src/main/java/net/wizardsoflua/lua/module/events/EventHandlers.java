@@ -2,6 +2,9 @@ package net.wizardsoflua.lua.module.events;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -123,7 +126,9 @@ public class EventHandlers {
     if (event.isCanceled()) {
       return;
     }
-    for (EventSubscription subscription : subscriptions.get(eventName)) {
+    // Avoid ConcurrentModificationException when unsubscribing within the interceptor
+    List<EventSubscription> subscriptions = new ArrayList<>(this.subscriptions.get(eventName));
+    for (EventSubscription subscription : subscriptions) {
       LuaFunction eventHandler = subscription.getEventHandler();
       Object luaEvent = classLoader.getConverters().toLua(event);
       context.call(eventHandler, luaEvent);
