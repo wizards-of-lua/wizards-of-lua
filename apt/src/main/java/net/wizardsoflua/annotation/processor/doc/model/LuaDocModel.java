@@ -12,9 +12,7 @@ import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotation
 import static net.wizardsoflua.annotation.processor.Utils.getQualifiedName;
 import static net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor.getRelevantElements;
 import static net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel.getSuperClassAndInstance;
-import static net.wizardsoflua.annotation.processor.table.model.LuaTableModel.relevantElements;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +30,7 @@ import javax.lang.model.util.Elements;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.squareup.javapoet.ClassName;
 
 import net.wizardsoflua.annotation.GenerateLuaClass;
@@ -46,6 +45,7 @@ import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
+import net.wizardsoflua.annotation.processor.table.model.LuaTableModel;
 
 public class LuaDocModel {
   public static LuaDocModel forLuaModule(TypeElement annotatedElement,
@@ -167,9 +167,13 @@ public class LuaDocModel {
     Map<String, PropertyDocModel> properties = new TreeMap<>();
     Map<String, FunctionDocModel> functions = new TreeMap<>();
 
-    Iterator<? extends Element> it = relevantElements(annotatedElement, env).iterator();
-    while (it.hasNext()) {
-      Element element = it.next();
+    Iterable<? extends Element> relevantElements = annotatedElement.getEnclosedElements();
+    TypeElement additionalElement = LuaTableModel.getAdditionalElement(annotatedElement, env);
+    if (additionalElement != null) {
+      relevantElements =
+          Iterables.concat(relevantElements, additionalElement.getEnclosedElements());
+    }
+    for (Element element : relevantElements) {
       ElementKind kind = element.getKind();
       if (kind == ElementKind.METHOD) {
         ExecutableElement method = (ExecutableElement) element;

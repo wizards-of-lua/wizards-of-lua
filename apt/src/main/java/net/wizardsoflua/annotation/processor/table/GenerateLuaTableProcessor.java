@@ -23,7 +23,6 @@ import com.squareup.javapoet.JavaFile;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
-import net.wizardsoflua.annotation.GenerateLuaTable;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
@@ -39,7 +38,6 @@ public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     HashSet<String> result = new HashSet<>();
-    result.add(GenerateLuaTable.class.getName());
     result.add(GenerateLuaClassTable.class.getName());
     result.add(GenerateLuaInstanceTable.class.getName());
     result.add(GenerateLuaModuleTable.class.getName());

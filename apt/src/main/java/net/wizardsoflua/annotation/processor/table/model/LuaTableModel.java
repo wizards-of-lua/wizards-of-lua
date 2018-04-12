@@ -34,7 +34,6 @@ import com.squareup.javapoet.TypeName;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
-import net.wizardsoflua.annotation.GenerateLuaTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.annotation.processor.ProcessingException;
@@ -81,62 +80,68 @@ public class LuaTableModel {
   }
 
   private static boolean isModifiable(TypeElement annotatedElement) {
-    GenerateLuaTable generateLuaTable = annotatedElement.getAnnotation(GenerateLuaTable.class);
-    if (generateLuaTable != null) {
-      return generateLuaTable.modifiable();
-    } else if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
+    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
       return true;
     } else if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
       return false;
     } else if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
       return true;
     } else {
-      throw new IllegalArgumentException(
-          annotatedElement + " is not annotated with @" + GenerateLuaTable.class.getSimpleName()
-              + ", @" + GenerateLuaClassTable.class.getSimpleName() + ", @"
-              + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
-              + GenerateLuaModuleTable.class);
+      throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
+          + GenerateLuaClassTable.class.getSimpleName() + ", @"
+          + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
+          + GenerateLuaModuleTable.class);
+    }
+  }
+
+  private static boolean shouldIncludeFunctions(TypeElement annotatedElement,
+      ProcessingEnvironment env) {
+    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
+      return true;
+    } else if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
+      return false;
+    } else if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
+      return true;
+    } else {
+      throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
+          + GenerateLuaClassTable.class.getSimpleName() + ", @"
+          + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
+          + GenerateLuaModuleTable.class);
+    }
+  }
+
+  public static @Nullable TypeElement getAdditionalElement(TypeElement annotatedElement,
+      ProcessingEnvironment env) {
+    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
+      AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaClassTable.class);
+      DeclaredType additionalType = getClassValue(mirror, GenerateLuaClassTable.INSTANCE, env);
+      return (TypeElement) additionalType.asElement();
+    } else if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
+      return null;
+    } else if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
+      return null;
+    } else {
+      throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
+          + GenerateLuaClassTable.class.getSimpleName() + ", @"
+          + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
+          + GenerateLuaModuleTable.class);
     }
   }
 
   public static Stream<? extends Element> relevantElements(TypeElement annotatedElement,
       ProcessingEnvironment env) {
-    boolean includeFunctions;
-    DeclaredType additionalFunctionsType;
-    GenerateLuaTable generateLuaTable = annotatedElement.getAnnotation(GenerateLuaTable.class);
-    if (generateLuaTable != null) {
-      includeFunctions = generateLuaTable.includeFunctions();
-      AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaTable.class);
-      additionalFunctionsType = getClassValue(mirror, GenerateLuaTable.ADDITIONAL_FUNCTIONS, env);
-    } else if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
-      includeFunctions = true;
-      AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaClassTable.class);
-      additionalFunctionsType = getClassValue(mirror, GenerateLuaClassTable.INSTANCE, env);
-    } else if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
-      includeFunctions = false;
-      additionalFunctionsType = null;
-    } else if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
-      includeFunctions = true;
-      additionalFunctionsType = null;
-    } else {
-      throw new IllegalArgumentException(
-          annotatedElement + " is not annotated with @" + GenerateLuaTable.class.getSimpleName()
-              + ", @" + GenerateLuaClassTable.class.getSimpleName() + ", @"
-              + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
-              + GenerateLuaModuleTable.class);
-    }
-    TypeElement additionalFunctionsElement =
-        additionalFunctionsType == null ? null : (TypeElement) additionalFunctionsType.asElement();
-    return relevantElements(annotatedElement, includeFunctions, additionalFunctionsElement);
+    boolean includeFunctions = shouldIncludeFunctions(annotatedElement, env);
+    TypeElement additionalElement = getAdditionalElement(annotatedElement, env);
+    return relevantElements(annotatedElement, includeFunctions, additionalElement);
   }
 
   private static Stream<? extends Element> relevantElements(TypeElement annotatedElement,
-      boolean includeFunctions, @Nullable TypeElement additionalFunctionsElement) {
+      boolean includeFunctions, @Nullable TypeElement additionalElement) {
     List<? extends Element> elements = annotatedElement.getEnclosedElements();
     Stream<? extends Element> stream = elements.stream();
-    if (additionalFunctionsElement != null) {
+    if (additionalElement != null) {
       Stream<? extends Element> additionalFunctionsStream =
-          additionalFunctionsElement.getEnclosedElements().stream()//
+          additionalElement.getEnclosedElements().stream()//
               .filter(e -> isLuaFunction(e));
       stream = Streams.concat(stream, additionalFunctionsStream);
     }
