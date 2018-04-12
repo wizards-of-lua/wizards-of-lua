@@ -1,10 +1,7 @@
 package net.wizardsoflua.annotation.processor.doc;
 
 import static javax.tools.StandardLocation.SOURCE_OUTPUT;
-import static net.wizardsoflua.annotation.processor.Constants.DECLARE_LUA_CLASS_NAME;
-import static net.wizardsoflua.annotation.processor.Constants.JAVA_LUA_CLASS;
-import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
-import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationValue;
+import static net.wizardsoflua.annotation.processor.Constants.CONVERTER_EXTENSION;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
 import java.io.IOException;
@@ -20,6 +17,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
@@ -30,11 +28,14 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.StandardLocation;
 
+import com.google.auto.service.AutoService;
 import com.google.common.collect.Maps;
 
 import net.wizardsoflua.annotation.GenerateLuaClass;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModule;
+import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.HasLuaClass;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
@@ -43,6 +44,7 @@ import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
 
+@AutoService(Processor.class)
 public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   private @Nullable Map<String, String> luaClassNames;
 
@@ -63,7 +65,6 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     HashSet<String> result = new HashSet<>();
-    result.add(DECLARE_LUA_CLASS_NAME);
     result.add(GenerateLuaDoc.class.getName());
     return result;
   }
@@ -77,25 +78,25 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   protected void doProcess(TypeElement annotation, Element annotatedElement,
       RoundEnvironment roundEnv)
       throws ProcessingException, MultipleProcessingExceptions, IOException {
-    if (annotation.getQualifiedName().contentEquals(DECLARE_LUA_CLASS_NAME)
-        && annotatedElement.getKind() == ElementKind.CLASS) {
-      registerLuaClass(annotatedElement);
-    }
     if (annotation.getQualifiedName().contentEquals(GenerateLuaDoc.class.getName())
         && annotatedElement.getKind() == ElementKind.CLASS) {
-      LuaDocModel module = analyze((TypeElement) annotatedElement);
+      TypeElement typeElement = (TypeElement) annotatedElement;
+      registerLuaClass(typeElement);
+      LuaDocModel module = analyze(typeElement);
       generate(module);
     }
   }
 
-  private void registerLuaClass(Element annotatedElement) throws IOException {
-    TypeElement typeElement = (TypeElement) annotatedElement;
-    DeclaredType type = (DeclaredType) typeElement.asType();
-    TypeMirror javaType = getTypeParameter(type, JAVA_LUA_CLASS, 0, processingEnv);
+  private void registerLuaClass(TypeElement annotatedElement) throws IOException {
+    DeclaredType type = (DeclaredType) annotatedElement.asType();
+    TypeMirror javaType = getTypeParameter(type, CONVERTER_EXTENSION, 0, processingEnv);
+    if (javaType == null) {
+      return;
+    }
     DeclaredType javaClass = (DeclaredType) javaType;
     TypeElement javaElement = (TypeElement) javaClass.asElement();
-    AnnotationMirror mirror = getAnnotationMirror(annotatedElement, DECLARE_LUA_CLASS_NAME);
-    String name = (String) getAnnotationValue(mirror, "name", processingEnv).getValue();
+    GenerateLuaDoc annotation = annotatedElement.getAnnotation(GenerateLuaDoc.class);
+    String name = annotation.name();
     getLuaClassNames().put(javaElement.getQualifiedName().toString(), name);
   }
 
@@ -119,6 +120,12 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
 
   private LuaDocModel analyze(TypeElement annotatedElement)
       throws ProcessingException, MultipleProcessingExceptions {
+    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
+      return LuaDocModel.of(annotatedElement, getLuaClassNames(), processingEnv);
+    }
+    if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
+      return LuaDocModel.of(annotatedElement, getLuaClassNames(), processingEnv);
+    }
     if (annotatedElement.getAnnotation(GenerateLuaModule.class) != null) {
       return LuaDocModel.forLuaModule(annotatedElement, getLuaClassNames(), processingEnv);
     }

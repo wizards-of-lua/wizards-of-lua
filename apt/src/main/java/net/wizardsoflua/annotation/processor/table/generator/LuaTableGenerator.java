@@ -14,6 +14,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -24,9 +25,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import net.wizardsoflua.annotation.processor.Utils;
-import net.wizardsoflua.annotation.processor.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
+import net.wizardsoflua.annotation.processor.table.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.table.model.LuaTableModel;
 
 public class LuaTableGenerator {
@@ -60,11 +61,18 @@ public class LuaTableGenerator {
       }
     }
     for (FunctionModel function : model.getFunctions()) {
-      luaModuleType.addType(createFunctionClass(function, "getDelegate()", null, env));
-    }
-    for (FunctionModel function : model.getAdditionalFunctions()) {
-      TypeMirror delegateType = model.getAdditionalFunctionsType();
-      luaModuleType.addType(createFunctionClass(function, "self", delegateType, env));
+      TypeElement enclosingElement = function.getEnclosingElement();
+      if (model.getSourceElement().equals(enclosingElement)) {
+        luaModuleType.addType(createFunctionClass(function, "getDelegate()", null, env));
+      } else {
+        Types types = env.getTypeUtils();
+        TypeMirror[] typeArgs = new TypeMirror[enclosingElement.getTypeParameters().size()];
+        for (int i = 0; i < typeArgs.length; i++) {
+          typeArgs[i] = types.getWildcardType(null, null);
+        }
+        TypeMirror delegateType = types.getDeclaredType(enclosingElement, typeArgs);
+        luaModuleType.addType(createFunctionClass(function, "self", delegateType, env));
+      }
     }
     return luaModuleType.build();
   }
@@ -95,10 +103,6 @@ public class LuaTableGenerator {
       }
     }
     for (FunctionModel function : model.getFunctions()) {
-      String Name = Utils.capitalize(function.getName());
-      constructor.addStatement("addFunction(new $LFunction())", Name);
-    }
-    for (FunctionModel function : model.getAdditionalFunctions()) {
       String Name = Utils.capitalize(function.getName());
       constructor.addStatement("addFunction(new $LFunction())", Name);
     }

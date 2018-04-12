@@ -4,9 +4,7 @@ import static net.wizardsoflua.annotation.processor.ProcessorUtils.write;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -17,15 +15,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
 
-import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
@@ -67,22 +61,7 @@ public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
   }
 
   private LuaTableModel analyze(TypeElement annotatedElement) throws ProcessingException {
-    if (annotatedElement.getAnnotation(GenerateLuaTable.class) != null) {
-      return LuaTableModel.of(annotatedElement, processingEnv);
-    }
-    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
-      return LuaTableModel.ofClass(annotatedElement, processingEnv);
-    }
-    if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
-      return LuaTableModel.ofInstance(annotatedElement, processingEnv);
-    }
-    if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
-      return LuaTableModel.ofModule(annotatedElement, processingEnv);
-    }
-    throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
-        + GenerateLuaTable.class.getSimpleName() + ", @"
-        + GenerateLuaClassTable.class.getSimpleName() + ", @"
-        + GenerateLuaInstanceTable.class.getSimpleName() + " or @" + GenerateLuaModuleTable.class);
+    return LuaTableModel.of(annotatedElement, processingEnv);
   }
 
   private void generate(LuaTableModel model) {
@@ -95,31 +74,4 @@ public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
       throw new UndeclaredThrowableException(ex);
     }
   }
-
-  /**
-   * Returns all elements in that are declared in {@code moduleElement} or it's super classes. If a
-   * super class is itself a {@link GenerateLuaClass} then its elements and those of its
-   * superclasses are ignored, because they are already exported to Lua.
-   *
-   * @param moduleElement
-   * @return all elements in that are declared in {@code moduleElement} or it's super classes
-   */
-  public static List<Element> getRelevantElements(TypeElement moduleElement) {
-    List<Element> elements = new ArrayList<>();
-    while (true) {
-      elements.addAll(moduleElement.getEnclosedElements());
-
-      TypeMirror superclass = moduleElement.getSuperclass();
-      if (superclass.getKind() == TypeKind.DECLARED) {
-        DeclaredType superType = (DeclaredType) superclass;
-        moduleElement = (TypeElement) superType.asElement();
-        if (moduleElement.getAnnotation(GenerateLuaClass.class) != null) {
-          return elements;
-        }
-      } else {
-        return elements;
-      }
-    }
-  }
-
 }

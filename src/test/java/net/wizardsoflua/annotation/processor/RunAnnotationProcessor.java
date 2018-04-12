@@ -17,6 +17,7 @@ import javax.tools.ToolProvider;
 import net.wizardsoflua.annotation.processor.doc.GenerateLuaDocProcessor;
 import net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor;
 import net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor;
+import net.wizardsoflua.annotation.processor.table.GenerateLuaTableProcessor;
 
 /**
  * Useful for debugging the annotation processors.
@@ -40,7 +41,8 @@ public class RunAnnotationProcessor {
     task.setProcessors(Arrays.asList(//
         new GenerateLuaClassProcessor(), //
         new GenerateLuaDocProcessor(), //
-        new GenerateLuaModuleProcessor() //
+        new GenerateLuaModuleProcessor(), //
+        new GenerateLuaTableProcessor() //
     ));
 
     task.call();
