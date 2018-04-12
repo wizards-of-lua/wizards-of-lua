@@ -47,27 +47,27 @@ public class UseItemFinishEventApi<D extends LivingEntityUseItemEvent.Finish>
 
   /**
    * This item is placed in the players inventory in replacement of the item that is currently used.
- *
- * #### Example
- *
- * Print a message when the player finishes eating a golden apple.
- *
- * <code>
- * local itemsInUse = {}
- * Events.on('UseItemStartEvent'):call(function(event)
- *   itemsInUse[event.entity] = event.item.id
- * end)
- * Events.on('UseItemStopEvent'):call(function(event)
- *   itemsInUse[event.entity] = nil
- * end)
- * Events.on('UseItemFinishEvent'):call(function(event)
- *   local itemInUse = itemsInUse[event.entity]
- *   itemsInUse[event.entity] = nil
- *   if itemInUse == 'golden_apple' then
- *     event.resultItem = Items.get('apple')
- *   end
- * end)
- * </code>
+   *
+   * #### Example
+   *
+   * Print a message when the player finishes eating a golden apple.
+   *
+   * <code>
+   * local itemsInUse = {}
+   * Events.on('UseItemStartEvent'):call(function(event)
+   *   itemsInUse[event.entity] = event.item.id
+   * end)
+   * Events.on('UseItemStopEvent'):call(function(event)
+   *   itemsInUse[event.entity] = nil
+   * end)
+   * Events.on('UseItemFinishEvent'):call(function(event)
+   *   local itemInUse = itemsInUse[event.entity]
+   *   itemsInUse[event.entity] = nil
+   *   if itemInUse == 'golden_apple' then
+   *     event.resultItem = Items.get('apple')
+   *   end
+   * end)
+   * </code>
    */
   @LuaProperty
   public ItemStack getResultItem() {
