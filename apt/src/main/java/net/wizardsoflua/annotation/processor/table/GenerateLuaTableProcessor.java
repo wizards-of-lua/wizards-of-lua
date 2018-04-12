@@ -26,6 +26,9 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
 
 import net.wizardsoflua.annotation.GenerateLuaClass;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.GenerateLuaTable;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
@@ -36,13 +39,16 @@ import net.wizardsoflua.annotation.processor.table.model.LuaTableModel;
 @AutoService(Processor.class)
 public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
   public static final AnnotationSpec GENERATED_ANNOTATION = AnnotationSpec.builder(Generated.class)//
-      .addMember("value", "$S", GenerateLuaTable.class.getSimpleName())//
+      .addMember("value", "$S", GenerateLuaTableProcessor.class.getSimpleName())//
       .build();
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     HashSet<String> result = new HashSet<>();
     result.add(GenerateLuaTable.class.getName());
+    result.add(GenerateLuaClassTable.class.getName());
+    result.add(GenerateLuaInstanceTable.class.getName());
+    result.add(GenerateLuaModuleTable.class.getName());
     return result;
   }
 
@@ -55,9 +61,28 @@ public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
   protected void doProcess(TypeElement annotation, Element annotatedElement,
       RoundEnvironment roundEnv) throws ProcessingException, MultipleProcessingExceptions {
     if (annotatedElement.getKind() == ElementKind.CLASS) {
-      LuaTableModel model = LuaTableModel.of((TypeElement) annotatedElement, processingEnv);
+      LuaTableModel model = analyze((TypeElement) annotatedElement);
       generate(model);
     }
+  }
+
+  private LuaTableModel analyze(TypeElement annotatedElement) throws ProcessingException {
+    if (annotatedElement.getAnnotation(GenerateLuaTable.class) != null) {
+      return LuaTableModel.of(annotatedElement, processingEnv);
+    }
+    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
+      return LuaTableModel.ofClass(annotatedElement, processingEnv);
+    }
+    if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
+      return LuaTableModel.ofInstance(annotatedElement, processingEnv);
+    }
+    if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
+      return LuaTableModel.ofModule(annotatedElement, processingEnv);
+    }
+    throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
+        + GenerateLuaTable.class.getSimpleName() + ", @"
+        + GenerateLuaClassTable.class.getSimpleName() + ", @"
+        + GenerateLuaInstanceTable.class.getSimpleName() + " or @" + GenerateLuaModuleTable.class);
   }
 
   private void generate(LuaTableModel model) {

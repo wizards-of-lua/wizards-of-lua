@@ -10,8 +10,9 @@ import net.sandius.rembulan.runtime.AbstractFunction2;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
-import net.wizardsoflua.annotation.GenerateLuaTable;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
@@ -26,7 +27,7 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
  * is connected to the event source.
  */
-@GenerateLuaTable(modifiable = true, additionalFunctions = EventQueueClass.Instance.class)
+@GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
 public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClassInstanceTable> {
   public static final String NAME = "EventQueue2Class";
@@ -53,7 +54,7 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
     return new EventQueueClassInstanceTable(new Instance<>(javaInstance), getConverter());
   }
 
-  @GenerateLuaTable(modifiable = false, includeFunctions = false)
+  @GenerateLuaInstanceTable
   public static class Instance<D extends EventQueue> extends ModifiableDelegator<D> {
     public Instance(D delegate) {
       super(delegate);

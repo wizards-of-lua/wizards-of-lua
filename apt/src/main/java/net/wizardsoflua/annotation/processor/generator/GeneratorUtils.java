@@ -3,6 +3,7 @@ package net.wizardsoflua.annotation.processor.generator;
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static net.wizardsoflua.annotation.processor.Constants.getNamedFunctionClassName;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.isJavaLangObject;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.isLuaType;
 
@@ -26,7 +27,6 @@ import com.squareup.javapoet.TypeSpec;
 
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.model.ArgumentModel;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
@@ -88,7 +88,7 @@ public class GeneratorUtils {
     if (delegateType != null) {
       numberOfArgs++; // Additional self arg
     }
-    ClassName superclass = Constants.getNamedFunctionClassName(numberOfArgs);
+    ClassName superclass = getNamedFunctionClassName(numberOfArgs);
 
     return classBuilder(Name + "Function")//
         .addModifiers(Modifier.PRIVATE)//

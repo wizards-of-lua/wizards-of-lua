@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -31,6 +32,9 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.GenerateLuaTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
@@ -51,6 +55,44 @@ public class LuaTableModel {
 
     boolean includeFunctions = annotation.includeFunctions();
 
+    return of(annotatedElement, modifiable, additionalType, includeFunctions, env);
+  }
+
+  public static LuaTableModel ofClass(TypeElement annotatedElement, ProcessingEnvironment env)
+      throws ProcessingException {
+    checkAnnotated(annotatedElement, GenerateLuaClassTable.class);
+
+    boolean modifiable = true;
+
+    AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaClassTable.class);
+    DeclaredType additionalType = getClassValue(mirror, GenerateLuaClassTable.INSTANCE, env);
+
+    boolean includeFunctions = true;
+
+    return of(annotatedElement, modifiable, additionalType, includeFunctions, env);
+  }
+
+  public static LuaTableModel ofInstance(TypeElement annotatedElement, ProcessingEnvironment env)
+      throws ProcessingException {
+    checkAnnotated(annotatedElement, GenerateLuaInstanceTable.class);
+    boolean modifiable = false;
+    DeclaredType additionalType = null;
+    boolean includeFunctions = false;
+    return of(annotatedElement, modifiable, additionalType, includeFunctions, env);
+  }
+
+  public static LuaTableModel ofModule(TypeElement annotatedElement, ProcessingEnvironment env)
+      throws ProcessingException {
+    checkAnnotated(annotatedElement, GenerateLuaModuleTable.class);
+    boolean modifiable = true;
+    DeclaredType additionalType = null;
+    boolean includeFunctions = true;
+    return of(annotatedElement, modifiable, additionalType, includeFunctions, env);
+  }
+
+  private static LuaTableModel of(TypeElement annotatedElement, boolean modifiable,
+      @Nullable DeclaredType additionalType, boolean includeFunctions, ProcessingEnvironment env)
+      throws ProcessingException {
     Map<String, PropertyModel> properties = new HashMap<>();
     Map<String, FunctionModel> functions = new HashMap<>();
     Map<String, FunctionModel> additionalFunctions = new HashMap<>();
@@ -77,16 +119,19 @@ public class LuaTableModel {
           functions.put(function.getName(), function);
         }
       }
-      TypeElement additionalElement = (TypeElement) additionalType.asElement();
-      List<? extends Element> additionalElements = additionalElement.getEnclosedElements();
-      List<ExecutableElement> additionalMethods = methodsIn(additionalElements);
-      for (ExecutableElement method : additionalMethods) {
-        if (method.getAnnotation(LuaFunction.class) != null) {
-          FunctionModel function = FunctionModel.of(method);
-          additionalFunctions.put(function.getName(), function);
+      Iterable<TypeElement> types = typesIn(elements);
+      if (additionalType != null) {
+        TypeElement additionalElement = (TypeElement) additionalType.asElement();
+        List<? extends Element> additionalElements = additionalElement.getEnclosedElements();
+        types = Iterables.concat(types, typesIn(additionalElements));
+        List<ExecutableElement> additionalMethods = methodsIn(additionalElements);
+        for (ExecutableElement method : additionalMethods) {
+          if (method.getAnnotation(LuaFunction.class) != null) {
+            FunctionModel function = FunctionModel.of(method);
+            additionalFunctions.put(function.getName(), function);
+          }
         }
       }
-      List<TypeElement> types = typesIn(Iterables.concat(elements, additionalElements));
       for (TypeElement typeElement : types) {
         if (typeElement.getAnnotation(LuaFunction.class) != null) {
           ManualFunctionModel function = ManualFunctionModel.of(typeElement);
@@ -94,14 +139,13 @@ public class LuaTableModel {
         }
       }
     }
-
     return new LuaTableModel(annotatedElement, modifiable, additionalType, properties, functions,
         manualFunctions, additionalFunctions);
   }
 
   private final TypeElement sourceElement;
   private final boolean modifiable;
-  private final TypeMirror additionalFunctionsType;
+  private final @Nullable TypeMirror additionalFunctionsType;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
   private final SortedMap<String, ManualFunctionModel> manualFunctions = new TreeMap<>();
@@ -118,8 +162,7 @@ public class LuaTableModel {
   ) {
     this.sourceElement = requireNonNull(sourceElement, "sourceElement == null!");
     this.modifiable = modifiable;
-    this.additionalFunctionsType =
-        requireNonNull(additionalFunctionsType, "additionalFunctionsType == null!");
+    this.additionalFunctionsType = additionalFunctionsType;
     this.properties.putAll(properties);
     this.functions.putAll(functions);
     this.manualFunctions.putAll(manualFunctions);
@@ -173,7 +216,7 @@ public class LuaTableModel {
     return Collections.unmodifiableCollection(additionalFunctions.values());
   }
 
-  public TypeMirror getAdditionalFunctionsType() {
+  public @Nullable TypeMirror getAdditionalFunctionsType() {
     return additionalFunctionsType;
   }
 }
