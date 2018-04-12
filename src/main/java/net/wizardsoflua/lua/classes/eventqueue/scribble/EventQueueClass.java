@@ -29,7 +29,7 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
  */
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
-public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClassInstanceTable> {
+public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClassInstanceTable<?>> {
   public static final String NAME = "EventQueue2Class";
   private LuaScheduler scheduler;
 
@@ -46,12 +46,12 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
 
   @Override
   public Table createTable() {
-    return new EventQueueClassTable(this, getConverter());
+    return new EventQueueClassTable<>(this, getConverter());
   }
 
   @Override
-  protected EventQueueClassInstanceTable toLuaInstance(EventQueue javaInstance) {
-    return new EventQueueClassInstanceTable(new Instance<>(javaInstance), getConverter());
+  protected EventQueueClassInstanceTable<?> toLuaInstance(EventQueue javaInstance) {
+    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getConverter());
   }
 
   @GenerateLuaInstanceTable

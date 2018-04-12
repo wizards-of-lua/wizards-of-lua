@@ -24,6 +24,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Streams;
@@ -36,6 +38,7 @@ import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
@@ -43,6 +46,7 @@ import net.wizardsoflua.annotation.processor.model.PropertyModel;
 public class LuaTableModel {
   public static LuaTableModel of(TypeElement annotatedElement, ProcessingEnvironment env)
       throws ProcessingException {
+    ClassName superTableClassName = getSuperTableClassName(annotatedElement);
     boolean modifiable = isModifiable(annotatedElement);
     Map<String, PropertyModel> properties = new HashMap<>();
     Map<String, FunctionModel> functions = new HashMap<>();
@@ -76,7 +80,23 @@ public class LuaTableModel {
         }
       }
     }
-    return new LuaTableModel(annotatedElement, modifiable, properties, functions, manualFunctions);
+    return new LuaTableModel(annotatedElement, superTableClassName, modifiable, properties,
+        functions, manualFunctions);
+  }
+
+  private static ClassName getSuperTableClassName(TypeElement annotatedElement) {
+    TypeMirror superclass = annotatedElement.getSuperclass();
+    if (superclass.getKind() == TypeKind.DECLARED) {
+      DeclaredType superType = (DeclaredType) superclass;
+      TypeElement superElement = (TypeElement) superType.asElement();
+      if (superElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
+        ClassName sourceClassName = ClassName.get(superElement);
+        String packageName = sourceClassName.packageName();
+        String simpleName = getGeneratedSimpleName(sourceClassName);
+        return ClassName.get(packageName, simpleName);
+      }
+    }
+    return Constants.LUA_TABLE_SUPERCLASS;
   }
 
   private static boolean isModifiable(TypeElement annotatedElement) {
@@ -156,6 +176,7 @@ public class LuaTableModel {
   }
 
   private final TypeElement sourceElement;
+  private final ClassName superTableClassName;
   private final boolean modifiable;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
@@ -163,12 +184,14 @@ public class LuaTableModel {
 
   public LuaTableModel(//
       TypeElement sourceElement, //
+      ClassName superTableClassName, //
       boolean modifiable, //
       Map<? extends String, ? extends PropertyModel> properties, //
       Map<? extends String, ? extends FunctionModel> functions, //
       Map<? extends String, ? extends ManualFunctionModel> manualFunctions //
   ) {
     this.sourceElement = requireNonNull(sourceElement, "sourceElement == null!");
+    this.superTableClassName = requireNonNull(superTableClassName, "superTableClassName == null!");
     this.modifiable = modifiable;
     this.properties.putAll(properties);
     this.functions.putAll(functions);
@@ -202,8 +225,16 @@ public class LuaTableModel {
   }
 
   public String getGeneratedSimpleName() {
-    List<String> sourceSimpleNames = getSourceClassName().simpleNames();
+    return getGeneratedSimpleName(getSourceClassName());
+  }
+
+  private static String getGeneratedSimpleName(ClassName sourceClassName) {
+    List<String> sourceSimpleNames = sourceClassName.simpleNames();
     return Joiner.on("").join(sourceSimpleNames) + TABLE_SUFFIX;
+  }
+
+  public ClassName getSuperTableClassName() {
+    return superTableClassName;
   }
 
   public boolean isModifiable() {

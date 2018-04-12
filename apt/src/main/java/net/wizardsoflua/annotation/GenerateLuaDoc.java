@@ -15,5 +15,5 @@ public @interface GenerateLuaDoc {
   /**
    * The subtitle of the module.
    */
-  String subtitle();
+  String subtitle() default "";
 }

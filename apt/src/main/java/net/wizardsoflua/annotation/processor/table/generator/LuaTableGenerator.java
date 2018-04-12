@@ -23,6 +23,7 @@ import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
@@ -49,7 +50,8 @@ public class LuaTableGenerator {
     TypeSpec.Builder luaModuleType = classBuilder(model.getGeneratedSimpleName())//
         .addAnnotation(GENERATED_ANNOTATION)//
         .addModifiers(Modifier.PUBLIC)//
-        .superclass(createSuperclassTypeName())//
+        .addTypeVariable(createTypeVariableD())//
+        .superclass(createSuperClassTypeName())//
         .addMethod(createConstructor())//
     ;
     for (PropertyModel property : model.getProperties()) {
@@ -77,21 +79,30 @@ public class LuaTableGenerator {
     return luaModuleType.build();
   }
 
-  private ParameterizedTypeName createSuperclassTypeName() {
-    ClassName raw = LUA_TABLE_SUPERCLASS;
-    TypeName delegate = model.getParameterizedSourceClassName();
-    return ParameterizedTypeName.get(raw, delegate);
+  private TypeVariableName createTypeVariableD() {
+    TypeName upperBound = model.getParameterizedSourceClassName();
+    return TypeVariableName.get("D", upperBound);
+  }
+
+  private ParameterizedTypeName createSuperClassTypeName() {
+    ClassName raw = model.getSuperTableClassName();
+    TypeVariableName d = createTypeVariableD();
+    return ParameterizedTypeName.get(raw, d);
   }
 
   private MethodSpec createConstructor() {
-    TypeName delegate = model.getParameterizedSourceClassName();
+    TypeName delegate = createTypeVariableD();
     TypeName converter = CONVERTER_CLASS;
     Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
         .addParameter(delegate, "delegate")//
         .addParameter(converter, "converter")//
-        .addStatement("super(delegate, converter, $L)", model.isModifiable())//
     ;
+    if (LUA_TABLE_SUPERCLASS.equals(model.getSuperTableClassName())) {
+      constructor.addStatement("super(delegate, converter, $L)", model.isModifiable());
+    } else {
+      constructor.addStatement("super(delegate, converter)");
+    }
     for (PropertyModel property : model.getProperties()) {
       String name = property.getName();
       String getterName = property.getGetterName();
