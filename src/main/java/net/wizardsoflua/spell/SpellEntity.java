@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,9 +18,6 @@ import net.wizardsoflua.lua.classes.LuaClassLoader;
 
 public class SpellEntity extends Entity {
   public static final String NAME = "Spell";
-  public static final int ID = 1;
-  public static final ResourceLocation RES_LOCATION =
-      new ResourceLocation(WizardsOfLua.MODID + ":" + SpellEntity.NAME);
 
   private ICommandSender owner;
   private SpellProgram program;
