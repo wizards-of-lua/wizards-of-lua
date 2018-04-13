@@ -16,17 +16,23 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 public class WorldTest extends WolTestBase {
 
   EnumDifficulty oldDifficulty;
-  
+
   @Before
   public void before() {
     oldDifficulty = mc().getDifficulty();
   }
-  
+
   @After
   public void after() {
     mc().setDifficulty(oldDifficulty);
+    // clear door
+    BlockPos pos = mc().getWorldSpawnPoint();
+    mc().setBlock(pos.up().up(), Blocks.AIR);
+    mc().setBlock(pos.up().up().north(), Blocks.AIR);
+    mc().setBlock(pos, Blocks.AIR);
+    mc().setBlock(pos.up(), Blocks.AIR);
   }
-  
+
   // /test net.wizardsoflua.tests.WorldTest test_world_name_is_readable
   @Test
   public void test_world_name_is_readable() {
@@ -76,7 +82,8 @@ public class WorldTest extends WolTestBase {
     EnumDifficulty expected = EnumDifficulty.NORMAL;
 
     // When:
-    mc().executeCommand("/lua w=spell.world; w.difficulty='%s'; print(w.difficulty)", expected.name());
+    mc().executeCommand("/lua w=spell.world; w.difficulty='%s'; print(w.difficulty)",
+        expected.name());
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -126,29 +133,31 @@ public class WorldTest extends WolTestBase {
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
   }
-  
+
   // /test net.wizardsoflua.tests.WorldTest test_getNearestVillage
-  @Test 
+  @Test
   public void test_getNearestVillage() {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
-    
+
     mc().setBlock(pos.up().up(), Blocks.GRASS);
     mc().setBlock(pos.up().up().north(), Blocks.GRASS);
     mc().setBlock(pos, Blocks.DARK_OAK_DOOR);
     mc().setBlock(pos.up(), Blocks.DARK_OAK_DOOR);
     mc().executeCommand("/summon minecraft:villager %s %s %s", pos.getX(), pos.getY(), pos.getZ());
-    
-    sleep(50); // wait for at least a game tick so that the new villlage can be detected
-    
+
+    sleep(50 * 5); // wait for at least 5 game ticks so that the new villlage can be detected
+
     mc().clearEvents();
-    
+
     BlockPos center = mc().getNearestVillageCenter(pos, 1);
-    String expected = center==null?"nil":format(center);
-    
+    String expected = center == null ? "nil" : format(center);
+
     // When:
-    mc().executeCommand("/lua spell.pos=Vec3(%s,%s,%s); v=spell.world:getNearestVillage(spell.pos, 1); print(v);", pos.getX(), pos.getY(), pos.getZ());
-    
+    mc().executeCommand(
+        "/lua spell.pos=Vec3(%s,%s,%s); v=spell.world:getNearestVillage(spell.pos, 1); print(v);",
+        pos.getX(), pos.getY(), pos.getZ());
+
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);

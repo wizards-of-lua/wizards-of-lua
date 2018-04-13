@@ -34,6 +34,14 @@ public class SpellRegistry {
     return Iterables.filter(spells, predicate);
   }
 
+  public Iterable<SpellEntity> get(List<Predicate<SpellEntity>> predicates) {
+    Iterable<SpellEntity> result = spells;
+    for (Predicate<SpellEntity> predicate : predicates) {
+      result = Iterables.filter(result, predicate);
+    }
+    return result;
+  }
+
   public Iterable<String> getActiveSids() {
     return transform(spells, s -> valueOf(s.getSid()));
   }
@@ -41,4 +49,5 @@ public class SpellRegistry {
   public Iterable<String> getActiveNames() {
     return transform(spells, SpellEntity::getName);
   }
+
 }

@@ -53,6 +53,7 @@ import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
+import net.wizardsoflua.lua.module.spell.SpellsModule;
 import net.wizardsoflua.lua.module.system.SystemAdapter;
 import net.wizardsoflua.lua.module.system.SystemModule;
 import net.wizardsoflua.lua.module.time.Time;
@@ -64,6 +65,7 @@ import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
+import net.wizardsoflua.spell.SpellRegistry;
 
 public class SpellProgram {
   private enum State {
@@ -79,6 +81,8 @@ public class SpellProgram {
     int getLuaTicksLimit();
 
     int getEventListenerLuaTicksLimit();
+
+    SpellRegistry getSpellRegistry();
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -274,6 +278,7 @@ public class SpellProgram {
 
     SpellModule.installInto(env, getConverters(), spellEntity);
     EntitiesModule.installInto(env, getConverters(), spellEntity);
+    SpellsModule.installInto(env, getConverters(), context.getSpellRegistry(), spellEntity);
 
     dependencies.installModules(env, executor, stateContext);
 
