@@ -174,20 +174,6 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).contains("Error").contains("attempt to modify read-only table index");
   }
 
-  // /test net.wizardsoflua.tests.SpellTest test_spell_can_be_found_with_selector
-  @Test
-  public void test_spell_can_be_found_with_selector() throws Exception {
-    // Given:
-    mc().executeCommand("/lua for i=1,10 do sleep(20); end");
-
-    // When:
-    mc().executeCommand("/execute @e[type=wol:Spell] 0 0 0 say hi");
-
-    // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).matches("\\[Spell-\\d+\\] hi");
-  }
-
   // /test net.wizardsoflua.tests.SpellTest test_spell_execute_command_casted_by_server
   @Test
   public void test_spell_execute_command_casted_by_server() throws Exception {

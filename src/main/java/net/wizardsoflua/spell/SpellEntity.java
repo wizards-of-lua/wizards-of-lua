@@ -44,6 +44,13 @@ public class SpellEntity extends Entity {
     chunkLoaderTicketSupport.request();
   }
 
+  @Override
+  public NBTTagCompound serializeNBT() {
+    NBTTagCompound ret = new NBTTagCompound();
+    //ret.setString("id", this.getEntityString());
+    return this.writeToNBT(ret);
+  }
+
   public PositionAndRotation getPositionAndRotation() {
     return new PositionAndRotation(getPositionVector(), rotationYaw, rotationPitch);
   }
