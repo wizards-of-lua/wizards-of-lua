@@ -32,7 +32,7 @@ public class Spell_data_Test extends WolTestBase {
     mc().executeCommand("lua spell.name = 'other'\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "other.data.blub = 'bla'\n"//
         + "print(other.data.blub)\n"//
     );
@@ -51,7 +51,7 @@ public class Spell_data_Test extends WolTestBase {
         + "sleep(2)\n"//
         + "print(spell.data.blub)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "other.data.blub = 'bla'\n"//
     );
 
@@ -69,7 +69,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.blub = 'bla'\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "print(other.data.blub)\n"//
     );
 
@@ -89,7 +89,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.blub = data\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "local data = other.data.blub\n"//
         + "print(data == data.bla)\n"//
     );
@@ -111,7 +111,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.blub = data\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "declare 'MyClass'\n"//
         + "local data = other.data.blub\n"//
         + "local mt = getmetatable(data)\n"//
@@ -137,7 +137,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.blub = data\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "local data = other.data.blub\n"//
         + "local mt = getmetatable(data)\n"//
         + "print(mt)\n"//
@@ -157,7 +157,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.blub = spell\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "print(other.data.blub == other)\n"//
     );
 
@@ -175,7 +175,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.blub = {bla = spell}\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "print(other.data.blub.bla == other)\n"//
     );
 
@@ -192,7 +192,7 @@ public class Spell_data_Test extends WolTestBase {
     mc().executeCommand("lua spell.name = 'other'\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "print(other.data == other.data)\n"//
     );
 
@@ -215,7 +215,7 @@ public class Spell_data_Test extends WolTestBase {
         + "sleep(2)\n"//
         + "print('other spell c==d: '..tostring(spell.data.c == spell.data.d))\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "print('main spell a==b: '..tostring(other.data.a == other.data.b))\n"//
         + "local aTable = {data = 'cd'}\n"//
         + "other.data.c = aTable\n"//
@@ -245,7 +245,7 @@ public class Spell_data_Test extends WolTestBase {
         + "spell.data.func()\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "local func = other.data.func\n"//
         + "print(type(func))\n"//
         + "func()\n"//
@@ -272,7 +272,7 @@ public class Spell_data_Test extends WolTestBase {
         + "setmetatable(spell.data.tbl, mt)\n"//
         + "sleep(2)\n"//
     );
-    mc().executeCommand("lua local other = Entities.find('@e[type=wol:spell,name=other]')[1]\n"//
+    mc().executeCommand("lua local other = Spells.find({name='other'})[1]\n"//
         + "local tbl = other.data.tbl\n"//
         + "local mt = {}\n"//
         + "print('main')\n"//
