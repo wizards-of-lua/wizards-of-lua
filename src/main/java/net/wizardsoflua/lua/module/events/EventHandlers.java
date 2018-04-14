@@ -14,8 +14,8 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
-import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.data.Data;
 
 public class EventHandlers {
@@ -32,7 +32,7 @@ public class EventHandlers {
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
   private final EventQueue.Context eventQueueContext = new EventQueue.Context() {
     @Override
-    public void disconnect(EventQueue eventQueue) {
+    public void stop(EventQueue eventQueue) {
       EventHandlers.this.disconnect(eventQueue);
     }
 
@@ -45,10 +45,10 @@ public class EventHandlers {
    * Using a linked multimap, because the order of subscriptions matters as later event listeners
    * are not called if the event was canceled by a previous one.
    */
-  private final Multimap<String, EventSubscription> subscriptions = LinkedHashMultimap.create();
-  private final EventSubscription.Context subscriptionContext = new EventSubscription.Context() {
+  private final Multimap<String, EventInterceptor> subscriptions = LinkedHashMultimap.create();
+  private final EventInterceptor.Context subscriptionContext = new EventInterceptor.Context() {
     @Override
-    public void unsubscribe(EventSubscription subscription) {
+    public void stop(EventInterceptor subscription) {
       for (String eventName : subscription.getEventNames()) {
         subscriptions.remove(eventName, subscription);
       }
@@ -66,7 +66,7 @@ public class EventHandlers {
   /**
    * @return the value of {@link #subscriptions}
    */
-  public Multimap<String, EventSubscription> getSubscriptions() {
+  public Multimap<String, EventInterceptor> getSubscriptions() {
     return subscriptions;
   }
 
@@ -78,11 +78,11 @@ public class EventHandlers {
     return result;
   }
 
-  public EventSubscription subscribe(Iterable<String> eventNames, LuaFunction eventHandler) {
-    return subscribe(new EventSubscription(eventNames, eventHandler, subscriptionContext));
+  public EventInterceptor subscribe(Iterable<String> eventNames, LuaFunction eventHandler) {
+    return subscribe(new EventInterceptor(eventNames, eventHandler, subscriptionContext));
   }
 
-  private EventSubscription subscribe(EventSubscription subscription) {
+  private EventInterceptor subscribe(EventInterceptor subscription) {
     for (String eventName : subscription.getEventNames()) {
       subscriptions.put(eventName, subscription);
     }
@@ -127,8 +127,8 @@ public class EventHandlers {
       return;
     }
     // Avoid ConcurrentModificationException when unsubscribing within the interceptor
-    List<EventSubscription> subscriptions = new ArrayList<>(this.subscriptions.get(eventName));
-    for (EventSubscription subscription : subscriptions) {
+    List<EventInterceptor> subscriptions = new ArrayList<>(this.subscriptions.get(eventName));
+    for (EventInterceptor subscription : subscriptions) {
       LuaFunction eventHandler = subscription.getEventHandler();
       Object luaEvent = classLoader.getConverters().toLua(event);
       context.call(eventHandler, luaEvent);

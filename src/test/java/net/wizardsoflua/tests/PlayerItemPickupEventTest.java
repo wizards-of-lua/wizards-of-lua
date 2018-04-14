@@ -30,7 +30,7 @@ public class PlayerItemPickupEventTest extends WolTestBase {
         itemPos.getX(), itemPos.getY(), itemPos.getZ());
     mc().clearEvents();
     mc().executeCommand(
-        "/lua q=Events.connect('PlayerItemPickupEvent'); e=q:next(); print(e.player.name)");
+        "/lua q=Events.collect('PlayerItemPickupEvent'); e=q:next(); print(e.player.name)");
 
     // When:
     mc().player().setPosition(itemPos);

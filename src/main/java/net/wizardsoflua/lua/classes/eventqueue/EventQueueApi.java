@@ -33,7 +33,7 @@ public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
 
   /**
    * These are the [names](/modules/Event#name) of all events this queue is
-   * [connected](/modules/Events#connect) to.
+   * [collecting](/modules/Events#collect) to.
    */
   @LuaProperty
   public ImmutableSet<String> getNames() {
@@ -41,24 +41,23 @@ public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
   }
 
   /**
-   * The 'disconnect' function disconnects this queue from the event source so that it will not
-   * collect any events anymore.
+   * The 'stop' function stops collecting events into this queue.
    *
    * #### Example
    *
-   * Connecting an event queue to the chat event source and disconnecting it after the first event
+   * Collecting chat events and stopping it after the first event
    * occurs.
    *
    * <code>
-   * local queue = Events.connect("ChatEvent")
+   * local queue = Events.collect("ChatEvent")
    * local event = queue:next()
    * print(str(event))
-   * queue:disconnect()
+   * queue:stop()
    * </code>
    */
   @LuaFunction
-  public void disconnect() {
-    delegate.disconnect();
+  public void stop() {
+    delegate.stop();
   }
 
   /**
@@ -69,7 +68,7 @@ public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
    * Busy-waiting for a chat event and printing the message when it occurs.
    *
    * <code>
-   * local queue = Events.connect("ChatEvent")
+   * local queue = Events.collect("ChatEvent")
    * while queue:isEmpty() do
    *   sleep(20)
    *   print("still waiting...")
@@ -93,7 +92,7 @@ public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
    * Echo the last chat message every 5 seconds.
    *
    * <code>
-   * local queue = Events.connect("ChatEvent")
+   * local queue = Events.collect("ChatEvent")
    * while true do
    *   local event = queue:latest()
    *   if event ~= nil then
@@ -120,7 +119,7 @@ public class EventQueueApi<D extends EventQueue> extends LuaClassApi<D> {
    * Echoing all chat messages.
    *
    * <code>
-   * local queue = Events.connect("ChatEvent")
+   * local queue = Events.collect("ChatEvent")
    * while true do
    *   local event = queue:next()
    *   spell:execute("say %s", event.message)

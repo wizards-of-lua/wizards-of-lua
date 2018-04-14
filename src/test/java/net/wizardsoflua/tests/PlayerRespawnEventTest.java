@@ -25,7 +25,7 @@ public class PlayerRespawnEventTest extends WolTestBase {
     String expected1 = mc().player().getName() + " fell out of the world";
     String expected5 = "#" + mc().player().getName();
     mc().executeCommand(
-        "/lua q=Events.connect('PlayerRespawnEvent'); e=q:next(); print('#'..e.player.name)");
+        "/lua q=Events.collect('PlayerRespawnEvent'); e=q:next(); print('#'..e.player.name)");
     mc().player().chat("/kill %s", mc().player().getName());
 
     // When:

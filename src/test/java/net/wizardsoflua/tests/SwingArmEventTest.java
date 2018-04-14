@@ -40,7 +40,7 @@ public class SwingArmEventTest extends WolTestBase {
     EnumFacing facing = EnumFacing.WEST;
     String expected = EnumHand.MAIN_HAND.name();
 
-    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
+    mc().executeCommand("/lua q=Events.collect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
     mc().player().rightclick(clickPos, facing);
@@ -63,7 +63,7 @@ public class SwingArmEventTest extends WolTestBase {
     EnumFacing facing = EnumFacing.WEST;
     String expected = EnumHand.OFF_HAND.name();
 
-    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
+    mc().executeCommand("/lua q=Events.collect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
     mc().player().rightclick(clickPos, facing);
@@ -85,7 +85,7 @@ public class SwingArmEventTest extends WolTestBase {
     EnumFacing facing = EnumFacing.UP;
     String expected = EnumHand.MAIN_HAND.name();
 
-    mc().executeCommand("/lua q=Events.connect('SwingArmEvent'); e=q:next(); print(e.hand)");
+    mc().executeCommand("/lua q=Events.collect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
     mc().player().leftclick(clickPos, facing);

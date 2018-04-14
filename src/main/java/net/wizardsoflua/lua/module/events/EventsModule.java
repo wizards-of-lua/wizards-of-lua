@@ -10,8 +10,8 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
+import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
-import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
@@ -25,12 +25,12 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
   public EventsModule(LuaClassLoader classLoader, EventHandlers delegate) {
     super(classLoader, delegate);
-    SubscribeFunction subscribeFunction = new SubscribeFunction();
-    addImmutable(subscribeFunction.getName(), subscribeFunction);
+    InterceptFunction interceptFunction = new InterceptFunction();
+    addImmutable(interceptFunction.getName(), interceptFunction);
     OnFunction onFunction = new OnFunction();
     addImmutable(onFunction.getName(), onFunction);
-    ConnectFunction connectFunction = new ConnectFunction();
-    addImmutable(connectFunction.getName(), connectFunction);
+    CollectFunction collectFunction = new CollectFunction();
+    addImmutable(collectFunction.getName(), collectFunction);
     FireFunction fireFunction = new FireFunction();
     addImmutable(fireFunction.getName(), fireFunction);
   }
@@ -58,18 +58,18 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
 
       Table metatable = new DefaultTable();
       metatable.rawset("__index", metatable);
-      SubscribeFunction subscribeFunction = new SubscribeFunction();
-      metatable.rawset("call", subscribeFunction);
+      InterceptFunction interceptFunction = new InterceptFunction();
+      metatable.rawset("call", interceptFunction);
       result.setMetatable(metatable);
 
       context.getReturnBuffer().setTo(result);
     }
   }
 
-  private class SubscribeFunction extends NamedFunction2 {
+  private class InterceptFunction extends NamedFunction2 {
     @Override
     public String getName() {
-      return "subscribe";
+      return "intercept";
     }
 
     @Override
@@ -79,16 +79,16 @@ public class EventsModule extends DelegatingProxy<EventHandlers> {
       LuaFunction eventHandler =
           getConverters().toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
 
-      EventSubscription subscription = delegate.subscribe(eventNames, eventHandler);
+      EventInterceptor subscription = delegate.subscribe(eventNames, eventHandler);
       Object result = getConverters().toLua(subscription);
       context.getReturnBuffer().setTo(result);
     }
   }
 
-  private class ConnectFunction extends NamedFunctionAnyArg {
+  private class CollectFunction extends NamedFunctionAnyArg {
     @Override
     public String getName() {
-      return "connect";
+      return "collect";
     }
 
     @Override

@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 public class EventQueue {
 
   public interface Context {
-    void disconnect(EventQueue eventQueue);
+    void stop(EventQueue eventQueue);
 
     long getCurrentTime();
   }
@@ -33,8 +33,8 @@ public class EventQueue {
     return names;
   }
 
-  public void disconnect() {
-    context.disconnect(this);
+  public void stop() {
+    context.stop(this);
   }
 
   public long getWaitUntil() {

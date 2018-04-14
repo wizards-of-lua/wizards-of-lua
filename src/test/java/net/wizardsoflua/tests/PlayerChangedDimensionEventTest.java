@@ -47,7 +47,7 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
     String sometimesExpected = mc().player().getName()+" moved too quickly!";
     createPortal(portalPos);
     mc().executeCommand(
-        "/lua q=Events.connect('PlayerChangedDimensionEvent'); e=q:next(); print(e.player.name)");
+        "/lua q=Events.collect('PlayerChangedDimensionEvent'); e=q:next(); print(e.player.name)");
 
     // When:
     mc().player().setPosition(portalPos.up().north());
