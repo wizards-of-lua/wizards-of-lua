@@ -14,6 +14,8 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
+import org.eclipse.jdt.internal.compiler.batch.Main;
+
 import net.wizardsoflua.annotation.processor.doc.GenerateLuaDocProcessor;
 import net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor;
 import net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor;
@@ -26,10 +28,22 @@ import net.wizardsoflua.annotation.processor.table.GenerateLuaTableProcessor;
  */
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {
-    runAnnoationProcessor();
+    runEclipseCompiler();
+    // runJdkCompiler();
   }
 
-  public static void runAnnoationProcessor() throws Exception {
+  private static void runEclipseCompiler() {
+    String[] argv = {//
+        "-cp", System.getProperty("java.class.path"), //
+        "-1.8", //
+        "-d", "build/eclipse-apt-classes", //
+        "-s", "build/eclipse-apt-sources", //
+        "src/main/java"//
+    };
+    Main.main(argv);
+  }
+
+  private static void runJdkCompiler() throws Exception {
     String source = "src/main/java";
 
     Iterable<JavaFileObject> files = getSourceFiles(source);
