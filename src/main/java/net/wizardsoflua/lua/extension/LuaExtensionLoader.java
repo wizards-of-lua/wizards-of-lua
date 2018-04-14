@@ -49,7 +49,7 @@ public class LuaExtensionLoader implements net.wizardsoflua.lua.extension.api.Lu
   private <E> E getExtension(Class<E> extensionClass, Consumer<E> initializer)
       throws ServiceConfigurationError {
     E extension = extensions.get(extensionClass);
-    if (extensionClass == null) {
+    if (extension == null) {
       extension = newInstance(extensionClass);
       extensions.add(extension);
       initializer.accept(extension);
