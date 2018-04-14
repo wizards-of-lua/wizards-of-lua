@@ -27,7 +27,7 @@ public class SharedFileMoveAction extends MenuEntry implements CommandAction {
       Deque<String> argList, BlockPos targetPos) {
     String name = argList.poll();
     if (argList.isEmpty()) {
-      List<String> files = wol.getFileRegistry().getSharedLuaFilenames();
+      List<String> files = wol.getFileRepository().getSharedLuaFilenames();
       return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
     }
     return Collections.emptyList();
@@ -39,7 +39,7 @@ public class SharedFileMoveAction extends MenuEntry implements CommandAction {
     String newName = argList.poll();
     if (name != null && newName != null) {
       try {
-        wol.getFileRegistry().moveSharedFile(name, newName);
+        wol.getFileRepository().moveSharedFile(name, newName);
       } catch (IllegalArgumentException e) {
         throw new CommandException(e.getMessage());
       }

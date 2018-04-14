@@ -37,7 +37,7 @@ public class LoginAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      URL url = wol.getFileRegistry().getPasswordTokenUrl(player);
+      URL url = wol.getFileRepository().getPasswordTokenUrl(player);
       WolAnnouncementMessage message =
           new WolAnnouncementMessage("Click here to log in with your web browser: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));

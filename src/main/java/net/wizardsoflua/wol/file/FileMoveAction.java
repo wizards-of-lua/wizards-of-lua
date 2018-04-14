@@ -32,7 +32,7 @@ public class FileMoveAction extends MenuEntry implements CommandAction {
       Entity entity = sender.getCommandSenderEntity();
       if (entity instanceof EntityPlayer) {
         EntityPlayer player = (EntityPlayer) entity;
-        List<String> files = wol.getFileRegistry().getLuaFilenames(player);
+        List<String> files = wol.getFileRepository().getLuaFilenames(player);
         return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
       }
     }
@@ -48,7 +48,7 @@ public class FileMoveAction extends MenuEntry implements CommandAction {
       EntityPlayer player = (EntityPlayer) entity;
       if (name != null && newName != null) {
         try {
-          wol.getFileRegistry().moveFile(player, name, newName);
+          wol.getFileRepository().moveFile(player, name, newName);
         } catch (IllegalArgumentException e) {
           throw new CommandException(e.getMessage());
         }
