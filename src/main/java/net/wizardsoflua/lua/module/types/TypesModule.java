@@ -1,42 +1,54 @@
 package net.wizardsoflua.lua.module.types;
 
-import com.google.auto.service.AutoService;
+import static java.util.Objects.requireNonNull;
 
+import javax.annotation.Nullable;
+
+import com.google.auto.service.AutoService;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
+import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
-import net.sandius.rembulan.runtime.ExecutionContext;
-import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.wizardsoflua.annotation.GenerateLuaModuleTable;
+import net.wizardsoflua.annotation.LuaFunction;
+import net.wizardsoflua.lua.BadArgumentException;
+import net.wizardsoflua.lua.classes.ObjectClass2;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Converter;
-import net.wizardsoflua.lua.extension.api.service.LuaClassLoader;
+import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
-import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
-import net.wizardsoflua.lua.function.NamedFunction1;
-import net.wizardsoflua.lua.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
+@GenerateLuaModuleTable
 @AutoService(LuaExtension.class)
-public class TypesModule extends AbstractLuaModule {
-  @Inject
-  private TableFactory tableFactory;
+public class TypesModule implements LuaTableExtension {
+  public static final String BOOLEAN = "boolean";
+  public static final String FUNCTION = "function";
+  public static final String NIL = "nil";
+  public static final String NUMBER = "number";
+  public static final String STRING = "string";
+  public static final String TABLE = "table";
+
   @Inject
   private Converter converter;
   @Inject
   private Table env;
   @Inject
-  private LuaClassLoader classLoader;
+  private LuaExtensionLoader extensionLoader;
+  @Inject
+  private TableFactory tableFactory;
 
-  private Types delegate;
-
-  public TypesModule() {
-    add(new DeclareFunction());
-    add(new InstanceOfFunction());
-    add(new GetTypenameFunction());
-  }
+  private final BiMap<String, Table> classes = HashBiMap.create();
+  private Table objectClassTable;
 
   @AfterInjection
-  public void initialize() {
-    delegate = new Types(env, classLoader);
+  public void init() {
+    ObjectClass2 objectClass = extensionLoader.getLuaExtension(ObjectClass2.class);
+    objectClassTable = objectClass.getTable();
+    classes.put(objectClass.getName(), objectClassTable);
   }
 
   @Override
@@ -46,54 +58,80 @@ public class TypesModule extends AbstractLuaModule {
 
   @Override
   public Table createTable() {
-    return tableFactory.newTable();
+    return new TypesModuleTable<>(this, converter);
   }
 
-  public Types getDelegate() {
-    return delegate;
+  @LuaFunction
+  public void declare(String className, @Nullable Table metatable) {
+    if (env.rawget(className) != null) {
+      throw new BadArgumentException(
+          "a global variable with name '" + className + "' is already defined", 1, "className",
+          "declare");
+    }
+    if (metatable == null) {
+      metatable = objectClassTable;
+    }
+    Table classTable = tableFactory.newTable();
+    classTable.rawset("__index", classTable);
+    classTable.setMetatable(metatable);
+    classes.put(className, classTable);
+    env.rawset(className, classTable);
   }
 
-  private class DeclareFunction extends NamedFunction2 {
-    @Override
-    public String getName() {
-      return "declare";
+  @LuaFunction
+  public boolean instanceOf(Table classTable, @Nullable Object object) {
+    if (object == null) {
+      return false;
     }
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2)
-        throws ResolvedControlThrowable {
-      String className = converter.toJava(String.class, arg1, 1, "className", getName());
-      Table metatable = converter.toJavaNullable(Table.class, arg2, 2, "metatable", getName());
-      delegate.declareClass(className, metatable);
-      context.getReturnBuffer().setTo();
+    if (!(object instanceof Table)) {
+      return false;
     }
+    Table metatable = ((Table) object).getMetatable();
+    return classTable.equals(metatable) || instanceOf(classTable, metatable);
   }
 
-  private class InstanceOfFunction extends NamedFunction2 {
-    @Override
-    public String getName() {
-      return "instanceOf";
+  @LuaFunction
+  public String getTypename(@Nullable Object object) {
+    if (object == null) {
+      return NIL;
     }
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2)
-        throws ResolvedControlThrowable {
-      Table classMetaTable = converter.toJavaNullable(Table.class, arg1, 1, "class", getName());
-      boolean result = delegate.isInstanceOf(classMetaTable, arg2);
-      context.getReturnBuffer().setTo(result);
+    if (object instanceof Table) {
+      Table table = (Table) object;
+      String classname = getClassname(table);
+      if (classname != null) {
+        return classname;
+      }
     }
+    return getTypename(object.getClass());
   }
 
-  private class GetTypenameFunction extends NamedFunction1 {
-    @Override
-    public String getName() {
-      return "getTypename";
+  public @Nullable String getClassname(Table table) {
+    requireNonNull(table, "table == null!");
+    if (classes.inverse().containsKey(table)) {
+      return "class";
     }
+    BiMap<Table, String> inverse = classes.inverse();
+    Table metatable = table.getMetatable();
+    return inverse.get(metatable);
+  }
 
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String result = delegate.getTypename(arg1);
-      context.getReturnBuffer().setTo(result);
+  public String getTypename(Class<?> cls) {
+    // TODO Adrodoc 14.04.2018: respect ConverterExtensions
+    if (Table.class.isAssignableFrom(cls)) {
+      return TABLE;
     }
+    if (ByteString.class.isAssignableFrom(cls) || String.class.isAssignableFrom(cls)) {
+      return STRING;
+    }
+    if (Number.class.isAssignableFrom(cls)) {
+      return NUMBER;
+    }
+    if (Boolean.class.isAssignableFrom(cls)) {
+      return BOOLEAN;
+    }
+    if (LuaFunction.class.isAssignableFrom(cls)) {
+      return FUNCTION;
+    }
+    return cls.getName();
   }
 }

@@ -15,7 +15,6 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.spell.TransferenceTableProxy;
 
 public class TransferenceProxyFactory {

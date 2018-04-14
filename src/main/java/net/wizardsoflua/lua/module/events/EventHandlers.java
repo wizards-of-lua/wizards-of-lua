@@ -26,7 +26,6 @@ import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.service.Spell;
 import net.wizardsoflua.lua.extension.api.service.Time;
-import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
 public class EventHandlers implements PauseContext {
@@ -45,14 +44,13 @@ public class EventHandlers implements PauseContext {
   @Inject
   private Time time;
 
-  private Types types;
+  private TypesModule types;
   private long luaTickLimit;
   private boolean duringEventIntercepting;
 
   @AfterInjection
   public void initialize() {
-    TypesModule typesModule = extensionLoader.getLuaExtension(TypesModule.class);
-    types = typesModule.getDelegate();
+    types = extensionLoader.getLuaExtension(TypesModule.class);
     luaTickLimit = config.getEventInterceptorTickLimit();
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override
@@ -143,6 +141,7 @@ public class EventHandlers implements PauseContext {
   }
 
   public void fire(String eventName, Object dataLuaObj) {
+    // TODO Adrodoc 15.04.2018: Rewrite using proxies (see SpellEntity.data)
     Data data = Data.createData(dataLuaObj, types);
     MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data));
   }

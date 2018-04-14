@@ -7,13 +7,14 @@ import javax.annotation.Nullable;
 
 import com.google.auto.service.AutoService;
 
+import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
-import net.wizardsoflua.annotation.GenerateLuaModule;
+import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
@@ -30,11 +31,10 @@ import net.wizardsoflua.lua.module.types.Types;
 /**
  * The Time module provides access to time related properties of the active Spell's world.
  */
-@GenerateLuaModule(name = TimeExtension.NAME)
+@GenerateLuaModuleTable
 @GenerateLuaDoc(subtitle = "Accessing the Time")
 @AutoService(LuaExtension.class)
 public class TimeExtension implements LuaTableExtension {
-  public static final String NAME = "Time";
   @Inject
   private Config config;
   @Inject
@@ -44,23 +44,21 @@ public class TimeExtension implements LuaTableExtension {
   @Inject
   private Time time;
 
-  private TimeModule table;
   private long sleepTrigger;
 
   @AfterInjection
   public void initialize() {
-    table = new TimeModule(this, converter);
     sleepTrigger = config.getLuaTickLimit() / 2;
   }
 
   @Override
   public String getName() {
-    return NAME;
+    return "Time";
   }
 
   @Override
-  public TimeModule createTable() {
-    return table;
+  public Table createTable() {
+    return new TimeExtensionTable<>(this, converter);
   }
 
   /**

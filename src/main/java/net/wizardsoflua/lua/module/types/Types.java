@@ -13,10 +13,11 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.classes.CustomLuaClass;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
+import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.service.LuaClassLoader;
 
+@Deprecated
 public class Types {
   public static final String NIL_META = "nil";
   public static final String BOOLEAN_META = "boolean";

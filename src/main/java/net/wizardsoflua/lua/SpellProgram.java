@@ -167,8 +167,6 @@ public class SpellProgram {
   private SpellExtensionLoader createSpellExtensionLoader() {
     ServiceInjector injector = new ServiceInjector();
     injector.registerService(Injector.class, injector);
-    injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaClassLoader.class,
-        luaClassLoader);
     injector.registerService(Config.class, new Config() {
       @Override
       public long getLuaTickLimit() {
@@ -189,7 +187,8 @@ public class SpellProgram {
       }
     });
     injector.registerService(LuaExtensionLoader.class, extensionLoader);
-    injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class, scheduler);
+    injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class,
+        scheduler);
     injector.registerService(Spell.class, new Spell() {
       @Override
       public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {

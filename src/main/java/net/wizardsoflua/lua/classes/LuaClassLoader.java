@@ -27,7 +27,7 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
-public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.service.LuaClassLoader {
+public class LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
 
   private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
@@ -123,7 +123,6 @@ public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.servic
     }
   }
 
-  @Override
   public void load(LuaClass luaClass) {
     if (luaClassByName.containsKey(luaClass.getName())) {
       return; // LuaClass is already loaded
@@ -139,7 +138,12 @@ public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.servic
     env.rawset(luaClass.getName(), luaClass.getMetaTable());
   }
 
-  @Override
+  /**
+   * Returns the {@link LuaClass} instance of the specified type, loading it if neccessary.
+   *
+   * @param luaClassClass
+   * @return the {@link LuaClass} instance
+   */
   public <LC extends LuaClass> LC getLuaClassOfType(Class<LC> luaClassClass) {
     requireNonNull(luaClassClass, "luaClassClass == null!");
     LuaClass luaClass = luaClassByType.get(luaClassClass);
@@ -164,7 +168,14 @@ public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.servic
     return luaClassByName.get(luaClassName);
   }
 
-  @Override
+  /**
+   * Returns the {@link LuaClass} with the specified table or {@code null} if no such
+   * {@link LuaClass} was loaded by {@code this} {@link LuaClassLoader}.
+   *
+   * @param luaClassTable the table of the {@link LuaClass}
+   * @return the {@link LuaClass} with the specified table or {@code null}
+   * @throws NullPointerException if the specified table is {@code null}
+   */
   public @Nullable LuaClass getLuaClassForClassTable(Table luaClassMetaTable)
       throws NullPointerException {
     requireNonNull(luaClassMetaTable, "luaClassMetaTable == null!");
@@ -172,7 +183,13 @@ public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.servic
     return luaClass;
   }
 
-  @Override
+  /**
+   * Returns the {@link LuaClass} of the specified {@link Table}. If {@code luaObject} is not an
+   * instance of a class then {@code null} is returned.
+   *
+   * @param luaObject
+   * @return the {@link LuaClass} or {@code null}
+   */
   public @Nullable LuaClass getLuaClassOfInstance(Table luaObject) {
     LuaClass result = getLuaClassForClassTable(luaObject);
     if (result != null) {
@@ -185,7 +202,6 @@ public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.servic
     return null;
   }
 
-  @Override
   public @Nullable <J> JavaLuaClass<J, ?> getLuaClassForJavaClass(Class<J> javaClass) {
     requireNonNull(javaClass, "javaClass == null!");
     @SuppressWarnings("unchecked")

@@ -11,7 +11,7 @@ import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.event.CustomEventClass;
-import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class Data {
@@ -23,7 +23,7 @@ public class Data {
     return new Data(javaObj);
   }
 
-  public static Data createData(Object luaObj, Types types) {
+  public static Data createData(Object luaObj, TypesModule types) {
     return new Data(transferObj(luaObj, new IdentityHashMap<>(), types));
   }
 
@@ -38,7 +38,7 @@ public class Data {
   }
 
   private static Object transferObj(Object luaObj, IdentityHashMap<Object, Object> copies,
-      Types types) {
+      TypesModule types) {
     if (luaObj == null) {
       return null;
     }
@@ -82,7 +82,7 @@ public class Data {
   }
 
   private static TableData transferTable(Table table, IdentityHashMap<Object, Object> copies,
-      Types types) {
+      TypesModule types) {
     if (table == null) {
       return null;
     }
