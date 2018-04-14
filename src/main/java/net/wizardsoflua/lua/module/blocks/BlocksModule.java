@@ -11,38 +11,35 @@ import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.TableFactory;
-import net.sandius.rembulan.runtime.ExecutionContext;
-import net.sandius.rembulan.runtime.ResolvedControlThrowable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaModuleTable;
+import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
-import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
-import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
+@GenerateLuaModuleTable
+@GenerateLuaDoc(name = BlocksModule.NAME, subtitle = "The Building Blocks Directory")
 @AutoService(LuaExtension.class)
-public class BlocksModule extends AbstractLuaModule {
-  @Inject
-  private TableFactory tableFactory;
+public class BlocksModule implements LuaTableExtension {
+  public static final String NAME = "Blocks";
   @Inject
   private Converter converter;
 
-  public BlocksModule() {
-    add(new GetFunction());
-  }
-
   @Override
   public String getName() {
-    return "Blocks";
+    return NAME;
   }
 
   @Override
   public Table getTable() {
-    return tableFactory.newTable();
+    return new BlocksModuleTable<>(this, converter);
   }
 
-  private ImmutableWolBlock get(String name) {
+  @LuaFunction
+  public ImmutableWolBlock get(String name) {
     Block block = getBlockByName(name);
 
     IBlockState blockState = block.getDefaultState();
@@ -76,21 +73,6 @@ public class BlocksModule extends AbstractLuaModule {
       if (origData.getTag("Items") == null) {
         origData.setTag("Items", new NBTTagList());
       }
-    }
-  }
-
-  private class GetFunction extends NamedFunction1 {
-    @Override
-    public String getName() {
-      return "get";
-    }
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      String name = converter.toJava(String.class, arg1, 1, "name", getName());
-      ImmutableWolBlock result = get(name);
-      Object luaResult = converter.toLua(result);
-      context.getReturnBuffer().setTo(luaResult);
     }
   }
 }
