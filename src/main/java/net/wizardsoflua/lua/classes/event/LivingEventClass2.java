@@ -7,24 +7,17 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
-import net.wizardsoflua.lua.module.events.EventHandlers;
-import net.wizardsoflua.lua.module.events.EventsModule;
 
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)
 @GenerateLuaDoc(name = LivingEventClass2.NAME)
 public class LivingEventClass2
     extends AbstractLuaClass<LivingEvent, LivingEventClass2InstanceTable<?>> {
   public static final String NAME = "LivingEvent";
-  private EventHandlers events;
-
-  @Override
-  public void initialize(InitializationContext context) {
-    super.initialize(context);
-    EventsModule module = context.getLuaExtensionLoader().getLuaExtension(EventsModule.class);
-    events = module.getDelegate();
-  }
+  @Inject
+  private Injector injector;
 
   @Override
   public String getName() {
@@ -38,14 +31,14 @@ public class LivingEventClass2
 
   @Override
   protected LivingEventClass2InstanceTable<?> toLuaInstance(LivingEvent javaInstance) {
-    return new LivingEventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, events),
+    return new LivingEventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
         getConverter());
   }
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends LivingEvent> extends EventClass2.Instance<D> {
-    public Instance(D delegate, String name, EventHandlers events) {
-      super(delegate, name, events);
+    public Instance(D delegate, String name, Injector injector) {
+      super(delegate, name, injector);
     }
 
     @LuaProperty

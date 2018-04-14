@@ -15,38 +15,45 @@ import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.data.Data;
-import net.wizardsoflua.lua.extension.api.Config;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.ExceptionHandler;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.LuaExtensionLoader;
-import net.wizardsoflua.lua.extension.api.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.PauseContext;
-import net.wizardsoflua.lua.extension.api.Spell;
-import net.wizardsoflua.lua.extension.api.Time;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Config;
+import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
+import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
+import net.wizardsoflua.lua.extension.api.service.Spell;
+import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
 public class EventHandlers implements PauseContext {
-  private final Converter converter;
-  private final ExceptionHandler exceptionHandler;
-  private final LuaScheduler scheduler;
-  private final Time time;
-  private final Types types;
-  private final long luaTickLimit;
+  @Inject
+  private Config config;
+  @Inject
+  private Converter converter;
+  @Inject
+  private ExceptionHandler exceptionHandler;
+  @Inject
+  private LuaExtensionLoader extensionLoader;
+  @Inject
+  private LuaScheduler scheduler;
+  @Inject
+  private Spell spell;
+  @Inject
+  private Time time;
+
+  private Types types;
+  private long luaTickLimit;
   private boolean duringEventIntercepting;
 
-  public EventHandlers(InitializationContext context) {
-    LuaExtensionLoader extensionLoader = context.getLuaExtensionLoader();
+  @AfterInjection
+  public void initialize() {
     TypesModule typesModule = extensionLoader.getLuaExtension(TypesModule.class);
     types = typesModule.getDelegate();
-    converter = context.getConverter();
-    exceptionHandler = context.getExceptionHandler();
-    Config config = context.getConfig();
     luaTickLimit = config.getEventInterceptorTickLimit();
-    scheduler = context.getScheduler();
-    Spell spell = context.getSpell();
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override
       public void terminate() {
@@ -59,7 +66,6 @@ public class EventHandlers implements PauseContext {
       }
     });
     scheduler.addPauseContext(this);
-    time = context.getTime();
   }
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();

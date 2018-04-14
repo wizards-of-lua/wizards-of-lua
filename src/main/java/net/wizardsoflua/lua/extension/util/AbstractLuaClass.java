@@ -1,17 +1,13 @@
 package net.wizardsoflua.lua.extension.util;
 
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 
 public abstract class AbstractLuaClass<J, L extends Delegator<? extends Delegator<? extends J>>>
     extends LuaInstanceCachingLuaClass<J, L> {
+  @Inject
   private Converter converter;
-
-  @Override
-  public void initialize(InitializationContext context) {
-    converter = context.getConverter();
-  }
 
   /**
    * @return the value of {@link #converter}

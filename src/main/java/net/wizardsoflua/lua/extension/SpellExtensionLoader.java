@@ -8,21 +8,18 @@ import java.util.function.Consumer;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
 import net.wizardsoflua.lua.extension.spi.ConverterExtension;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 
-public class LuaExtensionLoader implements net.wizardsoflua.lua.extension.api.LuaExtensionLoader {
+public class SpellExtensionLoader implements net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader {
   private final ClassIndex extensions = new ClassIndex();
   private final Table env;
-  private final InitializationContext initializationContext;
+  private final ServiceInjector injector;
   private final Converters converters;
 
-  public LuaExtensionLoader(Table env, InitializationContext initializationContext,
-      Converters converters) {
+  public SpellExtensionLoader(Table env, ServiceInjector injector, Converters converters) {
     this.env = checkNotNull(env, "env == null!");
-    this.initializationContext =
-        checkNotNull(initializationContext, "initializationContext == null!");
+    this.injector = checkNotNull(injector, "injector == null!");
     this.converters = requireNonNull(converters, "converters == null!");
   }
 
@@ -34,14 +31,14 @@ public class LuaExtensionLoader implements net.wizardsoflua.lua.extension.api.Lu
   @Override
   public <E extends LuaExtension> E getLuaExtension(Class<E> extensionClass) {
     return getExtension(extensionClass, extension -> {
-      extension.initialize(initializationContext);
+      injector.injectServicesInto(extension);
       extension.installInto(env);
     });
   }
 
   public <E extends ConverterExtension<?, ?>> E getConverterExtension(Class<E> extensionClass) {
     return getExtension(extensionClass, extension -> {
-      extension.initialize(initializationContext);
+      injector.injectServicesInto(extension);
       converters.addConverterExtension(extension);
     });
   }

@@ -22,12 +22,12 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.TransferenceProxyFactory;
-import net.wizardsoflua.lua.extension.api.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
-public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.LuaClassLoader {
+public class LuaClassLoader implements net.wizardsoflua.lua.extension.api.service.LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
 
   private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =

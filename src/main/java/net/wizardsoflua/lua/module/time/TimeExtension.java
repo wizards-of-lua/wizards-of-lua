@@ -17,11 +17,12 @@ import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.extension.api.Config;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.LuaScheduler;
-import net.wizardsoflua.lua.extension.api.Time;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Config;
+import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
+import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.module.types.Types;
@@ -34,20 +35,21 @@ import net.wizardsoflua.lua.module.types.Types;
 @AutoService(LuaExtension.class)
 public class TimeExtension implements LuaTableExtension {
   public static final String NAME = "Time";
+  @Inject
+  private Config config;
+  @Inject
   private Converter converter;
+  @Inject
   private LuaScheduler scheduler;
+  @Inject
   private Time time;
 
   private TimeModule table;
   private long sleepTrigger;
 
-  @Override
-  public void initialize(InitializationContext context) {
-    converter = context.getConverter();
-    scheduler = context.getScheduler();
-    time = context.getTime();
+  @AfterInjection
+  public void initialize() {
     table = new TimeModule(this, converter);
-    Config config = context.getConfig();
     sleepTrigger = config.getLuaTickLimit() / 2;
   }
 

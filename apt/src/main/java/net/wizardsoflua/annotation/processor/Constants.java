@@ -6,7 +6,7 @@ import com.squareup.javapoet.ClassName;
 
 public interface Constants {
   final ClassName CONVERTER_CLASS =
-      ClassName.get("net.wizardsoflua.lua.extension.api", "Converter");
+      ClassName.get("net.wizardsoflua.lua.extension.api.service", "Converter");
   final String CONVERTER_EXTENSION = "net.wizardsoflua.lua.extension.spi.ConverterExtension";
 
   final String LUA_CLASS_API = "net.wizardsoflua.lua.classes.LuaClassApi";
@@ -31,7 +31,6 @@ public interface Constants {
       ClassName.get("net.wizardsoflua.lua.classes", "GeneratedLuaInstance");
 
   static ClassName getNamedFunctionClassName(int numberOfArgs) {
-    return ClassName.get("net.wizardsoflua.lua.extension.api.function",
-        "NamedFunction" + numberOfArgs);
+    return ClassName.get("net.wizardsoflua.lua.function", "NamedFunction" + numberOfArgs);
   }
 }

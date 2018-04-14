@@ -19,8 +19,8 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.LuaScheduler;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
 
 /**
@@ -31,13 +31,8 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
 public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClassInstanceTable<?>> {
   public static final String NAME = "EventQueue2Class";
+  @Inject
   private LuaScheduler scheduler;
-
-  @Override
-  public void initialize(InitializationContext context) {
-    super.initialize(context);
-    scheduler = context.getScheduler();
-  }
 
   @Override
   public String getName() {

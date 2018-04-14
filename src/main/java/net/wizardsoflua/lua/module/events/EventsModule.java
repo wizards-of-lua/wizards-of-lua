@@ -6,34 +6,43 @@ import java.util.List;
 import com.google.auto.service.AutoService;
 
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.TableFactory;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
-import net.wizardsoflua.lua.extension.api.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
+import net.wizardsoflua.lua.function.NamedFunction2;
+import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
 @AutoService(LuaExtension.class)
 public class EventsModule extends AbstractLuaModule {
-  private Table table;
+  @Inject
   private Converter converter;
+  @Inject
+  private Injector injector;
+  @Inject
+  private TableFactory tableFactory;
+
   private EventHandlers delegate;
 
-  @Override
-  public void initialize(InitializationContext context) {
-    table = context.getTableFactory().newTable();
-    converter = context.getConverter();
-    delegate = new EventHandlers(context);
+  public EventsModule() {
     add(new SubscribeFunction());
     add(new OnFunction());
     add(new ConnectFunction());
     add(new FireFunction());
+  }
+
+  @AfterInjection
+  public void initialize() {
+    delegate = injector.inject(new EventHandlers());
   }
 
   public EventHandlers getDelegate() {
@@ -47,7 +56,7 @@ public class EventsModule extends AbstractLuaModule {
 
   @Override
   public Table createTable() {
-    return table;
+    return tableFactory.newTable();
   }
 
   private class OnFunction extends NamedFunctionAnyArg {

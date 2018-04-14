@@ -15,7 +15,7 @@ import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.LuaClassLoader;
+import net.wizardsoflua.lua.extension.api.service.LuaClassLoader;
 
 public class Types {
   public static final String NIL_META = "nil";

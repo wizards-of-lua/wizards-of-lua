@@ -7,23 +7,23 @@ import com.google.auto.service.AutoService;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.TableFactory;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
+import net.wizardsoflua.lua.function.NamedFunction2;
 
 @AutoService(LuaExtension.class)
 public class ItemsModule extends AbstractLuaModule {
-  private Table table;
+  @Inject
   private Converter converter;
+  @Inject
+  private TableFactory tableFactory;
 
-  @Override
-  public void initialize(InitializationContext context) {
-    table = context.getTableFactory().newTable();
-    converter = context.getConverter();
+  public ItemsModule() {
     add(new GetFunction());
   }
 
@@ -34,7 +34,7 @@ public class ItemsModule extends AbstractLuaModule {
 
   @Override
   public Table createTable() {
-    return table;
+    return tableFactory.newTable();
   }
 
   public Object get(String name, @Nullable Integer amount) {

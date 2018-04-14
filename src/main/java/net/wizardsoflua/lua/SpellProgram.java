@@ -42,14 +42,16 @@ import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
-import net.wizardsoflua.lua.extension.LuaExtensionLoader;
-import net.wizardsoflua.lua.extension.api.Config;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.ExceptionHandler;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.ServiceInjector;
+import net.wizardsoflua.lua.extension.SpellExtensionLoader;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
-import net.wizardsoflua.lua.extension.api.Spell;
-import net.wizardsoflua.lua.extension.api.Time;
+import net.wizardsoflua.lua.extension.api.service.Config;
+import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
+import net.wizardsoflua.lua.extension.api.service.Injector;
+import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.Spell;
+import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
@@ -93,7 +95,7 @@ public class SpellProgram {
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
   private final LuaClassLoader luaClassLoader;
-  private final LuaExtensionLoader extensionLoader;
+  private final SpellExtensionLoader extensionLoader;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
   private ICommandSender owner;
@@ -138,8 +140,7 @@ public class SpellProgram {
         return extensionLoader.getLuaExtension(EventsModule.class);
       }
     });
-    extensionLoader = new LuaExtensionLoader(env, createExtensionInitializationContext(),
-        luaClassLoader.getConverters());
+    extensionLoader = createSpellExtensionLoader();
     extensionLoader.installExtensions();
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
@@ -163,88 +164,51 @@ public class SpellProgram {
     scheduler.addPauseContext(systemAdapter);
   }
 
-  private InitializationContext createExtensionInitializationContext() {
-    return new InitializationContext() {
+  private SpellExtensionLoader createSpellExtensionLoader() {
+    ServiceInjector injector = new ServiceInjector();
+    injector.registerService(Injector.class, injector);
+    injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaClassLoader.class,
+        luaClassLoader);
+    injector.registerService(Config.class, new Config() {
       @Override
-      public net.wizardsoflua.lua.extension.api.LuaClassLoader getClassLoader() {
-        return luaClassLoader;
+      public long getLuaTickLimit() {
+        return luaTickLimit;
       }
 
       @Override
-      public Config getConfig() {
-        return new Config() {
-          @Override
-          public long getLuaTickLimit() {
-            return luaTickLimit;
-          }
-
-          @Override
-          public long getEventInterceptorTickLimit() {
-            return context.getEventListenerLuaTicksLimit();
-          }
-        };
+      public long getEventInterceptorTickLimit() {
+        return context.getEventListenerLuaTicksLimit();
+      }
+    });
+    injector.registerService(Converter.class, luaClassLoader.getConverters());
+    injector.registerService(Table.class, env);
+    injector.registerService(ExceptionHandler.class, new ExceptionHandler() {
+      @Override
+      public void handle(String contextMessage, Throwable t) {
+        handleException(contextMessage, t);
+      }
+    });
+    injector.registerService(LuaExtensionLoader.class, extensionLoader);
+    injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class, scheduler);
+    injector.registerService(Spell.class, new Spell() {
+      @Override
+      public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
+        parallelTaskFactories.add(parallelTaskFactory);
+      }
+    });
+    injector.registerService(TableFactory.class, stateContext);
+    injector.registerService(Time.class, new Time() {
+      @Override
+      public long getTotalWorldTime() {
+        return world.getTotalWorldTime();
       }
 
       @Override
-      public Converter getConverter() {
-        return luaClassLoader.getConverters();
+      public Clock getClock() {
+        return context.getClock();
       }
-
-      @Override
-      public Table getEnv() {
-        return env;
-      }
-
-      @Override
-      public ExceptionHandler getExceptionHandler() {
-        return new ExceptionHandler() {
-          @Override
-          public void handle(String contextMessage, Throwable t) {
-            handleException(contextMessage, t);
-          }
-        };
-      }
-
-      @Override
-      public net.wizardsoflua.lua.extension.api.LuaExtensionLoader getLuaExtensionLoader() {
-        return extensionLoader;
-      }
-
-      @Override
-      public LuaScheduler getScheduler() {
-        return scheduler;
-      }
-
-      @Override
-      public Spell getSpell() {
-        return new Spell() {
-          @Override
-          public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
-            parallelTaskFactories.add(parallelTaskFactory);
-          }
-        };
-      }
-
-      @Override
-      public TableFactory getTableFactory() {
-        return stateContext;
-      }
-
-      @Override
-      public Time getTime() {
-        return new Time() {
-          @Override
-          public long getTotalWorldTime() {
-            return world.getTotalWorldTime();
-          }
-
-          @Override
-          public Clock getClock() {
-            return context.getClock();
-          }
-        };
-      }
-    };
+    });
+    return new SpellExtensionLoader(env, injector, luaClassLoader.getConverters());
   }
 
   public LuaClassLoader getLuaClassLoader() {

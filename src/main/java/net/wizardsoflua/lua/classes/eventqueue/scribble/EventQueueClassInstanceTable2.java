@@ -4,7 +4,7 @@ import javax.annotation.Generated;
 
 import com.google.common.collect.ImmutableSet;
 
-import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.table.GeneratedLuaTable;
 
 @Generated("GenerateLuaTable")

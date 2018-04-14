@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.extension.api.Converter;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.table.PropertyTable;
 
 public abstract class DelegatingProxy<D> extends PropertyTable

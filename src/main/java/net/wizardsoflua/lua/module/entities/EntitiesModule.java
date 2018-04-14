@@ -13,7 +13,7 @@ import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
+import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class EntitiesModule {

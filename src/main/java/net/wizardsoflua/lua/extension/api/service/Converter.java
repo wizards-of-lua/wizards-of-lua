@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.api;
+package net.wizardsoflua.lua.extension.api.service;
 
 import java.util.List;
 import java.util.Optional;

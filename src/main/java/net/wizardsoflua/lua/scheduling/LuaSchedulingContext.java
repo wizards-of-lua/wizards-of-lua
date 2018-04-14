@@ -7,7 +7,7 @@ import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.LuaScheduler;
+import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 
 public abstract class LuaSchedulingContext implements SchedulingContext {
   public interface Context {

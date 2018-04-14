@@ -11,24 +11,24 @@ import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.TableFactory;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
+import net.wizardsoflua.lua.function.NamedFunction1;
 
 @AutoService(LuaExtension.class)
 public class BlocksModule extends AbstractLuaModule {
-  private Table table;
+  @Inject
+  private TableFactory tableFactory;
+  @Inject
   private Converter converter;
 
-  @Override
-  public void initialize(InitializationContext context) {
-    table = context.getTableFactory().newTable();
-    converter = context.getConverter();
+  public BlocksModule() {
     add(new GetFunction());
   }
 
@@ -39,7 +39,7 @@ public class BlocksModule extends AbstractLuaModule {
 
   @Override
   public Table createTable() {
-    return table;
+    return tableFactory.newTable();
   }
 
   private ImmutableWolBlock get(String name) {
@@ -65,7 +65,7 @@ public class BlocksModule extends AbstractLuaModule {
       throw new IllegalArgumentException(
           String.format("Can't find block with name '%s'", blockName));
     }
-    Block block = (Block) Block.REGISTRY.getObject(resourceLocation);
+    Block block = Block.REGISTRY.getObject(resourceLocation);
     return block;
   }
 

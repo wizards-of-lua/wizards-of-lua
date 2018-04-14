@@ -3,32 +3,40 @@ package net.wizardsoflua.lua.module.types;
 import com.google.auto.service.AutoService;
 
 import net.sandius.rembulan.Table;
+import net.sandius.rembulan.TableFactory;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
-import net.wizardsoflua.lua.extension.api.LuaClassLoader;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction2;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaClassLoader;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.AbstractLuaModule;
+import net.wizardsoflua.lua.function.NamedFunction1;
+import net.wizardsoflua.lua.function.NamedFunction2;
 
 @AutoService(LuaExtension.class)
 public class TypesModule extends AbstractLuaModule {
-  private Table table;
+  @Inject
+  private TableFactory tableFactory;
+  @Inject
   private Converter converter;
+  @Inject
+  private Table env;
+  @Inject
+  private LuaClassLoader classLoader;
+
   private Types delegate;
 
-  @Override
-  public void initialize(InitializationContext context) {
-    table = context.getTableFactory().newTable();
-    converter = context.getConverter();
-    Table env = context.getEnv();
-    LuaClassLoader classLoader = context.getClassLoader();
-    delegate = new Types(env, classLoader);
+  public TypesModule() {
     add(new DeclareFunction());
     add(new InstanceOfFunction());
     add(new GetTypenameFunction());
+  }
+
+  @AfterInjection
+  public void initialize() {
+    delegate = new Types(env, classLoader);
   }
 
   @Override
@@ -38,7 +46,7 @@ public class TypesModule extends AbstractLuaModule {
 
   @Override
   public Table createTable() {
-    return table;
+    return tableFactory.newTable();
   }
 
   public Types getDelegate() {

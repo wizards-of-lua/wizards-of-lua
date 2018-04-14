@@ -8,7 +8,7 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
-import net.wizardsoflua.lua.extension.api.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
 public class SystemModule extends DelegatingProxy<SystemAdapter> {
   public static SystemModule installInto(Table env, LuaClassLoader classLoader,

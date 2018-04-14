@@ -20,7 +20,7 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.extension.api.PauseContext;
 
-public class LuaScheduler implements net.wizardsoflua.lua.extension.api.LuaScheduler {
+public class LuaScheduler implements net.wizardsoflua.lua.extension.api.service.LuaScheduler {
   private final Collection<PauseContext> pauseContexts = new ArrayList<>();
   private final StateContext stateContext;
   private final PausableSchedulingContextFactory.Context context;

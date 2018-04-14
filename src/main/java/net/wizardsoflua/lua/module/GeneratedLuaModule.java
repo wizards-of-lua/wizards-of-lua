@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.Converter;
 import net.wizardsoflua.lua.extension.api.Named;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.table.PropertyTable;
 
 public abstract class GeneratedLuaModule<D> extends PropertyTable implements Delegator<D> {

@@ -16,7 +16,7 @@ import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.entity.EntityApi;
 import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.lua.classes.entity.EntityInstance;
-import net.wizardsoflua.lua.extension.api.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
 
 @DeclareLuaClass(name = SpellClass.NAME, superClass = EntityClass.class)

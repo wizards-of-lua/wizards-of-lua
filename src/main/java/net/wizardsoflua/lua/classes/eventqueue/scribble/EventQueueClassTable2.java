@@ -5,8 +5,8 @@ import javax.annotation.Generated;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.Converter;
-import net.wizardsoflua.lua.extension.api.function.NamedFunction1;
+import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.table.GeneratedLuaTable;
 
 @Generated("GenerateLuaTable")

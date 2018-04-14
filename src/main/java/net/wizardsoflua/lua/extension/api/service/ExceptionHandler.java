@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.api;
+package net.wizardsoflua.lua.extension.api.service;
 
 public interface ExceptionHandler {
   default void handle(Throwable t) {

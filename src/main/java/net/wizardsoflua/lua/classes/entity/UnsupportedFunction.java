@@ -6,7 +6,7 @@ import static java.util.Objects.requireNonNull;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
 public class UnsupportedFunction extends NamedFunctionAnyArg {
   private final String name;

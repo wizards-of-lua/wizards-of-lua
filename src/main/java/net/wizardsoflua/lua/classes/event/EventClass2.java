@@ -10,7 +10,10 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
-import net.wizardsoflua.lua.extension.api.InitializationContext;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Injector;
+import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
 import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
@@ -19,14 +22,8 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 @GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class")
 public class EventClass2 extends AbstractLuaClass<Event, EventClass2InstanceTable<?>> {
   public static final String NAME = "Event";
-  private EventHandlers events;
-
-  @Override
-  public void initialize(InitializationContext context) {
-    super.initialize(context);
-    EventsModule module = context.getLuaExtensionLoader().getLuaExtension(EventsModule.class);
-    events = module.getDelegate();
-  }
+  @Inject
+  private Injector injector;
 
   @Override
   public String getName() {
@@ -40,19 +37,28 @@ public class EventClass2 extends AbstractLuaClass<Event, EventClass2InstanceTabl
 
   @Override
   protected EventClass2InstanceTable<?> toLuaInstance(Event javaInstance) {
-    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, events),
+    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
         getConverter());
   }
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends Event> extends ModifiableDelegator<D> {
-    private final String name;
-    private final EventHandlers events;
+    @Inject
+    private LuaExtensionLoader extensionLoader;
 
-    public Instance(D delegate, String name, EventHandlers events) {
+    private final String name;
+    private EventHandlers events;
+
+    public Instance(D delegate, String name, Injector injector) {
       super(delegate);
       this.name = requireNonNull(name, "name == null!");
-      this.events = requireNonNull(events, "events == null!");
+      injector.inject(this);
+    }
+
+    @AfterInjection
+    public void initialize() {
+      EventsModule module = extensionLoader.getLuaExtension(EventsModule.class);
+      events = module.getDelegate();
     }
 
     @LuaProperty

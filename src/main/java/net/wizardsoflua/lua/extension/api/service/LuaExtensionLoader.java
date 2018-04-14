@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.api;
+package net.wizardsoflua.lua.extension.api.service;
 
 import javax.annotation.Nullable;
 
