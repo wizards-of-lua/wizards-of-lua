@@ -60,6 +60,9 @@ import net.wizardsoflua.lua.module.time.Time;
 import net.wizardsoflua.lua.module.time.TimeApi;
 import net.wizardsoflua.lua.module.time.TimeModule;
 import net.wizardsoflua.lua.module.types.TypesModule;
+import net.wizardsoflua.lua.module.wol.WolAdapter;
+import net.wizardsoflua.lua.module.wol.WolApi;
+import net.wizardsoflua.lua.module.wol.WolModule;
 import net.wizardsoflua.lua.scheduling.LuaExecutor;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.spell.SpellEntity;
@@ -83,6 +86,8 @@ public class SpellProgram {
     int getEventListenerLuaTicksLimit();
 
     SpellRegistry getSpellRegistry();
+
+    String getWolVersion();
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -161,6 +166,8 @@ public class SpellProgram {
       }
     });
     new TimeModule(new TimeApi(luaClassLoader, time)).installInto(env);
+    new WolModule(new WolApi(luaClassLoader, new WolAdapter(context.getWolVersion())))
+        .installInto(env);
     SystemModule.installInto(env, luaClassLoader, systemAdapter);
     BlocksModule.installInto(env, getConverters());
     ItemsModule.installInto(env, getConverters());

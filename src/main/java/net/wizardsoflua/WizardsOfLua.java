@@ -196,6 +196,11 @@ public class WizardsOfLua {
         return WizardsOfLua.this.getSpellRegistry();
       }
 
+      @Override
+      public String getWolVersion() {
+        return WizardsOfLua.VERSION;
+      }
+
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {
