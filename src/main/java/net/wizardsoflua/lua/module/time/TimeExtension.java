@@ -32,9 +32,10 @@ import net.wizardsoflua.lua.module.types.TypesModule;
  * The Time module provides access to time related properties of the active Spell's world.
  */
 @GenerateLuaModuleTable
-@GenerateLuaDoc(subtitle = "Accessing the Time")
+@GenerateLuaDoc(name = TimeExtension.NAME, subtitle = "Accessing the Time")
 @AutoService(LuaExtension.class)
 public class TimeExtension implements LuaTableExtension {
+  public static final String NAME = "Time";
   @Inject
   private Config config;
   @Inject
@@ -53,7 +54,7 @@ public class TimeExtension implements LuaTableExtension {
 
   @Override
   public String getName() {
-    return "Time";
+    return NAME;
   }
 
   @Override

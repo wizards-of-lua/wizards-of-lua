@@ -11,6 +11,7 @@ import com.google.common.collect.HashBiMap;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.lua.BadArgumentException;
@@ -23,15 +24,16 @@ import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
 @GenerateLuaModuleTable
+@GenerateLuaDoc(name = TypesModule.NAME)
 @AutoService(LuaExtension.class)
 public class TypesModule implements LuaTableExtension {
+  public static final String NAME = "Types";
   public static final String BOOLEAN = "boolean";
   public static final String FUNCTION = "function";
   public static final String NIL = "nil";
   public static final String NUMBER = "number";
   public static final String STRING = "string";
   public static final String TABLE = "table";
-
   @Inject
   private Converter converter;
   @Inject
@@ -53,7 +55,7 @@ public class TypesModule implements LuaTableExtension {
 
   @Override
   public String getName() {
-    return "Types";
+    return NAME;
   }
 
   @Override

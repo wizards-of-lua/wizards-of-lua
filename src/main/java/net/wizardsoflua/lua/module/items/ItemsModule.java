@@ -16,15 +16,16 @@ import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
 @GenerateLuaModuleTable
-@GenerateLuaDoc(subtitle = "Creating Items")
+@GenerateLuaDoc(name = ItemsModule.NAME, subtitle = "Creating Items")
 @AutoService(LuaExtension.class)
 public class ItemsModule implements LuaTableExtension {
+  public static final String NAME = "Items";
   @Inject
   private Converter converter;
 
   @Override
   public String getName() {
-    return "Items";
+    return NAME;
   }
 
   @Override
