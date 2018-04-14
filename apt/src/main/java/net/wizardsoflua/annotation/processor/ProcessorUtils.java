@@ -68,7 +68,8 @@ public class ProcessorUtils {
     todos.add(type);
     while (!todos.isEmpty()) {
       TypeMirror todo = todos.pop();
-      if (todo.getKind() == TypeKind.DECLARED) {
+      TypeKind kind = todo.getKind();
+      if (kind == TypeKind.DECLARED || kind == TypeKind.ERROR) {
         DeclaredType declaredTodo = (DeclaredType) todo;
         TypeElement todoElement = (TypeElement) declaredTodo.asElement();
         if (todoElement.getQualifiedName().contentEquals(superType)) {
