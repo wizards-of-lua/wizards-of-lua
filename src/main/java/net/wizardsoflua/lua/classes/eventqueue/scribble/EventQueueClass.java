@@ -44,7 +44,7 @@ public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
   }
 
   @Override
-  public Table createTable() {
+  public Table createRawTable() {
     return new EventQueueClassTable<>(this, converter);
   }
 

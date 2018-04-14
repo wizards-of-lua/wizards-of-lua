@@ -57,7 +57,7 @@ public class TimeExtension implements LuaTableExtension {
   }
 
   @Override
-  public Table createTable() {
+  public Table getTable() {
     return new TimeExtensionTable<>(this, converter);
   }
 

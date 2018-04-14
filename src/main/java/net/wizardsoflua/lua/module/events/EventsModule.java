@@ -55,7 +55,7 @@ public class EventsModule extends AbstractLuaModule {
   }
 
   @Override
-  public Table createTable() {
+  public Table getTable() {
     return tableFactory.newTable();
   }
 

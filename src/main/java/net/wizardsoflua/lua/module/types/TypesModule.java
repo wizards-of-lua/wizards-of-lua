@@ -48,7 +48,7 @@ public class TypesModule implements LuaTableExtension {
   public void init() {
     ObjectClass2 objectClass = extensionLoader.getLuaExtension(ObjectClass2.class);
     objectClassTable = objectClass.getTable();
-    classes.put(objectClass.getName(), objectClassTable);
+    registerClass(objectClass.getName(), objectClassTable);
   }
 
   @Override
@@ -57,7 +57,7 @@ public class TypesModule implements LuaTableExtension {
   }
 
   @Override
-  public Table createTable() {
+  public Table getTable() {
     return new TypesModuleTable<>(this, converter);
   }
 
@@ -74,8 +74,12 @@ public class TypesModule implements LuaTableExtension {
     Table classTable = tableFactory.newTable();
     classTable.rawset("__index", classTable);
     classTable.setMetatable(metatable);
-    classes.put(className, classTable);
+    registerClass(className, classTable);
     env.rawset(className, classTable);
+  }
+
+  public Table registerClass(String className, Table classTable) {
+    return classes.put(className, classTable);
   }
 
   @LuaFunction

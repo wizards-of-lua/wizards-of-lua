@@ -7,7 +7,7 @@ import net.wizardsoflua.lua.extension.api.Named;
 @Deprecated
 public abstract class AbstractLuaModule implements LuaTableExtension {
   protected <F extends LuaFunction & Named> void add(F function) {
-    Table table = createTable();
+    Table table = getTable();
     String name = function.getName();
     table.rawset(name, function);
   }

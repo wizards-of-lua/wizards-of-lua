@@ -35,14 +35,13 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
   }
 
   @Override
-  public Table createTable() {
+  public Table createRawTable() {
     return new EventClass2Table<>(this, converter);
   }
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(Event javaInstance) {
-    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
-        converter);
+    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector), converter);
   }
 
   @GenerateLuaInstanceTable

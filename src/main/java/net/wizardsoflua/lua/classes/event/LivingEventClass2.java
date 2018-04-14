@@ -28,7 +28,7 @@ public class LivingEventClass2 extends DelegatorCachingLuaClass<LivingEvent> {
   }
 
   @Override
-  public Table createTable() {
+  public Table createRawTable() {
     return new LivingEventClass2Table<>(this, converter);
   }
 
