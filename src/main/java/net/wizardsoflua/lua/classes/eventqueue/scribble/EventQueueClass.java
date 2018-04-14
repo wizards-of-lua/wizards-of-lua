@@ -16,12 +16,14 @@ import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
-import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
+import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 
 /**
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
@@ -29,8 +31,10 @@ import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
  */
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
-public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClassInstanceTable<?>> {
+public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
   public static final String NAME = "EventQueue2Class";
+  @Inject
+  private Converter converter;
   @Inject
   private LuaScheduler scheduler;
 
@@ -41,12 +45,12 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
 
   @Override
   public Table createTable() {
-    return new EventQueueClassTable<>(this, getConverter());
+    return new EventQueueClassTable<>(this, converter);
   }
 
   @Override
-  protected EventQueueClassInstanceTable<?> toLuaInstance(EventQueue javaInstance) {
-    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getConverter());
+  protected Delegator<Instance<?>> toLuaInstance(EventQueue javaInstance) {
+    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), converter);
   }
 
   @GenerateLuaInstanceTable
@@ -165,9 +169,8 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
       @Override
       public void invoke(ExecutionContext context, Object arg1, Object arg2)
           throws ResolvedControlThrowable {
-        EventQueue eventQueue =
-            luaClass.getConverter().toJava(EventQueue.class, arg1, 1, "self", NAME);
-        Long timeout = luaClass.getConverter().toJavaNullable(Long.class, arg2, 2, "timeout", NAME);
+        EventQueue eventQueue = luaClass.converter.toJava(EventQueue.class, arg1, 1, "self", NAME);
+        Long timeout = luaClass.converter.toJavaNullable(Long.class, arg2, 2, "timeout", NAME);
         eventQueue.waitForEvents(timeout);
         execute(context, eventQueue);
       }
@@ -189,7 +192,7 @@ public class EventQueueClass extends AbstractLuaClass<EventQueue, EventQueueClas
 
         if (!eventQueue.isEmpty()) {
           Object event = eventQueue.pop();
-          Object result = luaClass.getConverter().toLua(event);
+          Object result = luaClass.converter.toLua(event);
           context.getReturnBuffer().setTo(result);
         } else {
           context.getReturnBuffer().setTo();

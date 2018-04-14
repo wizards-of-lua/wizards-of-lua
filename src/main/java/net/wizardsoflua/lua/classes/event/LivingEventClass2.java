@@ -7,15 +7,18 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.Injector;
-import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
+import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)
 @GenerateLuaDoc(name = LivingEventClass2.NAME)
-public class LivingEventClass2
-    extends AbstractLuaClass<LivingEvent, LivingEventClass2InstanceTable<?>> {
+public class LivingEventClass2 extends DelegatorCachingLuaClass<LivingEvent> {
   public static final String NAME = "LivingEvent";
+  @Inject
+  private Converter converter;
   @Inject
   private Injector injector;
 
@@ -26,13 +29,13 @@ public class LivingEventClass2
 
   @Override
   public Table createTable() {
-    return new LivingEventClass2Table<>(this, getConverter());
+    return new LivingEventClass2Table<>(this, converter);
   }
 
   @Override
-  protected LivingEventClass2InstanceTable<?> toLuaInstance(LivingEvent javaInstance) {
+  protected Delegator<Instance<?>> toLuaInstance(LivingEvent javaInstance) {
     return new LivingEventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
-        getConverter());
+        converter);
   }
 
   @GenerateLuaInstanceTable

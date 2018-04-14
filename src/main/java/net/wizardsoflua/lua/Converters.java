@@ -211,11 +211,9 @@ public class Converters implements Converter {
   LuaExtensionLoader extensionLoader;
 
   private final Map<Class<?>, ConverterExtension<?, ?>> convertersByJavaClass = new HashMap<>();
-  private final Map<Class<?>, ConverterExtension<?, ?>> convertersByLuaClass = new HashMap<>();
 
   public void addConverterExtension(ConverterExtension<?, ?> extension) {
     convertersByJavaClass.put(extension.getJavaClass(), extension);
-    convertersByLuaClass.put(extension.getLuaClass(), extension);
   }
 
   private @Nullable <J> ConverterExtension<J, ?> getConverterForJavaClass(Class<J> javaClass) {
@@ -248,72 +246,60 @@ public class Converters implements Converter {
     return null;
   }
 
-  private @Nullable <L> ConverterExtension<?, L> getConverterForLuaClass(Class<L> luaClass) {
-    @SuppressWarnings("unchecked")
-    ConverterExtension<?, L> result = (ConverterExtension<?, L>) convertersByLuaClass.get(luaClass);
-    return result;
-  }
-
-  public @Nullable <L> ConverterExtension<?, ? super L> getConverterForLuaClassRecursively(
-      Class<L> javaClass) {
-    Class<? super L> cls = javaClass;
-    while (cls != null) {
-      ConverterExtension<?, ? super L> result = getConverterForLuaClass(cls);
-      if (result != null) {
-        return result;
-      }
-      cls = cls.getSuperclass();
-    }
-    return null;
-  }
-
-  private @Nullable <L> Object convertToJava(L luaObject) {
-    @SuppressWarnings("unchecked")
-    Class<L> luaClass = (Class<L>) luaObject.getClass();
-    ConverterExtension<?, ? super L> converter = getConverterForLuaClassRecursively(luaClass);
+  private @Nullable Object convertToJava(Class<?> javaClass, Object luaObject)
+      throws ClassCastException {
+    ConverterExtension<?, ?> converter = getConverterForJavaClassRecursively(javaClass);
     if (converter != null) {
-      return converter.getJavaInstance(luaObject);
+      return convertToJava(luaObject, converter);
     }
     return null;
   }
 
-  private Object convertTo(Class<?> type, Object luaObject)
+  private <L> Object convertToJava(Object luaObject, ConverterExtension<?, L> converter)
+      throws ClassCastException {
+    Class<L> luaClass = converter.getLuaClass();
+    L luaInstance = luaClass.cast(luaObject);
+    return converter.getJavaInstance(luaInstance);
+  }
+
+  private Object convertTo(Class<?> javaClass, Object luaObject)
       throws ClassCastException, BadArgumentException {
-    Object result = convertToJava(luaObject);
-    if (result != null) {
-      return result;
+    Object javaInstance = convertToJava(javaClass, luaObject);
+    if (javaInstance != null) {
+      return javaInstance;
     }
-    if (LuaClassLoader.isSupported(type) && luaObject instanceof Table) {
+    if (LuaClassLoader.isSupported(javaClass) && luaObject instanceof Table) {
       Table table = (Table) luaObject;
       LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
       if (luaClass instanceof JavaLuaClass) {
         return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }
     }
-    if (LuaClassApi.class.isAssignableFrom(type) && luaObject instanceof GeneratedLuaInstance) {
+    if (LuaClassApi.class.isAssignableFrom(javaClass)
+        && luaObject instanceof GeneratedLuaInstance) {
       return ((GeneratedLuaInstance<?, ?>) luaObject).getApi();
     }
-    if (type == String.class) {
+    if (javaClass == String.class) {
       return Conversions.javaRepresentationOf(luaObject);
     }
-    if (type == Double.class) {
+    if (javaClass == Double.class) {
       return castToDouble(luaObject);
     }
-    if (type == Float.class) {
+    if (javaClass == Float.class) {
       return castToFloat(luaObject);
     }
-    if (type == Integer.class) {
+    if (javaClass == Integer.class) {
       return castToInt(luaObject);
     }
-    if (type == Long.class) {
+    if (javaClass == Long.class) {
       return castToLong(luaObject);
     }
-    if (type == Boolean.class || type == boolean.class) {
+    if (javaClass == Boolean.class || javaClass == boolean.class) {
       return luaObject;
     }
-    if (Enum.class.isAssignableFrom(type)) {
+    if (Enum.class.isAssignableFrom(javaClass)) {
       String name = (String) Conversions.javaRepresentationOf(luaObject);
-      return enumConverter.toJava(type, name);
+      return enumConverter.toJava(javaClass, name);
     }
     return luaObject;
   }
@@ -333,7 +319,7 @@ public class Converters implements Converter {
   private Float castToFloat(Object luaObject) throws ClassCastException, BadArgumentException {
     Number number = (Number) luaObject;
     float result = number.floatValue();
-    if ((double) result == number.doubleValue()) {
+    if (result == number.doubleValue()) {
       return result;
     } else {
       throw new BadArgumentException("number has no float representation");
@@ -375,13 +361,12 @@ public class Converters implements Converter {
   @Override
   public <J> Object toLua(J javaObject) throws ConversionException {
     requireNonNull(javaObject, "javaObject == null!");
-    Object converterResult = convertToLua(javaObject);
-    if (converterResult != null) {
-      return converterResult;
-    }
-
     @SuppressWarnings("unchecked")
     Class<J> javaClass = (Class<J>) javaObject.getClass();
+    ConverterExtension<? super J, ?> converter = getConverterForJavaClassRecursively(javaClass);
+    if (converter != null) {
+      return converter.getLuaInstance(javaObject);
+    }
     JavaLuaClass<? super J, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(javaObject);

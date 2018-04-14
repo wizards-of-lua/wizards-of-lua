@@ -9,19 +9,23 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
-import net.wizardsoflua.lua.extension.util.AbstractLuaClass;
+import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
 @GenerateLuaClassTable(instance = EventClass2.Instance.class)
 @GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class")
-public class EventClass2 extends AbstractLuaClass<Event, EventClass2InstanceTable<?>> {
+public class EventClass2 extends DelegatorCachingLuaClass<Event> {
   public static final String NAME = "Event";
+  @Inject
+  private Converter converter;
   @Inject
   private Injector injector;
 
@@ -32,13 +36,13 @@ public class EventClass2 extends AbstractLuaClass<Event, EventClass2InstanceTabl
 
   @Override
   public Table createTable() {
-    return new EventClass2Table<>(this, getConverter());
+    return new EventClass2Table<>(this, converter);
   }
 
   @Override
-  protected EventClass2InstanceTable<?> toLuaInstance(Event javaInstance) {
+  protected Delegator<Instance<?>> toLuaInstance(Event javaInstance) {
     return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
-        getConverter());
+        converter);
   }
 
   @GenerateLuaInstanceTable
