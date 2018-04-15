@@ -21,7 +21,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.spi.LuaConverter;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
@@ -37,7 +37,7 @@ import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
   public static final String NAME = "EventQueue";
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private LuaScheduler scheduler;
 
@@ -48,12 +48,12 @@ public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
 
   @Override
   public Table createRawTable() {
-    return new EventQueueClassTable<>(this, converter);
+    return new EventQueueClassTable<>(this, converters);
   }
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(EventQueue javaInstance) {
-    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converter);
+    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
@@ -172,8 +172,8 @@ public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
       @Override
       public void invoke(ExecutionContext context, Object arg1, Object arg2)
           throws ResolvedControlThrowable {
-        EventQueue eventQueue = luaClass.converter.toJava(EventQueue.class, arg1, 1, "self", NAME);
-        Long timeout = luaClass.converter.toJavaNullable(Long.class, arg2, 2, "timeout", NAME);
+        EventQueue eventQueue = luaClass.converters.toJava(EventQueue.class, arg1, 1, "self", NAME);
+        Long timeout = luaClass.converters.toJavaNullable(Long.class, arg2, 2, "timeout", NAME);
         eventQueue.waitForEvents(timeout);
         execute(context, eventQueue);
       }
@@ -195,7 +195,7 @@ public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
 
         if (!eventQueue.isEmpty()) {
           Object event = eventQueue.pop();
-          Object result = luaClass.converter.toLua(event);
+          Object result = luaClass.converters.toLua(event);
           context.getReturnBuffer().setTo(result);
         } else {
           context.getReturnBuffer().setTo();

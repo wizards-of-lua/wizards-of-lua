@@ -11,7 +11,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
@@ -21,7 +21,7 @@ import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 public class ItemsModule implements LuaTableExtension {
   public static final String NAME = "Items";
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
 
   @Override
   public String getName() {
@@ -30,7 +30,7 @@ public class ItemsModule implements LuaTableExtension {
 
   @Override
   public Table getTable() {
-    return new ItemsModuleTable<>(this, converter);
+    return new ItemsModuleTable<>(this, converters);
   }
 
   @LuaFunction

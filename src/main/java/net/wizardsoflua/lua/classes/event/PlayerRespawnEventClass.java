@@ -18,8 +18,8 @@ public class PlayerRespawnEventClass extends
       extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
-      addImmutable("player", getConverter().toLua(delegate.player));
-      addImmutable("endConquered", getConverter().toLua(delegate.isEndConquered()));
+      addImmutable("player", getConverters().toLua(delegate.player));
+      addImmutable("endConquered", getConverters().toLua(delegate.isEndConquered()));
     }
   }
 }

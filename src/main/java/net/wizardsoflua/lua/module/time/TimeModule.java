@@ -21,7 +21,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
@@ -39,7 +39,7 @@ public class TimeModule implements LuaTableExtension {
   @Inject
   private Config config;
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private LuaScheduler scheduler;
   @Inject
@@ -59,7 +59,7 @@ public class TimeModule implements LuaTableExtension {
 
   @Override
   public Table getTable() {
-    return new TimeModuleTable<>(this, converter);
+    return new TimeModuleTable<>(this, converters);
   }
 
   /**
@@ -150,7 +150,7 @@ public class TimeModule implements LuaTableExtension {
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      Integer ticks = converter.toJavaNullable(Integer.class, arg1, 1, "ticks", NAME);
+      Integer ticks = converters.toJavaNullable(Integer.class, arg1, 1, "ticks", NAME);
       try {
         sleep(context, ticks);
       } catch (UnresolvedControlThrowable t) {

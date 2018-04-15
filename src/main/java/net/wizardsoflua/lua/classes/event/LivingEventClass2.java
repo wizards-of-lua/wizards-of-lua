@@ -9,8 +9,8 @@ import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.Injector;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)
@@ -18,7 +18,7 @@ import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 public class LivingEventClass2 extends DelegatorCachingLuaClass<LivingEvent> {
   public static final String NAME = "LivingEvent";
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private Injector injector;
 
@@ -29,13 +29,13 @@ public class LivingEventClass2 extends DelegatorCachingLuaClass<LivingEvent> {
 
   @Override
   public Table createRawTable() {
-    return new LivingEventClass2Table<>(this, converter);
+    return new LivingEventClass2Table<>(this, converters);
   }
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(LivingEvent javaInstance) {
     return new LivingEventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
-        getTable(), converter);
+        getTable(), converters);
   }
 
   @GenerateLuaInstanceTable

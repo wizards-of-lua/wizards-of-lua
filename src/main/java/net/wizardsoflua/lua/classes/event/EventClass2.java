@@ -13,8 +13,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.Injector;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 import net.wizardsoflua.lua.module.events.EventsModule;
@@ -24,7 +24,7 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 public class EventClass2 extends DelegatorCachingLuaClass<Event> {
   public static final String NAME = "Event";
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private Injector injector;
 
@@ -35,13 +35,13 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
 
   @Override
   public Table createRawTable() {
-    return new EventClass2Table<>(this, converter);
+    return new EventClass2Table<>(this, converters);
   }
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(Event javaInstance) {
     return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector), getTable(),
-        converter);
+        converters);
   }
 
   @GenerateLuaInstanceTable

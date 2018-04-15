@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.lua.BadArgumentException;
 
-public interface Converter {
+public interface LuaConverters {
   @Nullable
   <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject, int argumentIndex,
       String argumentName, String functionOrPropertyName) throws BadArgumentException;

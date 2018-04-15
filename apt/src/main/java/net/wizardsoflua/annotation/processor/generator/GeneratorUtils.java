@@ -47,7 +47,7 @@ public class GeneratorUtils {
       getter.addStatement("return $L.$L()", delegateExpression, getterName);
     } else {
       getter.addStatement("$T result = $L.$L()", getterType, delegateExpression, getterName);
-      getter.addStatement("return getConverter().toLuaNullable(result)");
+      getter.addStatement("return getConverters().toLuaNullable(result)");
     }
     return getter.build();
   }
@@ -65,7 +65,7 @@ public class GeneratorUtils {
       setter.addStatement("$T $L = luaObject", setterType, name);
     } else {
       String convertersMethod = property.isNullable() ? "toJavaNullable" : "toJava";
-      setter.addStatement("$T $L = getConverter().$L($T.class, luaObject, $S)", setterType, name,
+      setter.addStatement("$T $L = getConverters().$L($T.class, luaObject, $S)", setterType, name,
           convertersMethod, setterType, name);
     }
     setter.addStatement("$L.$L($L)", delegateExpression, setterName, name);
@@ -144,7 +144,7 @@ public class GeneratorUtils {
         } else {
           convertersMethod = nullable ? "toJavaNullable" : "toJava";
         }
-        invokeMethod.addStatement("$T $L = getConverter().$L($T.class, arg$L, $L, $S, getName())",
+        invokeMethod.addStatement("$T $L = getConverters().$L($T.class, arg$L, $L, $S, getName())",
             argType, argName, convertersMethod, rawArgType, argIndex, argIndex, argName);
       }
       argIndex++;
@@ -161,7 +161,7 @@ public class GeneratorUtils {
       invokeMethod.addStatement("context.getReturnBuffer().setTo(result)");
     } else {
       invokeMethod.addStatement("$T result = $L", returnType, callDelegate);
-      invokeMethod.addStatement("Object luaResult = getConverter().toLuaNullable(result)");
+      invokeMethod.addStatement("Object luaResult = getConverters().toLuaNullable(result)");
       invokeMethod.addStatement("context.getReturnBuffer().setTo(luaResult)");
     }
     return invokeMethod.build();

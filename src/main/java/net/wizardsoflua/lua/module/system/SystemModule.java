@@ -25,7 +25,7 @@ import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
@@ -40,7 +40,7 @@ public class SystemModule implements LuaTableExtension {
   @Inject
   private Config config;
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private LuaScheduler scheduler;
 
@@ -67,7 +67,7 @@ public class SystemModule implements LuaTableExtension {
 
   @Override
   public Table getTable() {
-    return new SystemModuleTable<>(this, converter);
+    return new SystemModuleTable<>(this, converters);
   }
 
   public boolean shouldPause() {
@@ -86,7 +86,7 @@ public class SystemModule implements LuaTableExtension {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      List<String> command = converter.toJavaList(String.class, args, getName());
+      List<String> command = converters.toJavaList(String.class, args, getName());
       execute(command);
       executeFunction(context);
     }

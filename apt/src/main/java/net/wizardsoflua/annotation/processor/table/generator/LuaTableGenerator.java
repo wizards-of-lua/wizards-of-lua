@@ -3,7 +3,7 @@ package net.wizardsoflua.annotation.processor.table.generator;
 import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static java.util.Objects.requireNonNull;
-import static net.wizardsoflua.annotation.processor.Constants.CONVERTER_CLASS;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_CONVERTERS_CLASS;
 import static net.wizardsoflua.annotation.processor.Constants.LUA_TABLE_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingGetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
@@ -93,7 +93,7 @@ public class LuaTableGenerator {
 
   private MethodSpec createConstructor() {
     TypeName delegate = createTypeVariableD();
-    TypeName converter = CONVERTER_CLASS;
+    TypeName converters = LUA_CONVERTERS_CLASS;
     Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
         .addParameter(delegate, "delegate")//
@@ -101,18 +101,19 @@ public class LuaTableGenerator {
     if (model.hasMetatable()) {
       constructor.addParameter(Table.class, "metatable");
     }
-    constructor.addParameter(converter, "converter");
+    constructor.addParameter(converters, "converters");
     if (LUA_TABLE_SUPERCLASS.equals(model.getSuperTableClassName())) {
       if (model.hasMetatable()) {
-        constructor.addStatement("super(delegate, metatable, converter, $L)", model.isModifiable());
+        constructor.addStatement("super(delegate, metatable, converters, $L)",
+            model.isModifiable());
       } else {
-        constructor.addStatement("super(delegate, converter, $L)", model.isModifiable());
+        constructor.addStatement("super(delegate, converters, $L)", model.isModifiable());
       }
     } else {
       if (model.hasMetatable()) {
-        constructor.addStatement("super(delegate, metatable, converter)");
+        constructor.addStatement("super(delegate, metatable, converters)");
       } else {
-        constructor.addStatement("super(delegate, converter)");
+        constructor.addStatement("super(delegate, converters)");
       }
     }
     for (PropertyModel property : model.getProperties()) {

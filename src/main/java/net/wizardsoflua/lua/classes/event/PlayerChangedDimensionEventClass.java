@@ -19,9 +19,9 @@ public class PlayerChangedDimensionEventClass extends
       extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
-      addImmutable("player", getConverter().toLua(delegate.player));
-      addImmutable("from", getConverter().toLua(delegate.fromDim));
-      addImmutable("to", getConverter().toLua(delegate.toDim));
+      addImmutable("player", getConverters().toLua(delegate.player));
+      addImmutable("from", getConverters().toLua(delegate.fromDim));
+      addImmutable("to", getConverters().toLua(delegate.toDim));
     }
   }
 }

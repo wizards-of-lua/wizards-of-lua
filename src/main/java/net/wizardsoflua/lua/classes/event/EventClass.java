@@ -47,7 +47,7 @@ public class EventClass extends DelegatorLuaClass<Event, EventClass.Proxy<EventA
     }
 
     public void setCanceled(Object arg) {
-      boolean canceled = getConverter().toJava(boolean.class, arg, "canceled");
+      boolean canceled = getConverters().toJava(boolean.class, arg, "canceled");
       if (!isCancelable()) {
         throw new IllegalOperationAttemptException("attempt to cancel " + getName());
       }

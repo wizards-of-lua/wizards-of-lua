@@ -87,7 +87,7 @@ public class MaterialClass
     }
 
     private Object getMobilityFlag() {
-      return getConverter().toLua(delegate.getMobilityFlag());
+      return getConverters().toLua(delegate.getMobilityFlag());
     }
 
     private @Nullable String getName() {

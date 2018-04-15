@@ -47,7 +47,7 @@ import net.wizardsoflua.lua.extension.ServiceInjector;
 import net.wizardsoflua.lua.extension.SpellExtensionLoader;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
@@ -197,7 +197,7 @@ public class SpellProgram {
         };
       }
     });
-    injector.registerService(Converter.class, luaClassLoader.getConverters());
+    injector.registerService(LuaConverters.class, luaClassLoader.getConverters());
     injector.registerService(Table.class, env);
     injector.registerService(ExceptionHandler.class, new ExceptionHandler() {
       @Override

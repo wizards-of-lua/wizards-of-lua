@@ -60,27 +60,27 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Prox
     }
 
     private void setDisplayName(Object luaObject) {
-      String displayName = getConverter().toJava(String.class, luaObject, "displayName");
+      String displayName = getConverters().toJava(String.class, luaObject, "displayName");
       delegate.setStackDisplayName(displayName);
     }
 
     private void setDamage(Object luaObject) {
-      int damage = getConverter().toJava(Integer.class, luaObject, "damage");
+      int damage = getConverters().toJava(Integer.class, luaObject, "damage");
       delegate.setItemDamage(damage);
     }
 
     private void setRepairCost(Object luaObject) {
-      int repairCost = getConverter().toJava(Integer.class, luaObject, "repairCost");
+      int repairCost = getConverters().toJava(Integer.class, luaObject, "repairCost");
       delegate.setRepairCost(repairCost);
     }
 
     private Object getRepairCost() {
       int cost = delegate.getRepairCost();
-      return getConverter().toLua(cost);
+      return getConverters().toLua(cost);
     }
 
     private void setCount(Object luaObj) {
-      int count = getConverter().toJava(Integer.class, luaObj, "count");
+      int count = getConverters().toJava(Integer.class, luaObj, "count");
       delegate.setCount(count);
     }
 
@@ -99,8 +99,8 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Prox
 
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getConverter().toJava(Proxy.class, arg1, 1, "self", getName());
-      Table nbt = getConverter().toJava(Table.class, arg2, 2, "nbt", getName());
+      Proxy proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
+      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
       proxy.putNbt(nbt);
       context.getReturnBuffer().setTo();
     }

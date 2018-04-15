@@ -17,8 +17,8 @@ public class ChatEventClass
   public static class Proxy<D extends ServerChatEvent> extends EventClass.Proxy<EventApi<D>, D> {
     public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
-      addImmutable("player", getConverter().toLua(delegate.getPlayer()));
-      addImmutable("message", getConverter().toLua(delegate.getMessage()));
+      addImmutable("player", getConverters().toLua(delegate.getPlayer()));
+      addImmutable("message", getConverters().toLua(delegate.getMessage()));
     }
   }
 }

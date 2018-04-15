@@ -24,7 +24,7 @@ public class LivingEventClass extends
 
     protected Object getEntity() {
       EntityLivingBase entity = delegate.getEntityLiving();
-      return getConverter().toLua(entity);
+      return getConverters().toLua(entity);
     }
   }
 }

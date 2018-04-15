@@ -1,7 +1,7 @@
 package net.wizardsoflua.annotation.processor.doc;
 
 import static javax.tools.StandardLocation.SOURCE_OUTPUT;
-import static net.wizardsoflua.annotation.processor.Constants.CONVERTER_EXTENSION;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_CONVERTER;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
 
   private void registerLuaClass(TypeElement annotatedElement) throws IOException {
     DeclaredType type = (DeclaredType) annotatedElement.asType();
-    TypeMirror javaType = getTypeParameter(type, CONVERTER_EXTENSION, 0, processingEnv);
+    TypeMirror javaType = getTypeParameter(type, LUA_CONVERTER, 0, processingEnv);
     if (javaType == null) {
       return;
     }

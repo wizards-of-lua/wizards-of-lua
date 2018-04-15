@@ -3,7 +3,7 @@ package net.wizardsoflua.annotation.processor.module.generator;
 import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static java.util.Objects.requireNonNull;
-import static net.wizardsoflua.annotation.processor.Constants.CONVERTER_CLASS;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_CONVERTERS_CLASS;
 import static net.wizardsoflua.annotation.processor.Constants.LUA_MODULE_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingGetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
@@ -71,12 +71,12 @@ public class LuaModuleGenerator {
 
   private MethodSpec createConstructor() {
     TypeName delegate = model.getClassName();
-    TypeName converter = CONVERTER_CLASS;
+    TypeName converters = LUA_CONVERTERS_CLASS;
     Builder constructor = constructorBuilder()//
         .addModifiers(Modifier.PUBLIC)//
         .addParameter(delegate, "delegate")//
-        .addParameter(converter, "converter")//
-        .addStatement("super(delegate, converter)")//
+        .addParameter(converters, "converters")//
+        .addStatement("super(delegate, converters)")//
     ;
     for (PropertyModel property : model.getProperties()) {
       String name = property.getName();

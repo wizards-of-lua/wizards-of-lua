@@ -4,21 +4,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 
 public class GeneratedLuaTable<D> extends PropertyTable implements Delegator<D> {
   private final D delegate;
-  private final Converter converter;
+  private final LuaConverters converters;
 
-  public GeneratedLuaTable(D delegate, Converter converter, boolean allowAdditionalProperties) {
+  public GeneratedLuaTable(D delegate, LuaConverters converters,
+      boolean allowAdditionalProperties) {
     super(allowAdditionalProperties);
     this.delegate = checkNotNull(delegate, "delegate == null!");
-    this.converter = checkNotNull(converter, "converter == null!");
+    this.converters = checkNotNull(converters, "converters == null!");
   }
 
-  public GeneratedLuaTable(D delegate, Table metatable, Converter converter,
+  public GeneratedLuaTable(D delegate, Table metatable, LuaConverters converters,
       boolean allowAdditionalProperties) {
-    this(delegate, converter, allowAdditionalProperties);
+    this(delegate, converters, allowAdditionalProperties);
     setMetatable(metatable);
   }
 
@@ -27,7 +28,7 @@ public class GeneratedLuaTable<D> extends PropertyTable implements Delegator<D> 
     return delegate;
   }
 
-  public Converter getConverter() {
-    return converter;
+  public LuaConverters getConverters() {
+    return converters;
   }
 }

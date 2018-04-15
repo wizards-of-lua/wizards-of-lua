@@ -63,7 +63,7 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
 
     private Object getMaterial() {
       Material mat = delegate.getBlockState().getMaterial();
-      return getConverter().toLua(mat);
+      return getConverters().toLua(mat);
     }
 
     private Object getData() {
@@ -95,9 +95,9 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
 
     @Override
     public void invoke(ExecutionContext context, Object arg1) throws ResolvedControlThrowable {
-      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(self.getBlockState(), self.getNbt());
-      Object result = getConverter().toLua(newWolBlock);
+      Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -111,8 +111,8 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
-      Table data = getConverter().toJava(Table.class, arg2, 2, "data", getName());
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      Table data = getConverters().toJava(Table.class, arg2, 2, "data", getName());
 
       IBlockState state = self.getBlockState();
       for (IProperty<?> key : state.getPropertyKeys()) {
@@ -123,7 +123,7 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
       }
 
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(state, self.getNbt());
-      Object result = getConverter().toLua(newWolBlock);
+      Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
 
@@ -143,8 +143,8 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
-      Table nbt = getConverter().toJava(Table.class, arg2, 2, "nbt", getName());
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
+      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
 
       NBTTagCompound oldNbt = self.getNbt();
       NBTTagCompound newNbt;
@@ -157,7 +157,7 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
       }
 
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(self.getBlockState(), newNbt);
-      Object result = getConverter().toLua(newWolBlock);
+      Object result = getConverters().toLua(newWolBlock);
       context.getReturnBuffer().setTo(result);
     }
   }
@@ -171,11 +171,11 @@ public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<Wol
     @Override
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
-      WolBlock self = getConverter().toJava(WolBlock.class, arg1, 1, "self", getName());
+      WolBlock self = getConverters().toJava(WolBlock.class, arg1, 1, "self", getName());
       int amount =
-          getConverter().toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
+          getConverters().toJavaOptional(Integer.class, arg2, 2, "amount", getName()).orElse(1);
       ItemStack itemStack = self.asItemStack(amount);
-      Object result = getConverter().toLua(itemStack);
+      Object result = getConverters().toLua(itemStack);
       context.getReturnBuffer().setTo(result);
     }
   }

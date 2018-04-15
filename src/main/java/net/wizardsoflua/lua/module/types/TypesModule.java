@@ -18,7 +18,7 @@ import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.classes.ObjectClass2;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
@@ -35,7 +35,7 @@ public class TypesModule implements LuaTableExtension {
   public static final String STRING = "string";
   public static final String TABLE = "table";
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private Table env;
   @Inject
@@ -60,7 +60,7 @@ public class TypesModule implements LuaTableExtension {
 
   @Override
   public Table getTable() {
-    return new TypesModuleTable<>(this, converter);
+    return new TypesModuleTable<>(this, converters);
   }
 
   @LuaFunction

@@ -29,7 +29,7 @@ import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.Converter;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
@@ -49,7 +49,7 @@ public class EventsModule implements LuaTableExtension {
   @Inject
   private Config config;
   @Inject
-  private Converter converter;
+  private LuaConverters converters;
   @Inject
   private ExceptionHandler exceptionHandler;
   @Inject
@@ -119,7 +119,7 @@ public class EventsModule implements LuaTableExtension {
 
   @Override
   public Table getTable() {
-    return new EventsModuleTable<>(this, converter);
+    return new EventsModuleTable<>(this, converters);
   }
 
   @net.wizardsoflua.annotation.LuaFunction
@@ -141,9 +141,9 @@ public class EventsModule implements LuaTableExtension {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      List<String> eventNames = converter.toJavaList(String.class, args, getName());
+      List<String> eventNames = converters.toJavaList(String.class, args, getName());
       EventQueue result = connect(eventNames);
-      Object luaResult = converter.toLua(result);
+      Object luaResult = converters.toLua(result);
       context.getReturnBuffer().setTo(luaResult);
     }
   }
@@ -168,7 +168,7 @@ public class EventsModule implements LuaTableExtension {
 
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
-      List<String> eventNames = converter.toJavaList(String.class, args, getName());
+      List<String> eventNames = converters.toJavaList(String.class, args, getName());
       Table result = on(eventNames);
       context.getReturnBuffer().setTo(result);
     }
@@ -203,11 +203,11 @@ public class EventsModule implements LuaTableExtension {
     public void invoke(ExecutionContext context, Object arg1, Object arg2)
         throws ResolvedControlThrowable {
       Iterable<String> eventNames =
-          converter.toJavaList(String.class, arg1, 1, "eventNames", getName());
+          converters.toJavaList(String.class, arg1, 1, "eventNames", getName());
       LuaFunction eventHandler =
-          converter.toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
+          converters.toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
       EventSubscription result = subscribe(eventNames, eventHandler);
-      Object luaResult = converter.toLuaNullable(result);
+      Object luaResult = converters.toLuaNullable(result);
       context.getReturnBuffer().setTo(luaResult);
     }
   }
@@ -253,7 +253,7 @@ public class EventsModule implements LuaTableExtension {
     List<EventSubscription> subscriptions = new ArrayList<>(this.subscriptions.get(eventName));
     for (EventSubscription subscription : subscriptions) {
       LuaFunction eventHandler = subscription.getEventHandler();
-      Object luaEvent = converter.toLua(event);
+      Object luaEvent = converters.toLua(event);
       try {
         callDuringEventIntercepting(eventHandler, luaEvent);
       } catch (CallException | InterruptedException ex) {

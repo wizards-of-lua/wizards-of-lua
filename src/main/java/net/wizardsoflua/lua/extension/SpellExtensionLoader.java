@@ -13,7 +13,7 @@ import net.wizardsoflua.lua.extension.spi.LuaExtension;
 public class SpellExtensionLoader
     implements net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader {
   private final ClassIndex extensions = new ClassIndex();
-  private final ClassIndex converterExtensions = new ClassIndex();
+  private final ClassIndex luaConverters = new ClassIndex();
   private final ClassIndex luaExtensions = new ClassIndex();
   private final Table env;
   private final ServiceInjector injector;
@@ -35,13 +35,13 @@ public class SpellExtensionLoader
   }
 
   public <C extends LuaConverter<?, ?>> C getLuaConverter(Class<C> converterClass) {
-    C extension = converterExtensions.get(converterClass);
-    if (extension == null) {
-      extension = getExtension(converterClass);
-      converterExtensions.add(extension);
-      converters.addConverter(extension);
+    C converter = luaConverters.get(converterClass);
+    if (converter == null) {
+      converter = getExtension(converterClass);
+      luaConverters.add(converter);
+      converters.addConverter(converter);
     }
-    return extension;
+    return converter;
   }
 
   @Override
