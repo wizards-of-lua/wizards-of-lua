@@ -210,7 +210,6 @@ public class SpellProgram {
         handleException(contextMessage, t);
       }
     });
-    injector.registerService(LuaExtensionLoader.class, extensionLoader);
     injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class,
         scheduler);
     injector.registerService(Spell.class, new Spell() {
@@ -231,7 +230,10 @@ public class SpellProgram {
         return context.getClock();
       }
     });
-    return new SpellExtensionLoader(env, injector, luaClassLoader.getConverters());
+    SpellExtensionLoader extensionLoader =
+        new SpellExtensionLoader(env, injector, luaClassLoader.getConverters());
+    injector.registerService(LuaExtensionLoader.class, extensionLoader);
+    return extensionLoader;
   }
 
   public LuaClassLoader getLuaClassLoader() {

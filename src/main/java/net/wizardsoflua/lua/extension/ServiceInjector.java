@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.extension;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -36,10 +38,14 @@ public class ServiceInjector implements Injector {
     for (Class<?> cls = object.getClass(); cls != null; cls = cls.getSuperclass()) {
       for (Field field : cls.getDeclaredFields()) {
         int modifiers = field.getModifiers();
-        if (!Modifier.isStatic(modifiers)//
-            && !Modifier.isFinal(modifiers)//
-            && field.isAnnotationPresent(Inject.class)) {
+        if (field.isAnnotationPresent(Inject.class)) {
+          checkArgument(!Modifier.isStatic(modifiers), "The static field %s is annotated with @%s",
+              field, Inject.class.getSimpleName());
+          checkArgument(!Modifier.isFinal(modifiers), "The final field %s is annotated with @%s",
+              field, Inject.class.getSimpleName());
           Object service = services.get(field.getType());
+          checkArgument(service != null, "The field %s refers to an unknown service interface",
+              field);
           boolean wasAccessible = field.isAccessible();
           field.setAccessible(true);
           try {

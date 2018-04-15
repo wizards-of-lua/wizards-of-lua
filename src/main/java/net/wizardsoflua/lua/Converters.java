@@ -244,7 +244,7 @@ public class Converters implements Converter {
     return result;
   }
 
-  public @Nullable <J> ConverterExtension<? super J, ?> getConverterForJavaClassRecursively(
+  private @Nullable <J> ConverterExtension<? super J, ?> getConverterForJavaClassRecursively(
       Class<J> javaClass) {
     Class<? super J> cls = javaClass;
     while (cls != null) {
