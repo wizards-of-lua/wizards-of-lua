@@ -95,12 +95,12 @@ public class PropertyTable extends Table {
   }
 
   public <T> void addReadOnly(Object key, Supplier<T> get) {
-    addProperty(key, new TableProperty<T>(get, null));
+    addProperty(key, new TableProperty<>(get, null));
   }
 
   public <T> void add(Object key, @Nullable Supplier<T> get, Consumer<Object> set) {
     checkNotNull(set, "set == null!");
-    addProperty(key, new TableProperty<T>(get, set));
+    addProperty(key, new TableProperty<>(get, set));
   }
 
   private void addProperty(Object key, TableProperty<?> property) {

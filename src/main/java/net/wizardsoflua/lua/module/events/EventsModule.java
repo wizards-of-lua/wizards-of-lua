@@ -21,7 +21,7 @@ import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
-import net.wizardsoflua.lua.classes.eventqueue.scribble.EventQueueClass;
+import net.wizardsoflua.lua.classes.eventqueue.EventQueueClass;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
 import net.wizardsoflua.lua.classes.eventsubscription.EventSubscriptionClass;
 import net.wizardsoflua.lua.data.Data;

@@ -1,7 +1,8 @@
-package net.wizardsoflua.lua.classes.eventqueue.scribble;
+package net.wizardsoflua.lua.classes.eventqueue;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -19,10 +20,11 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
-import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
+import net.wizardsoflua.lua.extension.spi.ConverterExtension;
+import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 
 /**
@@ -31,6 +33,7 @@ import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
  */
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
+@AutoService({ConverterExtension.class, LuaExtension.class})
 public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
   public static final String NAME = "EventQueue";
   @Inject
@@ -50,7 +53,7 @@ public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(EventQueue javaInstance) {
-    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), converter);
+    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converter);
   }
 
   @GenerateLuaInstanceTable

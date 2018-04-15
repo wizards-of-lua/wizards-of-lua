@@ -28,6 +28,7 @@ import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.extension.api.service.Converter;
@@ -288,6 +289,12 @@ public class Converters implements Converter {
     Object javaInstance = convertToJava(javaClass, luaObject);
     if (javaInstance != null) {
       return javaInstance;
+    }
+    if (luaObject instanceof Delegator) {
+      Object delegate = ((Delegator<?>) luaObject).getDelegate();
+      if (javaClass.isInstance(delegate)) {
+        return javaClass.cast(delegate);
+      }
     }
     if (LuaClassLoader.isSupported(javaClass) && luaObject instanceof Table) {
       Table table = (Table) luaObject;

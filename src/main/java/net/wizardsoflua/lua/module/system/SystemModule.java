@@ -22,7 +22,6 @@ import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
-import net.wizardsoflua.lua.classes.eventqueue.scribble.EventQueueClass;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Config;
@@ -31,6 +30,7 @@ import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.module.types.TypesModule;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = SystemModule.NAME, subtitle = "Interacting with the Server's OS")
@@ -75,7 +75,7 @@ public class SystemModule implements LuaTableExtension {
   }
 
   @net.wizardsoflua.annotation.LuaFunction(name = ExecuteFunction.NAME)
-  @LuaFunctionDoc(returnType = EventQueueClass.NAME, args = {"name", "arg..."})
+  @LuaFunctionDoc(returnType = TypesModule.NIL, args = {"name", "arg..."})
   class ExecuteFunction extends NamedFunctionAnyArg {
     public static final String NAME = "execute";
 

@@ -35,7 +35,7 @@ public class LivingEventClass2 extends DelegatorCachingLuaClass<LivingEvent> {
   @Override
   protected Delegator<Instance<?>> toLuaInstance(LivingEvent javaInstance) {
     return new LivingEventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector),
-        converter);
+        getTable(), converter);
   }
 
   @GenerateLuaInstanceTable

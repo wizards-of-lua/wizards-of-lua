@@ -40,7 +40,8 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(Event javaInstance) {
-    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector), converter);
+    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector), getTable(),
+        converter);
   }
 
   @GenerateLuaInstanceTable

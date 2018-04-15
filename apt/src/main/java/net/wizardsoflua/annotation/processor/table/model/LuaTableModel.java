@@ -47,6 +47,7 @@ public class LuaTableModel {
   public static LuaTableModel of(TypeElement annotatedElement, ProcessingEnvironment env)
       throws ProcessingException {
     ClassName superTableClassName = getSuperTableClassName(annotatedElement);
+    boolean hasMetatable = hasMetatable(annotatedElement);
     boolean modifiable = isModifiable(annotatedElement);
     Map<String, PropertyModel> properties = new HashMap<>();
     Map<String, FunctionModel> functions = new HashMap<>();
@@ -80,8 +81,8 @@ public class LuaTableModel {
         }
       }
     }
-    return new LuaTableModel(annotatedElement, superTableClassName, modifiable, properties,
-        functions, manualFunctions);
+    return new LuaTableModel(annotatedElement, superTableClassName, hasMetatable, modifiable,
+        properties, functions, manualFunctions);
   }
 
   private static ClassName getSuperTableClassName(TypeElement annotatedElement) {
@@ -98,6 +99,21 @@ public class LuaTableModel {
       }
     }
     return Constants.LUA_TABLE_SUPERCLASS;
+  }
+
+  private static boolean hasMetatable(TypeElement annotatedElement) {
+    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
+      return false;
+    } else if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
+      return true;
+    } else if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
+      return false;
+    } else {
+      throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
+          + GenerateLuaClassTable.class.getSimpleName() + ", @"
+          + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
+          + GenerateLuaModuleTable.class);
+    }
   }
 
   private static boolean isModifiable(TypeElement annotatedElement) {
@@ -178,6 +194,7 @@ public class LuaTableModel {
 
   private final TypeElement sourceElement;
   private final ClassName superTableClassName;
+  private final boolean hasMetatable;
   private final boolean modifiable;
   private final SortedMap<String, PropertyModel> properties = new TreeMap<>();
   private final SortedMap<String, FunctionModel> functions = new TreeMap<>();
@@ -186,6 +203,7 @@ public class LuaTableModel {
   public LuaTableModel(//
       TypeElement sourceElement, //
       ClassName superTableClassName, //
+      boolean hasMetatable, //
       boolean modifiable, //
       Map<? extends String, ? extends PropertyModel> properties, //
       Map<? extends String, ? extends FunctionModel> functions, //
@@ -193,6 +211,7 @@ public class LuaTableModel {
   ) {
     this.sourceElement = requireNonNull(sourceElement, "sourceElement == null!");
     this.superTableClassName = requireNonNull(superTableClassName, "superTableClassName == null!");
+    this.hasMetatable = hasMetatable;
     this.modifiable = modifiable;
     this.properties.putAll(properties);
     this.functions.putAll(functions);
@@ -236,6 +255,10 @@ public class LuaTableModel {
 
   public ClassName getSuperTableClassName() {
     return superTableClassName;
+  }
+
+  public boolean hasMetatable() {
+    return hasMetatable;
   }
 
   public boolean isModifiable() {
