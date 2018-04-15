@@ -16,7 +16,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.view.ViewFactory;
 
 public class SpellEntity extends Entity {
   public static final String NAME = "Spell";
@@ -93,12 +93,13 @@ public class SpellEntity extends Entity {
     this.visible = visible;
   }
 
-  public Object getData(LuaClassLoader viewingClassLoader) {
-    LuaClassLoader spellClassLoader = program.getLuaClassLoader();
-    if (viewingClassLoader == spellClassLoader) {
+  public Object getData(ViewFactory viewer) {
+    ViewFactory provider =
+        program.getLuaExtensionLoader().getSpellExtension(ViewFactory.class);
+    if (viewer == provider) {
       return data;
     }
-    return viewingClassLoader.getTransferenceProxyFactory().getProxy(data, spellClassLoader);
+    return viewer.getView(data, provider);
   }
 
   @Override

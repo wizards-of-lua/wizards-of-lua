@@ -93,7 +93,7 @@ public class Data {
     }
 
     TraversableHashMap<Object, Object> contents = new TraversableHashMap<>();
-    String classname = types.getClassname(table);
+    String classname = types.getClassName(table);
     TableData result = new TableData(contents, classname);
     copies.put(table, result);
 

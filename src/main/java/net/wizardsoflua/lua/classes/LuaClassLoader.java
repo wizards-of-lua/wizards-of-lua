@@ -21,7 +21,6 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.TransferenceProxyFactory;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
@@ -29,6 +28,7 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
+import net.wizardsoflua.lua.view.ViewFactory;
 
 public class LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
@@ -78,8 +78,6 @@ public class LuaClassLoader {
   private final Map<Class<?>, JavaLuaClass<?, ?>> luaClassByJavaClass = new HashMap<>();
   private final Types types;
   private final Converters converters = new Converters(this);
-  private final TransferenceProxyFactory transferenceProxyFactory =
-      new TransferenceProxyFactory(this);
   private final Context context;
 
   @Inject
@@ -115,8 +113,20 @@ public class LuaClassLoader {
     return converters;
   }
 
-  public TransferenceProxyFactory getTransferenceProxyFactory() {
-    return transferenceProxyFactory;
+  /**
+   * @deprecated Use {@link LuaExtensionLoader#getSpellExtension(Class)}
+   */
+  @Deprecated
+  public ViewFactory getViewFactory() {
+    return extensionLoader.getSpellExtension(ViewFactory.class);
+  }
+
+  /**
+   * @deprecated Use {@link LuaExtensionLoader#getLuaExtension(Class)}
+   */
+  @Deprecated
+  public EventsModule getEventsModule() {
+    return extensionLoader.getLuaExtension(EventsModule.class);
   }
 
   public void loadStandardClasses() {
@@ -243,13 +253,5 @@ public class LuaClassLoader {
 
   public LuaSchedulingContext getCurrentSchedulingContext() {
     return context.getCurrentSchedulingContext();
-  }
-
-  /**
-   * @deprecated Use {@link LuaExtensionLoader#getLuaExtension(Class)}
-   */
-  @Deprecated
-  public EventsModule getEventsModule() {
-    return extensionLoader.getLuaExtension(EventsModule.class);
   }
 }

@@ -63,6 +63,17 @@ public class TypesModule implements LuaTableExtension {
     return new TypesModuleTable<>(this, converters);
   }
 
+  public @Nullable Table getClassTableForName(String className) {
+    requireNonNull(className, "className == null!");
+    return classes.get(className);
+  }
+
+  public Table registerClass(String className, Table classTable) {
+    requireNonNull(className, "className == null!");
+    requireNonNull(classTable, "classTable == null!");
+    return classes.put(className, classTable);
+  }
+
   @LuaFunction
   public void declare(String className, @Nullable Table metatable) {
     if (env.rawget(className) != null) {
@@ -78,10 +89,6 @@ public class TypesModule implements LuaTableExtension {
     classTable.setMetatable(metatable);
     registerClass(className, classTable);
     env.rawset(className, classTable);
-  }
-
-  public Table registerClass(String className, Table classTable) {
-    return classes.put(className, classTable);
   }
 
   @LuaFunction
@@ -103,21 +110,21 @@ public class TypesModule implements LuaTableExtension {
     }
     if (object instanceof Table) {
       Table table = (Table) object;
-      String classname = getClassname(table);
-      if (classname != null) {
-        return classname;
+      String className = getClassName(table);
+      if (className != null) {
+        return className;
       }
     }
     return getTypename(object.getClass());
   }
 
-  public @Nullable String getClassname(Table table) {
-    requireNonNull(table, "table == null!");
-    if (classes.inverse().containsKey(table)) {
+  public @Nullable String getClassName(Table instanceTable) {
+    requireNonNull(instanceTable, "table == null!");
+    if (classes.inverse().containsKey(instanceTable)) {
       return "class";
     }
     BiMap<Table, String> inverse = classes.inverse();
-    Table metatable = table.getMetatable();
+    Table metatable = instanceTable.getMetatable();
     return inverse.get(metatable);
   }
 
