@@ -32,7 +32,7 @@ import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
 public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
-  public static final String NAME = "EventQueue2Class";
+  public static final String NAME = "EventQueue";
   @Inject
   private Converter converter;
   @Inject
