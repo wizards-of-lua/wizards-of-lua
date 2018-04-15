@@ -154,7 +154,7 @@ public class TimeModule implements LuaTableExtension {
       try {
         sleep(context, ticks);
       } catch (UnresolvedControlThrowable t) {
-        t.resolve(this, null);
+        throw t.resolve(this, null);
       }
       execute(context);
     }
