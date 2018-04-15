@@ -240,8 +240,7 @@ public class Converters implements LuaConverters {
 
   private @Nullable <J> LuaConverter<J, ?> getConverterForJavaClass(Class<J> javaClass) {
     @SuppressWarnings("unchecked")
-    LuaConverter<J, ?> result =
-        (LuaConverter<J, ?>) convertersByJavaClass.get(javaClass);
+    LuaConverter<J, ?> result = (LuaConverter<J, ?>) convertersByJavaClass.get(javaClass);
     return result;
   }
 

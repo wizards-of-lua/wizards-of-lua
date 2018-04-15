@@ -92,6 +92,7 @@ dependencies {
   compileOnly project(':apt')
   compileOnly libs.auto_service
 
+  embed project(':extension-api')
   embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
   embed libs.rembulan_stdlib
 
