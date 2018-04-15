@@ -13,7 +13,6 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.testenv.assertion.AssertionsFactory;
 
@@ -25,11 +24,6 @@ public class NbtConverterTest extends AssertionsFactory {
         @Override
         public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
           return null;
-        }
-
-        @Override
-        public EventsModule getEventsModule() {
-          throw new UnsupportedOperationException();
         }
       }));
 

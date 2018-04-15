@@ -55,7 +55,6 @@ import net.wizardsoflua.lua.extension.api.service.ScriptGatewayConfig;
 import net.wizardsoflua.lua.extension.api.service.Spell;
 import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
-import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
@@ -140,14 +139,10 @@ public class SpellProgram {
       public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
         return scheduler.getCurrentSchedulingContext();
       }
-
-      @Override
-      public EventsModule getEventsModule() {
-        return extensionLoader.getLuaExtension(EventsModule.class);
-      }
     });
     extensionLoader = createSpellExtensionLoader();
     extensionLoader.installExtensions();
+    extensionLoader.getInjector().inject(luaClassLoader);
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override

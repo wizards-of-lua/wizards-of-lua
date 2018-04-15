@@ -17,7 +17,6 @@ import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
 public class TableUtils {
@@ -29,11 +28,6 @@ public class TableUtils {
         @Override
         public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
           return null;
-        }
-
-        @Override
-        public EventsModule getEventsModule() {
-          throw new UnsupportedOperationException();
         }
       }).getConverters();
 

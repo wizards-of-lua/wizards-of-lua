@@ -11,7 +11,8 @@ import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.extension.spi.ConverterExtension;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 
-public class SpellExtensionLoader implements net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader {
+public class SpellExtensionLoader
+    implements net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader {
   private final ClassIndex extensions = new ClassIndex();
   private final Table env;
   private final ServiceInjector injector;
@@ -21,6 +22,10 @@ public class SpellExtensionLoader implements net.wizardsoflua.lua.extension.api.
     this.env = checkNotNull(env, "env == null!");
     this.injector = checkNotNull(injector, "injector == null!");
     this.converters = requireNonNull(converters, "converters == null!");
+  }
+
+  public ServiceInjector getInjector() {
+    return injector;
   }
 
   public void installExtensions() {

@@ -22,9 +22,12 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.TransferenceProxyFactory;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 
 public class LuaClassLoader {
@@ -79,17 +82,25 @@ public class LuaClassLoader {
       new TransferenceProxyFactory(this);
   private final Context context;
 
+  @Inject
+  private LuaExtensionLoader extensionLoader;
+
+  private TypesModule typesModule;
+
   public interface Context {
     @Nullable
     LuaSchedulingContext getCurrentSchedulingContext();
-
-    EventsModule getEventsModule();
   }
 
   public LuaClassLoader(Table env, Context context) {
     this.env = requireNonNull(env, "env == null!");
     this.context = requireNonNull(context, "context == null!");
     types = new Types(env, this);
+  }
+
+  @AfterInjection
+  public void init() {
+    typesModule = extensionLoader.getLuaExtension(TypesModule.class);
   }
 
   public Table getEnv() {
@@ -135,6 +146,7 @@ public class LuaClassLoader {
       JavaLuaClass<?, ?> javaLuaClass = (JavaLuaClass<?, ?>) luaClass;
       luaClassByJavaClass.put(javaLuaClass.getJavaClass(), javaLuaClass);
     }
+    typesModule.registerClass(luaClass.getName(), luaClass.getMetaTable());
     env.rawset(luaClass.getName(), luaClass.getMetaTable());
   }
 
@@ -238,6 +250,6 @@ public class LuaClassLoader {
    */
   @Deprecated
   public EventsModule getEventsModule() {
-    return context.getEventsModule();
+    return extensionLoader.getLuaExtension(EventsModule.class);
   }
 }
