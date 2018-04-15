@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ServiceConfigurationError;
-import java.util.function.Consumer;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
@@ -14,6 +13,8 @@ import net.wizardsoflua.lua.extension.spi.LuaExtension;
 public class SpellExtensionLoader
     implements net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader {
   private final ClassIndex extensions = new ClassIndex();
+  private final ClassIndex converterExtensions = new ClassIndex();
+  private final ClassIndex luaExtensions = new ClassIndex();
   private final Table env;
   private final ServiceInjector injector;
   private final Converters converters;
@@ -29,32 +30,37 @@ public class SpellExtensionLoader
   }
 
   public void installExtensions() {
-    ServiceLoader.load(LuaExtension.class).forEach(this::getLuaExtension);
     ServiceLoader.load(ConverterExtension.class).forEach(this::getConverterExtension);
+    ServiceLoader.load(LuaExtension.class).forEach(this::getLuaExtension);
+  }
+
+  public <E extends ConverterExtension<?, ?>> E getConverterExtension(Class<E> extensionClass) {
+    E extension = converterExtensions.get(extensionClass);
+    if (extension == null) {
+      extension = getExtension(extensionClass);
+      converterExtensions.add(extension);
+      converters.addConverterExtension(extension);
+    }
+    return extension;
   }
 
   @Override
   public <E extends LuaExtension> E getLuaExtension(Class<E> extensionClass) {
-    return getExtension(extensionClass, extension -> {
-      injector.injectServicesInto(extension);
+    E extension = luaExtensions.get(extensionClass);
+    if (extension == null) {
+      extension = getExtension(extensionClass);
+      luaExtensions.add(extension);
       extension.installInto(env);
-    });
+    }
+    return extension;
   }
 
-  public <E extends ConverterExtension<?, ?>> E getConverterExtension(Class<E> extensionClass) {
-    return getExtension(extensionClass, extension -> {
-      injector.injectServicesInto(extension);
-      converters.addConverterExtension(extension);
-    });
-  }
-
-  private <E> E getExtension(Class<E> extensionClass, Consumer<E> initializer)
-      throws ServiceConfigurationError {
+  private <E> E getExtension(Class<E> extensionClass) throws ServiceConfigurationError {
     E extension = extensions.get(extensionClass);
     if (extension == null) {
       extension = newInstance(extensionClass);
       extensions.add(extension);
-      initializer.accept(extension);
+      injector.injectServicesInto(extension);
     }
     return extension;
   }
