@@ -3,6 +3,7 @@ package net.wizardsoflua.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +51,7 @@ import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.ScriptGatewayConfig;
 import net.wizardsoflua.lua.extension.api.service.Spell;
 import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
@@ -60,8 +62,6 @@ import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
-import net.wizardsoflua.lua.module.system.SystemAdapter;
-import net.wizardsoflua.lua.module.system.SystemModule;
 import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
@@ -83,6 +83,12 @@ public class SpellProgram {
     int getLuaTicksLimit();
 
     int getEventListenerLuaTicksLimit();
+
+    boolean isScriptGatewayEnabled();
+
+    Path getScriptDir();
+
+    long getScriptTimeoutMillis();
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -112,7 +118,7 @@ public class SpellProgram {
   private final Context context;
 
   SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
-      String defaultLuaPath, World world, SystemAdapter systemAdapter, Context context) {
+      String defaultLuaPath, World world, Context context) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
@@ -160,8 +166,6 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
-    SystemModule.installInto(env, luaClassLoader, systemAdapter);
-    scheduler.addPauseContext(systemAdapter);
   }
 
   private SpellExtensionLoader createSpellExtensionLoader() {
@@ -176,6 +180,26 @@ public class SpellProgram {
       @Override
       public long getEventInterceptorTickLimit() {
         return context.getEventListenerLuaTicksLimit();
+      }
+
+      @Override
+      public ScriptGatewayConfig getScriptGatewayConfig() {
+        return new ScriptGatewayConfig() {
+          @Override
+          public boolean isEnabled() {
+            return context.isScriptGatewayEnabled();
+          }
+
+          @Override
+          public Path getScriptDir() {
+            return context.getScriptDir();
+          }
+
+          @Override
+          public long getScriptTimeoutMillis() {
+            return context.getScriptTimeoutMillis();
+          }
+        };
       }
     });
     injector.registerService(Converter.class, luaClassLoader.getConverters());

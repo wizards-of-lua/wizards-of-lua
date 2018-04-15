@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
@@ -57,8 +58,8 @@ public class ScriptGatewayConfig {
     return timeoutMillis;
   }
 
-  public File getDir() {
-    return dirFile;
+  public Path getDir() {
+    return dirFile.toPath().normalize();
   }
 
   private File tryToCreateDir(File dir) {

@@ -4,6 +4,7 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
 
@@ -182,7 +183,7 @@ public class WizardsOfLua {
       }
 
       @Override
-      public File getScriptDir() {
+      public Path getScriptDir() {
         return getConfig().getScriptGatewayConfig().getDir();
       }
 

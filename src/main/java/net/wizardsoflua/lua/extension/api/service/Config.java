@@ -5,4 +5,6 @@ public interface Config {
   long getLuaTickLimit();
 
   long getEventInterceptorTickLimit();
+
+  ScriptGatewayConfig getScriptGatewayConfig();
 }
