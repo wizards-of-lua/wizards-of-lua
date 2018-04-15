@@ -54,6 +54,14 @@ public class Converters implements Converter {
   }
 
   @Override
+  public final @Nullable <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject,
+      int argumentIndex, String argumentName, String functionOrPropertyName)
+      throws BadArgumentException {
+    return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
+        () -> toJavaListNullable(type, luaObject));
+  }
+
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject, int argumentIndex,
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
@@ -124,6 +132,12 @@ public class Converters implements Converter {
   }
 
   @Override
+  public final @Nullable <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject,
+      String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(functionOrPropertyName, () -> toJavaListNullable(type, luaObject));
+  }
+
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaList(type, luaObject));
@@ -158,6 +172,13 @@ public class Converters implements Converter {
     }
   }
 
+  private @Nullable <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject) {
+    if (luaObject == null) {
+      return null;
+    }
+    return toJavaList(type, luaObject);
+  }
+
   private <J> List<J> toJavaList(Class<J> type, Object luaObject) throws BadArgumentException {
     Table table = toJava(Table.class, luaObject);
     List<J> result = new ArrayList<>();
@@ -177,11 +198,11 @@ public class Converters implements Converter {
     return result;
   }
 
-  private <J> Optional<J> toJavaOptional(Class<J> type, Object luaObject) {
+  private <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject) {
     return ofNullable(toJavaNullable(type, luaObject));
   }
 
-  private <J> J toJavaNullable(Class<J> type, Object luaObject) {
+  private @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject) {
     if (luaObject == null) {
       return null;
     }

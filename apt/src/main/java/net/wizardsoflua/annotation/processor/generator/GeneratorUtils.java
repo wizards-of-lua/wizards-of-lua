@@ -4,8 +4,10 @@ import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static net.wizardsoflua.annotation.processor.Constants.getNamedFunctionClassName;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.isJavaLangObject;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.isLuaType;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.isSubType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,8 @@ public class GeneratorUtils {
     return getter.build();
   }
 
-  public static MethodSpec createDelegatingSetter(PropertyModel property, String delegateExpression) {
+  public static MethodSpec createDelegatingSetter(PropertyModel property,
+      String delegateExpression) {
     String name = property.getName();
     String setterName = property.getSetterName();
     TypeMirror setterType = property.getSetterType();
@@ -129,11 +132,18 @@ public class GeneratorUtils {
       TypeMirror argType = arg.getType();
       TypeMirror rawArgType = types.erasure(argType);
       String argName = arg.getName();
-      boolean nullable = arg.isNullable();
       if (isJavaLangObject(argType)) {
         invokeMethod.addStatement("$T $L = arg$L", argType, argName, argIndex);
       } else {
-        String convertersMethod = nullable ? "toJavaNullable" : "toJava";
+        boolean nullable = arg.isNullable();
+        String convertersMethod;
+        String iterableClassName = Iterable.class.getName();
+        if (isSubType(argType, iterableClassName, env)) {
+          rawArgType = getTypeParameter(argType, iterableClassName, 0, env);
+          convertersMethod = nullable ? "toJavaListNullable" : "toJavaList";
+        } else {
+          convertersMethod = nullable ? "toJavaNullable" : "toJava";
+        }
         invokeMethod.addStatement("$T $L = getConverter().$L($T.class, arg$L, $L, $S, getName())",
             argType, argName, convertersMethod, rawArgType, argIndex, argIndex, argName);
       }

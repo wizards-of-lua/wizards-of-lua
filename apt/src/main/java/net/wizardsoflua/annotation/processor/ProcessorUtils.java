@@ -55,28 +55,24 @@ public class ProcessorUtils {
    * representing String.class.
    *
    * @param type
-   * @param superType
+   * @param superTypeName
    * @param index
    * @param types
-   * @return the type parameter of {@code superClass} in the context of {@code type} at the
+   * @return the type parameter of {@code superTypeName} in the context of {@code type} at the
    *         specified {@code index} or {@code null}
    */
-  public static @Nullable TypeMirror getTypeParameter(DeclaredType type, String superType,
+  public static @Nullable TypeMirror getTypeParameter(TypeMirror type, String superTypeName,
       int index, ProcessingEnvironment env) {
-    Types types = env.getTypeUtils();
-    Deque<TypeMirror> todos = new ArrayDeque<>();
-    todos.add(type);
-    while (!todos.isEmpty()) {
-      TypeMirror todo = todos.pop();
-      TypeKind kind = todo.getKind();
+    Set<TypeMirror> superTypes = getAllSuperTypes(type, env);
+    for (TypeMirror superType : superTypes) {
+      TypeKind kind = superType.getKind();
       if (kind == TypeKind.DECLARED || kind == TypeKind.ERROR) {
-        DeclaredType declaredTodo = (DeclaredType) todo;
-        TypeElement todoElement = (TypeElement) declaredTodo.asElement();
-        if (todoElement.getQualifiedName().contentEquals(superType)) {
-          return declaredTodo.getTypeArguments().get(index);
+        DeclaredType declaredSuperType = (DeclaredType) superType;
+        TypeElement superElement = (TypeElement) declaredSuperType.asElement();
+        if (superElement.getQualifiedName().contentEquals(superTypeName)) {
+          return declaredSuperType.getTypeArguments().get(index);
         }
       }
-      todos.addAll(types.directSupertypes(todo));
     }
     return null;
   }
@@ -131,6 +127,29 @@ public class ProcessorUtils {
       }
     }
     return result;
+  }
+
+  /**
+   * Alternative to Types.isSubType(), because that does not work across processing rounds.
+   *
+   * @param type
+   * @param superTypeName
+   * @param env
+   * @return {@code true} if {@code type} is a sub type of {@code superTypeName}, {@code false}
+   *         otherwise
+   * @see Types#isSubtype(TypeMirror, TypeMirror)
+   */
+  public static boolean isSubType(TypeMirror type, String superTypeName,
+      ProcessingEnvironment env) {
+    for (TypeMirror superType : getAllSuperTypes(type, env)) {
+      if (superType.getKind() == TypeKind.DECLARED) {
+        TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
+        if (superElement.getQualifiedName().contentEquals(superTypeName)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public static boolean isJavaLangObject(TypeMirror typeMirror) {
