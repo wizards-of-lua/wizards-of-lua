@@ -17,7 +17,6 @@ import net.wizardsoflua.lua.extension.api.service.Converter;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
-import net.wizardsoflua.lua.module.events.EventHandlers;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
 @GenerateLuaClassTable(instance = EventClass2.Instance.class)
@@ -50,7 +49,7 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
     private LuaExtensionLoader extensionLoader;
 
     private final String name;
-    private EventHandlers events;
+    private EventsModule events;
 
     public Instance(D delegate, String name, Injector injector) {
       super(delegate);
@@ -60,8 +59,7 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
 
     @AfterInjection
     public void initialize() {
-      EventsModule module = extensionLoader.getLuaExtension(EventsModule.class);
-      events = module.getDelegate();
+      events = extensionLoader.getLuaExtension(EventsModule.class);
     }
 
     @LuaProperty

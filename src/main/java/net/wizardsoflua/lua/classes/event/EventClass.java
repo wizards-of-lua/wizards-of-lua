@@ -3,9 +3,8 @@ package net.wizardsoflua.lua.classes.event;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.module.events.EventHandlers;
+import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
 @DeclareLuaClass(name = EventClass.NAME)
@@ -36,8 +35,7 @@ public class EventClass extends DelegatorLuaClass<Event, EventClass.Proxy<EventA
     }
 
     public boolean isCancelable() {
-      EventsModule module = getLuaClass().getClassLoader().getEventsModule();
-      EventHandlers events = module.getDelegate();
+      EventsModule events = getLuaClass().getClassLoader().getEventsModule();
       if (!events.isDuringEventIntercepting()) {
         return false;
       }
