@@ -64,9 +64,9 @@ public class ServiceInjector implements Injector {
     Method[] methods = object.getClass().getMethods();
     for (Method method : methods) {
       int modifiers = method.getModifiers();
-      if (!Modifier.isStatic(modifiers)//
-          && !Modifier.isAbstract(modifiers)//
-          && method.isAnnotationPresent(AfterInjection.class)) {
+      if (method.isAnnotationPresent(AfterInjection.class)) {
+        checkArgument(!Modifier.isStatic(modifiers), "The static method %s is annotated with @%s",
+            method, Inject.class.getSimpleName());
         try {
           method.invoke(object);
         } catch (IllegalAccessException ex) {
