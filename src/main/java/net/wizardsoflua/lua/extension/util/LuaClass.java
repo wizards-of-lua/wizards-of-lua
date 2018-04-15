@@ -8,7 +8,7 @@ import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
-public abstract class LuaClass<J, L> extends TypeTokenConverterExtension<J, L>
+public abstract class LuaClass<J, L> extends TypeTokenLuaConverter<J, L>
     implements LuaTableExtension {
   @Inject
   private LuaExtensionLoader extensionLoader;

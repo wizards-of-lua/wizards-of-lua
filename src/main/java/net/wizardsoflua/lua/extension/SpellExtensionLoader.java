@@ -7,7 +7,7 @@ import java.util.ServiceConfigurationError;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.extension.spi.ConverterExtension;
+import net.wizardsoflua.lua.extension.spi.LuaConverter;
 import net.wizardsoflua.lua.extension.spi.LuaExtension;
 
 public class SpellExtensionLoader
@@ -30,16 +30,16 @@ public class SpellExtensionLoader
   }
 
   public void installExtensions() {
-    ServiceLoader.load(ConverterExtension.class).forEach(this::getConverterExtension);
+    ServiceLoader.load(LuaConverter.class).forEach(this::getLuaConverter);
     ServiceLoader.load(LuaExtension.class).forEach(this::getLuaExtension);
   }
 
-  public <E extends ConverterExtension<?, ?>> E getConverterExtension(Class<E> extensionClass) {
-    E extension = converterExtensions.get(extensionClass);
+  public <C extends LuaConverter<?, ?>> C getLuaConverter(Class<C> converterClass) {
+    C extension = converterExtensions.get(converterClass);
     if (extension == null) {
-      extension = getExtension(extensionClass);
+      extension = getExtension(converterClass);
       converterExtensions.add(extension);
-      converters.addConverterExtension(extension);
+      converters.addConverter(extension);
     }
     return extension;
   }

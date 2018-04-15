@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 
 import com.google.common.reflect.TypeToken;
 
-import net.wizardsoflua.lua.extension.spi.ConverterExtension;
+import net.wizardsoflua.lua.extension.spi.LuaConverter;
 
-public abstract class TypeTokenConverterExtension<J, L> implements ConverterExtension<J, L> {
+public abstract class TypeTokenLuaConverter<J, L> implements LuaConverter<J, L> {
   private @Nullable Class<J> javaClass;
   private @Nullable Class<L> luaClass;
 
