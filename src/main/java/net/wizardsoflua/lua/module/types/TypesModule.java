@@ -135,7 +135,7 @@ public class TypesModule implements LuaTableExtension {
     if (Boolean.class.isAssignableFrom(cls)) {
       return BOOLEAN;
     }
-    if (LuaFunction.class.isAssignableFrom(cls)) {
+    if (net.sandius.rembulan.runtime.LuaFunction.class.isAssignableFrom(cls)) {
       return FUNCTION;
     }
     return cls.getName();
