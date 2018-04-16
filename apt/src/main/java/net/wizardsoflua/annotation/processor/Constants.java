@@ -23,6 +23,8 @@ public interface Constants {
 
   final ClassName LUA_TABLE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaTable");
+  final ClassName LUA_INSTANCE_TABLE_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaInstanceTable");
   final ClassName LUA_MODULE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.module", "GeneratedLuaModule");
   final ClassName LUA_CLASS_SUPERCLASS =

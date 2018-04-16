@@ -4,6 +4,7 @@ import static com.squareup.javapoet.MethodSpec.constructorBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.Constants.LUA_CONVERTERS_CLASS;
+import static net.wizardsoflua.annotation.processor.Constants.LUA_INSTANCE_TABLE_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.Constants.LUA_TABLE_SUPERCLASS;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingGetter;
 import static net.wizardsoflua.annotation.processor.generator.GeneratorUtils.createDelegatingSetter;
@@ -102,7 +103,9 @@ public class LuaTableGenerator {
       constructor.addParameter(Table.class, "metatable");
     }
     constructor.addParameter(converters, "converters");
-    if (LUA_TABLE_SUPERCLASS.equals(model.getSuperTableClassName())) {
+    ClassName superTableClassName = model.getSuperTableClassName();
+    if (LUA_TABLE_SUPERCLASS.equals(superTableClassName)
+        || LUA_INSTANCE_TABLE_SUPERCLASS.equals(superTableClassName)) {
       if (model.hasMetatable()) {
         constructor.addStatement("super(delegate, metatable, converters, $L)",
             model.isModifiable());

@@ -238,31 +238,20 @@ public class Converters implements LuaConverters {
     convertersByJavaClass.put(converter.getJavaClass(), converter);
   }
 
-  private @Nullable <J> LuaConverter<J, ?> getConverterForJavaClass(Class<J> javaClass) {
+  private @Nullable <J> LuaConverter<J, ?> getConverter(Class<J> javaClass) {
     @SuppressWarnings("unchecked")
     LuaConverter<J, ?> result = (LuaConverter<J, ?>) convertersByJavaClass.get(javaClass);
     return result;
   }
 
-  private @Nullable <J> LuaConverter<? super J, ?> getConverterForJavaClassRecursively(
-      Class<J> javaClass) {
+  private @Nullable <J> LuaConverter<? super J, ?> getConverterForJavaClass(Class<J> javaClass) {
     Class<? super J> cls = javaClass;
     while (cls != null) {
-      LuaConverter<? super J, ?> result = getConverterForJavaClass(cls);
+      LuaConverter<? super J, ?> result = getConverter(cls);
       if (result != null) {
         return result;
       }
       cls = cls.getSuperclass();
-    }
-    return null;
-  }
-
-  private @Nullable <J> Object convertToLua(J javaObject) {
-    @SuppressWarnings("unchecked")
-    Class<J> javaClass = (Class<J>) javaObject.getClass();
-    LuaConverter<? super J, ?> converter = getConverterForJavaClassRecursively(javaClass);
-    if (converter != null) {
-      return converter.getLuaInstance(javaObject);
     }
     return null;
   }
@@ -276,7 +265,7 @@ public class Converters implements LuaConverters {
 
   private Object convertTo(Class<?> javaClass, Object luaObject)
       throws ClassCastException, BadArgumentException {
-    LuaConverter<?, ?> converter = getConverterForJavaClassRecursively(javaClass);
+    LuaConverter<?, ?> converter = getConverterForJavaClass(javaClass);
     if (converter != null) {
       return convertToJava(luaObject, converter);
     }
@@ -381,7 +370,7 @@ public class Converters implements LuaConverters {
     requireNonNull(javaObject, "javaObject == null!");
     @SuppressWarnings("unchecked")
     Class<J> javaClass = (Class<J>) javaObject.getClass();
-    LuaConverter<? super J, ?> converter = getConverterForJavaClassRecursively(javaClass);
+    LuaConverter<? super J, ?> converter = getConverterForJavaClass(javaClass);
     if (converter != null) {
       return converter.getLuaInstance(javaObject);
     }

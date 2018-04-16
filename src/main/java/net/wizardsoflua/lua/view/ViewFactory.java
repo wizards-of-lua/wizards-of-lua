@@ -11,8 +11,11 @@ import com.google.common.cache.CacheBuilder;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.lua.classes.JavaInstanceWrapper;
+import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.module.types.TypesModule;
@@ -28,9 +31,12 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 @AutoService(SpellExtension.class)
 public class ViewFactory implements SpellExtension {
   @Inject
+  private LuaConverters converters;
+  @Inject
   private LuaExtensionLoader extensionLoader;
 
-  private final Cache<Object, View> cache = CacheBuilder.newBuilder().weakKeys().build();
+  private final Cache<Object, View> cache =
+      CacheBuilder.newBuilder().weakKeys().softValues().build();
   private TypesModule types;
 
   @AfterInjection
@@ -64,6 +70,14 @@ public class ViewFactory implements SpellExtension {
       if (remoteViewFactory == this) {
         return remoteLuaObject;
       }
+    }
+    if (remoteLuaObject instanceof LuaInstance) {
+      Object javaInstance = ((LuaInstance<?>) remoteLuaObject).getDelegate();
+      return converters.toLua(javaInstance);
+    }
+    if (remoteLuaObject instanceof JavaInstanceWrapper) {
+      Object javaInstance = ((JavaInstanceWrapper<?>) remoteLuaObject).getJavaInstance();
+      return converters.toLua(javaInstance);
     }
     final ViewFactory finalRemoteViewFactory = remoteViewFactory;
     if (remoteLuaObject instanceof LuaFunction) {

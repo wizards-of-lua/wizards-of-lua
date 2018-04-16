@@ -98,7 +98,11 @@ public class LuaTableModel {
         return ClassName.get(packageName, simpleName);
       }
     }
-    return Constants.LUA_TABLE_SUPERCLASS;
+    if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
+      return Constants.LUA_INSTANCE_TABLE_SUPERCLASS;
+    } else {
+      return Constants.LUA_TABLE_SUPERCLASS;
+    }
   }
 
   private static boolean hasMetatable(TypeElement annotatedElement) {

@@ -9,6 +9,7 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
@@ -45,7 +46,7 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
   }
 
   @GenerateLuaInstanceTable
-  public static class Instance<D extends Event> extends ModifiableDelegator<D> {
+  public static class Instance<D extends Event> extends LuaInstance<D> {
     @Inject
     private LuaExtensionLoader extensionLoader;
 

@@ -17,8 +17,8 @@ import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
@@ -57,7 +57,7 @@ public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
   }
 
   @GenerateLuaInstanceTable
-  public static class Instance<D extends EventQueue> extends ModifiableDelegator<D> {
+  public static class Instance<D extends EventQueue> extends LuaInstance<D> {
     public Instance(D delegate) {
       super(delegate);
     }

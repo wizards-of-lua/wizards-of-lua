@@ -2,7 +2,6 @@ package net.wizardsoflua.lua.table;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 
@@ -15,12 +14,6 @@ public class GeneratedLuaTable<D> extends PropertyTable implements Delegator<D> 
     super(allowAdditionalProperties);
     this.delegate = checkNotNull(delegate, "delegate == null!");
     this.converters = checkNotNull(converters, "converters == null!");
-  }
-
-  public GeneratedLuaTable(D delegate, Table metatable, LuaConverters converters,
-      boolean allowAdditionalProperties) {
-    this(delegate, converters, allowAdditionalProperties);
-    setMetatable(metatable);
   }
 
   @Override
