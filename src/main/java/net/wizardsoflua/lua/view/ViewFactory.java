@@ -16,7 +16,7 @@ import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
@@ -33,7 +33,7 @@ public class ViewFactory implements SpellExtension {
   @Inject
   private LuaConverters converters;
   @Inject
-  private LuaExtensionLoader extensionLoader;
+  private SpellExtensions extensions;
 
   private final Cache<Object, View> cache =
       CacheBuilder.newBuilder().weakKeys().softValues().build();
@@ -41,7 +41,7 @@ public class ViewFactory implements SpellExtension {
 
   @AfterInjection
   public void init() {
-    types = extensionLoader.getLuaExtension(TypesModule.class);
+    types = extensions.getSpellExtension(TypesModule.class);
   }
 
   public @Nullable String getClassName(Table table) {

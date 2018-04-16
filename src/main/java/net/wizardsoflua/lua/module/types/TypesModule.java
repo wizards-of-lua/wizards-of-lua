@@ -19,14 +19,14 @@ import net.wizardsoflua.lua.classes.ObjectClass2;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
+import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = TypesModule.NAME)
-@AutoService(LuaExtension.class)
-public class TypesModule implements LuaTableExtension {
+@AutoService(SpellExtension.class)
+public class TypesModule extends LuaTableExtension {
   public static final String NAME = "Types";
   public static final String BOOLEAN = "boolean";
   public static final String FUNCTION = "function";
@@ -39,7 +39,7 @@ public class TypesModule implements LuaTableExtension {
   @Inject
   private Table env;
   @Inject
-  private LuaExtensionLoader extensionLoader;
+  private SpellExtensions extensions;
   @Inject
   private TableFactory tableFactory;
 
@@ -48,7 +48,7 @@ public class TypesModule implements LuaTableExtension {
 
   @AfterInjection
   public void init() {
-    ObjectClass2 objectClass = extensionLoader.getLuaExtension(ObjectClass2.class);
+    ObjectClass2 objectClass = extensions.getSpellExtension(ObjectClass2.class);
     objectClassTable = objectClass.getTable();
     registerClass(objectClass.getName(), objectClassTable);
   }

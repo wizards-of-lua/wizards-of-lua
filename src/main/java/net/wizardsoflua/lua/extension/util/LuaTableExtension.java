@@ -1,17 +1,21 @@
 package net.wizardsoflua.lua.extension.util;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.common.Named;
+import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
+import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.spi.SpellExtension;
 
-public interface LuaTableExtension extends LuaExtension {
-  @Override
-  default void installInto(Table env) {
+public abstract class LuaTableExtension implements SpellExtension, Named {
+  @Inject
+  private Table env;
+
+  @AfterInjection
+  public void installIntoEnv() {
     String name = getName();
     Table table = getTable();
     env.rawset(name, table);
   }
 
-  String getName();
-
-  Table getTable();
+  protected abstract Table getTable();
 }

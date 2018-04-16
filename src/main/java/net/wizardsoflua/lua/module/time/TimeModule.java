@@ -24,7 +24,7 @@ import net.wizardsoflua.lua.extension.api.service.Config;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.service.Time;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
@@ -33,8 +33,8 @@ import net.wizardsoflua.lua.module.types.TypesModule;
  */
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = TimeModule.NAME, subtitle = "Accessing the Time")
-@AutoService(LuaExtension.class)
-public class TimeModule implements LuaTableExtension {
+@AutoService(SpellExtension.class)
+public class TimeModule extends LuaTableExtension {
   public static final String NAME = "Time";
   @Inject
   private Config config;

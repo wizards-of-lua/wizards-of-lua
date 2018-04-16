@@ -5,69 +5,43 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ServiceConfigurationError;
 
-import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.extension.api.service.Injector;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.spi.LuaConverter;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
 
-public class SpellExtensionLoader
-    implements net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader {
-  private final ClassIndex extensions = new ClassIndex();
-  private final ClassIndex luaConverters = new ClassIndex();
-  private final ClassIndex luaExtensions = new ClassIndex();
-  private final Table env;
-  private final ServiceInjector injector;
-  private final Converters converters;
+public class SpellExtensionLoader implements SpellExtensions {
+  private final ClassIndex serviceProvider = new ClassIndex();
+  private final Injector injector;
+  private final LuaConverters converters;
 
-  public SpellExtensionLoader(Table env, ServiceInjector injector, Converters converters) {
-    this.env = checkNotNull(env, "env == null!");
+  public SpellExtensionLoader(Injector injector, LuaConverters converters) {
     this.injector = checkNotNull(injector, "injector == null!");
     this.converters = requireNonNull(converters, "converters == null!");
   }
 
-  public ServiceInjector getInjector() {
+  public Injector getInjector() {
     return injector;
   }
 
   public void installExtensions() {
-    ServiceLoader.load(LuaConverter.class).forEach(this::getLuaConverter);
-    ServiceLoader.load(LuaExtension.class).forEach(this::getLuaExtension);
+    ServiceLoader.load(LuaConverter.class).forEach(this::registerLuaConverter);
     ServiceLoader.load(SpellExtension.class).forEach(this::getSpellExtension);
   }
 
-  public <C extends LuaConverter<?, ?>> C getLuaConverter(Class<C> converterClass) {
-    C converter = luaConverters.get(converterClass);
-    if (converter == null) {
-      converter = getExtension(converterClass);
-      luaConverters.add(converter);
-      converters.addConverter(converter);
-    }
-    return converter;
-  }
-
-  @Override
-  public <E extends LuaExtension> E getLuaExtension(Class<E> extensionClass) {
-    E extension = luaExtensions.get(extensionClass);
-    if (extension == null) {
-      extension = getExtension(extensionClass);
-      luaExtensions.add(extension);
-      extension.installInto(env);
-    }
-    return extension;
+  private <C extends LuaConverter<?, ?>> void registerLuaConverter(Class<C> converterClass) {
+    C converter = getSpellExtension(converterClass);
+    converters.registerLuaConverter(converter);
   }
 
   @Override
   public <E extends SpellExtension> E getSpellExtension(Class<E> extensionClass) {
-    return getExtension(extensionClass);
-  }
-
-  private <E> E getExtension(Class<E> extensionClass) throws ServiceConfigurationError {
-    E extension = extensions.get(extensionClass);
+    E extension = serviceProvider.get(extensionClass);
     if (extension == null) {
       extension = newInstance(extensionClass);
-      extensions.add(extension);
-      injector.injectServicesInto(extension);
+      serviceProvider.add(extension);
+      injector.inject(extension);
     }
     return extension;
   }
@@ -77,7 +51,7 @@ public class SpellExtensionLoader
       return cls.newInstance();
     } catch (InstantiationException | IllegalAccessException ex) {
       String message = "Provider " + cls + " could not be instantiated";
-      throw new ServiceConfigurationError(LuaExtension.class.getName() + ": " + message, ex);
+      throw new ServiceConfigurationError(SpellExtension.class.getName() + ": " + message, ex);
     }
   }
 }

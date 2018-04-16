@@ -47,10 +47,10 @@ import net.wizardsoflua.lua.extension.ServiceInjector;
 import net.wizardsoflua.lua.extension.SpellExtensionLoader;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.service.Injector;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.api.service.ScriptGatewayConfig;
 import net.wizardsoflua.lua.extension.api.service.Spell;
 import net.wizardsoflua.lua.extension.api.service.Time;
@@ -225,9 +225,8 @@ public class SpellProgram {
         return context.getClock();
       }
     });
-    SpellExtensionLoader extensionLoader =
-        new SpellExtensionLoader(env, injector, luaClassLoader.getConverters());
-    injector.registerService(LuaExtensionLoader.class, extensionLoader);
+    SpellExtensionLoader extensionLoader = new SpellExtensionLoader(injector, getConverters());
+    injector.registerService(SpellExtensions.class, extensionLoader);
     return extensionLoader;
   }
 
@@ -239,7 +238,7 @@ public class SpellProgram {
     return luaClassLoader.getConverters();
   }
 
-  public LuaExtensionLoader getLuaExtensionLoader() {
+  public SpellExtensions getLuaExtensionLoader() {
     return extensionLoader;
   }
 

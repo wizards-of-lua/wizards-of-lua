@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import net.wizardsoflua.lua.extension.spi.LuaConverter;
+
 public interface LuaConverters {
   @Nullable
   <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject, int argumentIndex,
@@ -45,4 +47,6 @@ public interface LuaConverters {
   Object toLuaNullable(@Nullable Object value);
 
   <J> Object toLua(J javaObject);
+
+  void registerLuaConverter(LuaConverter<?, ?> converter) throws IllegalArgumentException;
 }

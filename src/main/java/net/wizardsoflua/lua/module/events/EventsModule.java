@@ -29,13 +29,13 @@ import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.api.service.Spell;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.api.service.Time;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
@@ -43,8 +43,8 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = EventsModule.NAME, subtitle = "Knowing What Happened")
-@AutoService(LuaExtension.class)
-public class EventsModule implements LuaTableExtension {
+@AutoService(SpellExtension.class)
+public class EventsModule extends LuaTableExtension {
   public static final String NAME = "Events";
   @Inject
   private Config config;
@@ -53,7 +53,7 @@ public class EventsModule implements LuaTableExtension {
   @Inject
   private ExceptionHandler exceptionHandler;
   @Inject
-  private LuaExtensionLoader extensionLoader;
+  private SpellExtensions extensions;
   @Inject
   private LuaScheduler scheduler;
   @Inject
@@ -96,7 +96,7 @@ public class EventsModule implements LuaTableExtension {
 
   @AfterInjection
   public void initialize() {
-    types = extensionLoader.getLuaExtension(TypesModule.class);
+    types = extensions.getSpellExtension(TypesModule.class);
     luaTickLimit = config.getEventInterceptorTickLimit();
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override

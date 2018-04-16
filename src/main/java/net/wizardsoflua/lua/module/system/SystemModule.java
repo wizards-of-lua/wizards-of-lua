@@ -27,15 +27,15 @@ import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Config;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = SystemModule.NAME, subtitle = "Interacting with the Server's OS")
-@AutoService(LuaExtension.class)
-public class SystemModule implements LuaTableExtension {
+@AutoService(SpellExtension.class)
+public class SystemModule extends LuaTableExtension {
   public static final String NAME = "System";
   @Inject
   private Config config;

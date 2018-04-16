@@ -6,11 +6,11 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.spi.LuaExtension;
+import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
-@AutoService(LuaExtension.class)
-public class ObjectClass2 implements LuaTableExtension {
+@AutoService(SpellExtension.class)
+public class ObjectClass2 extends LuaTableExtension {
   @Inject
   private TableFactory tableFactory;
 

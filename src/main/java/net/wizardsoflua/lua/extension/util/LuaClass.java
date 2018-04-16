@@ -3,25 +3,33 @@ package net.wizardsoflua.lua.extension.util;
 import javax.annotation.Nullable;
 
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.common.Named;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
-public abstract class LuaClass<J, L> extends TypeTokenLuaConverter<J, L>
-    implements LuaTableExtension {
+public abstract class LuaClass<J, L> extends TypeTokenLuaConverter<J, L> implements Named {
   @Inject
-  private LuaExtensionLoader extensionLoader;
+  private Table env;
+  @Inject
+  private SpellExtensions extensions;
 
   private @Nullable Table table;
 
   @AfterInjection
   public void init() {
-    TypesModule types = extensionLoader.getLuaExtension(TypesModule.class);
+    TypesModule types = extensions.getSpellExtension(TypesModule.class);
     types.registerClass(getName(), getTable());
   }
 
-  @Override
+  @AfterInjection
+  public void installIntoEnv() {
+    String name = getName();
+    Table table = getTable();
+    env.rawset(name, table);
+  }
+
   public Table getTable() {
     if (table == null) {
       table = createRawTable();

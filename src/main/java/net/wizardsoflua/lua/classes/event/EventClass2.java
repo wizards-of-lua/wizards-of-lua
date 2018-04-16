@@ -11,12 +11,11 @@ import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.classes.common.ModifiableDelegator;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
 import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
@@ -48,7 +47,7 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
   @GenerateLuaInstanceTable
   public static class Instance<D extends Event> extends LuaInstance<D> {
     @Inject
-    private LuaExtensionLoader extensionLoader;
+    private SpellExtensions extensions;
 
     private final String name;
     private EventsModule events;
@@ -61,7 +60,7 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
 
     @AfterInjection
     public void initialize() {
-      events = extensionLoader.getLuaExtension(EventsModule.class);
+      events = extensions.getSpellExtension(EventsModule.class);
     }
 
     @LuaProperty

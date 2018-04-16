@@ -32,7 +32,6 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.data.TableData;
 import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaExtensionLoader;
 import net.wizardsoflua.lua.extension.spi.LuaConverter;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
@@ -230,12 +229,16 @@ public class Converters implements LuaConverters {
     return new BadArgumentException(expected, actual);
   }
 
-  LuaExtensionLoader extensionLoader;
-
   private final Map<Class<?>, LuaConverter<?, ?>> convertersByJavaClass = new HashMap<>();
 
-  public void addConverter(LuaConverter<?, ?> converter) {
-    convertersByJavaClass.put(converter.getJavaClass(), converter);
+  @Override
+  public void registerLuaConverter(LuaConverter<?, ?> converter) throws IllegalArgumentException {
+    Class<?> javaClass = converter.getJavaClass();
+    if (convertersByJavaClass.containsKey(javaClass)) {
+      throw new IllegalArgumentException(
+          "A converter for java " + javaClass + " is already registered");
+    }
+    convertersByJavaClass.put(javaClass, converter);
   }
 
   private @Nullable <J> LuaConverter<J, ?> getConverter(Class<J> javaClass) {
