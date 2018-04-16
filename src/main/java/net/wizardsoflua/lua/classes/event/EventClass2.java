@@ -16,12 +16,12 @@ import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
-import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
+import net.wizardsoflua.lua.extension.util.BasicLuaClass;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
 @GenerateLuaClassTable(instance = EventClass2.Instance.class)
 @GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class")
-public class EventClass2 extends DelegatorCachingLuaClass<Event> {
+public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   public static final String NAME = "Event";
   @Inject
   private LuaConverters converters;
@@ -40,8 +40,8 @@ public class EventClass2 extends DelegatorCachingLuaClass<Event> {
 
   @Override
   protected Delegator<Instance<?>> toLuaInstance(Event javaInstance) {
-    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, NAME, injector), getTable(),
-        converters);
+    return new EventClass2InstanceTable<>(new Instance<>(javaInstance, getName(), injector),
+        getTable(), converters);
   }
 
   @GenerateLuaInstanceTable

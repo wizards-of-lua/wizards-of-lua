@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public abstract class LuaInstanceCachingLuaClass<J, L> extends LuaClass<J, L> {
+public abstract class CachingLuaClass<J, L> extends LuaClass<J, L> {
   private final Cache<J, L> cache = CacheBuilder.newBuilder().weakKeys().softValues().build();
 
   public Cache<J, L> getCache() {

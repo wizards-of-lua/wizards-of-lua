@@ -24,7 +24,7 @@ import net.wizardsoflua.lua.extension.api.inject.Inject;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.spi.LuaConverter;
-import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
+import net.wizardsoflua.lua.extension.util.BasicLuaClass;
 
 /**
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
@@ -33,7 +33,7 @@ import net.wizardsoflua.lua.extension.util.DelegatorCachingLuaClass;
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
 @AutoService(LuaConverter.class)
-public class EventQueueClass extends DelegatorCachingLuaClass<EventQueue> {
+public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
   public static final String NAME = "EventQueue";
   @Inject
   private LuaConverters converters;
