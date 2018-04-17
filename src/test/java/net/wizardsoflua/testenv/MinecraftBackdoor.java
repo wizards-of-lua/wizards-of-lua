@@ -33,6 +33,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.Village;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
@@ -59,6 +61,18 @@ public class MinecraftBackdoor {
 
   public String getWorldName() {
     return testEnv.getServer().getEntityWorld().getWorldInfo().getWorldName();
+  }
+
+  public int getWorldDimension() {
+    return testEnv.getServer().getEntityWorld().provider.getDimension();
+  }
+
+  public EnumDifficulty getDifficulty() {
+    return testEnv.getServer().getEntityWorld().getWorldInfo().getDifficulty();
+  }
+
+  public void setDifficulty(EnumDifficulty newDifficulty) {
+    testEnv.getServer().getEntityWorld().getWorldInfo().setDifficulty(newDifficulty);
   }
 
   public void post(Event event) {
@@ -158,6 +172,15 @@ public class MinecraftBackdoor {
     testEnv.getServer().getEntityWorld().setSpawnPoint(pos);
   }
 
+  public BlockPos getNearestVillageCenter(BlockPos pos, int radius) {
+    Village v =
+        testEnv.getServer().getEntityWorld().getVillageCollection().getNearestVillage(pos, radius);
+    if (v == null) {
+      return null;
+    }
+    return v.getCenter();
+  }
+
   public int getLuaTicksLimit() {
     return testEnv.getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
   }
@@ -242,4 +265,7 @@ public class MinecraftBackdoor {
       setBlock(pos, blockType);
     }
   }
+
+
+
 }

@@ -16,12 +16,10 @@ public class EnumConverter {
     // if (IStringSerializable.class.isAssignableFrom(type)) {
     //
     // }
-    if (GameType.class == type) {
-      Map<String, Object> map = getToJavaMapping(type);
-      Object result = map.get(name);
-      return (T) result;
-    }
-    return null;
+
+    Map<String, Object> map = getToJavaMapping(type);
+    Object result = map.get(name);
+    return (T) result;
   }
 
   public Object toLua(Enum<?> vEnum) {

@@ -8,15 +8,15 @@ import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
-public class EventSubscriptionTest extends WolTestBase {
+public class EventInterceptorTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.EventSubscriptionTest test_unsubscribe__After_unsubscribing_the_EventHandler_is_no_longer_called
+  // /test net.wizardsoflua.tests.EventInterceptorTest test_stop__After_stopping_the_EventHandler_is_no_longer_called
   @Test
-  public void test_unsubscribe__After_unsubscribing_the_EventHandler_is_no_longer_called() {
+  public void test_stop__After_stopping_the_EventHandler_is_no_longer_called() {
     // When:
-    mc().executeCommand("lua subscription = Events.on('custom-event'):call(function(event)\n"//
+    mc().executeCommand("lua interceptor = Events.on('custom-event'):call(function(event)\n"//
         + "print(event.data)\n"//
-        + "subscription:unsubscribe()\n"//
+        + "interceptor:stop()\n"//
         + "end)\n"//
     );
     mc().executeCommand("lua Events.fire('custom-event', 1)");
@@ -30,31 +30,31 @@ public class EventSubscriptionTest extends WolTestBase {
     assertThat(act2.getMessage()).isEqualTo("3");
   }
 
-  // /test net.wizardsoflua.tests.EventSubscriptionTest test_unsubscribe__After_last_unsubscribing_the_Spell_can_terminate
+  // /test net.wizardsoflua.tests.EventInterceptorTest test_stop__After_last_stopping_the_Spell_can_terminate
   @Test
-  public void test_unsubscribe__After_last_unsubscribing_the_Spell_can_terminate() {
+  public void test_stop__After_last_stopping_the_Spell_can_terminate() {
     // When:
-    mc().executeCommand("lua subscription1 = Events.on('unsub-1'):call(function(event)\n"//
-        + "subscription1:unsubscribe()\n"//
+    mc().executeCommand("lua interceptor1 = Events.on('stop-1'):call(function(event)\n"//
+        + "interceptor1:stop()\n"//
         + "end)\n"//
-        + "subscription2 = Events.on('unsub-2'):call(function(event)\n"//
-        + "subscription2:unsubscribe()\n"//
+        + "interceptor2 = Events.on('stop-2'):call(function(event)\n"//
+        + "interceptor2:stop()\n"//
         + "end)\n"//
     );
     sleep(1000);
     mc().executeCommand("wol spell list all");
-    mc().executeCommand("lua Events.fire('unsub-1')");
+    mc().executeCommand("lua Events.fire('stop-1')");
     sleep(1000);
     mc().executeCommand("wol spell list all");
-    mc().executeCommand("lua Events.fire('unsub-2')");
+    mc().executeCommand("lua Events.fire('stop-2')");
     sleep(1000);
     mc().executeCommand("wol spell list all");
 
     // Then:
     ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).contains("subscription1 = Events.on('unsub-1')");
+    assertThat(act1.getMessage()).contains("interceptor1 = Events.on('stop-1')");
     ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).contains("subscription1 = Events.on('unsub-1')");
+    assertThat(act2.getMessage()).contains("interceptor1 = Events.on('stop-1')");
     ServerLog4jEvent act3 = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act3.getMessage()).isEqualTo("[WoL] Active spells:\n");
   }

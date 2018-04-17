@@ -50,9 +50,9 @@ import net.wizardsoflua.lua.extension.api.service.Config;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.api.service.ScriptGatewayConfig;
 import net.wizardsoflua.lua.extension.api.service.Spell;
+import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.api.service.Time;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
@@ -61,12 +61,14 @@ import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
+import net.wizardsoflua.lua.module.spell.SpellsModule;
 import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
+import net.wizardsoflua.spell.SpellRegistry;
 
 public class SpellProgram {
   private enum State {
@@ -88,6 +90,8 @@ public class SpellProgram {
     Path getScriptDir();
 
     long getScriptTimeoutMillis();
+
+    SpellRegistry getSpellRegistry();
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -319,6 +323,7 @@ public class SpellProgram {
 
     SpellModule.installInto(env, getConverters(), spellEntity);
     EntitiesModule.installInto(env, getConverters(), spellEntity);
+    SpellsModule.installInto(env, getConverters(), context.getSpellRegistry(), spellEntity);
 
     dependencies.installModules(env, scheduler, luaTickLimit);
 

@@ -39,7 +39,7 @@ public class BlockBreakEventTest extends WolTestBase {
     mc().setBlock(blockPos, Blocks.TNT); // TNT is destroyed by a single hit
     String expected = format(blockPos);
 
-    mc().executeCommand("/lua q=Events.connect('BlockBreakEvent'); e=q:next(); print(e.pos)");
+    mc().executeCommand("/lua q=Events.collect('BlockBreakEvent'); e=q:next(); print(e.pos)");
 
     // When:
     mc().player().leftclick(blockPos, UP);

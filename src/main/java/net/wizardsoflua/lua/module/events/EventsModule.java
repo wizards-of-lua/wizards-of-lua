@@ -20,10 +20,10 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.event.CustomLuaEvent;
+import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
+import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptorClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueueClass;
-import net.wizardsoflua.lua.classes.eventsubscription.EventSubscription;
-import net.wizardsoflua.lua.classes.eventsubscription.EventSubscriptionClass;
 import net.wizardsoflua.lua.data.Data;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
@@ -66,7 +66,7 @@ public class EventsModule extends LuaTableExtension {
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
   private final EventQueue.Context eventQueueContext = new EventQueue.Context() {
     @Override
-    public void disconnect(EventQueue queue) {
+    public void stop(EventQueue queue) {
       for (String name : queue.getNames()) {
         queues.remove(name, queue);
       }
@@ -78,15 +78,15 @@ public class EventsModule extends LuaTableExtension {
     }
   };
   /**
-   * Using a linked multimap, because the order of subscriptions matters as later event listeners
+   * Using a linked multimap, because the order of interceptors matters as later event interceptors
    * are not called if the event was canceled by a previous one.
    */
-  private final Multimap<String, EventSubscription> subscriptions = LinkedHashMultimap.create();
-  private final EventSubscription.Context subscriptionContext = new EventSubscription.Context() {
+  private final Multimap<String, EventInterceptor> interceptors = LinkedHashMultimap.create();
+  private final EventInterceptor.Context interceptorContext = new EventInterceptor.Context() {
     @Override
-    public void unsubscribe(EventSubscription subscription) {
-      for (String eventName : subscription.getEventNames()) {
-        subscriptions.remove(eventName, subscription);
+    public void stop(EventInterceptor interceptor) {
+      for (String eventName : interceptor.getEventNames()) {
+        interceptors.remove(eventName, interceptor);
       }
     }
   };
@@ -101,12 +101,12 @@ public class EventsModule extends LuaTableExtension {
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override
       public void terminate() {
-        subscriptions.clear();
+        interceptors.clear();
       }
 
       @Override
       public boolean isFinished() {
-        return subscriptions.isEmpty();
+        return interceptors.isEmpty();
       }
     });
     scheduler.addPauseContext(this::shouldPause);
@@ -129,10 +129,10 @@ public class EventsModule extends LuaTableExtension {
     MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data2));
   }
 
-  @net.wizardsoflua.annotation.LuaFunction(name = ConnectFunction.NAME)
+  @net.wizardsoflua.annotation.LuaFunction(name = CollectFunction.NAME)
   @LuaFunctionDoc(returnType = EventQueueClass.NAME, args = {"eventName..."})
-  class ConnectFunction extends NamedFunctionAnyArg {
-    public static final String NAME = "connect";
+  class CollectFunction extends NamedFunctionAnyArg {
+    public static final String NAME = "collect";
 
     @Override
     public String getName() {
@@ -142,13 +142,13 @@ public class EventsModule extends LuaTableExtension {
     @Override
     public void invoke(ExecutionContext context, Object[] args) throws ResolvedControlThrowable {
       List<String> eventNames = converters.toJavaList(String.class, args, getName());
-      EventQueue result = connect(eventNames);
+      EventQueue result = collect(eventNames);
       Object luaResult = converters.toLua(result);
       context.getReturnBuffer().setTo(luaResult);
     }
   }
 
-  public EventQueue connect(Iterable<String> eventNames) {
+  public EventQueue collect(Iterable<String> eventNames) {
     EventQueue result = new EventQueue(eventNames, eventQueueContext);
     for (String name : eventNames) {
       queues.put(name, result);
@@ -183,16 +183,16 @@ public class EventsModule extends LuaTableExtension {
 
     Table metatable = tableFactory.newTable();
     metatable.rawset("__index", metatable);
-    SubscribeFunction subscribeFunction = new SubscribeFunction();
-    metatable.rawset("call", subscribeFunction);
+    InterceptFunction interceptFunction = new InterceptFunction();
+    metatable.rawset("call", interceptFunction);
     result.setMetatable(metatable);
     return result;
   }
 
-  @net.wizardsoflua.annotation.LuaFunction(name = SubscribeFunction.NAME)
-  @LuaFunctionDoc(returnType = EventSubscriptionClass.NAME, args = {"eventNames", "eventHandler"})
-  class SubscribeFunction extends NamedFunction2 {
-    public static final String NAME = "subscribe";
+  @net.wizardsoflua.annotation.LuaFunction(name = InterceptFunction.NAME)
+  @LuaFunctionDoc(returnType = EventInterceptorClass.NAME, args = {"eventNames", "eventHandler"})
+  class InterceptFunction extends NamedFunction2 {
+    public static final String NAME = "intercept";
 
     @Override
     public String getName() {
@@ -206,21 +206,21 @@ public class EventsModule extends LuaTableExtension {
           converters.toJavaList(String.class, arg1, 1, "eventNames", getName());
       LuaFunction eventHandler =
           converters.toJava(LuaFunction.class, arg2, 2, "eventHandler", getName());
-      EventSubscription result = subscribe(eventNames, eventHandler);
+      EventInterceptor result = intercept(eventNames, eventHandler);
       Object luaResult = converters.toLuaNullable(result);
       context.getReturnBuffer().setTo(luaResult);
     }
   }
 
-  public EventSubscription subscribe(Iterable<String> eventNames, LuaFunction eventHandler) {
-    return subscribe(new EventSubscription(eventNames, eventHandler, subscriptionContext));
+  public EventInterceptor intercept(Iterable<String> eventNames, LuaFunction eventHandler) {
+    return intercept(new EventInterceptor(eventNames, eventHandler, interceptorContext));
   }
 
-  private EventSubscription subscribe(EventSubscription subscription) {
-    for (String eventName : subscription.getEventNames()) {
-      subscriptions.put(eventName, subscription);
+  private EventInterceptor intercept(EventInterceptor interceptor) {
+    for (String eventName : interceptor.getEventNames()) {
+      interceptors.put(eventName, interceptor);
     }
-    return subscription;
+    return interceptor;
   }
 
   public boolean shouldPause() {
@@ -249,10 +249,10 @@ public class EventsModule extends LuaTableExtension {
     if (event.isCanceled()) {
       return;
     }
-    // Avoid ConcurrentModificationException when unsubscribing within the interceptor
-    List<EventSubscription> subscriptions = new ArrayList<>(this.subscriptions.get(eventName));
-    for (EventSubscription subscription : subscriptions) {
-      LuaFunction eventHandler = subscription.getEventHandler();
+    // Avoid ConcurrentModificationException when stopping during interception
+    List<EventInterceptor> interceptors = new ArrayList<>(this.interceptors.get(eventName));
+    for (EventInterceptor interceptor : interceptors) {
+      LuaFunction eventHandler = interceptor.getEventHandler();
       Object luaEvent = converters.toLua(event);
       try {
         callDuringEventIntercepting(eventHandler, luaEvent);

@@ -14,8 +14,8 @@ public class EventQueueTest extends WolTestBase {
   @Test
   public void test_latest__Two_custom_Events() {
     // When:
-    mc().executeCommand("lua q=Events.connect('custom-event')\n"//
-        + "Events.connect('continue'):next()\n"//
+    mc().executeCommand("lua q=Events.collect('custom-event')\n"//
+        + "Events.collect('continue'):next()\n"//
         + "e=q:latest()\n"//
         + "print(e.data)\n"//
         + "print(str(q:isEmpty()))\n"//
@@ -36,7 +36,7 @@ public class EventQueueTest extends WolTestBase {
   public void test_latest__No_event() {
     // When:
     mc().executeCommand(
-        "/lua q=Events.connect('LeftClickBlockEvent'); sleep(20); e=q:latest(); print(str(e == nil))");
+        "/lua q=Events.collect('LeftClickBlockEvent'); sleep(20); e=q:latest(); print(str(e == nil))");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);

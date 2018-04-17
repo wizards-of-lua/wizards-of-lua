@@ -27,7 +27,7 @@ public class PlayerLoggedOutEventTest extends WolTestBase {
     String expected2 = mc().player().getName() + " left the game";
     String expected3 = "#" + mc().player().getName();
     mc().executeCommand(
-        "/lua q=Events.connect('PlayerLoggedOutEvent'); e=q:next(); print('#'..e.player.name)");
+        "/lua q=Events.collect('PlayerLoggedOutEvent'); e=q:next(); print('#'..e.player.name)");
 
     // When:
     mc().player().reconnect();

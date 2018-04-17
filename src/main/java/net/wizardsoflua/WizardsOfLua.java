@@ -192,6 +192,10 @@ public class WizardsOfLua {
         return getConfig().getScriptGatewayConfig().getTimeoutMillis();
       }
 
+      @Override
+      public SpellRegistry getSpellRegistry() {
+        return WizardsOfLua.this.getSpellRegistry();
+      }
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {
@@ -294,7 +298,8 @@ public class WizardsOfLua {
     MinecraftForge.EVENT_BUS.register(getSpellRegistry());
     MinecraftForge.EVENT_BUS.register(aboutMessage);
     MinecraftForge.EVENT_BUS.register(eventHandler);
-    SpellEntity.register();
+
+    // SpellEntity.register();
   }
 
   @EventHandler

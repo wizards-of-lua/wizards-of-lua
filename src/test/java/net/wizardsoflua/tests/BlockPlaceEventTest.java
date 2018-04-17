@@ -37,7 +37,7 @@ public class BlockPlaceEventTest extends WolTestBase {
     BlockSand sand = Blocks.SAND;
     mc().player().setMainHandItem(new ItemStack(sand));
     mc().player().setPosition(playerPos);
-    mc().executeCommand("lua q=Events.connect('BlockPlaceEvent')\n"//
+    mc().executeCommand("lua q=Events.collect('BlockPlaceEvent')\n"//
         + "e=q:next()\n"//
         + "print(e.pos)\n"//
         + "print(e.block.name)\n"//
@@ -62,7 +62,7 @@ public class BlockPlaceEventTest extends WolTestBase {
     BlockSand sand = Blocks.SAND;
     mc().player().setOffHandItem(new ItemStack(sand));
     mc().player().setPosition(playerPos);
-    mc().executeCommand("lua q=Events.connect('BlockPlaceEvent')\n"//
+    mc().executeCommand("lua q=Events.collect('BlockPlaceEvent')\n"//
         + "e=q:next()\n"//
         + "print(e.pos)\n"//
         + "print(e.block.name)\n"//

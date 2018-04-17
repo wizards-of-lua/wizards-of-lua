@@ -43,7 +43,7 @@ public class RightClickBlockEventTest extends WolTestBase {
     Vec3d hitvec = new Vec3d(clickPos);
     String expected = format(clickPos);
 
-    mc().executeCommand("/lua q=Events.connect('RightClickBlockEvent'); e=q:next(); print(e.pos)");
+    mc().executeCommand("/lua q=Events.collect('RightClickBlockEvent'); e=q:next(); print(e.pos)");
 
     // When:
     mc().player().rightclick(clickPos, facing, hitvec);

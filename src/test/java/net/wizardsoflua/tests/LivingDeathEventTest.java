@@ -21,7 +21,7 @@ public class LivingDeathEventTest extends WolTestBase {
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua q=Events.connect('LivingDeathEvent'); e=q:next(); print(e.cause)");
+    mc().executeCommand("/lua q=Events.collect('LivingDeathEvent'); e=q:next(); print(e.cause)");
     mc().executeCommand("/kill @e[type=pig,name=testpig]");
 
     // Then:
@@ -42,7 +42,7 @@ public class LivingDeathEventTest extends WolTestBase {
 
     // When:
     mc().executeCommand(
-        "/lua q=Events.connect('LivingDeathEvent'); e=q:next(); print(e.entity.name)");
+        "/lua q=Events.collect('LivingDeathEvent'); e=q:next(); print(e.entity.name)");
     mc().executeCommand("/kill @e[type=pig,name=testpig]");
 
     // Then:
@@ -61,7 +61,7 @@ public class LivingDeathEventTest extends WolTestBase {
     // When:
     try {
       mc().executeCommand(
-          "/lua q=Events.connect('LivingDeathEvent'); e=q:next(); print(e.entity.name)");
+          "/lua q=Events.collect('LivingDeathEvent'); e=q:next(); print(e.entity.name)");
       mc().executeCommand("/kill @a[name=%s]", playerName);
 
       // Then:

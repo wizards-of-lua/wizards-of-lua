@@ -19,7 +19,7 @@ public class CustomEventTest extends WolTestBase {
     String message = "hello world!";
     String expected = "received " + message;
 
-    mc().executeCommand("/lua q=Events.connect('%s'); e=q:next(); print('received '..e.data)",
+    mc().executeCommand("/lua q=Events.collect('%s'); e=q:next(); print('received '..e.data)",
         eventName);
 
     // When:
@@ -42,7 +42,7 @@ public class CustomEventTest extends WolTestBase {
     String expected2 = "received " + message;
 
     mc().executeCommand(
-        "/lua q=Events.connect('%s'); e=q:next(); print('received '..e.data.pos); print('received '..e.data.message)",
+        "/lua q=Events.collect('%s'); e=q:next(); print('received '..e.data.pos); print('received '..e.data.message)",
         eventName);
 
     // When:
@@ -63,7 +63,7 @@ public class CustomEventTest extends WolTestBase {
     String eventName = "my-custom-event-name";
 
     mc().executeCommand(
-        "/lua q=Events.connect('%s'); e=q:next(); for i,d in pairs(e.data) do assert(d==i,d..'=='..i); end; print('ok')",
+        "/lua q=Events.collect('%s'); e=q:next(); for i,d in pairs(e.data) do assert(d==i,d..'=='..i); end; print('ok')",
         eventName);
 
     // When:
@@ -82,7 +82,7 @@ public class CustomEventTest extends WolTestBase {
     String eventName = "my-custom-event-name";
 
     mc().executeCommand(
-        "/lua q=Events.connect('%s'); e=q:next(); e.data.key=2345; print(e.data.key)", eventName);
+        "/lua q=Events.collect('%s'); e=q:next(); e.data.key=2345; print(e.data.key)", eventName);
 
     // When:
     mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName);
@@ -100,10 +100,10 @@ public class CustomEventTest extends WolTestBase {
     String eventName2 = "my-custom-event-name-2";
 
     mc().executeCommand(
-        "/lua q=Events.connect('%s'); e=q:next(); e.data.key=2345; Events.fire('%s', e)",
+        "/lua q=Events.collect('%s'); e=q:next(); e.data.key=2345; Events.fire('%s', e)",
         eventName1, eventName2);
 
-    mc().executeCommand("/lua q=Events.connect('%s'); e=q:next(); print(e.data.data.key)", eventName2);
+    mc().executeCommand("/lua q=Events.collect('%s'); e=q:next(); print(e.data.data.key)", eventName2);
 
     // When:
     mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName1);

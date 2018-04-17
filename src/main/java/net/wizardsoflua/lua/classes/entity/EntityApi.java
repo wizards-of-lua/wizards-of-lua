@@ -16,6 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -201,7 +202,7 @@ public class EntityApi<D extends Entity> extends LuaClassApi<D> {
     delegate.setRenderYawOffset(yaw);
     delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw, pitch);
   }
-  
+
   /**
    * This is true, if this entity is currently sneaking, false otherwise.
    */
@@ -238,6 +239,14 @@ public class EntityApi<D extends Entity> extends LuaClassApi<D> {
   @LuaProperty
   public String getUuid() {
     return delegate.getUniqueID().toString();
+  }
+
+  /**
+   * The world the the space this entity is living in.
+   */
+  @LuaProperty
+  public World getWorld() {
+    return delegate.world;
   }
 
   /**

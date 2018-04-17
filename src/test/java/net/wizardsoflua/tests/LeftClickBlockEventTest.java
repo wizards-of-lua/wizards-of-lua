@@ -39,7 +39,7 @@ public class LeftClickBlockEventTest extends WolTestBase {
     EnumFacing facing = EnumFacing.UP;
     String expected = format(clickPos);
 
-    mc().executeCommand("/lua q=Events.connect('LeftClickBlockEvent'); e=q:next(); print(e.pos)");
+    mc().executeCommand("/lua q=Events.collect('LeftClickBlockEvent'); e=q:next(); print(e.pos)");
 
     // When:
     mc().player().leftclick(clickPos, facing);
