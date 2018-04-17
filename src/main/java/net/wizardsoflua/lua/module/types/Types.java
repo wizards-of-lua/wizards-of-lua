@@ -99,9 +99,7 @@ public class Types {
 
   public @Nullable String getTypename(Class<?> type) {
     if (Delegator.class.isAssignableFrom(type)) {
-      @SuppressWarnings("unchecked")
-      Class<? extends Delegator<?>> delegatorClass = (Class<? extends Delegator<?>>) type;
-      type = Delegator.getDelegateClassOf(delegatorClass);
+      type = unproxy(type);
     }
     JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(type);
     if (luaClass != null) {
@@ -123,6 +121,12 @@ public class Types {
       return FUNCTION_META;
     }
     return type.getName();
+  }
+
+  private <T> Class<T> unproxy(Class<?> type) {
+    @SuppressWarnings("unchecked")
+    Class<? extends Delegator<T>> delegatorClass = (Class<? extends Delegator<T>>) type;
+    return Delegator.getDelegateClassOf(delegatorClass);
   }
 
   /**
