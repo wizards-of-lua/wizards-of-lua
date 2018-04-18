@@ -22,7 +22,7 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
@@ -80,7 +80,7 @@ public class LuaClassLoader {
   private final Converters converters = new Converters(this);
   private final Context context;
 
-  @Inject
+  @Resource
   private SpellExtensions extensions;
 
   private TypesModule typesModule;

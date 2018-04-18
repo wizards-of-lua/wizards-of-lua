@@ -13,7 +13,7 @@ import java.util.Map;
 import com.google.common.base.Throwables;
 
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 
 public class ServiceInjector implements Injector {
@@ -38,11 +38,11 @@ public class ServiceInjector implements Injector {
     for (Class<?> cls = object.getClass(); cls != null; cls = cls.getSuperclass()) {
       for (Field field : cls.getDeclaredFields()) {
         int modifiers = field.getModifiers();
-        if (field.isAnnotationPresent(Inject.class)) {
+        if (field.isAnnotationPresent(Resource.class)) {
           checkArgument(!Modifier.isStatic(modifiers), "The static field %s is annotated with @%s",
-              field, Inject.class.getSimpleName());
+              field, Resource.class.getSimpleName());
           checkArgument(!Modifier.isFinal(modifiers), "The final field %s is annotated with @%s",
-              field, Inject.class.getSimpleName());
+              field, Resource.class.getSimpleName());
           Object service = services.get(field.getType());
           checkArgument(service != null, "The field %s refers to an unknown service interface",
               field);
@@ -66,7 +66,7 @@ public class ServiceInjector implements Injector {
       int modifiers = method.getModifiers();
       if (method.isAnnotationPresent(AfterInjection.class)) {
         checkArgument(!Modifier.isStatic(modifiers), "The static method %s is annotated with @%s",
-            method, Inject.class.getSimpleName());
+            method, Resource.class.getSimpleName());
         try {
           method.invoke(object);
         } catch (IllegalAccessException ex) {

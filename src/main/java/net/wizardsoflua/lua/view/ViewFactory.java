@@ -14,7 +14,7 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.classes.JavaInstanceWrapper;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
@@ -30,9 +30,9 @@ import net.wizardsoflua.lua.module.types.TypesModule;
  */
 @AutoService(SpellExtension.class)
 public class ViewFactory implements SpellExtension {
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private SpellExtensions extensions;
 
   private final Cache<Object, View> cache =

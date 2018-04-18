@@ -17,7 +17,7 @@ import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.classes.ObjectClass2;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
@@ -34,13 +34,13 @@ public class TypesModule extends LuaTableExtension {
   public static final String NUMBER = "number";
   public static final String STRING = "string";
   public static final String TABLE = "table";
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private Table env;
-  @Inject
+  @Resource
   private SpellExtensions extensions;
-  @Inject
+  @Resource
   private TableFactory tableFactory;
 
   private final BiMap<String, Table> classes = HashBiMap.create();

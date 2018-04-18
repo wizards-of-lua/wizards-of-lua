@@ -12,7 +12,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
@@ -23,9 +23,9 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 @GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class")
 public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   public static final String NAME = "Event";
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private Injector injector;
 
   @Override
@@ -46,7 +46,7 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends Event> extends LuaInstance<D> {
-    @Inject
+    @Resource
     private SpellExtensions extensions;
 
     private final String name;

@@ -19,7 +19,7 @@ import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.Config;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
@@ -36,13 +36,13 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 @AutoService(SpellExtension.class)
 public class TimeModule extends LuaTableExtension {
   public static final String NAME = "Time";
-  @Inject
+  @Resource
   private Config config;
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private LuaScheduler scheduler;
-  @Inject
+  @Resource
   private Time time;
 
   private long sleepTrigger;

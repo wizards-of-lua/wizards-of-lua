@@ -8,7 +8,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
@@ -17,9 +17,9 @@ import net.wizardsoflua.lua.extension.util.BasicLuaClass;
 @GenerateLuaDoc(name = LivingEventClass2.NAME)
 public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventClass2.Instance<?>> {
   public static final String NAME = "LivingEvent";
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private Injector injector;
 
   @Override

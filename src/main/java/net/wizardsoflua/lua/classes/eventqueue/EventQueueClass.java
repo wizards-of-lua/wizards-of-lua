@@ -20,7 +20,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
 import net.wizardsoflua.lua.extension.spi.LuaConverter;
@@ -35,9 +35,9 @@ import net.wizardsoflua.lua.extension.util.BasicLuaClass;
 @AutoService(LuaConverter.class)
 public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
   public static final String NAME = "EventQueue";
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private LuaScheduler scheduler;
 
   @Override

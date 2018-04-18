@@ -27,7 +27,7 @@ import net.wizardsoflua.lua.classes.eventqueue.EventQueueClass;
 import net.wizardsoflua.lua.data.Data;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.Config;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
@@ -46,21 +46,21 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 @AutoService(SpellExtension.class)
 public class EventsModule extends LuaTableExtension {
   public static final String NAME = "Events";
-  @Inject
+  @Resource
   private Config config;
-  @Inject
+  @Resource
   private LuaConverters converters;
-  @Inject
+  @Resource
   private ExceptionHandler exceptionHandler;
-  @Inject
+  @Resource
   private SpellExtensions extensions;
-  @Inject
+  @Resource
   private LuaScheduler scheduler;
-  @Inject
+  @Resource
   private Spell spell;
-  @Inject
+  @Resource
   private TableFactory tableFactory;
-  @Inject
+  @Resource
   private Time time;
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();

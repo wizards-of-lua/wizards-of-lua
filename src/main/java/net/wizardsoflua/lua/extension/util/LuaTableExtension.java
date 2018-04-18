@@ -3,11 +3,11 @@ package net.wizardsoflua.lua.extension.util;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.common.Named;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
 
 public abstract class LuaTableExtension implements SpellExtension, Named {
-  @Inject
+  @Resource
   private Table env;
 
   @AfterInjection

@@ -15,7 +15,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.block.ImmutableWolBlock;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
@@ -25,7 +25,7 @@ import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 @AutoService(SpellExtension.class)
 public class BlocksModule extends LuaTableExtension {
   public static final String NAME = "Blocks";
-  @Inject
+  @Resource
   private LuaConverters converters;
 
   @Override

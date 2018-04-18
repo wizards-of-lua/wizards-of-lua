@@ -6,12 +6,12 @@ import com.google.common.reflect.TypeToken;
 
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Inject;
+import net.wizardsoflua.lua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 
 public abstract class BasicLuaClass<J, I extends Delegator<? extends J>>
     extends CachingLuaClass<J, Delegator<? extends I>> {
-  @Inject
+  @Resource
   private LuaConverters converters;
 
   private @Nullable Class<I> instanceClass;
