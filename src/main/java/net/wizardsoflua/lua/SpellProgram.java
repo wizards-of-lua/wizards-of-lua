@@ -43,12 +43,11 @@ import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
-import net.wizardsoflua.lua.extension.ServiceInjector;
+import net.wizardsoflua.lua.extension.Injector;
 import net.wizardsoflua.lua.extension.SpellExtensionLoader;
 import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
 import net.wizardsoflua.lua.extension.api.service.Config;
 import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
-import net.wizardsoflua.lua.extension.api.service.Injector;
 import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.api.service.ScriptGatewayConfig;
 import net.wizardsoflua.lua.extension.api.service.Spell;
@@ -168,9 +167,9 @@ public class SpellProgram {
   }
 
   private SpellExtensionLoader createSpellExtensionLoader() {
-    ServiceInjector injector = new ServiceInjector();
-    injector.registerService(Injector.class, injector);
-    injector.registerService(Config.class, new Config() {
+    Injector injector = new Injector();
+    injector.registerResource(net.wizardsoflua.lua.extension.api.service.Injector.class, injector);
+    injector.registerResource(Config.class, new Config() {
       @Override
       public long getLuaTickLimit() {
         return luaTickLimit;
@@ -201,24 +200,24 @@ public class SpellProgram {
         };
       }
     });
-    injector.registerService(LuaConverters.class, luaClassLoader.getConverters());
-    injector.registerService(Table.class, env);
-    injector.registerService(ExceptionHandler.class, new ExceptionHandler() {
+    injector.registerResource(LuaConverters.class, luaClassLoader.getConverters());
+    injector.registerResource(Table.class, env);
+    injector.registerResource(ExceptionHandler.class, new ExceptionHandler() {
       @Override
       public void handle(String contextMessage, Throwable t) {
         handleException(contextMessage, t);
       }
     });
-    injector.registerService(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class,
+    injector.registerResource(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class,
         scheduler);
-    injector.registerService(Spell.class, new Spell() {
+    injector.registerResource(Spell.class, new Spell() {
       @Override
       public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
         parallelTaskFactories.add(parallelTaskFactory);
       }
     });
-    injector.registerService(TableFactory.class, stateContext);
-    injector.registerService(Time.class, new Time() {
+    injector.registerResource(TableFactory.class, stateContext);
+    injector.registerResource(Time.class, new Time() {
       @Override
       public long getTotalWorldTime() {
         return world.getTotalWorldTime();
@@ -230,7 +229,7 @@ public class SpellProgram {
       }
     });
     SpellExtensionLoader extensionLoader = new SpellExtensionLoader(injector, getConverters());
-    injector.registerService(SpellExtensions.class, extensionLoader);
+    injector.registerResource(SpellExtensions.class, extensionLoader);
     return extensionLoader;
   }
 
