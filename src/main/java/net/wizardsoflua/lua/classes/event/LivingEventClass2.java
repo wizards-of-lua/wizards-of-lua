@@ -7,10 +7,10 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.Injector;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
 
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)

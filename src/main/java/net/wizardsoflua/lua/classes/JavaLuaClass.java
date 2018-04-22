@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 
 /**
  * A {@link LuaClass} that represents a Java{@link Class} in Lua and can convert java instances to

@@ -18,13 +18,12 @@ import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
-import net.wizardsoflua.lua.extension.api.service.Time;
-import net.wizardsoflua.lua.extension.spi.SpellExtension;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Config;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.api.resource.Time;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
@@ -37,8 +36,6 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 public class TimeModule extends LuaTableExtension {
   public static final String NAME = "Time";
   @Resource
-  private Config config;
-  @Resource
   private LuaConverters converters;
   @Resource
   private LuaScheduler scheduler;
@@ -47,8 +44,7 @@ public class TimeModule extends LuaTableExtension {
 
   private long sleepTrigger;
 
-  @AfterInjection
-  public void initialize() {
+  public void initialize(@Resource Config config) {
     sleepTrigger = config.getLuaTickLimit() / 2;
   }
 

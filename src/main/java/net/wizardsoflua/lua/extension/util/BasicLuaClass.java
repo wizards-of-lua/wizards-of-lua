@@ -4,16 +4,12 @@ import javax.annotation.Nullable;
 
 import com.google.common.reflect.TypeToken;
 
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 
 public abstract class BasicLuaClass<J, I extends Delegator<? extends J>>
     extends CachingLuaClass<J, Delegator<? extends I>> {
-  @Resource
-  private LuaConverters converters;
-
   private @Nullable Class<I> instanceClass;
 
   public Class<I> getInstanceClass() {
@@ -28,8 +24,7 @@ public abstract class BasicLuaClass<J, I extends Delegator<? extends J>>
     return instanceClass;
   }
 
-  @AfterInjection
-  public void registerInstanceConverter() {
+  public void registerInstanceConverter(@Resource LuaConverters converters) {
     converters.registerLuaConverter(new TypeTokenLuaConverter<I, Delegator<? extends I>>() {
       @Override
       public Class<I> getJavaClass() {

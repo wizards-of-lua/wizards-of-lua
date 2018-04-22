@@ -1,8 +1,8 @@
 package net.wizardsoflua.lua.table;
 
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.JavaInstanceWrapper;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 
 public class GeneratedLuaInstanceTable<D extends JavaInstanceWrapper<?>>
     extends GeneratedLuaTable<D> implements JavaInstanceWrapper<Object> {

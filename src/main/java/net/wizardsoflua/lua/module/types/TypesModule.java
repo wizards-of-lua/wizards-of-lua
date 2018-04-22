@@ -14,13 +14,12 @@ import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.classes.ObjectClass2;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
-import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 
 @GenerateLuaModuleTable
@@ -39,15 +38,12 @@ public class TypesModule extends LuaTableExtension {
   @Resource
   private Table env;
   @Resource
-  private SpellExtensions extensions;
-  @Resource
   private TableFactory tableFactory;
 
   private final BiMap<String, Table> classes = HashBiMap.create();
   private Table objectClassTable;
 
-  @AfterInjection
-  public void init() {
+  public void init(@Resource SpellExtensions extensions) {
     ObjectClass2 objectClass = extensions.getSpellExtension(ObjectClass2.class);
     objectClassTable = objectClass.getTable();
     registerClass(objectClass.getName(), objectClassTable);

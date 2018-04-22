@@ -2,9 +2,9 @@ package net.wizardsoflua.lua.classes.common;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 import net.wizardsoflua.lua.table.PropertyTable;
 
 public abstract class DelegatingProxy<D> extends PropertyTable

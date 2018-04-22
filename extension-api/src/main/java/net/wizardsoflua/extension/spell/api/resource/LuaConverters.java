@@ -1,11 +1,11 @@
-package net.wizardsoflua.lua.extension.api.service;
+package net.wizardsoflua.extension.spell.api.resource;
 
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import net.wizardsoflua.lua.extension.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
 
 public interface LuaConverters {
   @Nullable

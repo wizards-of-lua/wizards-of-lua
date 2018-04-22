@@ -9,13 +9,12 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.Injector;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
@@ -46,20 +45,16 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends Event> extends LuaInstance<D> {
-    @Resource
-    private SpellExtensions extensions;
-
     private final String name;
     private EventsModule events;
 
     public Instance(D delegate, String name, Injector injector) {
       super(delegate);
       this.name = requireNonNull(name, "name == null!");
-      injector.inject(this);
+      injector.injectMembers(this);
     }
 
-    @AfterInjection
-    public void initialize() {
+    public void initialize(@Resource SpellExtensions extensions) {
       events = extensions.getSpellExtension(EventsModule.class);
     }
 

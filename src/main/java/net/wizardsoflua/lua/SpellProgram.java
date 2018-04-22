@@ -37,22 +37,24 @@ import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
+import net.wizardsoflua.extension.spell.api.resource.Config;
+import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.ScriptGatewayConfig;
+import net.wizardsoflua.extension.spell.api.resource.Spell;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
+import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerApi;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
-import net.wizardsoflua.lua.extension.Injector;
+import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.extension.SpellExtensionLoader;
-import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
-import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.ScriptGatewayConfig;
-import net.wizardsoflua.lua.extension.api.service.Spell;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
-import net.wizardsoflua.lua.extension.api.service.Time;
+import net.wizardsoflua.lua.extension.SpellScope;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
@@ -91,6 +93,8 @@ public class SpellProgram {
     long getScriptTimeoutMillis();
 
     SpellRegistry getSpellRegistry();
+
+    InjectionScope getRootScope();
   }
 
   private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -144,8 +148,8 @@ public class SpellProgram {
       }
     });
     extensionLoader = createSpellExtensionLoader();
-    extensionLoader.installExtensions();
-    extensionLoader.getInjector().inject(luaClassLoader);
+    extensionLoader.loadExtensions();
+    extensionLoader.getInjector().injectMembers(luaClassLoader);
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
@@ -167,8 +171,9 @@ public class SpellProgram {
   }
 
   private SpellExtensionLoader createSpellExtensionLoader() {
-    Injector injector = new Injector();
-    injector.registerResource(net.wizardsoflua.lua.extension.api.service.Injector.class, injector);
+    InjectionScope rootScope = context.getRootScope();
+    InjectionScope injector = new SpellScope(rootScope);
+    injector.registerResource(Injector.class, injector::injectMembers);
     injector.registerResource(Config.class, new Config() {
       @Override
       public long getLuaTickLimit() {
@@ -208,7 +213,7 @@ public class SpellProgram {
         handleException(contextMessage, t);
       }
     });
-    injector.registerResource(net.wizardsoflua.lua.extension.api.service.LuaScheduler.class,
+    injector.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
         scheduler);
     injector.registerResource(Spell.class, new Spell() {
       @Override
@@ -358,9 +363,9 @@ public class SpellProgram {
   }
 
   public void replacePlayerInstance(EntityPlayerMP newPlayer) {
-    if (this.owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      if (this.owner.getCommandSenderEntity().getUniqueID().equals(newPlayer.getUniqueID())) {
-        this.owner = newPlayer;
+    if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
+      if (owner.getCommandSenderEntity().getUniqueID().equals(newPlayer.getUniqueID())) {
+        owner = newPlayer;
       }
     }
     PlayerClass playerClass = luaClassLoader.getLuaClassOfType(PlayerClass.class);

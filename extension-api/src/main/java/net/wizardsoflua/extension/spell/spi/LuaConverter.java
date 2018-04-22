@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.spi;
+package net.wizardsoflua.extension.spell.spi;
 
 public interface LuaConverter<J, L> extends SpellExtension {
   Class<J> getJavaClass();

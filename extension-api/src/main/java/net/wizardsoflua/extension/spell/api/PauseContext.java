@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.api;
+package net.wizardsoflua.extension.spell.api;
 
 public interface PauseContext {
   boolean shouldPause();

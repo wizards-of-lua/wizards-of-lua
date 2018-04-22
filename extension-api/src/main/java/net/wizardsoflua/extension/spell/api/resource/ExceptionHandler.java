@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.api.service;
+package net.wizardsoflua.extension.spell.api.resource;
 
 public interface ExceptionHandler {
   default void handle(Throwable t) {

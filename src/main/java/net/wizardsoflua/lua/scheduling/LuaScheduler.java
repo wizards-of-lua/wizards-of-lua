@@ -18,9 +18,9 @@ import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.PauseContext;
+import net.wizardsoflua.extension.spell.api.PauseContext;
 
-public class LuaScheduler implements net.wizardsoflua.lua.extension.api.service.LuaScheduler {
+public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resource.LuaScheduler {
   private final Collection<PauseContext> pauseContexts = new ArrayList<>();
   private final StateContext stateContext;
   private final PausableSchedulingContextFactory.Context context;

@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.api.service;
+package net.wizardsoflua.extension.spell.api.resource;
 
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
@@ -6,7 +6,7 @@ import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
-import net.wizardsoflua.lua.extension.api.PauseContext;
+import net.wizardsoflua.extension.spell.api.PauseContext;
 
 public interface LuaScheduler {
   void addPauseContext(PauseContext context);

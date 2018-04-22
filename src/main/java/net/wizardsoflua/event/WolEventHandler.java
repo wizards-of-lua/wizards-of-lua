@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.spell.SpellEntity;
 

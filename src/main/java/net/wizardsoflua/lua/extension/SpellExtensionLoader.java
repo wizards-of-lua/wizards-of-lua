@@ -3,29 +3,26 @@ package net.wizardsoflua.lua.extension;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
-import java.util.ServiceConfigurationError;
-
-import net.wizardsoflua.lua.extension.api.service.Injector;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
-import net.wizardsoflua.lua.extension.spi.LuaConverter;
-import net.wizardsoflua.lua.extension.spi.SpellExtension;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 
 public class SpellExtensionLoader implements SpellExtensions {
-  private final ClassIndex serviceProvider = new ClassIndex();
-  private final Injector injector;
+  private final InjectionScope injectionScope;
   private final LuaConverters converters;
 
-  public SpellExtensionLoader(Injector injector, LuaConverters converters) {
-    this.injector = checkNotNull(injector, "injector == null!");
+  public SpellExtensionLoader(InjectionScope injectionScope, LuaConverters converters) {
+    this.injectionScope = checkNotNull(injectionScope, "injectionScope == null!");
     this.converters = requireNonNull(converters, "converters == null!");
   }
 
   public Injector getInjector() {
-    return injector;
+    return injectionScope.getResource(Injector.class);
   }
 
-  public void installExtensions() {
+  public void loadExtensions() {
     ServiceLoader.load(LuaConverter.class).forEach(this::registerLuaConverter);
     ServiceLoader.load(SpellExtension.class).forEach(this::getSpellExtension);
   }
@@ -37,21 +34,6 @@ public class SpellExtensionLoader implements SpellExtensions {
 
   @Override
   public <E extends SpellExtension> E getSpellExtension(Class<E> extensionClass) {
-    E extension = serviceProvider.get(extensionClass);
-    if (extension == null) {
-      extension = newInstance(extensionClass);
-      serviceProvider.add(extension);
-      injector.inject(extension);
-    }
-    return extension;
-  }
-
-  private static <P> P newInstance(Class<P> cls) throws ServiceConfigurationError {
-    try {
-      return cls.newInstance();
-    } catch (InstantiationException | IllegalAccessException ex) {
-      String message = "Provider " + cls + " could not be instantiated";
-      throw new ServiceConfigurationError(SpellExtension.class.getName() + ": " + message, ex);
-    }
+    return injectionScope.getInstance(extensionClass);
   }
 }

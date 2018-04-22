@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -20,10 +21,9 @@ import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
@@ -96,7 +96,7 @@ public class LuaClassLoader {
     types = new Types(env, this);
   }
 
-  @AfterInjection
+  @Inject
   public void init() {
     typesModule = extensions.getSpellExtension(TypesModule.class);
   }

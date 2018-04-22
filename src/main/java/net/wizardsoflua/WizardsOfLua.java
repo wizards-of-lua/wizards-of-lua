@@ -43,6 +43,7 @@ import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.profiles.Profiles;
@@ -92,6 +93,7 @@ public class WizardsOfLua {
    * Clock used for RuntimeModule
    */
   private Clock clock = getDefaultClock();
+  private InjectionScope rootScope = new InjectionScope();
 
   public WizardsOfLua() {}
 
@@ -195,6 +197,11 @@ public class WizardsOfLua {
       @Override
       public SpellRegistry getSpellRegistry() {
         return WizardsOfLua.this.getSpellRegistry();
+      }
+
+      @Override
+      public InjectionScope getRootScope() {
+        return rootScope;
       }
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);

@@ -2,8 +2,8 @@ package net.wizardsoflua.lua.table;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
 
 public class GeneratedLuaTable<D> extends PropertyTable implements Delegator<D> {
   private final D delegate;

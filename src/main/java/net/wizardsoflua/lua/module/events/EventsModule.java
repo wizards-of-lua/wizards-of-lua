@@ -20,22 +20,21 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.event.CustomLuaEvent;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
+import net.wizardsoflua.extension.spell.api.resource.Config;
+import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.api.resource.Spell;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
+import net.wizardsoflua.extension.spell.api.resource.Time;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
 import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptorClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueueClass;
 import net.wizardsoflua.lua.data.Data;
-import net.wizardsoflua.lua.extension.api.ParallelTaskFactory;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.ExceptionHandler;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
-import net.wizardsoflua.lua.extension.api.service.Spell;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
-import net.wizardsoflua.lua.extension.api.service.Time;
-import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
@@ -47,17 +46,11 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 public class EventsModule extends LuaTableExtension {
   public static final String NAME = "Events";
   @Resource
-  private Config config;
-  @Resource
   private LuaConverters converters;
   @Resource
   private ExceptionHandler exceptionHandler;
   @Resource
-  private SpellExtensions extensions;
-  @Resource
   private LuaScheduler scheduler;
-  @Resource
-  private Spell spell;
   @Resource
   private TableFactory tableFactory;
   @Resource
@@ -94,10 +87,10 @@ public class EventsModule extends LuaTableExtension {
   private long luaTickLimit;
   private boolean duringEventIntercepting;
 
-  @AfterInjection
-  public void initialize() {
-    types = extensions.getSpellExtension(TypesModule.class);
+  public void initialize(@Resource Config config, @Resource SpellExtensions extensions,
+      @Resource Spell spell) {
     luaTickLimit = config.getEventInterceptorTickLimit();
+    types = extensions.getSpellExtension(TypesModule.class);
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override
       public void terminate() {

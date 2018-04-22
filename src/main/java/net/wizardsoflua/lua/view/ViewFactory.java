@@ -11,13 +11,12 @@ import com.google.common.cache.CacheBuilder;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.JavaInstanceWrapper;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.SpellExtensions;
-import net.wizardsoflua.lua.extension.spi.SpellExtension;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
 /**
@@ -32,15 +31,12 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 public class ViewFactory implements SpellExtension {
   @Resource
   private LuaConverters converters;
-  @Resource
-  private SpellExtensions extensions;
 
   private final Cache<Object, View> cache =
       CacheBuilder.newBuilder().weakKeys().softValues().build();
   private TypesModule types;
 
-  @AfterInjection
-  public void init() {
+  public void init(@Resource SpellExtensions extensions) {
     types = extensions.getSpellExtension(TypesModule.class);
   }
 

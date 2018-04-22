@@ -22,12 +22,11 @@ import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
-import net.wizardsoflua.lua.extension.api.inject.AfterInjection;
-import net.wizardsoflua.lua.extension.api.inject.Resource;
-import net.wizardsoflua.lua.extension.api.service.Config;
-import net.wizardsoflua.lua.extension.api.service.LuaConverters;
-import net.wizardsoflua.lua.extension.api.service.LuaScheduler;
-import net.wizardsoflua.lua.extension.spi.SpellExtension;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Config;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.lua.module.types.TypesModule;
@@ -37,8 +36,6 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 @AutoService(SpellExtension.class)
 public class SystemModule extends LuaTableExtension {
   public static final String NAME = "System";
-  @Resource
-  private Config config;
   @Resource
   private LuaConverters converters;
   @Resource
@@ -52,8 +49,7 @@ public class SystemModule extends LuaTableExtension {
   private @Nullable String currentCommand;
   private long started = Long.MAX_VALUE;
 
-  @AfterInjection
-  public void init() {
+  public void init(@Resource Config config) {
     enabled = config.getScriptGatewayConfig().isEnabled();
     scriptDir = config.getScriptGatewayConfig().getScriptDir();
     scriptTimeoutMillis = config.getScriptGatewayConfig().getScriptTimeoutMillis();

@@ -1,10 +1,12 @@
 package net.wizardsoflua.lua.extension;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,19 +25,52 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 
-import net.wizardsoflua.lua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.reflect.ReflectionUtils;
 
-public class Injector implements net.wizardsoflua.lua.extension.api.service.Injector {
+/**
+ * An implementation of the {@link javax.inject} specification with support for registering
+ * resources that can be injected using @{@link Resource}
+ *
+ * @author Adrodoc
+ * @see javax.inject
+ */
+public class InjectionScope {
+  private final @Nullable InjectionScope parent;
+  private final Class<? extends Annotation> scopeAnnotationType;
+  private final ClassIndex cache = new ClassIndex();
   private final Map<Class<?>, Object> resources = new HashMap<>();
-  private final ClassIndex singletons = new ClassIndex();
+
+  public InjectionScope() {
+    parent = null;
+    scopeAnnotationType = Singleton.class;
+  }
+
+  protected InjectionScope(@Nullable InjectionScope parent,
+      Class<? extends Annotation> scopeAnnotationType) {
+    this.parent = requireNonNull(parent, "parent == null!");
+    this.scopeAnnotationType = requireNonNull(scopeAnnotationType, "scopeAnnotationType == null!");
+  }
+
+  public InjectionScope createSubScope(Class<? extends Annotation> scopeAnnotationType) {
+    for (InjectionScope scope = this; scope != null; scope = scope.parent) {
+      if (scope.scopeAnnotationType.equals(scopeAnnotationType)) {
+        throw new IllegalArgumentException(
+            "Trying to create nested scope for " + scopeAnnotationType);
+      }
+    }
+    return new InjectionScope(this, scopeAnnotationType);
+  }
 
   public <R> void registerResource(Class<R> resourceInterface, R resource) {
     resources.put(resourceInterface, resource);
@@ -43,21 +78,20 @@ public class Injector implements net.wizardsoflua.lua.extension.api.service.Inje
 
   public <R> R getResource(Class<R> resourceInterface) throws IllegalArgumentException {
     Object resource = resources.get(resourceInterface);
-    checkArgument(resource != null, "Unknown resource " + resourceInterface.getName());
-    return resourceInterface.cast(resource);
+    if (resource != null) {
+      return resourceInterface.cast(resource);
+    } else if (parent != null) {
+      return parent.getResource(resourceInterface);
+    } else {
+      throw new IllegalArgumentException("Unknown resource " + resourceInterface.getName());
+    }
   }
 
-  private Object getResource(Type type) throws IllegalArgumentException {
-    return provideInstance(type, this::getResource);
+  private Object provideResource(Type type) throws IllegalArgumentException {
+    return provide(type, this::getResource);
   }
 
-  @Override
-  public <T> T inject(T instance) {
-    injectMembers(instance);
-    return instance;
-  }
-
-  private Object provideInstance(Type type, Function<Class<?>, Object> instanceForClass)
+  private Object provide(Type type, Function<Class<?>, Object> instanceForClass)
       throws IllegalStateException {
     if (type instanceof Class<?>) {
       Class<?> cls = (Class<?>) type;
@@ -67,44 +101,69 @@ public class Injector implements net.wizardsoflua.lua.extension.api.service.Inje
       Type rawType = parameterizedType.getRawType();
       if (Provider.class.equals(rawType)) {
         Type typeArgument = parameterizedType.getActualTypeArguments()[0];
-        return new Provider<Object>() {
-          @Override
-          public Object get() {
-            return provideInstance(typeArgument, instanceForClass);
-          }
-        };
+        return (Provider<Object>) () -> provide(typeArgument, instanceForClass);
       } else {
-        return provideInstance(rawType, instanceForClass);
+        return provide(rawType, instanceForClass);
       }
     }
     throw fail(type, "unknown type kind");
   }
 
   private Object provideInstance(Type type) throws IllegalStateException {
-    return provideInstance(type, this::provideInstance);
+    return provide(type, this::getInstance);
   }
 
-  public <T> T provideInstance(Class<T> cls) {
-    if (cls.isAnnotationPresent(Singleton.class)) {
-      T result = singletons.get(cls);
-      if (result == null) {
-        result = provideNewInstance(cls);
-        singletons.add(result);
+  public <T> T getInstance(Class<T> cls) throws IllegalStateException {
+    Annotation scopeAnnotation = getScopeAnnotation(cls);
+    if (scopeAnnotation == null) {
+      return provideNewInstance(cls);
+    } else {
+      Class<? extends Annotation> scopeType = scopeAnnotation.annotationType();
+      if (scopeAnnotationType.equals(scopeType)) {
+        T result = cache.get(cls);
+        if (result == null) {
+          result = provideNewInstance(cls);
+          cache.add(result);
+        }
+        return result;
+      } else if (parent != null) {
+        return parent.getInstance(cls);
+      } else {
+        throw fail(cls, "unsupported scope annotation @" + scopeType.getSimpleName());
       }
-      return result;
     }
-    return provideNewInstance(cls);
+  }
+
+  protected @Nullable Annotation getScopeAnnotation(Class<?> cls) {
+    List<Annotation> scopeAnnotations = new ArrayList<>();
+    Annotation[] annotations = cls.getAnnotations();
+    for (Annotation annotation : annotations) {
+      Class<? extends Annotation> annotationType = annotation.annotationType();
+      if (annotationType.isAnnotationPresent(Scope.class)) {
+        scopeAnnotations.add(annotation);
+      }
+    }
+    int size = scopeAnnotations.size();
+    if (size < 1) {
+      return null;
+    } else if (size == 1) {
+      return scopeAnnotations.get(0);
+    } else {
+      throw fail(cls, "encountered multiple scope annotations: " + scopeAnnotations);
+    }
   }
 
   private <T> T provideNewInstance(Class<T> cls) throws IllegalStateException {
     T instance = createInstance(cls);
-    return inject(instance);
+    injectMembers(instance);
+    callPostConstruct(instance);
+    return instance;
   }
 
   private <T> T createInstance(Class<T> cls) throws IllegalStateException {
     List<Constructor<?>> constructors = new ArrayList<>();
     for (Constructor<?> constructor : cls.getConstructors()) {
-      if (constructor.isAnnotationPresent(Inject.class)) {
+      if (isAnnotated(constructor)) {
         constructors.add(constructor);
       }
     }
@@ -136,17 +195,18 @@ public class Injector implements net.wizardsoflua.lua.extension.api.service.Inje
         }
       }));
     } else {
-      throw fail(cls,
-          "it has multiple constructor annotated with @" + Inject.class.getSimpleName());
+      throw fail(cls, "it has multiple constructor that are annotated with @"
+          + Inject.class.getSimpleName() + " or have parameters annotated with @" + Resource.class);
     }
   }
 
-  private void injectMembers(Object instance) throws IllegalStateException {
+  public <T> T injectMembers(T instance) throws IllegalStateException {
     Deque<Class<?>> classes = getSortedSuperTypes(instance.getClass());
     for (Class<?> cls : classes) {
       injectFields(instance, cls);
       injectMethods(instance, cls, classes);
     }
+    return instance;
   }
 
   private <T> void injectFields(T instance, Class<?> declaringClass) throws IllegalStateException {
@@ -209,7 +269,7 @@ public class Injector implements net.wizardsoflua.lua.extension.api.service.Inje
     }
   }
 
-  private boolean isAnnotated(Method method) {
+  private boolean isAnnotated(Executable method) {
     if (method.isAnnotationPresent(Inject.class)) {
       return true;
     }
@@ -253,15 +313,34 @@ public class Injector implements net.wizardsoflua.lua.extension.api.service.Inje
 
   private Object getArgument(Type type, AnnotatedElement annotatedElement)
       throws IllegalStateException {
-    boolean isInject = annotatedElement.isAnnotationPresent(Inject.class);
-    boolean isResource = annotatedElement.isAnnotationPresent(Resource.class);
-    if (isInject && isResource) {
-      throw new IllegalArgumentException("Use one of @" + Inject.class.getSimpleName() + " or @"
-          + Resource.class.getSimpleName() + ", but not both");
-    } else if (isResource) {
-      return getResource(type);
+    if (annotatedElement.isAnnotationPresent(Resource.class)) {
+      return provideResource(type);
     }
     return provideInstance(type);
+  }
+
+  private void callPostConstruct(Object instance) {
+    Deque<Class<?>> classes = getSortedSuperTypes(instance.getClass());
+    for (Class<?> cls : classes) {
+      for (Method method : cls.getDeclaredMethods()) {
+        if (method.isAnnotationPresent(PostConstruct.class)
+            && !isMethodOverridden(method, classes)) {
+          runAccessible(method, () -> {
+            try {
+              method.invoke(instance);
+            } catch (IllegalAccessException ex) {
+              throw fail(cls, "failed to access method " + method, ex);
+            } catch (IllegalArgumentException ex) {
+              throw fail(instance.getClass(), "the method " + method + " is annotated with @"
+                  + PostConstruct.class.getSimpleName() + ", but declares a parameter", ex);
+            } catch (InvocationTargetException ex) {
+              throw fail(instance.getClass(), "the method " + method + " threw an exeption",
+                  ex.getCause());
+            }
+          });
+        }
+      }
+    }
   }
 
   private static void runAccessible(AccessibleObject object, Runnable runnable) {
