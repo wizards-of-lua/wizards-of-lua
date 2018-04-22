@@ -56,6 +56,8 @@ public class EventsModule extends LuaTableExtension {
   private TableFactory tableFactory;
   @Resource
   private Time time;
+  @Inject
+  private TypesModule types;
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
   private final EventQueue.Context eventQueueContext = new EventQueue.Context() {
@@ -84,8 +86,6 @@ public class EventsModule extends LuaTableExtension {
       }
     }
   };
-  @Inject
-  private TypesModule types;
   private long luaTickLimit;
   private boolean duringEventIntercepting;
 

@@ -127,7 +127,7 @@ public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resour
     try {
       return call(executor, callable);
     } catch (CallPausedException ex) {
-      // This should never happen unless we have a programming error.
+      // This shouldn't happen unless ExecutionContext.pause is used instead of LuaScheduler.pause
       throw new UndeclaredThrowableException(ex);
     }
   }
