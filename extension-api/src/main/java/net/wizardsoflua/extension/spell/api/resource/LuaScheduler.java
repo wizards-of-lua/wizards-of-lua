@@ -6,11 +6,10 @@ import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.extension.spell.api.LuaTickListener;
 import net.wizardsoflua.extension.spell.api.PauseContext;
 
 public interface LuaScheduler {
-  void addPauseContext(PauseContext context);
-
   Object[] call(long luaTickLimit, LuaFunction function, Object... args)
       throws CallException, CallPausedException, InterruptedException;
 
@@ -35,5 +34,11 @@ public interface LuaScheduler {
 
   void setAutosleep(boolean autosleep);
 
-  long getTotalLuaTicks();
+  boolean addTickListener(LuaTickListener tickListener);
+
+  boolean removeTickListener(LuaTickListener tickListener);
+
+  boolean addPauseContext(PauseContext context);
+
+  boolean removePauseContext(PauseContext context);
 }

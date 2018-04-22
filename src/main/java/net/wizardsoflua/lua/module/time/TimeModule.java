@@ -43,9 +43,11 @@ public class TimeModule extends LuaTableExtension {
   private Time time;
 
   private long sleepTrigger;
+  private long luatime;
 
-  public void initialize(@Resource Config config) {
+  public void init(@Resource Config config) {
     sleepTrigger = config.getLuaTickLimit() / 2;
+    scheduler.addTickListener(ticks -> luatime += ticks);
   }
 
   @Override
@@ -96,7 +98,7 @@ public class TimeModule extends LuaTableExtension {
    */
   @LuaProperty
   public long getLuatime() {
-    return scheduler.getTotalLuaTicks();
+    return luatime;
   }
 
   /**

@@ -5,8 +5,8 @@ import static com.google.common.base.Preconditions.checkState;
 import static net.sandius.rembulan.exec.DirectCallExecutor.newExecutor;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -18,32 +18,28 @@ import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.extension.spell.api.LuaTickListener;
 import net.wizardsoflua.extension.spell.api.PauseContext;
 
 public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resource.LuaScheduler {
-  private final Collection<PauseContext> pauseContexts = new ArrayList<>();
+  private final Set<LuaTickListener> tickListeners = new HashSet<>();
+  private final Set<PauseContext> pauseContexts = new HashSet<>();
   private final StateContext stateContext;
   private final PausableSchedulingContextFactory.Context context;
   private @Nullable LuaSchedulingContext currentSchedulingContext;
   private boolean autosleep = true;
-  private long totalLuaTicks;
 
   public LuaScheduler(StateContext stateContext) {
     this.stateContext = checkNotNull(stateContext, "stateContext == null!");
     context = new PausableSchedulingContextFactory.Context() {
       @Override
-      public boolean shouldPause() {
-        for (PauseContext context : pauseContexts) {
-          if (context.shouldPause()) {
-            return true;
-          }
-        }
-        return false;
+      public void registerTicks(int ticks) {
+        LuaScheduler.this.registerTicks(ticks);
       }
 
       @Override
-      public void registerTicks(int ticks) {
-        LuaScheduler.this.registerTicks(ticks);
+      public boolean shouldPause() {
+        return LuaScheduler.this.shouldPause();
       }
 
       @Override
@@ -58,9 +54,39 @@ public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resour
     };
   }
 
+  private void registerTicks(int ticks) {
+    for (LuaTickListener tickListener : tickListeners) {
+      tickListener.registerTicks(ticks);
+    }
+  }
+
+  private boolean shouldPause() {
+    for (PauseContext context : pauseContexts) {
+      if (context.shouldPause()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
-  public void addPauseContext(PauseContext context) {
-    pauseContexts.add(context);
+  public boolean addTickListener(LuaTickListener tickListener) {
+    return tickListeners.add(tickListener);
+  }
+
+  @Override
+  public boolean removeTickListener(LuaTickListener tickListener) {
+    return tickListeners.remove(tickListener);
+  }
+
+  @Override
+  public boolean addPauseContext(PauseContext context) {
+    return pauseContexts.add(context);
+  }
+
+  @Override
+  public boolean removePauseContext(PauseContext context) {
+    return pauseContexts.remove(context);
   }
 
   @Override
@@ -179,14 +205,5 @@ public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resour
   @Override
   public void setAutosleep(boolean autosleep) {
     getCurrentSchedulingContextNonNull().setAutosleep(autosleep);
-  }
-
-  @Override
-  public long getTotalLuaTicks() {
-    return totalLuaTicks;
-  }
-
-  public void registerTicks(int ticks) {
-    totalLuaTicks += ticks;
   }
 }
