@@ -3,6 +3,8 @@ package net.wizardsoflua.lua.module.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
@@ -27,7 +29,6 @@ import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
-import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
@@ -83,14 +84,13 @@ public class EventsModule extends LuaTableExtension {
       }
     }
   };
+  @Inject
   private TypesModule types;
   private long luaTickLimit;
   private boolean duringEventIntercepting;
 
-  public void initialize(@Resource Config config, @Resource SpellExtensions extensions,
-      @Resource Spell spell) {
+  public void initialize(@Resource Config config, @Resource Spell spell) {
     luaTickLimit = config.getEventInterceptorTickLimit();
-    types = extensions.getSpellExtension(TypesModule.class);
     spell.addParallelTaskFactory(new ParallelTaskFactory() {
       @Override
       public void terminate() {

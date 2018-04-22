@@ -44,8 +44,9 @@ import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.ScriptGatewayConfig;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
-import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.extension.spell.api.resource.Time;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerApi;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
@@ -53,9 +54,10 @@ import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
-import net.wizardsoflua.lua.extension.SpellExtensionLoader;
+import net.wizardsoflua.lua.extension.ServiceLoader;
 import net.wizardsoflua.lua.extension.SpellScope;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
+import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
@@ -66,6 +68,7 @@ import net.wizardsoflua.lua.module.spell.SpellsModule;
 import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
+import net.wizardsoflua.lua.view.ViewFactory;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -107,7 +110,7 @@ public class SpellProgram {
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
   private final LuaClassLoader luaClassLoader;
-  private final SpellExtensionLoader extensionLoader;
+  private final InjectionScope injectionScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
   private ICommandSender owner;
@@ -147,9 +150,10 @@ public class SpellProgram {
         return scheduler.getCurrentSchedulingContext();
       }
     });
-    extensionLoader = createSpellExtensionLoader();
-    extensionLoader.loadExtensions();
-    extensionLoader.getInjector().injectMembers(luaClassLoader);
+    injectionScope = createInjectionScope();
+    ServiceLoader.load(LuaConverter.class).forEach(this::registerLuaConverter);
+    ServiceLoader.load(SpellExtension.class).forEach(injectionScope::getInstance);
+    injectionScope.injectMembers(luaClassLoader);
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
       @Override
@@ -170,7 +174,7 @@ public class SpellProgram {
     });
   }
 
-  private SpellExtensionLoader createSpellExtensionLoader() {
+  private InjectionScope createInjectionScope() {
     InjectionScope rootScope = context.getRootScope();
     InjectionScope injector = new SpellScope(rootScope);
     injector.registerResource(Injector.class, injector::injectMembers);
@@ -233,9 +237,12 @@ public class SpellProgram {
         return context.getClock();
       }
     });
-    SpellExtensionLoader extensionLoader = new SpellExtensionLoader(injector, getConverters());
-    injector.registerResource(SpellExtensions.class, extensionLoader);
-    return extensionLoader;
+    return injector;
+  }
+
+  private <C extends LuaConverter<?, ?>> void registerLuaConverter(Class<C> converterClass) {
+    C converter = injectionScope.getInstance(converterClass);
+    getConverters().registerLuaConverter(converter);
   }
 
   public LuaClassLoader getLuaClassLoader() {
@@ -246,8 +253,12 @@ public class SpellProgram {
     return luaClassLoader.getConverters();
   }
 
-  public SpellExtensions getLuaExtensionLoader() {
-    return extensionLoader;
+  public EventsModule getEvents() {
+    return injectionScope.getInstance(EventsModule.class);
+  }
+
+  public ViewFactory getViewFactory() {
+    return injectionScope.getInstance(ViewFactory.class);
   }
 
   public void setSpellEntity(SpellEntity spellEntity) {

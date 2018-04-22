@@ -2,6 +2,8 @@ package net.wizardsoflua.lua.classes.event;
 
 import static java.util.Objects.requireNonNull;
 
+import javax.inject.Inject;
+
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
@@ -12,7 +14,6 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
-import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
@@ -46,16 +47,13 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   @GenerateLuaInstanceTable
   public static class Instance<D extends Event> extends LuaInstance<D> {
     private final String name;
+    @Inject
     private EventsModule events;
 
     public Instance(D delegate, String name, Injector injector) {
       super(delegate);
       this.name = requireNonNull(name, "name == null!");
       injector.injectMembers(this);
-    }
-
-    public void initialize(@Resource SpellExtensions extensions) {
-      events = extensions.getSpellExtension(EventsModule.class);
     }
 
     @LuaProperty

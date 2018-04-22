@@ -47,8 +47,8 @@ public class SpellEntity extends Entity {
   @Override
   public NBTTagCompound serializeNBT() {
     NBTTagCompound ret = new NBTTagCompound();
-    //ret.setString("id", this.getEntityString());
-    return this.writeToNBT(ret);
+    // ret.setString("id", this.getEntityString());
+    return writeToNBT(ret);
   }
 
   public PositionAndRotation getPositionAndRotation() {
@@ -87,8 +87,7 @@ public class SpellEntity extends Entity {
   }
 
   public Object getData(ViewFactory viewer) {
-    ViewFactory provider =
-        program.getLuaExtensionLoader().getSpellExtension(ViewFactory.class);
+    ViewFactory provider = program.getViewFactory();
     if (viewer == provider) {
       return data;
     }
@@ -114,7 +113,7 @@ public class SpellEntity extends Entity {
 
   @Override
   public Vec3d getLookVec() {
-    return this.getLook(1.0F);
+    return getLook(1.0F);
   }
 
   @Override
@@ -154,9 +153,9 @@ public class SpellEntity extends Entity {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    if (this.owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      if (this.owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
-        this.owner = player;
+    if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
+      if (owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
+        owner = player;
       }
     }
     getProgram().replacePlayerInstance(player);

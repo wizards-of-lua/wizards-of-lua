@@ -3,6 +3,7 @@ package net.wizardsoflua.lua.module.types;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 import com.google.auto.service.AutoService;
 import com.google.common.collect.BiMap;
@@ -14,9 +15,9 @@ import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
-import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.classes.ObjectClass2;
@@ -39,12 +40,13 @@ public class TypesModule extends LuaTableExtension {
   private Table env;
   @Resource
   private TableFactory tableFactory;
-
-  private final BiMap<String, Table> classes = HashBiMap.create();
+  @Inject
+  private ObjectClass2 objectClass;
   private Table objectClassTable;
+  private final BiMap<String, Table> classes = HashBiMap.create();
 
-  public void init(@Resource SpellExtensions extensions) {
-    ObjectClass2 objectClass = extensions.getSpellExtension(ObjectClass2.class);
+  @PostConstruct
+  public void init() {
     objectClassTable = objectClass.getTable();
     registerClass(objectClass.getName(), objectClassTable);
   }

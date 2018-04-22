@@ -21,8 +21,6 @@ import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.extension.api.inject.Resource;
-import net.wizardsoflua.extension.spell.api.resource.SpellExtensions;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
@@ -80,10 +78,12 @@ public class LuaClassLoader {
   private final Converters converters = new Converters(this);
   private final Context context;
 
-  @Resource
-  private SpellExtensions extensions;
-
+  @Inject
+  private EventsModule events;
+  @Inject
   private TypesModule typesModule;
+  @Inject
+  private ViewFactory viewFactory;
 
   public interface Context {
     @Nullable
@@ -94,11 +94,6 @@ public class LuaClassLoader {
     this.env = requireNonNull(env, "env == null!");
     this.context = requireNonNull(context, "context == null!");
     types = new Types(env, this);
-  }
-
-  @Inject
-  public void init() {
-    typesModule = extensions.getSpellExtension(TypesModule.class);
   }
 
   public Table getEnv() {
@@ -114,19 +109,19 @@ public class LuaClassLoader {
   }
 
   /**
-   * @deprecated Use {@link SpellExtensions#getSpellExtension(Class)}
+   * @deprecated Use @{@link Inject}
    */
   @Deprecated
   public ViewFactory getViewFactory() {
-    return extensions.getSpellExtension(ViewFactory.class);
+    return viewFactory;
   }
 
   /**
-   * @deprecated Use {@link SpellExtensions#getSpellExtension(Class)}
+   * @deprecated Use @{@link Inject}
    */
   @Deprecated
   public EventsModule getEventsModule() {
-    return extensions.getSpellExtension(EventsModule.class);
+    return events;
   }
 
   public void loadStandardClasses() {
