@@ -18,12 +18,12 @@ public abstract class LuaClass<J, L> extends TypeTokenLuaConverter<J, L> impleme
   private @Nullable Table table;
 
   @PostConstruct
-  public void registerClass() {
+  protected void registerClass() {
     types.registerClass(getName(), getTable());
   }
 
   @PostConstruct
-  public void installIntoEnv() {
+  protected void installIntoEnv() {
     String name = getName();
     Table table = getTable();
     env.rawset(name, table);

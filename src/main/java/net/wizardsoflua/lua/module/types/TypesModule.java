@@ -46,7 +46,7 @@ public class TypesModule extends LuaTableExtension {
   private final BiMap<String, Table> classes = HashBiMap.create();
 
   @PostConstruct
-  public void init() {
+  protected void init() {
     objectClassTable = objectClass.getTable();
     registerClass(objectClass.getName(), objectClassTable);
   }
