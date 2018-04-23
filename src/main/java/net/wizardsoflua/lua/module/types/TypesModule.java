@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.google.auto.service.AutoService;
 import com.google.common.collect.BiMap;
@@ -15,7 +16,6 @@ import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
-import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
@@ -41,14 +41,17 @@ public class TypesModule extends LuaTableExtension {
   @Resource
   private TableFactory tableFactory;
   @Inject
-  private ObjectClass2 objectClass;
-  private Table objectClassTable;
-  private final BiMap<String, Table> classes = HashBiMap.create();
+  private Provider<ObjectClass2> objectClassProvider;
 
-  @PostConstruct
-  protected void init() {
-    objectClassTable = objectClass.getTable();
-    registerClass(objectClass.getName(), objectClassTable);
+  private final BiMap<String, Table> classes = HashBiMap.create();
+  private @Nullable Table objectClassTable;
+
+  private Table getObjectClassTable() {
+    if (objectClassTable == null) {
+      ObjectClass2 objectClass = objectClassProvider.get();
+      objectClassTable = objectClass.getTable();
+    }
+    return objectClassTable;
   }
 
   @Override
@@ -80,7 +83,7 @@ public class TypesModule extends LuaTableExtension {
           "declare");
     }
     if (metatable == null) {
-      metatable = objectClassTable;
+      metatable = getObjectClassTable();
     }
     Table classTable = tableFactory.newTable();
     classTable.rawset("__index", classTable);

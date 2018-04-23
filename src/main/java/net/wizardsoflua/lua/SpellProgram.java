@@ -176,9 +176,19 @@ public class SpellProgram {
 
   private InjectionScope createInjectionScope() {
     InjectionScope rootScope = context.getRootScope();
-    InjectionScope injector = new SpellScope(rootScope);
-    injector.registerResource(Injector.class, injector::injectMembers);
-    injector.registerResource(Config.class, new Config() {
+    InjectionScope scope = new SpellScope(rootScope);
+    scope.registerResource(Injector.class, new Injector() {
+      @Override
+      public <T> T injectMembers(T instance) throws IllegalStateException {
+        return scope.injectMembers(instance);
+      }
+
+      @Override
+      public <T> T getInstance(Class<T> cls) throws IllegalStateException {
+        return scope.getInstance(cls);
+      }
+    });
+    scope.registerResource(Config.class, new Config() {
       @Override
       public long getLuaTickLimit() {
         return luaTickLimit;
@@ -209,24 +219,24 @@ public class SpellProgram {
         };
       }
     });
-    injector.registerResource(LuaConverters.class, luaClassLoader.getConverters());
-    injector.registerResource(Table.class, env);
-    injector.registerResource(ExceptionHandler.class, new ExceptionHandler() {
+    scope.registerResource(LuaConverters.class, luaClassLoader.getConverters());
+    scope.registerResource(Table.class, env);
+    scope.registerResource(ExceptionHandler.class, new ExceptionHandler() {
       @Override
       public void handle(String contextMessage, Throwable t) {
         handleException(contextMessage, t);
       }
     });
-    injector.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
+    scope.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
         scheduler);
-    injector.registerResource(Spell.class, new Spell() {
+    scope.registerResource(Spell.class, new Spell() {
       @Override
       public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
         parallelTaskFactories.add(parallelTaskFactory);
       }
     });
-    injector.registerResource(TableFactory.class, stateContext);
-    injector.registerResource(Time.class, new Time() {
+    scope.registerResource(TableFactory.class, stateContext);
+    scope.registerResource(Time.class, new Time() {
       @Override
       public long getTotalWorldTime() {
         return world.getTotalWorldTime();
@@ -237,7 +247,7 @@ public class SpellProgram {
         return context.getClock();
       }
     });
-    return injector;
+    return scope;
   }
 
   private <C extends LuaConverter<?, ?>> void registerLuaConverter(Class<C> converterClass) {

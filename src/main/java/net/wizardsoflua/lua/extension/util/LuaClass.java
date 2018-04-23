@@ -7,11 +7,16 @@ import net.sandius.rembulan.Table;
 import net.wizardsoflua.common.Named;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.spi.SpellExtension;
+import net.wizardsoflua.lua.classes.ObjectClass2;
 import net.wizardsoflua.lua.module.types.TypesModule;
 
-public abstract class LuaClass<J, L> extends TypeTokenLuaConverter<J, L> implements Named {
+public abstract class LuaClass implements SpellExtension, Named {
   @Resource
   private Table env;
+  @Resource
+  private Injector injector;
   @Inject
   private TypesModule types;
 
@@ -33,9 +38,21 @@ public abstract class LuaClass<J, L> extends TypeTokenLuaConverter<J, L> impleme
     if (table == null) {
       table = createRawTable();
       table.rawset("__index", table);
+      Table metatable = getMetatable();
+      table.setMetatable(metatable);
     }
     return table;
   }
 
   protected abstract Table createRawTable();
+
+  protected @Nullable Table getMetatable() {
+    Class<? extends LuaClass> superClassClass = getSuperClassClass();
+    LuaClass superClass = injector.getInstance(superClassClass);
+    return superClass.getTable();
+  }
+
+  protected Class<? extends LuaClass> getSuperClassClass() {
+    return ObjectClass2.class;
+  }
 }

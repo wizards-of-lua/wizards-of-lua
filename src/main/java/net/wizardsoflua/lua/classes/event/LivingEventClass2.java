@@ -12,6 +12,7 @@ import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClass;
 
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)
 @GenerateLuaDoc(name = LivingEventClass2.NAME)
@@ -25,6 +26,11 @@ public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventCla
   @Override
   public String getName() {
     return NAME;
+  }
+ 
+  @Override
+  protected Class<? extends LuaClass> getSuperClassClass() {
+    return EventClass2.class;
   }
 
   @Override
