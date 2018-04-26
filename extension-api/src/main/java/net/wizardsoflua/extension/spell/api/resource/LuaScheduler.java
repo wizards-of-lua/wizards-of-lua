@@ -1,0 +1,44 @@
+package net.wizardsoflua.extension.spell.api.resource;
+
+import net.sandius.rembulan.exec.CallException;
+import net.sandius.rembulan.exec.CallPausedException;
+import net.sandius.rembulan.exec.Continuation;
+import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.LuaFunction;
+import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.extension.spell.api.LuaTickListener;
+import net.wizardsoflua.extension.spell.api.PauseContext;
+
+public interface LuaScheduler {
+  Object[] call(long luaTickLimit, LuaFunction function, Object... args)
+      throws CallException, CallPausedException, InterruptedException;
+
+  Object[] callUnpausable(long luaTickLimit, LuaFunction function, Object... args)
+      throws CallException, InterruptedException;
+
+  Object[] resume(long luaTickLimit, Continuation continuation)
+      throws CallException, CallPausedException, InterruptedException;
+
+  Object[] resumeUnpausable(long luaTickLimit, Continuation continuation)
+      throws CallException, InterruptedException;
+
+  void pause(ExecutionContext context) throws UnresolvedControlThrowable;
+
+  void pauseIfRequested(ExecutionContext context) throws UnresolvedControlThrowable;
+
+  void sleep(ExecutionContext context, int ticks) throws UnresolvedControlThrowable;
+
+  long getAllowance();
+
+  boolean isAutosleep();
+
+  void setAutosleep(boolean autosleep);
+
+  boolean addTickListener(LuaTickListener tickListener);
+
+  boolean removeTickListener(LuaTickListener tickListener);
+
+  boolean addPauseContext(PauseContext context);
+
+  boolean removePauseContext(PauseContext context);
+}

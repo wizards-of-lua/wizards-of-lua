@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 /**
  * The <span class="notranslate">DroppedItem</span> class represents things that are lying somewhere
@@ -16,7 +16,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 public class DroppedItemApi<D extends EntityItem> extends EntityApi<D> {
   public static final String NAME = "DroppedItem";
 
-  public DroppedItemApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public DroppedItemApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

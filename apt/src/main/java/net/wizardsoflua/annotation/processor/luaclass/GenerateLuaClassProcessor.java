@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -23,6 +24,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import com.google.auto.service.AutoService;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
 
@@ -39,6 +41,7 @@ import net.wizardsoflua.annotation.processor.model.FunctionModel;
 import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
 import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
+@AutoService(Processor.class)
 public class GenerateLuaClassProcessor extends ExceptionHandlingProcessor {
   public static final AnnotationSpec GENERATED_ANNOTATION = AnnotationSpec.builder(Generated.class)//
       .addMember("value", "$S", GenerateLuaClass.class.getSimpleName())//

@@ -5,7 +5,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 /**
  * The <span class="notranslate">UseItemEvent</span> class is the base class of events about
@@ -22,7 +22,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 public class UseItemEventApi<D extends LivingEntityUseItemEvent> extends LivingEventApi<D> {
   public static final String NAME = "UseItemEvent";
 
-  public UseItemEventApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public UseItemEventApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

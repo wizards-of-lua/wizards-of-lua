@@ -14,7 +14,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.view.ViewFactory;
 
 public class SpellEntity extends Entity {
   public static final String NAME = "Spell";
@@ -47,8 +47,8 @@ public class SpellEntity extends Entity {
   @Override
   public NBTTagCompound serializeNBT() {
     NBTTagCompound ret = new NBTTagCompound();
-    //ret.setString("id", this.getEntityString());
-    return this.writeToNBT(ret);
+    // ret.setString("id", this.getEntityString());
+    return writeToNBT(ret);
   }
 
   public PositionAndRotation getPositionAndRotation() {
@@ -86,12 +86,12 @@ public class SpellEntity extends Entity {
     this.visible = visible;
   }
 
-  public Object getData(LuaClassLoader viewingClassLoader) {
-    LuaClassLoader spellClassLoader = program.getLuaClassLoader();
-    if (viewingClassLoader == spellClassLoader) {
+  public Object getData(ViewFactory viewer) {
+    ViewFactory provider = program.getViewFactory();
+    if (viewer == provider) {
       return data;
     }
-    return viewingClassLoader.getTransferenceProxyFactory().getProxy(data, spellClassLoader);
+    return viewer.getView(data, provider);
   }
 
   @Override
@@ -113,7 +113,7 @@ public class SpellEntity extends Entity {
 
   @Override
   public Vec3d getLookVec() {
-    return this.getLook(1.0F);
+    return getLook(1.0F);
   }
 
   @Override
@@ -153,9 +153,9 @@ public class SpellEntity extends Entity {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    if (this.owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      if (this.owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
-        this.owner = player;
+    if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
+      if (owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
+        owner = player;
       }
     }
     getProgram().replacePlayerInstance(player);

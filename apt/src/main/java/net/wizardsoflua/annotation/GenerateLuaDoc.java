@@ -9,8 +9,11 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target(TYPE)
 public @interface GenerateLuaDoc {
+  // TODO Adrodoc55 10.04.2018: Hier sollte kein default sein
+  String name() default "";
+
   /**
    * The subtitle of the module.
    */
-  String subtitle();
+  String subtitle() default "";
 }

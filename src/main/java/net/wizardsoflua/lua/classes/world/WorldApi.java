@@ -13,8 +13,8 @@ import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassApi;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 
 /**
  * The World is the space around every creature and item in it.
@@ -24,7 +24,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 public class WorldApi<D extends World> extends LuaClassApi<D> {
   public static final String NAME = "World";
 
-  public WorldApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public WorldApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 
@@ -76,7 +76,7 @@ public class WorldApi<D extends World> extends LuaClassApi<D> {
   /**
    * The 'canSeeSky' function returns true if the sky is visible from the given position when
    * looking straight up.
-   * 
+   *
    * @param pos
    */
   @LuaFunction

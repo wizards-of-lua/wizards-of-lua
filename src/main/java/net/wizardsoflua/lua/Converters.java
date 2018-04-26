@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +23,8 @@ import net.sandius.rembulan.LuaMathOperators;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
@@ -33,7 +36,7 @@ import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
 
-public class Converters {
+public class Converters implements LuaConverters {
   private final LuaClassLoader classLoader;
   private final NbtConverter nbtConverter;
   private final TableDataConverter tableDataConverter;
@@ -49,12 +52,22 @@ public class Converters {
     return nbtConverter;
   }
 
+  @Override
+  public final @Nullable <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject,
+      int argumentIndex, String argumentName, String functionOrPropertyName)
+      throws BadArgumentException {
+    return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
+        () -> toJavaListNullable(type, luaObject));
+  }
+
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject, int argumentIndex,
       String argumentName, String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
         () -> toJavaList(type, luaObject));
   }
 
+  @Override
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       int argumentIndex, String argumentName, String functionOrPropertyName)
       throws BadArgumentException {
@@ -62,6 +75,7 @@ public class Converters {
         () -> toJavaOptional(type, luaObject));
   }
 
+  @Override
   public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
       int argumentIndex, String argumentName, String functionOrPropertyName)
       throws BadArgumentException {
@@ -69,6 +83,7 @@ public class Converters {
         () -> toJavaNullable(type, luaObject));
   }
 
+  @Override
   public final <J> J toJava(Class<J> type, Object luaObject, int argumentIndex, String argumentName,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(argumentIndex, argumentName, functionOrPropertyName,
@@ -102,8 +117,9 @@ public class Converters {
     }
   }
 
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object[] args, String functionOrPropertyName)
-      throws ConversionException {
+      throws BadArgumentException {
     List<J> result = new ArrayList<>(args.length);
     for (int i = 0; i < args.length; i++) {
       Object arg = args[i];
@@ -114,21 +130,31 @@ public class Converters {
     return result;
   }
 
+  @Override
+  public final @Nullable <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject,
+      String functionOrPropertyName) throws BadArgumentException {
+    return enrichBadArgException(functionOrPropertyName, () -> toJavaListNullable(type, luaObject));
+  }
+
+  @Override
   public final <J> List<J> toJavaList(Class<J> type, Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaList(type, luaObject));
   }
 
+  @Override
   public final <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaOptional(type, luaObject));
   }
 
+  @Override
   public final @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject,
       String functionOrPropertyName) throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJavaNullable(type, luaObject));
   }
 
+  @Override
   public final <J> J toJava(Class<J> type, Object luaObject, String functionOrPropertyName)
       throws BadArgumentException {
     return enrichBadArgException(functionOrPropertyName, () -> toJava(type, luaObject));
@@ -143,6 +169,13 @@ public class Converters {
       ex.setFunctionOrPropertyName(functionOrPropertyName);
       throw ex;
     }
+  }
+
+  private @Nullable <J> List<J> toJavaListNullable(Class<J> type, @Nullable Object luaObject) {
+    if (luaObject == null) {
+      return null;
+    }
+    return toJavaList(type, luaObject);
   }
 
   private <J> List<J> toJavaList(Class<J> type, Object luaObject) throws BadArgumentException {
@@ -164,11 +197,11 @@ public class Converters {
     return result;
   }
 
-  private <J> Optional<J> toJavaOptional(Class<J> type, Object luaObject) {
+  private <J> Optional<J> toJavaOptional(Class<J> type, @Nullable Object luaObject) {
     return ofNullable(toJavaNullable(type, luaObject));
   }
 
-  private <J> J toJavaNullable(Class<J> type, Object luaObject) {
+  private @Nullable <J> J toJavaNullable(Class<J> type, @Nullable Object luaObject) {
     if (luaObject == null) {
       return null;
     }
@@ -195,39 +228,81 @@ public class Converters {
     return new BadArgumentException(expected, actual);
   }
 
-  private Object convertTo(Class<?> type, Object luaObject)
+  private final Map<Class<?>, LuaConverter<?, ?>> convertersByJavaClass = new HashMap<>();
+
+  @Override
+  public void registerLuaConverter(LuaConverter<?, ?> converter) throws IllegalArgumentException {
+    Class<?> javaClass = converter.getJavaClass();
+    if (convertersByJavaClass.containsKey(javaClass)) {
+      throw new IllegalArgumentException(
+          "A converter for java " + javaClass + " is already registered");
+    }
+    convertersByJavaClass.put(javaClass, converter);
+  }
+
+  private @Nullable <J> LuaConverter<J, ?> getConverter(Class<J> javaClass) {
+    @SuppressWarnings("unchecked")
+    LuaConverter<J, ?> result = (LuaConverter<J, ?>) convertersByJavaClass.get(javaClass);
+    return result;
+  }
+
+  private @Nullable <J> LuaConverter<? super J, ?> getConverterForJavaClass(Class<J> javaClass) {
+    Class<? super J> cls = javaClass;
+    while (cls != null) {
+      LuaConverter<? super J, ?> result = getConverter(cls);
+      if (result != null) {
+        return result;
+      }
+      cls = cls.getSuperclass();
+    }
+    return null;
+  }
+
+  private <L> Object convertToJava(Object luaObject, LuaConverter<?, L> converter)
+      throws ClassCastException {
+    Class<L> luaClass = converter.getLuaClass();
+    L luaInstance = luaClass.cast(luaObject);
+    return converter.getJavaInstance(luaInstance);
+  }
+
+  private Object convertTo(Class<?> javaClass, Object luaObject)
       throws ClassCastException, BadArgumentException {
-    if (LuaClassLoader.isSupported(type) && luaObject instanceof Table) {
+    LuaConverter<?, ?> converter = getConverterForJavaClass(javaClass);
+    if (converter != null) {
+      return convertToJava(luaObject, converter);
+    }
+    if (LuaClassLoader.isSupported(javaClass) && luaObject instanceof Table) {
       Table table = (Table) luaObject;
-      LuaClass luaClass = classLoader.getLuaClassOf(table);
+      LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
       if (luaClass instanceof JavaLuaClass) {
         return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
       }
     }
-    if (LuaClassApi.class.isAssignableFrom(type) && luaObject instanceof GeneratedLuaInstance) {
+    if (LuaClassApi.class.isAssignableFrom(javaClass)
+        && luaObject instanceof GeneratedLuaInstance) {
       return ((GeneratedLuaInstance<?, ?>) luaObject).getApi();
     }
-    if (type == String.class) {
+    if (javaClass == String.class) {
       return Conversions.javaRepresentationOf(luaObject);
     }
-    if (type == Double.class) {
+    if (javaClass == Double.class) {
       return castToDouble(luaObject);
     }
-    if (type == Float.class) {
+    if (javaClass == Float.class) {
       return castToFloat(luaObject);
     }
-    if (type == Integer.class) {
+    if (javaClass == Integer.class) {
       return castToInt(luaObject);
     }
-    if (type == Long.class) {
+    if (javaClass == Long.class) {
       return castToLong(luaObject);
     }
-    if (type == Boolean.class || type == boolean.class) {
+    if (javaClass == Boolean.class || javaClass == boolean.class) {
       return luaObject;
     }
-    if (Enum.class.isAssignableFrom(type)) {
+    if (Enum.class.isAssignableFrom(javaClass)) {
       String name = (String) Conversions.javaRepresentationOf(luaObject);
-      return enumConverter.toJava(type, name);
+      return enumConverter.toJava(javaClass, name);
     }
     return luaObject;
   }
@@ -247,7 +322,7 @@ public class Converters {
   private Float castToFloat(Object luaObject) throws ClassCastException, BadArgumentException {
     Number number = (Number) luaObject;
     float result = number.floatValue();
-    if ((double) result == number.doubleValue()) {
+    if (result == number.doubleValue()) {
       return result;
     } else {
       throw new BadArgumentException("number has no float representation");
@@ -272,11 +347,13 @@ public class Converters {
     }
   }
 
+  @Override
   public final @Nullable Optional<? extends Object> toLuaOptional(@Nullable Object value)
       throws ConversionException {
     return ofNullable(toLuaNullable(value));
   }
 
+  @Override
   public final @Nullable Object toLuaNullable(@Nullable Object value) throws ConversionException {
     if (value == null) {
       return null;
@@ -284,10 +361,15 @@ public class Converters {
     return toLua(value);
   }
 
+  @Override
   public <J> Object toLua(J javaObject) throws ConversionException {
-    requireNonNull(javaObject, "value == null!");
+    requireNonNull(javaObject, "javaObject == null!");
     @SuppressWarnings("unchecked")
     Class<J> javaClass = (Class<J>) javaObject.getClass();
+    LuaConverter<? super J, ?> converter = getConverterForJavaClass(javaClass);
+    if (converter != null) {
+      return converter.getLuaInstance(javaObject);
+    }
     JavaLuaClass<? super J, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(javaObject);

@@ -2,15 +2,12 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.dependency.ModuleDependency;
-import net.wizardsoflua.lua.module.system.SystemAdapter;
 import net.wizardsoflua.profiles.Profiles;
 
 public class SpellProgramFactory {
@@ -19,12 +16,6 @@ public class SpellProgramFactory {
     Profiles getProfiles();
 
     String getSharedLuaPath();
-
-    File getScriptDir();
-
-    long getScriptTimeoutMillis();
-
-    boolean isScriptGatewayEnabled();
   }
 
   private final Context context;
@@ -36,8 +27,7 @@ public class SpellProgramFactory {
   public SpellProgram create(World world, ICommandSender owner, String code) {
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
-    SystemAdapter systemAdapter = createSystemAdapter();
-    return new SpellProgram(owner, code, dependencies, defaultLuaPath, world, systemAdapter, context);
+    return new SpellProgram(owner, code, dependencies, defaultLuaPath, world, context);
   }
 
   private String getDefaultLuaPath(ICommandSender owner) {
@@ -47,12 +37,6 @@ public class SpellProgramFactory {
           + context.getLuaPathElementOfPlayer(entity.getCachedUniqueIdString());
     }
     return context.getSharedLuaPath();
-  }
-
-
-  private SystemAdapter createSystemAdapter() {
-    return new SystemAdapter(context.isScriptGatewayEnabled(), context.getScriptTimeoutMillis(),
-        context.getScriptDir());
   }
 
   private ModuleDependencies createDependencies(ICommandSender owner) {

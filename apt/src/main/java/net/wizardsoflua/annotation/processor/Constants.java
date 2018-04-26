@@ -5,6 +5,10 @@ import static net.wizardsoflua.annotation.processor.Utils.getQualifiedName;
 import com.squareup.javapoet.ClassName;
 
 public interface Constants {
+  final ClassName LUA_CONVERTERS_CLASS =
+      ClassName.get("net.wizardsoflua.extension.spell.api.resource", "LuaConverters");
+  final String LUA_CONVERTER = "net.wizardsoflua.lua.extension.spi.LuaConverter";
+
   final String LUA_CLASS_API = "net.wizardsoflua.lua.classes.LuaClassApi";
   final ClassName OBJECT_CLASS = ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
   final String JAVA_LUA_CLASS = "net.wizardsoflua.lua.classes.JavaLuaClass";
@@ -12,10 +16,15 @@ public interface Constants {
       ClassName.get("net.wizardsoflua.lua.classes", "DeclareLuaClass");
   final String DECLARE_LUA_CLASS_NAME = getQualifiedName(DECLARE_LUA_CLASS);
 
+  final String TABLE_SUFFIX = "Table";
   final String MODULE_SUFFIX = "Module";
   final String CLASS_SUFFIX = "Class";
   final String INSTANCE_SUFFIX = "Instance";
 
+  final ClassName LUA_TABLE_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaTable");
+  final ClassName LUA_INSTANCE_TABLE_SUPERCLASS =
+      ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaInstanceTable");
   final ClassName LUA_MODULE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.module", "GeneratedLuaModule");
   final ClassName LUA_CLASS_SUPERCLASS =

@@ -3,7 +3,7 @@ package net.wizardsoflua.lua.classes.event;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 /**
  * The <span class="notranslate">UseItemStartEvent</span> class is fired when a [Mob](/modules/Mob)
@@ -28,7 +28,7 @@ public class UseItemStartEventApi<D extends LivingEntityUseItemEvent.Start>
     extends UseItemEventApi<D> {
   public static final String NAME = "UseItemStartEvent";
 
-  public UseItemStartEventApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public UseItemStartEventApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 }

@@ -14,7 +14,7 @@ import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.lua.function.NamedFunction2;
@@ -22,7 +22,7 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @DeclareLuaClass(name = BlockClass.NAME)
-public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
+public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
   public static final String NAME = "Block";
 
   @Override
@@ -39,7 +39,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
   }
 
   public static class Proxy<D extends WolBlock> extends LuaInstance<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addReadOnly("name", this::getName);
       addReadOnly("material", this::getMaterial);
@@ -149,7 +149,7 @@ public class BlockClass extends ProxyingLuaClass<WolBlock, BlockClass.Proxy<WolB
       NBTTagCompound oldNbt = self.getNbt();
       NBTTagCompound newNbt;
       if (oldNbt != null) {
-        newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
+        newNbt = getClassLoader().getConverters().getNbtConverter().merge(oldNbt, nbt);
       } else {
         // newNbt = oldNbt;
         throw new IllegalArgumentException(String.format("Can't set nbt for block '%s'",

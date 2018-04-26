@@ -1,4 +1,5 @@
 include 'apt'
+include 'extension-api'
 
 void subprojects(ProjectDescriptor project = rootProject, Closure closure) {
   project.children.each {

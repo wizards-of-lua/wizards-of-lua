@@ -20,6 +20,14 @@ public class BadArgumentException extends RuntimeException {
     setDetailMessage(detailMessage);
   }
 
+  public BadArgumentException(String detailMessage, int argumentIndex, String argumentName,
+      String functionOrPropertyName) {
+    setDetailMessage(detailMessage);
+    setArgumentIndex(argumentIndex);
+    setArgumentName(argumentName);
+    setFunctionOrPropertyName(functionOrPropertyName);
+  }
+
   /**
    * @return the value of {@link #detailMessage}
    */

@@ -1,0 +1,8 @@
+apply plugin: 'eclipse'
+apply plugin: 'java'
+
+dependencies {
+  compile libs.javax_inject
+  compile libs.jsr305
+  compile libs.rembulan_runtime
+}

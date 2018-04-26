@@ -10,7 +10,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -48,36 +47,34 @@ public class ProcessorUtils {
   }
 
   /**
-   * Returns the type parameter of {@code superClass} in the context of {@code type} at the
-   * specified {@code index} or {@code null} if {@code superClass} is not a super class of
-   * {@code type}.
+   * Returns the type parameter of {@code superType} in the context of {@code type} at the specified
+   * {@code index} or {@code null} if {@code superType} is not a super type of {@code type}.
    * <p>
-   * Example: For a type {@code StringList} which extends {@code AbstractList<String>}, a call like
-   * {@code getParameterType(StringList, AbstractList, 0, types)} would return a {@link TypeMirror}
+   * Example: For a type {@code StringList} which implements {@code List<String>}, a call like
+   * {@code getParameterType(StringList, List, 0, types)} would return a {@link TypeMirror}
    * representing String.class.
    *
    * @param type
-   * @param superClass
+   * @param superTypeName
    * @param index
    * @param types
-   * @return the type parameter of {@code superClass} in the context of {@code type} at the
+   * @return the type parameter of {@code superTypeName} in the context of {@code type} at the
    *         specified {@code index} or {@code null}
    */
-  public static @Nullable TypeMirror getTypeParameter(DeclaredType type, String superClass,
+  public static @Nullable TypeMirror getTypeParameter(TypeMirror type, String superTypeName,
       int index, ProcessingEnvironment env) {
-    Types types = env.getTypeUtils();
-    while (true) {
-      TypeElement element = (TypeElement) type.asElement();
-      if (element.getQualifiedName().contentEquals(superClass)) {
-        return type.getTypeArguments().get(index);
-      }
-      Iterator<? extends TypeMirror> supertypes = types.directSupertypes(type).iterator();
-      if (supertypes.hasNext()) {
-        type = (DeclaredType) supertypes.next();
-      } else {
-        return null;
+    Set<TypeMirror> superTypes = getAllSuperTypes(type, env);
+    for (TypeMirror superType : superTypes) {
+      TypeKind kind = superType.getKind();
+      if (kind == TypeKind.DECLARED || kind == TypeKind.ERROR) {
+        DeclaredType declaredSuperType = (DeclaredType) superType;
+        TypeElement superElement = (TypeElement) declaredSuperType.asElement();
+        if (superElement.getQualifiedName().contentEquals(superTypeName)) {
+          return declaredSuperType.getTypeArguments().get(index);
+        }
       }
     }
+    return null;
   }
 
   public static @Nullable DeclaredType getClassValue(AnnotationMirror mirror, String key,
@@ -130,6 +127,29 @@ public class ProcessorUtils {
       }
     }
     return result;
+  }
+
+  /**
+   * Alternative to Types.isSubType(), because that does not work across processing rounds.
+   *
+   * @param type
+   * @param superTypeName
+   * @param env
+   * @return {@code true} if {@code type} is a sub type of {@code superTypeName}, {@code false}
+   *         otherwise
+   * @see Types#isSubtype(TypeMirror, TypeMirror)
+   */
+  public static boolean isSubType(TypeMirror type, String superTypeName,
+      ProcessingEnvironment env) {
+    for (TypeMirror superType : getAllSuperTypes(type, env)) {
+      if (superType.getKind() == TypeKind.DECLARED) {
+        TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
+        if (superElement.getQualifiedName().contentEquals(superTypeName)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public static boolean isJavaLangObject(TypeMirror typeMirror) {

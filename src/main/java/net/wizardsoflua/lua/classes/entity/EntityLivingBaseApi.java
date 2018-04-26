@@ -7,10 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 public class EntityLivingBaseApi<D extends EntityLivingBase> extends EntityApi<D> {
-  public EntityLivingBaseApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public EntityLivingBaseApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

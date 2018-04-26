@@ -11,7 +11,9 @@ import javax.annotation.Nullable;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
+import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.util.TraversableHashMap;
+import net.wizardsoflua.common.Named;
 
 /**
  * A {@link Table} implementation that can be used as a Lua interface for Java properties.
@@ -21,16 +23,19 @@ import net.sandius.rembulan.util.TraversableHashMap;
 public class PropertyTable extends Table {
   private final TraversableHashMap<Object, Object> values = new TraversableHashMap<>();
   /**
-   * Should Lua be able to add additional functions and properties.
+   * Whether or not this table should be modifiable from Lua. If this is {@code true} then Lua code
+   * will be able to add additional functions and properties and change values that are not wrapped
+   * in a {@link TableProperty}.
    */
-  private final boolean allowAdditionalProperties;
+  private final boolean modifiable;
 
+  @Deprecated
   public PropertyTable() {
     this(false);
   }
 
-  public PropertyTable(boolean allowAdditionalProperties) {
-    this.allowAdditionalProperties = allowAdditionalProperties;
+  public PropertyTable(boolean modifiable) {
+    this.modifiable = modifiable;
   }
 
   private static void checkKey(Object key) {
@@ -61,7 +66,7 @@ public class PropertyTable extends Table {
     if (p instanceof TableProperty<?>) {
       ((TableProperty<?>) p).set(value);
     } else {
-      if (allowAdditionalProperties) {
+      if (modifiable) {
         values.put(key, value);
       } else {
         throw new IllegalOperationAttemptException("attempt to modify unknown table index");
@@ -90,19 +95,31 @@ public class PropertyTable extends Table {
   }
 
   public <T> void addReadOnly(Object key, Supplier<T> get) {
-    addProperty(key, new TableProperty<T>(get, null));
+    addProperty(key, new TableProperty<>(get, null));
   }
 
   public <T> void add(Object key, @Nullable Supplier<T> get, Consumer<Object> set) {
     checkNotNull(set, "set == null!");
-    addProperty(key, new TableProperty<T>(get, set));
+    addProperty(key, new TableProperty<>(get, set));
   }
 
   private void addProperty(Object key, TableProperty<?> property) {
+    add(key, property);
+  }
+
+  public <F extends LuaFunction & Named> void addFunction(F function) {
+    add(function.getName(), function);
+  }
+
+  public void addFunction(Object key, LuaFunction function) {
+    add(key, function);
+  }
+
+  private void add(Object key, Object value) {
     key = Conversions.normaliseKey(key);
     checkKey(key);
-    checkNotNull(property, "property == null!");
-    values.put(key, property);
+    checkNotNull(value, "value == null!");
+    values.put(key, value);
   }
 
   /**

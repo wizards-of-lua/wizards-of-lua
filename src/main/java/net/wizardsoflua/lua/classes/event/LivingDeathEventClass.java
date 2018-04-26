@@ -3,11 +3,11 @@ package net.wizardsoflua.lua.classes.event;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = LivingDeathEventClass.NAME, superClass = LivingEventClass.class)
 public class LivingDeathEventClass
-    extends ProxyingLuaClass<LivingDeathEvent, LivingDeathEventClass.Proxy<LivingDeathEvent>> {
+    extends DelegatorLuaClass<LivingDeathEvent, LivingDeathEventClass.Proxy<LivingDeathEvent>> {
   public static final String NAME = "LivingDeathEvent";
 
   @Override
@@ -17,7 +17,7 @@ public class LivingDeathEventClass
 
   public static class Proxy<D extends LivingDeathEvent>
       extends LivingEventClass.Proxy<LivingEventApi<D>, D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(new LivingEventApi<>(luaClass, delegate));
       addReadOnly("cause", this::getCause);
     }

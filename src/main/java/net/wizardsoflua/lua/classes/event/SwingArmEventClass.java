@@ -2,11 +2,11 @@ package net.wizardsoflua.lua.classes.event;
 
 import net.wizardsoflua.event.SwingArmEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 @DeclareLuaClass(name = SwingArmEventClass.NAME, superClass = EventClass.class)
 public class SwingArmEventClass
-    extends ProxyingLuaClass<SwingArmEvent, SwingArmEventClass.Proxy<SwingArmEvent>> {
+    extends DelegatorLuaClass<SwingArmEvent, SwingArmEventClass.Proxy<SwingArmEvent>> {
   public static final String NAME = "SwingArmEvent";
 
   @Override
@@ -15,7 +15,7 @@ public class SwingArmEventClass
   }
 
   public static class Proxy<D extends SwingArmEvent> extends EventClass.Proxy<EventApi<D>, D> {
-    public Proxy(ProxyingLuaClass<D, ? extends Proxy<D>> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<D, ? extends Proxy<D>> luaClass, D delegate) {
       super(new EventApi<>(luaClass, delegate));
       addImmutable("hand", getConverters().toLua(delegate.getHand()));
       addImmutable("item", getConverters().toLua(delegate.getItemStack()));

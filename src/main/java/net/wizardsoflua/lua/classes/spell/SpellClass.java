@@ -102,7 +102,7 @@ public class SpellClass
     }
 
     public Object getData() {
-      return delegate.getData(classLoader);
+      return delegate.getData(classLoader.getViewFactory());
     }
 
     public int execute(String command) {

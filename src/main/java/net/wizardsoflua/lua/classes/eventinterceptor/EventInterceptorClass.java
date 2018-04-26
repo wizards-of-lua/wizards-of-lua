@@ -2,13 +2,13 @@ package net.wizardsoflua.lua.classes.eventinterceptor;
 
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 import net.wizardsoflua.lua.function.NamedFunction1;
 
 @DeclareLuaClass(name = EventInterceptorClass.NAME)
 public class EventInterceptorClass
-    extends ProxyingLuaClass<EventInterceptor, EventInterceptorClass.Proxy<EventInterceptor>> {
+    extends DelegatorLuaClass<EventInterceptor, EventInterceptorClass.Proxy<EventInterceptor>> {
   public static final String NAME = "EventInterceptor";
 
   public EventInterceptorClass() {
@@ -21,7 +21,7 @@ public class EventInterceptorClass
   }
 
   public static class Proxy<D extends EventInterceptor> extends LuaInstance<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
     }
 

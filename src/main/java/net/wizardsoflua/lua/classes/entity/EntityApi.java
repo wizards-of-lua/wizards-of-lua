@@ -23,7 +23,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.lua.classes.LuaClassApi;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 
 /**
  * The Entity class is the base class of all entities that populate the world.
@@ -33,7 +33,7 @@ import net.wizardsoflua.lua.classes.ProxyingLuaClass;
 public class EntityApi<D extends Entity> extends LuaClassApi<D> {
   public static final String NAME = "Entity";
 
-  public EntityApi(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+  public EntityApi(DelegatorLuaClass<?, ?> luaClass, D delegate) {
     super(luaClass, delegate);
   }
 

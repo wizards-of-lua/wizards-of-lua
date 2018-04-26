@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
-import net.wizardsoflua.lua.classes.ProxyingLuaClass;
+import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 
 @DeclareLuaClass(name = MaterialClass.NAME)
@@ -67,7 +67,7 @@ public class MaterialClass
   }
 
   public static class Proxy<D extends Material> extends LuaInstance<D> {
-    public Proxy(ProxyingLuaClass<?, ?> luaClass, D delegate) {
+    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
       super(luaClass, delegate);
       addImmutable("blocksLight", delegate.blocksLight());
       addImmutable("blocksMovement", delegate.blocksMovement());
