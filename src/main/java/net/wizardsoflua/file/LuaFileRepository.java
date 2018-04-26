@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.config.RestApiConfig;
 
-public class LuaFileRegistry {
+public class LuaFileRepository {
 
   public interface Context {
     File getPlayerLibDir(UUID playerId);
@@ -34,7 +34,7 @@ public class LuaFileRegistry {
   private final Crypto crypto = new Crypto();
   private final Context context;
 
-  public LuaFileRegistry(Context context) {
+  public LuaFileRepository(Context context) {
     this.context = context;
   }
 
@@ -291,11 +291,11 @@ public class LuaFileRegistry {
   }
 
   public String getFileReferenceFor(EntityPlayer player, String filepath) {
-    return player.getUniqueID().toString() + "/" + filepath;
+    return player.getUniqueID().toString() + "/" + filepath.replace('\\', '/');
   }
 
   public String getSharedFileReferenceFor(String filepath) {
-    return "shared" + "/" + filepath;
+    return "shared" + "/" + filepath.replace('\\', '/');
   }
 
   private String getFilepathFor(String fileReference) {

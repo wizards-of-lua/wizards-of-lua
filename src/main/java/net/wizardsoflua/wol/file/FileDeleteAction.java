@@ -31,7 +31,7 @@ public class FileDeleteAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      List<String> files = wol.getFileRegistry().getLuaFilenames(player);
+      List<String> files = wol.getFileRepository().getLuaFilenames(player);
       return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
     }
     return Collections.emptyList();
@@ -44,7 +44,7 @@ public class FileDeleteAction extends MenuEntry implements CommandAction {
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
       try {
-        wol.getFileRegistry().deleteFile(player, name);
+        wol.getFileRepository().deleteFile(player, name);
       } catch (IllegalArgumentException e) {
         throw new CommandException(e.getMessage());
       }

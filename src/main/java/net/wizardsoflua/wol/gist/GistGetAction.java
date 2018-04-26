@@ -65,8 +65,8 @@ public class GistGetAction extends MenuEntry implements CommandAction {
       for (GistFile gistFile : files) {
         FileRef fileReference = toFileReference(player, directory, gistFile);
         String content = gistFile.content;
-        boolean existed = wol.getFileRegistry().exists(fileReference.fullPath);
-        wol.getFileRegistry().saveLuaFile(fileReference.fullPath, content);
+        boolean existed = wol.getFileRepository().exists(fileReference.fullPath);
+        wol.getFileRepository().saveLuaFile(fileReference.fullPath, content);
         String action = existed ? "updated" : "created";
         WolAnnouncementMessage message =
             new WolAnnouncementMessage(fileReference.localPath + " " + action + ".");
@@ -110,9 +110,9 @@ public class GistGetAction extends MenuEntry implements CommandAction {
     String localPath = directory == null ? gistFile.filename : directory + "/" + gistFile.filename;
     switch (section) {
       case PERSONAL:
-        return new FileRef(localPath, wol.getFileRegistry().getFileReferenceFor(owner, localPath));
+        return new FileRef(localPath, wol.getFileRepository().getFileReferenceFor(owner, localPath));
       case SHARED:
-        return new FileRef(localPath, wol.getFileRegistry().getSharedFileReferenceFor(localPath));
+        return new FileRef(localPath, wol.getFileRepository().getSharedFileReferenceFor(localPath));
       default:
         throw new IllegalStateException("Unexpected section: " + section);
     }

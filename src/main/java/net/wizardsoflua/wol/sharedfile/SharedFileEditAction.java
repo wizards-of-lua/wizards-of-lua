@@ -29,7 +29,7 @@ public class SharedFileEditAction extends MenuEntry implements CommandAction {
       Deque<String> argList, BlockPos targetPos) {
     String name = argList.poll();
 
-    List<String> files = wol.getFileRegistry().getSharedLuaFilenames();
+    List<String> files = wol.getFileRepository().getSharedLuaFilenames();
     return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
   }
 
@@ -39,7 +39,7 @@ public class SharedFileEditAction extends MenuEntry implements CommandAction {
 
     URL url;
     try {
-      url = wol.getFileRegistry().getSharedFileEditURL(name);
+      url = wol.getFileRepository().getSharedFileEditURL(name);
     } catch (IllegalArgumentException e) {
       throw new CommandException(e.getMessage());
     }

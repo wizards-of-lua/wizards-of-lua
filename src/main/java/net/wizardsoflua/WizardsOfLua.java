@@ -38,7 +38,7 @@ import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.file.LuaFile;
-import net.wizardsoflua.file.LuaFileRegistry;
+import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
@@ -81,7 +81,7 @@ public class WizardsOfLua {
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
   private Profiles profiles;
-  private LuaFileRegistry fileRegistry;
+  private LuaFileRepository fileRepository;
   private WolRestApiServer restApiServer;
 
   private MinecraftServer server;
@@ -237,7 +237,7 @@ public class WizardsOfLua {
         return LuaClassLoader.getLuaClassNameOf(event.getClass());
       }
     });
-    fileRegistry = new LuaFileRegistry(new LuaFileRegistry.Context() {
+    fileRepository = new LuaFileRepository(new LuaFileRepository.Context() {
       @Override
       public File getPlayerLibDir(UUID playerId) {
         return getConfig().getOrCreateWizardConfig(playerId).getLibDir();
@@ -267,7 +267,7 @@ public class WizardsOfLua {
     restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
       @Override
       public LuaFile getLuaFileByReference(String fileReference) {
-        return getFileRegistry().loadLuaFile(fileReference);
+        return getFileRepository().loadLuaFile(fileReference);
       }
 
       @Override
@@ -277,12 +277,12 @@ public class WizardsOfLua {
 
       @Override
       public void saveLuaFileByReference(String fileReference, String content) {
-        getFileRegistry().saveLuaFile(fileReference, content);
+        getFileRepository().saveLuaFile(fileReference, content);
       }
 
       @Override
       public boolean isValidLoginToken(UUID playerId, String token) {
-        return getFileRegistry().isValidLoginToken(playerId, token);
+        return getFileRepository().isValidLoginToken(playerId, token);
       }
 
     });
@@ -363,8 +363,8 @@ public class WizardsOfLua {
     luaFunctionCache.clear();
   }
 
-  public LuaFileRegistry getFileRegistry() {
-    return fileRegistry;
+  public LuaFileRepository getFileRepository() {
+    return fileRepository;
   }
 
   public WolRestApiServer getRestServer() {

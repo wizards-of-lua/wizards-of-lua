@@ -35,7 +35,7 @@ public class FileEditAction extends MenuEntry implements CommandAction {
     Entity entity = sender.getCommandSenderEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      List<String> files = wol.getFileRegistry().getLuaFilenames(player);
+      List<String> files = wol.getFileRepository().getLuaFilenames(player);
       return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
     }
     return Collections.emptyList();
@@ -50,7 +50,7 @@ public class FileEditAction extends MenuEntry implements CommandAction {
       EntityPlayer player = (EntityPlayer) entity;
       URL url;
       try {
-        url = wol.getFileRegistry().getFileEditURL(player, name);
+        url = wol.getFileRepository().getFileEditURL(player, name);
       } catch (IllegalArgumentException e) {
         throw new CommandException(e.getMessage());
       }

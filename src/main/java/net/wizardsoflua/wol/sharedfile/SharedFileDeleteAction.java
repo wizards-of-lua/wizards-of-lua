@@ -26,7 +26,7 @@ public class SharedFileDeleteAction extends MenuEntry implements CommandAction {
       Deque<String> argList, BlockPos targetPos) {
     String name = argList.poll();
 
-    List<String> files = wol.getFileRegistry().getSharedLuaFilenames();
+    List<String> files = wol.getFileRepository().getSharedLuaFilenames();
     return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
   }
 
@@ -35,7 +35,7 @@ public class SharedFileDeleteAction extends MenuEntry implements CommandAction {
     String name = argList.poll();
 
     try {
-      wol.getFileRegistry().deleteSharedFile(name);
+      wol.getFileRepository().deleteSharedFile(name);
     } catch (IllegalArgumentException e) {
       throw new CommandException(e.getMessage());
     }
