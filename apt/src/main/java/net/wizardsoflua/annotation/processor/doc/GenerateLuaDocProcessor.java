@@ -44,7 +44,7 @@ import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
 
-@AutoService(Processor.class)
+//@AutoService(Processor.class)
 public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   private @Nullable Map<String, String> luaClassNames;
 

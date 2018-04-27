@@ -120,7 +120,8 @@ public class LuaDocGenerator {
         String javaName = typeElement.getQualifiedName().toString();
         String luaName = luaClassNames.get(javaName);
         if (luaName == null) {
-          CharSequence msg = "Could not determine the lua name of " + javaName;
+          CharSequence msg = "Could not determine the lua name of " + javaName + " at "
+              + annotatedElement + " of " + annotatedElement.getEnclosingElement();
           throw new ProcessingException(msg, annotatedElement);
         }
         return toReference(luaName);
