@@ -44,11 +44,23 @@ public class SpellEntityFactory {
   }
 
   private ICommandSender getOwner(ICommandSender sender) {
-    Entity entity = sender.getCommandSenderEntity();
-    if (entity instanceof SpellEntity) {
-      return ((SpellEntity) entity).getOwner();
+//    Entity entity = sender.getCommandSenderEntity();
+//    if (entity instanceof SpellEntity) {
+//      return ((SpellEntity) entity).getOwner();
+//    }
+    if ( isSpell(sender)) {
+      return getSpellOwner(sender);
     }
     return sender;
+  }
+
+  private boolean isSpell(ICommandSender sender) {
+    return sender instanceof SpellEntity;
+  }
+  
+  private ICommandSender getSpellOwner(ICommandSender sender) {
+    SpellEntity spell = (SpellEntity)sender;
+    return spell.getOwner();
   }
 
   private PositionAndRotation getPositionAndRotation(ICommandSender sender) {
@@ -90,8 +102,10 @@ public class SpellEntityFactory {
       float rotationYaw = SpellUtil.getRotationYaw(e.getHorizontalFacing());
       float rotationPitch = 0;
       return new PositionAndRotation(pos, rotationYaw, rotationPitch);
-    } else if (entity instanceof SpellEntity) {
-      return ((SpellEntity) entity).getPositionAndRotation();
+//    } else if (entity instanceof SpellEntity) {
+//      return ((SpellEntity) entity).getPositionAndRotation();
+    } else if ( isSpell(sender)) {
+      return ((SpellEntity)sender).getPositionAndRotation();
     } else {
       throw new IllegalArgumentException(
           format("Unexpected command sender entity: %s", entity.getClass().getName()));

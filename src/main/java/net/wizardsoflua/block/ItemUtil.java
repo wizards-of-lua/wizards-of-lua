@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -14,6 +15,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class ItemUtil {
 
@@ -36,6 +39,26 @@ public class ItemUtil {
       return stack;
     } else {
       return storeTEInStack(stack, nbt);
+    }
+  }
+
+  @Nullable
+  public static EntityItem dropItem(World world, Vec3d pos, Item item, int amount) {
+    return dropItem(world, pos, new ItemStack(item, amount, 0));
+  }
+
+  /**
+   * copied from net.minecraft.entity.Entity.entityDropItem(ItemStack, float)
+   */
+  @Nullable
+  public static EntityItem dropItem(World world, Vec3d pos, ItemStack stack) {
+    if (stack.isEmpty()) {
+      return null;
+    } else {
+      EntityItem result = new EntityItem(world, pos.x, pos.y, pos.z, stack);
+      result.setDefaultPickupDelay();
+      world.spawnEntity(result);
+      return result;
     }
   }
 

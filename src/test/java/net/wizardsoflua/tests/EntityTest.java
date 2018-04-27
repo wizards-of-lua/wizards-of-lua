@@ -23,9 +23,14 @@ public class EntityTest extends WolTestBase {
   @Test
   public void test_nbt_is_not_nil() throws Exception {
     // Given:
+    BlockPos pos = mc().getWorldSpawnPoint();
 
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
+        pos.getY(), pos.getZ());
+    mc().clearEvents();
+    
     // When:
-    mc().executeCommand("/lua print(spell.nbt~=nil)");
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.nbt~=nil)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -36,11 +41,15 @@ public class EntityTest extends WolTestBase {
   @Test
   public void test_nbt_pos_is_readable() throws Exception {
     // Given:
-    Vec3d pos = new Vec3d(1, 2, 3);
+    Vec3d pos = new Vec3d(4.5, 5, 2.3);
     String expected = String.format("{ %s, %s, %s }", pos.x, pos.y, pos.z);
-    // When:
-    mc().executeCommand("/lua spell.pos=Vec3(%s,%s,%s); print(str(spell.nbt.Pos))", pos.x, pos.y,
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.x, pos.y,
         pos.z);
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(str(p.nbt.Pos))");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -51,9 +60,14 @@ public class EntityTest extends WolTestBase {
   @Test
   public void test_nbt_is_not_writable() throws Exception {
     // Given:
+    BlockPos pos = mc().getWorldSpawnPoint();
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
+        pos.getY(), pos.getZ());
+    mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua spell.nbt = {};");
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; p.nbt = {};");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -68,10 +82,15 @@ public class EntityTest extends WolTestBase {
     Vec3d posA = new Vec3d(1, 2, 3);
     Vec3d posB = new Vec3d(5, 6, 7);
     String expected = format(posB);
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", posA.x,
+        posA.y, posA.z);
+    mc().clearEvents();
+
     // When:
     mc().executeCommand(
-        "/lua spell.pos=Vec3(%s,%s,%s); spell:putNbt({Pos={%s, %s, %s}}); print(spell.pos)", posA.x,
-        posA.y, posA.z, posB.x, posB.y, posB.z);
+        "/lua p=Entities.find('@e[name=testpig]')[1];p:putNbt({Pos={%s, %s, %s}}); print(p.pos)",
+        posB.x, posB.y, posB.z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);

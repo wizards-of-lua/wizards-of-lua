@@ -13,13 +13,10 @@ import net.wizardsoflua.block.LiveWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
-import net.wizardsoflua.lua.classes.entity.EntityApi;
-import net.wizardsoflua.lua.classes.entity.EntityClass;
-import net.wizardsoflua.lua.classes.entity.EntityInstance;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
 
-@DeclareLuaClass(name = SpellClass.NAME, superClass = EntityClass.class)
+@DeclareLuaClass(name = SpellClass.NAME, superClass = VirtualEntityClass.class)
 public class SpellClass
     extends InstanceCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String NAME = "Spell";
@@ -31,11 +28,12 @@ public class SpellClass
 
   @Override
   public Proxy<SpellEntity> toLua(SpellEntity delegate) {
-    return new Proxy<>(new EntityApi<>(this, delegate));
+    return new Proxy<>(new VirtualEntityApi<>(this, delegate));
   }
 
-  public static class Proxy<D extends SpellEntity> extends EntityInstance<EntityApi<D>, D> {
-    public Proxy(EntityApi<D> api) {
+  public static class Proxy<D extends SpellEntity>
+      extends VirtualEntityInstance<VirtualEntityApi<D>, D> {
+    public Proxy(VirtualEntityApi<D> api) {
       super(api);
       addReadOnly("owner", this::getOwner);
       add("block", this::getBlock, this::setBlock);
@@ -71,26 +69,6 @@ public class SpellClass
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       block.setBlock(world, pos);
     }
-
-    // public ItemStack getItemFromBlock() {
-    // BlockPos pos = new BlockPos(delegate.getPositionVector());
-    // IBlockState blockState = delegate.getEntityWorld().getBlockState(pos);
-    // World world = delegate.getEntityWorld();
-    // NBTTagCompound nbt = getNbt(world.getTileEntity(pos));
-    // return ItemUtil.getItemStackFromBlock(blockState, nbt);
-    // }
-    //
-    // private @Nullable NBTTagCompound getNbt(@Nullable TileEntity te) {
-    // if (te != null) {
-    // NBTTagCompound nbt = new NBTTagCompound();
-    // te.writeToNBT(nbt);
-    // nbt.removeTag("x");
-    // nbt.removeTag("y");
-    // nbt.removeTag("z");
-    // return nbt;
-    // }
-    // return null;
-    // }
 
     public void setVisible(Object luaObj) {
       boolean value = getConverters().toJava(Boolean.class, luaObj, "visible");

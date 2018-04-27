@@ -52,8 +52,7 @@ public class LuaCommand extends CommandBase {
       throws CommandException {
     try {
       World world = sender.getEntityWorld();
-      SpellEntity spell = wol.getSpellEntityFactory().create(world, sender, concat(args));
-      world.spawnEntity(spell);
+      wol.getSpellEntityFactory().create(world, sender, concat(args));
     } catch (Throwable t) {
       handleException(t, sender);
     }

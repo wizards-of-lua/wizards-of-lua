@@ -6,7 +6,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,21 +15,23 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.view.ViewFactory;
 
-public class SpellEntity extends Entity {
+public class SpellEntity extends VirtualEntity {
   public static final String NAME = "Spell";
 
   private ICommandSender owner;
   private SpellProgram program;
   private long sid; // immutable spell id
-  private ChunkLoaderTicketSupport chunkLoaderTicketSupport;
+  private ServerOnlyEntityChunkLoaderTicketSupport chunkLoaderTicketSupport;
   private boolean visible = false;
   private Table data = new DefaultTable();
+
+  public int ticksExisted;
 
   public SpellEntity(World world) {
     // Used by MC when loading this entity from persistent data
     super(checkNotNull(world, "world==null!"));
   }
-
+  
   public SpellEntity(World world, ICommandSender owner, SpellProgram program,
       PositionAndRotation posRot, long sid) {
     this(world);
@@ -39,21 +40,24 @@ public class SpellEntity extends Entity {
     this.sid = sid;
     setPositionAndRotation(posRot);
     String name = SpellEntity.NAME + "-" + sid;
-    setCustomNameTag(name);
-    chunkLoaderTicketSupport = new ChunkLoaderTicketSupport(WizardsOfLua.instance, this);
+    setName(name);
+    chunkLoaderTicketSupport =
+        new ServerOnlyEntityChunkLoaderTicketSupport(WizardsOfLua.instance, this);
     chunkLoaderTicketSupport.request();
   }
 
-  @Override
-  public NBTTagCompound serializeNBT() {
-    NBTTagCompound ret = new NBTTagCompound();
-    // ret.setString("id", this.getEntityString());
-    return writeToNBT(ret);
-  }
+  // @Override
+  // public NBTTagCompound serializeNBT() {
+  // NBTTagCompound ret = new NBTTagCompound();
+  // // ret.setString("id", this.getEntityString());
+  // return writeToNBT(ret);
+  // }
 
   public PositionAndRotation getPositionAndRotation() {
     return new PositionAndRotation(getPositionVector(), rotationYaw, rotationPitch);
   }
+
+
 
   private void setPositionAndRotation(PositionAndRotation posRot) {
     Vec3d pos = posRot.getPos();
@@ -61,6 +65,8 @@ public class SpellEntity extends Entity {
     float pitch = posRot.getRotationPitch();
     setPositionAndRotation(pos.x, pos.y, pos.z, yaw, pitch);
   }
+
+
 
   public ICommandSender getOwner() {
     return owner;
@@ -94,14 +100,14 @@ public class SpellEntity extends Entity {
     return viewer.getView(data, provider);
   }
 
-  @Override
-  protected void readEntityFromNBT(NBTTagCompound compound) {}
-
-  @Override
-  protected void writeEntityToNBT(NBTTagCompound compound) {}
-
-  @Override
-  protected void entityInit() {}
+  // @Override
+  // protected void readEntityFromNBT(NBTTagCompound compound) {}
+  //
+  // @Override
+  // protected void writeEntityToNBT(NBTTagCompound compound) {}
+  //
+  // @Override
+  // protected void entityInit() {}
 
   @Override
   public void setPosition(double x, double y, double z) {
@@ -109,11 +115,6 @@ public class SpellEntity extends Entity {
       chunkLoaderTicketSupport.updatePosition();
     }
     super.setPosition(x, y, z);
-  }
-
-  @Override
-  public Vec3d getLookVec() {
-    return getLook(1.0F);
   }
 
   @Override
@@ -131,14 +132,14 @@ public class SpellEntity extends Entity {
     if (visible) {
       SpellAuraFX.spawnParticle(this);
     }
-    applyMotion();
+    //applyMotion();
   }
 
-  private void applyMotion() {
-    if (motionX != 0 || motionY != 0 || motionZ != 0) {
-      setPositionAndUpdate(posX + motionX, posY + motionY, posZ + motionZ);
-    }
-  }
+//  private void applyMotion() {
+//    if (motionX != 0 || motionY != 0 || motionZ != 0) {
+//      setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+//    }
+//  }
 
   @Override
   public void setDead() {

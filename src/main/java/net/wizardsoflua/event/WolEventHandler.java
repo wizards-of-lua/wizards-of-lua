@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.module.events.EventsModule;
@@ -40,11 +41,22 @@ public class WolEventHandler {
     if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
       return;
     }
+    if ( event instanceof ServerTickEvent) {
+      onServerTickEvent((ServerTickEvent)event);
+    }
     if (context.isSupportedLuaEvent(event)) {
       for (SpellEntity spellEntity : context.getSpells()) {
         String eventName = context.getEventName(event);
         EventsModule events = spellEntity.getProgram().getEvents();
         events.onEvent(eventName, event);
+      }
+    }
+  }
+
+  private void onServerTickEvent(ServerTickEvent event) {
+    for (SpellEntity spellEntity : context.getSpells()) {
+      if ( spellEntity.isAlive()) {
+        spellEntity.onUpdate();
       }
     }
   }
