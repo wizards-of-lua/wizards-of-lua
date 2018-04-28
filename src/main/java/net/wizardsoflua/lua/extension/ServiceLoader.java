@@ -10,20 +10,26 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Charsets;
 
 public class ServiceLoader {
   private static final String PREFIX = "META-INF/services/";
 
-  public static <S> Set<Class<? extends S>> load(Class<S> service) {
+  public static <S> Set<Class<? extends S>> load(Logger logger, Class<S> service) {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    return load(service, cl);
+    return load(logger, service, cl);
   }
 
-  public static <S> Set<Class<? extends S>> load(Class<S> service, ClassLoader classLoader) {
+  public static <S> Set<Class<? extends S>> load(Logger logger, Class<S> service,
+      ClassLoader classLoader) {
     requireNonNull(service, "service == null!");
     requireNonNull(classLoader, "classLoader == null!");
+    logger
+        .debug("Searching for services implementing the " + service.getSimpleName() + " interface");
     Set<Class<? extends S>> result = new HashSet<>();
     String name = PREFIX + service.getName();
     try {
@@ -35,6 +41,8 @@ public class ServiceLoader {
     } catch (IOException ex) {
       throw fail(service, "Error reading configuration file", ex);
     }
+    logger.debug("Found " + result.size() + " services: "
+        + result.stream().map(s -> s.getName()).collect(Collectors.joining(", ")));
     return result;
   }
 

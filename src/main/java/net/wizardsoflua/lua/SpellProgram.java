@@ -10,6 +10,8 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.cache.Cache;
 
 import net.minecraft.command.ICommandSender;
@@ -127,7 +129,7 @@ public class SpellProgram {
   private final Context context;
 
   SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
-      String defaultLuaPath, World world, Context context) {
+      String defaultLuaPath, World world, Context context, Logger logger) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
@@ -151,8 +153,8 @@ public class SpellProgram {
       }
     });
     injectionScope = createInjectionScope();
-    ServiceLoader.load(LuaConverter.class).forEach(this::registerLuaConverter);
-    ServiceLoader.load(SpellExtension.class).forEach(injectionScope::getInstance);
+    ServiceLoader.load(logger, LuaConverter.class).forEach(this::registerLuaConverter);
+    ServiceLoader.load(logger, SpellExtension.class).forEach(injectionScope::getInstance);
     injectionScope.injectMembers(luaClassLoader);
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {

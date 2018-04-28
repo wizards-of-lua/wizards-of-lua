@@ -138,7 +138,7 @@ public class WizardsOfLua {
         return result;
       }
     });
-    spellProgramFactory = new SpellProgramFactory(new SpellProgramFactory.Context() {
+    spellProgramFactory = new SpellProgramFactory(logger, new SpellProgramFactory.Context() {
       @Override
       public Clock getClock() {
         return clock;
