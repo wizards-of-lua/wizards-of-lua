@@ -130,8 +130,8 @@ jar {
   from configurations.embed.collect {
     it.isDirectory() ? it : zipTree(it)
   }
-  exclude('META-INF/**')
-  exclude('LICENSE.txt')
+  //exclude('META-INF/**')
+  //exclude('LICENSE.txt')  
 }
 
 processResources {
