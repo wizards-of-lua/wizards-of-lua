@@ -25,8 +25,6 @@ public class SpellEntity extends VirtualEntity {
   private boolean visible = false;
   private Table data = new DefaultTable();
 
-  public int ticksExisted;
-
   public SpellEntity(World world) {
     // Used by MC when loading this entity from persistent data
     super(checkNotNull(world, "world==null!"));

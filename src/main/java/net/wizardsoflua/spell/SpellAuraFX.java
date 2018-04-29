@@ -25,7 +25,7 @@ public class SpellAuraFX {
   private static final int[] PARTICLE_ARGS = new int[0];
 
   public static void spawnParticle(SpellEntity spell) {
-    int time = spell.ticksExisted;
+    int time = spell.getAge();
     if (time % 2 > 0) {
       return;
     }

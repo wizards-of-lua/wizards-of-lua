@@ -42,6 +42,8 @@ public class VirtualEntity implements ICommandSender {
 
   private boolean alive;
   private int dimension;
+  
+  private int age;
 
   private final Set<String> tags = new HashSet<>();
 
@@ -63,6 +65,10 @@ public class VirtualEntity implements ICommandSender {
 
   public void setName(String name) {
     this.name = name;
+  }
+  
+  public int getAge() {
+    return age;
   }
 
   public void setDead() {
@@ -193,6 +199,7 @@ public class VirtualEntity implements ICommandSender {
   }
 
   public void onUpdate() {
+    age++;
     // TODO check if this is the correct speed
     posX += motionX;
     posY += motionY;
