@@ -114,7 +114,7 @@ Here is the function for this:
 ```lua
 function rocketThrowerObserver()
   spell.name = "rocket-thrower-observer"
-  local q = Events.connect("SwingArmEvent")
+  local q = Events.collect("SwingArmEvent")
   while true do
     local e = q:next()
     if e.item.displayName == "Rocket Thrower" then

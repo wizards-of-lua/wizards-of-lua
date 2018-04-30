@@ -89,6 +89,17 @@ properties:
     access: r
     description: "This is true, if this entity is alive, false otherwise.
     "
+  - name: sneaking
+    type: boolean
+    access: r
+    description: |
+        The 'sneaking' property is true whenever this entity is sneaking.
+
+        #### Example
+        Making the spell visible whenever its owner is sneaking.
+        ```lua
+        while true do spell.visible=spell.owner.sneaking; sleep(1); end
+        ```
 functions:
   - name: move
     parameters: direction, distance

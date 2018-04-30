@@ -29,12 +29,3 @@ for _,e in pairs(found) do
   print(e.name)
 end
 ```
-
-#### Example
-Printing the spell ids of all running spells.
-```lua
-found = Entities.find("@e[type=wol:spell]")
-for _,spell in pairs(found) do
-  print(spell.sid)
-end
-```

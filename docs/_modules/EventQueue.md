@@ -9,17 +9,17 @@ properties:
     type: table
     access: r
     description: "These are the [names](/modules/Event/#name) of all events
-    this queue is [connected](/modules/Events/#connect) to.
+    this queue is [collecting](/modules/Events/#collect).
     "
 functions:
-  - name: disconnect
+  - name: stop
     parameters:
     results: nil
-    description: "The 'disconnect' function disconnects this queue from the event source so that
+    description: "The 'stop' function disconnects this queue from the event source so that
     it will not collect any events anymore.
     "
     examples:
-      - url: EventQueue/disconnect.md
+      - url: EventQueue/stop.md
   - name: isEmpty
     parameters:
     results: boolean

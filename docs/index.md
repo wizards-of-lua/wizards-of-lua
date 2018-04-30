@@ -11,14 +11,20 @@ modification that gives players the power to casts spells written in Lua.
 [Read more about the features of the Wizards of Lua mod.](/features)
 
 -----
-### We are Looking for Beta testers!
+### Join Us on our Public Server!
 
-We want to invite you to join our Beta test team at our public test server at <tt>5.35.245.30</tt>.
-On this server you can play with the mod without having to install it yourself.
+We want to invite you to join our public server at <tt>5.35.245.30</tt>.
 
-If you are interested to help us with Beta tests, just [ask for operator privileges on our Discord channel]({{ site.discord_url }}),
-since you need to be OP to cast spells.
+On this server we are running the development version of our upcoming Red Magic mod,
+which is completely powered by Wizards of Lua magic.
+
 We would be grateful for any bug reports and feedback on the project.
+
+-----
+### We are Looking for Beta Testers!
+
+If you are interested to help us with Beta tests, just [tell us on our Discord channel]({{ site.discord_url }}),
+so that we can invite you to our beta servers.
 
 -----
 

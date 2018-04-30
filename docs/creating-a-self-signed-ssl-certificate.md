@@ -24,8 +24,10 @@ keytool -genkey -keystore server-keystore.jks -alias server_alias \
         -keyalg RSA -sigalg SHA256withRSA -keysize 2048 -validity 365 \
         -storetype pkcs12
 ```
-* When prompted for passwords, just choose some and store them properly in your mind.
-You will need to write them into the server's config later on.
+* When prompted for a password, just choose one and store it properly in your mind.
+You will need to write it into the server's config later on.
+Please note that different store and key passwords are not supported for PKCS12 keystores.
+So you will use the same password for both.
 * This will generate a new file called ```server-keystore.jks``` in the current directory.
 
 ### Adding the SSL-Certificate to your Minecraft Server
@@ -46,7 +48,7 @@ RestApi {
   ...
 ```
 Please replace *example.com* with the hostname or the numerical IP address of your server.
-And replace the values for *keystorePassword* and *keyPassword* with those you chose when
+And replace the values for *keystorePassword* and *keyPassword* with the value you chose when
 you used the keytool.
 
 * Now restart the Minecraft server

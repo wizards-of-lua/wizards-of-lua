@@ -32,7 +32,7 @@ But first, let's understand, what a typical observer spell is doing,
 for example, by looking at the rocket thrower observer:
 ```lua
 function rocketThrowerObserver()
-  local q = Events.connect("SwingArmEvent")
+  local q = Events.collect("SwingArmEvent")
   while true do
     local e = q:next()
     if e.item.displayName == "Rocket Thrower" then
@@ -97,7 +97,7 @@ the item.
 It looks like this:
 ```lua
 function magicWandObserver()
-  local q=Events.connect("SwingArmEvent")
+  local q=Events.collect("SwingArmEvent")
   while true do
     local   e = q:next()
     local nbt = e.item.nbt

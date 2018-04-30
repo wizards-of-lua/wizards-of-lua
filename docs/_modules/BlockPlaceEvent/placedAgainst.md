@@ -1,7 +1,7 @@
 #### Example
 Transform all torches that are placed against a redstone block into redstone torches.
 ```lua
-local queue = Events.connect("BlockPlaceEvent")
+local queue = Events.collect("BlockPlaceEvent")
 while true do
   local event = queue:next()
   if event.block.name == 'torch' and event.placedAgainst.name == 'redstone_block' then

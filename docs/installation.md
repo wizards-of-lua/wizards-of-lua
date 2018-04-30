@@ -12,24 +12,24 @@ However, if you want to play Wizards of Lua in singleplayer, you need to modify
 the client as well.
 
 ### Requirements
-* The Wizards of Lua modification requires Minecraft 1.11.2 (Java Edition)
-* and Forge 13.20.1.*
+* The Wizards of Lua modification requires Minecraft 1.12.2 (Java Edition)
+* and Forge 14.23.n.n
 
 ### Download
-* [Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files)
+* [Wizards of Lua from Curse Forge](https://minecraft.curseforge.com/projects/wizards-of-lua/files)
 
 ### Installing Wizards of Lua on a Server
-* [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.11.2.html) 13.20.1.2454 (or later)
-* Copy <tt>forge-1.11.2-13.20.1.2454-installer.jar</tt> into a new and empty directory
+* [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html) 14.23.3.2655 (or later)
+* Copy <tt>forge-1.12.2-14.23.3.2655-installer.jar</tt> into a new and empty directory
 where you want to run the server from
 * Change into that directory and run
 ```bash
-java -jar forge-1.11.2-13.20.1.2454-installer.jar --installServer
+java -jar forge-1.12.2-14.23.3.2655-installer.jar --installServer
 ```
 This will download additional files from the internet and create the server jar file
 * Run vanilla Minecraft with
 ```bash
-java -Xms1024M -jar minecraft_server.1.11.2.jar nogui
+java -Xms1024M -jar minecraft_server.1.12.2.jar nogui
 ```
 This will try to start the server.
 But since you need to sign the eula, the program aborts shorty afterwards with something like this:
@@ -51,11 +51,15 @@ to
 eula=true
 ```
 and save the file.
+* Create the mods directory
+```bash
+mkdir mods
+```
 * Now download the [latest version of Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files) and copy it into the <tt>mods</tt>
 directory of your server directory.
 * Now run Minecraft Forge with
 ```bash
-java -Xms1024M -jar forge-1.11.2-13.20.1.2454-universal.jar nogui
+java -Xms1024M -jar forge-1.12.2-14.23.3.2655-universal.jar nogui
 ```
 This will start the modded version of Minecraft with Forge and Wizards Of Lua activated.
 Now you can execute Lua commands.
@@ -71,6 +75,9 @@ If everything works fine you should receive something like the following output:
 * Now start you Minecraft client and log into your new server
 * Don't forget to give yourself operator priviliges
 
+If you plan to allow public access to your server, you may want to secure the built-in
+web-based Lua editor by using SSL and a [self-signed certificate](/creating-a-self-signed-ssl-certificate.html).
+
 ### Installing Wizards of Lua on a Client
 Please note that installing Wizards of Lua on the client is **not** required if
 you only plan to play it on the server.
@@ -82,7 +89,7 @@ If not, [get Minecraft](https://minecraft.net/),
 [get Java](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html),
 install both and come back here.
 
-* [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.11.2.html) 13.20.1.2454 (or later)
+* [Download Forge Installer](http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html) 14.23.3.2655 (or later)
 * Start the Forge Installer by double-clicking on the file
 * Choose "Install client" option and click "OK"
 * Now download the [latest version of Wizards of Lua](https://minecraft.curseforge.com/projects/wizards-of-lua/files)

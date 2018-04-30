@@ -2,7 +2,7 @@
 Rewarding a player who died in lava with a brand new lava bucket.
 ```lua
 local causes = {}
-local queue = Events.connect("LivingDeathEvent","PlayerRespawnEvent")
+local queue = Events.collect("LivingDeathEvent","PlayerRespawnEvent")
 while true do
   local event = queue:next()
   if event.name == "LivingDeathEvent" and type(event.entity)=="Player" then

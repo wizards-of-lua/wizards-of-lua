@@ -1,7 +1,7 @@
 #### Example
 Echo the last chat message every 5 seconds.
 ```lua
-local queue = Events.connect("ChatEvent")
+local queue = Events.collect("ChatEvent")
 while true do
   local event = queue:latest()
   if event ~= nil then

@@ -2,7 +2,7 @@
 name: Spell
 subtitle: Aspects of an Active Spell
 type: class
-extends: Entity
+extends: VirtualEntity
 layout: module
 properties:
   - name: block
@@ -61,7 +61,7 @@ properties:
       Finding the (first) spell called 'rain-spell' and setting the item that is 'raining' down.
       ```lua
       local otherSpellName = 'rain-spell'
-      local otherSpell = Entities.find('@e[type=wol:spell,name='..otherSpellName..']')[1]
+      local otherSpell = Spells.find({name=otherSpellName})[1]
       otherSpell.data.item = Items.get('diamond_axe')
       ```
 functions:

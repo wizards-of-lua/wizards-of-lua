@@ -22,7 +22,7 @@ As a wizard, you will know how to execute the following great magical powers:
 * Breaking spells.
 * [Accessing and changing any block](/modules/Blocks) in the Minecraft world, including data values and NBT values.
 * [Querying](/modules/Entities) and manipulating [players](/modules/Player), [creatures](/modules/Entity), and [items](/modules/Items).
-* [Receiving](/modules/Events/#connect) in-game events like [left-click-block](/modules/LeftClickBlockEvent), [swing-arm](/modules/SwingArmEvent), and many others.
+* [Receiving](/modules/Events/#collect) in-game events like [left-click-block](/modules/LeftClickBlockEvent), [swing-arm](/modules/SwingArmEvent), and many others.
 * [Firing](/modules/Events/#fire) and handling [custom events](/modules/CustomEvent).
 * [Executing](/modules/Spell/#execute) any Minecraft command, even those added by other mods.
 * [Accessing](/tutorials/importing_lua_files/) self-made Lua modules from the server's file system.
