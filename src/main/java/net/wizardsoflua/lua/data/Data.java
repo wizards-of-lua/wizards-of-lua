@@ -78,7 +78,7 @@ public class Data {
       return result;
     }
     throw new IllegalArgumentException(String
-        .format("Can't transfer Lua object. Unsupported data type: %s", types.getTypename(luaObj)));
+        .format("Can't transfer Lua object. Unsupported data type: %s", types.type(luaObj)));
   }
 
   private static TableData transferTable(Table table, IdentityHashMap<Object, Object> copies,

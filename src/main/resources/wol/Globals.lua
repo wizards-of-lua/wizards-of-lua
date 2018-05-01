@@ -34,7 +34,7 @@ end
 -- Overwrite the type() function so that it can handle registered classes
 local type_ = type
 function type(obj)
-  local result = Types.getTypename(obj)
+  local result = Types.type(obj)
   return result or type_(obj)
 end
 

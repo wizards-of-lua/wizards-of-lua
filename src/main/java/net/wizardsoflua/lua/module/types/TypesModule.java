@@ -105,7 +105,7 @@ public class TypesModule extends LuaTableExtension {
   }
 
   @LuaFunction
-  public String getTypename(@Nullable Object object) {
+  public String type(@Nullable Object object) {
     if (object == null) {
       return NIL;
     }
