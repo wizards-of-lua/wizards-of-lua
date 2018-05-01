@@ -42,7 +42,7 @@ public class LuaFileRepository {
     try {
       Path playerLibDir = context.getPlayerLibDir(player.getUniqueID()).toPath();
       try (Stream<Path> files = Files.walk(playerLibDir, FileVisitOption.FOLLOW_LINKS)) {
-        return files.filter(p -> !Files.isDirectory(p))
+        return files.filter(p -> !Files.isDirectory(p)).filter(p->!isHidden(p))
             .map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
@@ -54,12 +54,21 @@ public class LuaFileRepository {
     try {
       Path sharedLibDir = context.getSharedLibDir().toPath();
       try (Stream<Path> files = Files.walk(sharedLibDir, FileVisitOption.FOLLOW_LINKS)) {
-        return files.filter(p -> !Files.isDirectory(p))
+        return files.filter(p -> !Files.isDirectory(p)).filter(p->!isHidden(p))
             .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+  
+  private boolean isHidden(Path path) {
+    for( Path elem:path) {
+      if ( elem.getFileName().toString().startsWith(".")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public URL getFileEditURL(EntityPlayer player, String filepath) throws IllegalArgumentException {
