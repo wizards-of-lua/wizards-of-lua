@@ -49,8 +49,8 @@ public class AboutMessage {
 
   public ITextComponent getTextComponent() {
     String message = String.format(
-        "%s, Version %s - " + "Please note that this is an early Alpha version!"
-            + " For sending suggestions and bug reports please visit ",
+        "%s, Version %s - " + "Please read the instructions!"
+            + " For instructions, or sending suggestions and bug reports please visit ",
         context.getName(), context.getVersion());
     WolAnnouncementMessage result = new WolAnnouncementMessage(message);
     result.appendSibling(newChatWithLinks(context.getUrl()));
