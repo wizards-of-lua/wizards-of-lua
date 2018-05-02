@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = PlayerRespawnEventClass.NAME, superClass = EventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = PlayerRespawnEventClass.NAME, superClass = EventClass.class)
 public class PlayerRespawnEventClass extends
     DelegatorLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Proxy<PlayerEvent.PlayerRespawnEvent>> {
   public static final String NAME = "PlayerRespawnEvent";

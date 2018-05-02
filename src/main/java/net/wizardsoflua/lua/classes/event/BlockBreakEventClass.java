@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraftforge.event.world.BlockEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = BlockBreakEventClass.NAME, superClass = BlockEventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = BlockBreakEventClass.NAME, superClass = BlockEventClass.class)
 public class BlockBreakEventClass extends
     DelegatorLuaClass<BlockEvent.BreakEvent, BlockBreakEventClass.Proxy<BlockEvent.BreakEvent>> {
   public static final String NAME = "BlockBreakEvent";

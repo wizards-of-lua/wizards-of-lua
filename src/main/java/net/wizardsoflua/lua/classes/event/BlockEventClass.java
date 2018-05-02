@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
@@ -7,8 +9,10 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.wizardsoflua.block.ImmutableWolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = BlockEventClass.NAME, superClass = EventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = BlockEventClass.NAME, superClass = EventClass.class)
 public class BlockEventClass
     extends DelegatorLuaClass<BlockEvent, BlockEventClass.Proxy<BlockEvent>> {
   public static final String NAME = "BlockEvent";

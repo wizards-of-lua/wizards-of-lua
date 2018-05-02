@@ -5,13 +5,17 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.block.material.Material;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = MaterialClass.NAME)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = MaterialClass.NAME)
 public class MaterialClass
     extends InstanceCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
   private static final Map<Material, String> NAMES = new IdentityHashMap<>();

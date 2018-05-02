@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraftforge.event.ServerChatEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = ChatEventClass.NAME, superClass = EventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = ChatEventClass.NAME, superClass = EventClass.class)
 public class ChatEventClass
     extends DelegatorLuaClass<ServerChatEvent, ChatEventClass.Proxy<ServerChatEvent>> {
   public static final String NAME = "ChatEvent";

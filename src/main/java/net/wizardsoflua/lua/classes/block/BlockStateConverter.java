@@ -5,7 +5,6 @@ import java.util.Collection;
 import com.google.auto.service.AutoService;
 
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;

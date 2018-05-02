@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.wizardsoflua.event.SwingArmEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = SwingArmEventClass.NAME, superClass = EventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = SwingArmEventClass.NAME, superClass = EventClass.class)
 public class SwingArmEventClass
     extends DelegatorLuaClass<SwingArmEvent, SwingArmEventClass.Proxy<SwingArmEvent>> {
   public static final String NAME = "SwingArmEvent";

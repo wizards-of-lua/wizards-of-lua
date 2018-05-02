@@ -2,6 +2,8 @@ package net.wizardsoflua.lua.classes.spell;
 
 import javax.annotation.Nullable;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -13,10 +15,12 @@ import net.wizardsoflua.block.LiveWolBlock;
 import net.wizardsoflua.block.WolBlock;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.spell.SpellEntity;
 
-@DeclareLuaClass(name = SpellClass.NAME, superClass = VirtualEntityClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = SpellClass.NAME, superClass = VirtualEntityClass.class)
 public class SpellClass
     extends InstanceCachingLuaClass<SpellEntity, SpellClass.Proxy<SpellEntity>> {
   public static final String NAME = "Spell";

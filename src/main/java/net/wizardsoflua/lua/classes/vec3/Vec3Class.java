@@ -1,13 +1,17 @@
 package net.wizardsoflua.lua.classes.vec3;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
-@DeclareLuaClass(name = Vec3Class.NAME)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = Vec3Class.NAME)
 public class Vec3Class extends JavaLuaClass<Vec3d, Table> {
   public static final String NAME = "Vec3";
 

@@ -9,6 +9,7 @@ import com.google.common.reflect.TypeToken;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
 /**
  * A {@link LuaClass} that represents a Java{@link Class} in Lua and can convert java instances to
@@ -16,7 +17,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
  *
  * @author Adrodoc55
  */
-public abstract class JavaLuaClass<J, L extends Table> extends LuaClass {
+public abstract class JavaLuaClass<J, L extends Table> extends LuaClass implements DeclaredLuaClass {
   public static String getNameOf(Class<? extends JavaLuaClass<?, ?>> luaClassClass) {
     DeclareLuaClass annotation = luaClassClass.getAnnotation(DeclareLuaClass.class);
     return annotation.name();

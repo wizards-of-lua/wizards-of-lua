@@ -1,13 +1,17 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
-@DeclareLuaClass(name = EventClass.NAME)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = EventClass.NAME)
 public class EventClass extends DelegatorLuaClass<Event, EventClass.Proxy<EventApi<Event>, Event>> {
   public static final String NAME = "Event";
 

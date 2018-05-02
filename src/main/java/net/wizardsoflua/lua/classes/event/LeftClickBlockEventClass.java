@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = LeftClickBlockEventClass.NAME, superClass = PlayerInteractEventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = LeftClickBlockEventClass.NAME, superClass = PlayerInteractEventClass.class)
 public class LeftClickBlockEventClass extends
     DelegatorLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Proxy<PlayerInteractEvent.LeftClickBlock>> {
   public static final String NAME = "LeftClickBlockEvent";

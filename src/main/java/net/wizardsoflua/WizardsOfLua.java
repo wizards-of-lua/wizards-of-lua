@@ -100,6 +100,7 @@ public class WizardsOfLua {
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) throws Exception {
     logger = event.getModLog();
+    LuaClassLoader.initialize(logger);
     config = WolConfig.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 

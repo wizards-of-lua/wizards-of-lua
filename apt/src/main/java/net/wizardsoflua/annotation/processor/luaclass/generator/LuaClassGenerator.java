@@ -15,6 +15,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Types;
 
+import com.google.auto.service.AutoService;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -23,6 +24,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.Utils;
 import net.wizardsoflua.annotation.processor.luaclass.model.LuaClassModel;
 import net.wizardsoflua.annotation.processor.model.FunctionModel;
@@ -49,6 +51,7 @@ public class LuaClassGenerator {
     TypeSpec.Builder luaClassType = classBuilder(model.getClassClassName())//
         .addAnnotation(GENERATED_ANNOTATION)//
         .addAnnotation(createDeclareLuaClassAnnotation())//
+        .addAnnotation(createAutoServiceAnnotation())//
         .addModifiers(Modifier.PUBLIC)//
         .superclass(createSuperclassTypeName())//
         .addMethod(createToLuaMethod())//
@@ -66,6 +69,12 @@ public class LuaClassGenerator {
     return AnnotationSpec.builder(DECLARE_LUA_CLASS)//
         .addMember("name", "$S", model.getName())//
         .addMember("superClass", "$T.class", model.getSuperClassName())//
+        .build();
+  }
+  
+  private AnnotationSpec createAutoServiceAnnotation() {
+    return AnnotationSpec.builder(AutoService.class)//
+        .addMember("value", "$T.class", Constants.DECLARED_LUA_CLASS)//
         .build();
   }
 

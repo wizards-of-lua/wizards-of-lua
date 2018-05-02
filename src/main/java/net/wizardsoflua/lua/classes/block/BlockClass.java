@@ -21,7 +21,8 @@
 //import net.wizardsoflua.lua.nbt.NbtConverter;
 //import net.wizardsoflua.lua.table.PatchedImmutableTable;
 //
-//@DeclareLuaClass(name = BlockClass.NAME)
+//@AutoService(DeclaredLuaClass.class)
+//@DeclareLuaClass (name = BlockClass.NAME)
 //public class BlockClass extends DelegatorLuaClass<WolBlock, BlockClass.Proxy<WolBlock>> {
 //  public static final String NAME = "Block";
 //

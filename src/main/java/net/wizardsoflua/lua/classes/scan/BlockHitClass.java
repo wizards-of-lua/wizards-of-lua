@@ -1,12 +1,16 @@
 package net.wizardsoflua.lua.classes.scan;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = BlockHitClass.NAME)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = BlockHitClass.NAME)
 public class BlockHitClass
     extends DelegatorLuaClass<RayTraceResult, BlockHitClass.Proxy<RayTraceResult>> {
   public static final String NAME = "BlockHit";

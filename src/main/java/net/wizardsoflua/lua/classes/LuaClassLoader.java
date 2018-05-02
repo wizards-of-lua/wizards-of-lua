@@ -1,27 +1,27 @@
 package net.wizardsoflua.lua.classes;
 
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.transform;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.wizardsoflua.lua.extension.ServiceLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.module.types.TypesModule;
@@ -31,30 +31,36 @@ import net.wizardsoflua.lua.view.ViewFactory;
 public class LuaClassLoader {
   private static final String CLASSES_PACKAGE = "net.wizardsoflua.lua.classes";
 
-  private static final ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES =
-      findJavaLuaClassClasses();
-  private static final ImmutableMap<Class<?>, Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASS_BY_JAVA_CLASS =
-      Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, new Function<Class<?>, Class<?>>() {
-        @Override // for some reason the JDK does not like our generics here so we use raw types
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        public Class<?> apply(Class<?> input) {
-          return JavaLuaClass.getJavaClassOf((Class) input);
-        }
-      });
+  public static void initialize(Logger logger) {
+    JAVA_LUA_CLASS_CLASSES = findJavaLuaClassClasses(logger);
+    JAVA_LUA_CLASS_CLASS_BY_JAVA_CLASS =
+        Maps.uniqueIndex(JAVA_LUA_CLASS_CLASSES, new Function<Class<?>, Class<?>>() {
+          @Override // for some reason the JDK does not like our generics here so we use raw types
+          @SuppressWarnings({"rawtypes", "unchecked"})
+          public Class<?> apply(Class<?> input) {
+            return JavaLuaClass.getJavaClassOf((Class) input);
+          }
+        });
+  }
 
-  private static ImmutableList<Class<? extends JavaLuaClass<?, ?>>> findJavaLuaClassClasses() {
+  private static ImmutableList<Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASSES;
+  private static ImmutableMap<Class<?>, Class<? extends JavaLuaClass<?, ?>>> JAVA_LUA_CLASS_CLASS_BY_JAVA_CLASS;
+
+  private static ImmutableList<Class<? extends JavaLuaClass<?, ?>>> findJavaLuaClassClasses(
+      Logger logger) {
     try {
-      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-      ClassPath classpath = ClassPath.from(classloader);
-      ImmutableSet<ClassInfo> classInfos = classpath.getTopLevelClassesRecursive(CLASSES_PACKAGE);
-      Iterable<Class<?>> classes = transform(classInfos, ClassInfo::load);
-      Iterable<Class<?>> x = filter(classes, cls -> cls.isAnnotationPresent(DeclareLuaClass.class));
-      Iterable<Class<?>> luaClasses = filter(x, LuaClass.class::isAssignableFrom);
-      @SuppressWarnings("unchecked")
+      logger.debug("Searching for Lua classes...");
+      Set<Class<? extends DeclaredLuaClass>> luaClasses =
+          ServiceLoader.load(logger, DeclaredLuaClass.class).stream()
+              .filter(c -> JavaLuaClass.class.isAssignableFrom(c)).collect(Collectors.toSet());
+
       Iterable<Class<? extends JavaLuaClass<?, ?>>> result =
           (Iterable<Class<? extends JavaLuaClass<?, ?>>>) (Iterable<?>) luaClasses;
-      return ImmutableList.copyOf(result);
-    } catch (IOException ex) {
+      ImmutableList<Class<? extends JavaLuaClass<?, ?>>> r = ImmutableList.copyOf(result);
+      logger.debug("Found Lua classes: "
+          + r.stream().map(c -> c.getName()).collect(Collectors.joining(", ")));
+      return r;
+    } catch (Exception ex) {
       throw new UndeclaredThrowableException(ex);
     }
   }

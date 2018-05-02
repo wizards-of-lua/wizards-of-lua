@@ -22,8 +22,8 @@ import net.wizardsoflua.annotation.GenerateLuaClass;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
-import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassApi;
 
 /**
  * The Entity class is the base class of all entities that populate the world.

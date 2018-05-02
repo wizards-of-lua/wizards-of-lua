@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = CustomEventClass.NAME, superClass = EventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = CustomEventClass.NAME, superClass = EventClass.class)
 public class CustomEventClass
     extends DelegatorLuaClass<CustomLuaEvent, CustomEventClass.Proxy<CustomLuaEvent>> {
   public static final String NAME = "CustomEvent";

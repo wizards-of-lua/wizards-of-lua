@@ -1,11 +1,15 @@
 package net.wizardsoflua.lua.classes.event;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
-@DeclareLuaClass(name = LivingEventClass.NAME, superClass = EventClass.class)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = LivingEventClass.NAME, superClass = EventClass.class)
 public class LivingEventClass extends
     DelegatorLuaClass<LivingEvent, LivingEventClass.Proxy<LivingEventApi<LivingEvent>, LivingEvent>> {
   public static final String NAME = "LivingEvent";

@@ -1,18 +1,22 @@
 package net.wizardsoflua.lua.classes.item;
 
+import com.google.auto.service.AutoService;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.DelegatorLuaClass;
+import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
+import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
-@DeclareLuaClass(name = ItemClass.NAME)
+@AutoService(DeclaredLuaClass.class)
+@DeclareLuaClass (name = ItemClass.NAME)
 public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Proxy> {
   public static final String NAME = "Item";
 
