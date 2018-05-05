@@ -38,11 +38,10 @@ public class VirtualEntity implements ICommandSender {
 
   protected float rotationYaw;
   protected float rotationPitch;
-  private Vec3d lookVec;
 
   private boolean alive;
   private int dimension;
-  
+
   private int age;
 
   private final Set<String> tags = new HashSet<>();
@@ -66,7 +65,7 @@ public class VirtualEntity implements ICommandSender {
   public void setName(String name) {
     this.name = name;
   }
-  
+
   public int getAge() {
     return age;
   }
@@ -136,7 +135,18 @@ public class VirtualEntity implements ICommandSender {
   }
 
   public Vec3d getLookVec() {
-    return lookVec;
+    return this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
+  }
+
+  /**
+   * Creates a Vec3 using the pitch and yaw of the entities rotation.
+   */
+  protected final Vec3d getVectorForRotation(float pitch, float yaw) {
+    float f = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
+    float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
+    float f2 = -MathHelper.cos(-pitch * 0.017453292F);
+    float f3 = MathHelper.sin(-pitch * 0.017453292F);
+    return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
   }
 
   public double getDistanceSq(VirtualEntity entity) {
