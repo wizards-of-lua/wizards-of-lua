@@ -17,7 +17,7 @@ We won't include things that we think are not matching our vision of this projec
 This mod is based on Forge, which is a framework for creating and running Minecraft mods based on the Java version of Minecraft.
 To contribute source code to this project you should be familiar with Java 8, Forge, Lua, and Gradle.
 
-Please note that is project is a spare time project.
+Please note that this project is a spare time project.
 If you post an issue or create a pull request, please give us some time to react.
 
 ## How to Setup a Local Development Environment for Eclipse
