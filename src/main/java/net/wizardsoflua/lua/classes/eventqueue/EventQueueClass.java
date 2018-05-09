@@ -25,25 +25,22 @@ import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 /**
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
  * is connected to the event source.
  */
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = EventQueueClass.NAME)
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
-@AutoService(LuaConverter.class)
 public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
   public static final String NAME = "EventQueue";
   @Resource
   private LuaConverters converters;
   @Resource
   private LuaScheduler scheduler;
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
 
   @Override
   public Table createRawTable() {

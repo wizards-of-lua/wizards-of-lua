@@ -17,8 +17,10 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
+@LuaClassAttributes(name = EventClass2.NAME)
 @GenerateLuaClassTable(instance = EventClass2.Instance.class)
 @GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class")
 public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
@@ -27,11 +29,6 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   private LuaConverters converters;
   @Resource
   private Injector injector;
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
 
   @Override
   public Table createRawTable() {

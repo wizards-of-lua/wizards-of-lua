@@ -8,18 +8,15 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.extension.util.LuaClass;
+import net.wizardsoflua.lua.extension.util.AnnotatedLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 @AutoService(SpellExtension.class)
-public class ObjectClass2 extends LuaClass {
+@LuaClassAttributes(name = ObjectClass2.NAME)
+public class ObjectClass2 extends AnnotatedLuaClass {
   public static final String NAME = "Object";
   @Resource
   private TableFactory tableFactory;
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
 
   @Override
   protected @Nullable Table getMetatable() {
