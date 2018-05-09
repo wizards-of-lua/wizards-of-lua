@@ -1,12 +1,15 @@
 package net.wizardsoflua.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-@Retention(SOURCE)
+/**
+ * We use class retention, because otherwise this annotation is not available on unchanged classes
+ * during eclipses incremental compilation.
+ * 
+ * @author Adrodoc
+ */
 @Target(TYPE)
 public @interface GenerateLuaDoc {
   /**
