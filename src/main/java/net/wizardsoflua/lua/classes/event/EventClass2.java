@@ -64,12 +64,12 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
       if (!events.isDuringEventIntercepting()) {
         return false;
       }
-      return getDelegate().isCancelable();
+      return delegate.isCancelable();
     }
 
     @LuaProperty
     public boolean isCanceled() {
-      return getDelegate().isCanceled();
+      return delegate.isCanceled();
     }
 
     @LuaProperty
@@ -77,7 +77,7 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
       if (!isCancelable()) {
         throw new IllegalOperationAttemptException("attempt to cancel " + getName());
       }
-      getDelegate().setCanceled(canceled);
+      delegate.setCanceled(canceled);
     }
   }
 }

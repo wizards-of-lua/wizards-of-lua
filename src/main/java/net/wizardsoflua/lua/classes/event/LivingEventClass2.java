@@ -43,7 +43,7 @@ public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventCla
 
     @LuaProperty
     public EntityLivingBase getEntity() {
-      return getDelegate().getEntityLiving();
+      return delegate.getEntityLiving();
     }
   }
 }

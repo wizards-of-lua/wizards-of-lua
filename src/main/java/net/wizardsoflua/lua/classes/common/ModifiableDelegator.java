@@ -2,9 +2,8 @@ package net.wizardsoflua.lua.classes.common;
 
 import static java.util.Objects.requireNonNull;
 
-// TODO Adrodoc55 10.04.2018: Rename to LuaInstance
 public class ModifiableDelegator<D> implements Delegator<D> {
-  private D delegate;
+  protected D delegate;
 
   public ModifiableDelegator(D delegate) {
     setDelegate(delegate);

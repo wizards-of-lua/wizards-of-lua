@@ -64,7 +64,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaProperty
     public ImmutableSet<String> getNames() {
-      return getDelegate().getNames();
+      return delegate.getNames();
     }
 
     /**
@@ -83,7 +83,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaFunction
     public void stop() {
-      getDelegate().stop();
+      delegate.stop();
     }
 
     /**
@@ -105,7 +105,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaFunction
     public boolean isEmpty() {
-      return getDelegate().isEmpty();
+      return delegate.isEmpty();
     }
 
     /**
@@ -130,7 +130,6 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaFunction
     public Event latest() {
-      D delegate = getDelegate();
       Event latest = delegate.latest();
       delegate.clear();
       return latest;
