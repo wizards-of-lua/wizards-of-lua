@@ -22,9 +22,8 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.classes.LuaInstance;
-import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
-import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.AnnotatedLuaClass;
 import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 /**
@@ -35,7 +34,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = EventQueueClass.NAME)
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Collecting Events")
-public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
+public class EventQueueClass extends AnnotatedLuaClass {
   public static final String NAME = "EventQueue";
   @Resource
   private LuaConverters converters;
@@ -47,9 +46,8 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
     return new EventQueueClassTable<>(this, converters);
   }
 
-  @Override
-  protected Delegator<Instance<?>> toLuaInstance(EventQueue javaInstance) {
-    return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
+  public Instance<EventQueue> createInstance(EventQueue javaInstance) {
+    return new Instance<>(javaInstance);
   }
 
   @GenerateLuaInstanceTable
