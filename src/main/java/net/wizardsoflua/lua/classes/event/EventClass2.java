@@ -22,7 +22,7 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 
 @LuaClassAttributes(name = EventClass2.NAME)
 @GenerateLuaClassTable(instance = EventClass2.Instance.class)
-@GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class", type = EventClass2.TYPE)
+@GenerateLuaDoc(subtitle = "The Event Base Class", type = EventClass2.TYPE)
 public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   public static final String NAME = "Event";
   public static final String TYPE = "event";
@@ -32,7 +32,7 @@ public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   private Injector injector;
 
   @Override
-  public Table createRawTable() {
+  protected Table createRawTable() {
     return new EventClass2Table<>(this, converters);
   }
 

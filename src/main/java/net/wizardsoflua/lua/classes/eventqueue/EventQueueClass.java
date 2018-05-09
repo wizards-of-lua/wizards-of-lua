@@ -34,7 +34,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = EventQueueClass.NAME)
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
-@GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
+@GenerateLuaDoc(subtitle = "Collecting Events")
 public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
   public static final String NAME = "EventQueue";
   @Resource
@@ -43,7 +43,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
   private LuaScheduler scheduler;
 
   @Override
-  public Table createRawTable() {
+  protected Table createRawTable() {
     return new EventQueueClassTable<>(this, converters);
   }
 
