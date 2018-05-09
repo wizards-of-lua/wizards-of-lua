@@ -1,8 +1,11 @@
 package net.wizardsoflua.annotation.processor.doc;
 
 import static javax.tools.StandardLocation.SOURCE_OUTPUT;
-import static net.wizardsoflua.annotation.processor.Constants.LUA_CONVERTER;
+import static net.wizardsoflua.annotation.processor.Constants.DELEGATOR;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getClassValue;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
+import static net.wizardsoflua.annotation.processor.ProcessorUtils.getUpperBound;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,16 +22,21 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.StandardLocation;
 
 import com.google.common.collect.Maps;
 
 import net.wizardsoflua.annotation.GenerateLuaClass;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModule;
 import net.wizardsoflua.annotation.HasLuaClass;
@@ -83,15 +91,31 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
 
   private void registerLuaClass(TypeElement annotatedElement)
       throws ProcessingException, IOException {
-    DeclaredType type = (DeclaredType) annotatedElement.asType();
-    TypeMirror javaType = getTypeParameter(type, LUA_CONVERTER, 0, processingEnv);
-    if (javaType == null) {
-      return; // Legacy classes don't implement LuaConverter
+    AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaClassTable.class);
+    if (mirror == null) {
+      return;
     }
-    DeclaredType javaClass = (DeclaredType) javaType;
+    DeclaredType instance = getClassValue(mirror, GenerateLuaClassTable.INSTANCE, processingEnv);
+    TypeMirror derasured = derasure(instance);
+    TypeMirror javaType = getTypeParameter(derasured, DELEGATOR, 0, processingEnv);
+    DeclaredType javaClass = getUpperBound(javaType);
     TypeElement javaElement = (TypeElement) javaClass.asElement();
     String name = LuaDocModel.getName(annotatedElement, processingEnv);
     getLuaClassNames().put(javaElement.getQualifiedName().toString(), name);
+  }
+
+  /**
+   * Opposite of {@link Types#erasure(TypeMirror)} for {@link DeclaredType}s.
+   *
+   * @param type
+   * @return the de-erased type
+   */
+  private TypeMirror derasure(DeclaredType type) {
+    TypeElement instanceElement = (TypeElement) type.asElement();
+    Elements elements = processingEnv.getElementUtils();
+    Name qualifiedName = instanceElement.getQualifiedName();
+    TypeElement capturedElement = elements.getTypeElement(qualifiedName);
+    return capturedElement.asType();
   }
 
   private static final StandardLocation PROPERTY_LOCATION = SOURCE_OUTPUT;
