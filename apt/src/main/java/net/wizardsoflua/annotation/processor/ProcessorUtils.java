@@ -35,14 +35,14 @@ import com.squareup.javapoet.JavaFile;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.annotation.LuaProperty;
 
 public class ProcessorUtils {
-  public static <A extends Annotation> A checkAnnotated(Element element, Class<A> annotationClass) {
+  public static <A extends Annotation> A checkAnnotated(Element element, Class<A> annotationClass)
+      throws IllegalArgumentException {
     A annotation = element.getAnnotation(annotationClass);
     String kind = element.getKind().toString().toLowerCase();
     checkArgument(annotation != null, "%s %s is not annotated with @%s", kind, element,
-        LuaProperty.class.getSimpleName());
+        annotationClass.getSimpleName());
     return annotation;
   }
 
@@ -57,7 +57,7 @@ public class ProcessorUtils {
    * @param type
    * @param superTypeName
    * @param index
-   * @param types
+   * @param env
    * @return the type parameter of {@code superTypeName} in the context of {@code type} at the
    *         specified {@code index} or {@code null}
    */

@@ -22,9 +22,10 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 
 @LuaClassAttributes(name = EventClass2.NAME)
 @GenerateLuaClassTable(instance = EventClass2.Instance.class)
-@GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class")
+@GenerateLuaDoc(name = EventClass2.NAME, subtitle = "The Event Base Class", type = EventClass2.TYPE)
 public class EventClass2 extends BasicLuaClass<Event, EventClass2.Instance<?>> {
   public static final String NAME = "Event";
+  public static final String TYPE = "event";
   @Resource
   private LuaConverters converters;
   @Resource

@@ -5,6 +5,10 @@ public abstract class AnnotatedLuaClass extends LuaClass {
     return cls.getAnnotation(LuaClassAttributes.class).name();
   }
 
+  /**
+   * Required unless @{@link LuaClassAttributes} is present, in which case
+   * {@link LuaClassAttributes#name()} is used.
+   */
   public static Class<? extends LuaClass> getSuperClassClassOf(Class<?> cls) {
     return cls.getAnnotation(LuaClassAttributes.class).superClass();
   }

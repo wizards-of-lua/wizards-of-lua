@@ -16,7 +16,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 @LuaClassAttributes(name = LivingEventClass2.NAME, superClass = EventClass2.class)
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)
-@GenerateLuaDoc(name = LivingEventClass2.NAME)
+@GenerateLuaDoc(name = LivingEventClass2.NAME, type = EventClass2.TYPE)
 public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventClass2.Instance<?>> {
   public static final String NAME = "LivingEvent";
   @Resource

@@ -17,10 +17,8 @@ import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -28,23 +26,19 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.StandardLocation;
 
-import com.google.auto.service.AutoService;
 import com.google.common.collect.Maps;
 
 import net.wizardsoflua.annotation.GenerateLuaClass;
-import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModule;
-import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.HasLuaClass;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
 import net.wizardsoflua.annotation.processor.ProcessingException;
-import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
 
-//@AutoService(Processor.class)
+// @AutoService(Processor.class)
 public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   private @Nullable Map<String, String> luaClassNames;
 
@@ -87,7 +81,8 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     }
   }
 
-  private void registerLuaClass(TypeElement annotatedElement) throws IOException {
+  private void registerLuaClass(TypeElement annotatedElement)
+      throws ProcessingException, IOException {
     DeclaredType type = (DeclaredType) annotatedElement.asType();
     TypeMirror javaType = getTypeParameter(type, LUA_CONVERTER, 0, processingEnv);
     if (javaType == null) {
@@ -95,8 +90,7 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     }
     DeclaredType javaClass = (DeclaredType) javaType;
     TypeElement javaElement = (TypeElement) javaClass.asElement();
-    GenerateLuaDoc annotation = annotatedElement.getAnnotation(GenerateLuaDoc.class);
-    String name = annotation.name();
+    String name = LuaDocModel.getName(annotatedElement, processingEnv);
     getLuaClassNames().put(javaElement.getQualifiedName().toString(), name);
   }
 
@@ -120,12 +114,6 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
 
   private LuaDocModel analyze(TypeElement annotatedElement)
       throws ProcessingException, MultipleProcessingExceptions {
-    if (annotatedElement.getAnnotation(GenerateLuaClassTable.class) != null) {
-      return LuaDocModel.of(annotatedElement, getLuaClassNames(), processingEnv);
-    }
-    if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
-      return LuaDocModel.of(annotatedElement, getLuaClassNames(), processingEnv);
-    }
     if (annotatedElement.getAnnotation(GenerateLuaModule.class) != null) {
       return LuaDocModel.forLuaModule(annotatedElement, getLuaClassNames(), processingEnv);
     }
@@ -135,12 +123,7 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     if (annotatedElement.getAnnotation(HasLuaClass.class) != null) {
       return LuaDocModel.forManualLuaClass(annotatedElement, getLuaClassNames(), processingEnv);
     }
-    CharSequence msg = "Luadoc can only be generated if the class is also annotated with @"
-        + GenerateLuaModule.class.getSimpleName() + " or @" + GenerateLuaClass.class.getSimpleName()
-        + " or @" + HasLuaClass.class.getSimpleName();
-    Element e = annotatedElement;
-    AnnotationMirror a = ProcessorUtils.getAnnotationMirror(annotatedElement, GenerateLuaDoc.class);
-    throw new ProcessingException(msg, e, a);
+    return LuaDocModel.of(annotatedElement, getLuaClassNames(), processingEnv);
   }
 
   private void generate(LuaDocModel model) {

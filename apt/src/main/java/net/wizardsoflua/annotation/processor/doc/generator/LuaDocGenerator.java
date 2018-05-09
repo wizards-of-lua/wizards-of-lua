@@ -35,7 +35,7 @@ public class LuaDocGenerator {
     doc.append("---\n");
     doc.append("name: ").append(model.getName()).append('\n');
     doc.append("subtitle: ").append(model.getSubtitle()).append('\n');
-    doc.append("type: ").append(model.getType().name().toLowerCase()).append('\n');
+    doc.append("type: ").append(model.getType()).append('\n');
     String superClass = model.getSuperClass();
     if (superClass != null) {
       doc.append("extends: ").append(superClass).append('\n');
