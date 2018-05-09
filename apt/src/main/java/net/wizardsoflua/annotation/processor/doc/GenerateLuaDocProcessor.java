@@ -86,7 +86,7 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     DeclaredType type = (DeclaredType) annotatedElement.asType();
     TypeMirror javaType = getTypeParameter(type, LUA_CONVERTER, 0, processingEnv);
     if (javaType == null) {
-      return;
+      return; // Legacy classes don't implement LuaConverter
     }
     DeclaredType javaClass = (DeclaredType) javaType;
     TypeElement javaElement = (TypeElement) javaClass.asElement();

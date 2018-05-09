@@ -12,7 +12,7 @@ public interface Constants {
 
   final ClassName LUA_CONVERTERS_CLASS =
       ClassName.get("net.wizardsoflua.extension.spell.api.resource", "LuaConverters");
-  final String LUA_CONVERTER = "net.wizardsoflua.lua.extension.spi.LuaConverter";
+  final String LUA_CONVERTER = "net.wizardsoflua.extension.spell.spi.LuaConverter";
 
   final String LUA_CLASS_API = "net.wizardsoflua.lua.classes.LuaClassApi";
   final ClassName OBJECT_CLASS = ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");
