@@ -1,6 +1,11 @@
 package net.wizardsoflua.lua.extension.util;
 
+import javax.annotation.Nullable;
+
 public abstract class AnnotatedLuaClass extends LuaClass {
+  private @Nullable String name;
+  private @Nullable Class<? extends LuaClass> superClassClass;
+
   public static String getNameOf(Class<?> cls) {
     return cls.getAnnotation(LuaClassAttributes.class).name();
   }
@@ -15,11 +20,17 @@ public abstract class AnnotatedLuaClass extends LuaClass {
 
   @Override
   public String getName() {
-    return getNameOf(getClass());
+    if (name == null) {
+      name = getNameOf(getClass());
+    }
+    return name;
   }
 
   @Override
   protected Class<? extends LuaClass> getSuperClassClass() {
-    return getSuperClassClassOf(getClass());
+    if (superClassClass == null) {
+      superClassClass = getSuperClassClassOf(getClass());
+    }
+    return superClassClass;
   }
 }
