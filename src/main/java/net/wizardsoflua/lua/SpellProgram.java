@@ -103,7 +103,7 @@ public class SpellProgram {
     InjectionScope getRootScope();
   }
 
-  private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
+  public static final String ROOT_CLASS_PREFIX = "SpellByteCode";
   private final String code;
   private final ModuleDependencies dependencies;
   private final LuaScheduler scheduler;
@@ -145,7 +145,7 @@ public class SpellProgram {
     env = stateContext.newTable();
     runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
-    exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
+    exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
     luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
       @Override
