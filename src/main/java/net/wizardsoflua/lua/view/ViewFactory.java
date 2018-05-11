@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import javax.annotation.Nullable;
 
-import com.google.auto.service.AutoService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -12,9 +11,9 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.SpellScoped;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
-import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.JavaInstanceWrapper;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
 
@@ -26,8 +25,8 @@ import net.wizardsoflua.lua.classes.common.LuaInstance;
  * @author Adrodoc
  * @see FunctionView#invoke(ExecutionContext)
  */
-@AutoService(SpellExtension.class)
-public class ViewFactory implements SpellExtension {
+@SpellScoped
+public class ViewFactory {
   @Resource
   private LuaConverters converters;
   @Resource
