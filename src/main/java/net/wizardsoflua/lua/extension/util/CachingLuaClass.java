@@ -7,7 +7,8 @@ import com.google.common.cache.CacheBuilder;
 
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 
-public abstract class CachingLuaClass<J, L> extends LuaClass implements LuaConverter<J, L> {
+public abstract class CachingLuaClass<J, L> extends AnnotatedLuaClass
+    implements LuaConverter<J, L> {
   private final Cache<J, L> cache = CacheBuilder.newBuilder().weakKeys().softValues().build();
 
   public Cache<J, L> getCache() {

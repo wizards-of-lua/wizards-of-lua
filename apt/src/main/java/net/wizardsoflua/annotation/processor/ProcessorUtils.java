@@ -25,9 +25,14 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ErrorType;
+import javax.lang.model.type.IntersectionType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
 
 import com.squareup.javapoet.JavaFile;
@@ -35,14 +40,14 @@ import com.squareup.javapoet.JavaFile;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.annotation.LuaProperty;
 
 public class ProcessorUtils {
-  public static <A extends Annotation> A checkAnnotated(Element element, Class<A> annotationClass) {
+  public static <A extends Annotation> A checkAnnotated(Element element, Class<A> annotationClass)
+      throws IllegalArgumentException {
     A annotation = element.getAnnotation(annotationClass);
     String kind = element.getKind().toString().toLowerCase();
     checkArgument(annotation != null, "%s %s is not annotated with @%s", kind, element,
-        LuaProperty.class.getSimpleName());
+        annotationClass.getSimpleName());
     return annotation;
   }
 
@@ -57,7 +62,7 @@ public class ProcessorUtils {
    * @param type
    * @param superTypeName
    * @param index
-   * @param types
+   * @param env
    * @return the type parameter of {@code superTypeName} in the context of {@code type} at the
    *         specified {@code index} or {@code null}
    */
@@ -70,7 +75,8 @@ public class ProcessorUtils {
         DeclaredType declaredSuperType = (DeclaredType) superType;
         TypeElement superElement = (TypeElement) declaredSuperType.asElement();
         if (superElement.getQualifiedName().contentEquals(superTypeName)) {
-          return declaredSuperType.getTypeArguments().get(index);
+          List<? extends TypeMirror> typeArguments = declaredSuperType.getTypeArguments();
+          return typeArguments.get(index);
         }
       }
     }
@@ -190,4 +196,34 @@ public class ProcessorUtils {
       file.writeTo(writer);
     }
   }
+
+  public static DeclaredType getUpperBound(TypeMirror type) {
+    return type.accept(new SimpleTypeVisitor8<DeclaredType, Void>() {
+      @Override
+      public DeclaredType visitDeclared(DeclaredType t, Void p) {
+        return t;
+      }
+
+      @Override
+      public DeclaredType visitError(ErrorType t, Void p) {
+        return t;
+      }
+
+      @Override
+      public DeclaredType visitIntersection(IntersectionType t, Void p) {
+        return t.getBounds().iterator().next().accept(this, p);
+      }
+
+      @Override
+      public DeclaredType visitTypeVariable(TypeVariable t, Void p) {
+        return t.getUpperBound().accept(this, p);
+      }
+
+      @Override
+      public DeclaredType visitWildcard(WildcardType t, Void p) {
+        return t.getExtendsBound().accept(this, p);
+      }
+    }, null);
+  }
+
 }

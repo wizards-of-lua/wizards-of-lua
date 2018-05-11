@@ -3,7 +3,6 @@ package net.wizardsoflua.lua.view;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 import com.google.auto.service.AutoService;
 import com.google.common.cache.Cache;
@@ -14,10 +13,10 @@ import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.JavaInstanceWrapper;
 import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.module.types.TypesModule;
 
 /**
  * A factory that can create {@link View}s of lua objects from different spells. These views are
@@ -31,18 +30,18 @@ import net.wizardsoflua.lua.module.types.TypesModule;
 public class ViewFactory implements SpellExtension {
   @Resource
   private LuaConverters converters;
-  @Inject
-  private TypesModule types;
+  @Resource
+  private LuaTypes types;
 
   private final Cache<Object, View> cache =
       CacheBuilder.newBuilder().weakKeys().softValues().build();
 
   public @Nullable String getClassName(Table table) {
-    return types.getClassName(table);
+    return types.getLuaClassName(table);
   }
 
   public @Nullable Table getClassTableForName(String className) {
-    return types.getClassTableForName(className);
+    return types.getLuaClassTableForName(className);
   }
 
   /**

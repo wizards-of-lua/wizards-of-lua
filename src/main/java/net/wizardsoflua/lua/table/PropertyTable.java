@@ -13,7 +13,7 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.util.TraversableHashMap;
-import net.wizardsoflua.common.Named;
+import net.wizardsoflua.extension.api.Named;
 
 /**
  * A {@link Table} implementation that can be used as a Lua interface for Java properties.

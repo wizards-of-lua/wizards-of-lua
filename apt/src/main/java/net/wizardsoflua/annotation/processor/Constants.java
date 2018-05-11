@@ -7,10 +7,12 @@ import com.squareup.javapoet.ClassName;
 public interface Constants {
   final ClassName DECLARED_LUA_CLASS =
       ClassName.get("net.wizardsoflua.lua.classes.spi", "DeclaredLuaClass");
+  final String LUA_CLASS_ATTRIBUTES = "net.wizardsoflua.lua.extension.util.LuaClassAttributes";
+  final String OBJECT_CLASS2 = "net.wizardsoflua.lua.classes.ObjectClass2";
 
+  final String DELEGATOR = "net.wizardsoflua.lua.classes.common.Delegator";
   final ClassName LUA_CONVERTERS_CLASS =
       ClassName.get("net.wizardsoflua.extension.spell.api.resource", "LuaConverters");
-  final String LUA_CONVERTER = "net.wizardsoflua.lua.extension.spi.LuaConverter";
 
   final String LUA_CLASS_API = "net.wizardsoflua.lua.classes.LuaClassApi";
   final ClassName OBJECT_CLASS = ClassName.get("net.wizardsoflua.lua.classes", "ObjectClass");

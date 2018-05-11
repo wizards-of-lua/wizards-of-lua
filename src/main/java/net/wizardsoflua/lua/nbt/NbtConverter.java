@@ -72,7 +72,7 @@ public class NbtConverter {
   private String keyToString(Object luaKey, int index, String path) {
     ByteString result = Conversions.stringValueOf(luaKey);
     if (result == null) {
-      String actualType = classLoader.getTypes().getTypename(luaKey);
+      String actualType = classLoader.getTypes().getLuaTypeName(luaKey);
       throw new ConversionException("Can't convert key " + index + " in " + path
           + "! string/number expected, but got " + actualType);
     }
@@ -80,7 +80,7 @@ public class NbtConverter {
   }
 
   ConversionException conversionException(String path, Object actual, String expected) {
-    String actualType = classLoader.getTypes().getTypename(actual);
+    String actualType = classLoader.getTypes().getLuaTypeName(actual);
     return new ConversionException(
         "Can't convert " + path + "! " + expected + " expected, but got " + actualType);
   }
@@ -154,7 +154,7 @@ public class NbtConverter {
 
   public static ByteString toLua(NBTTagString nbt) {
     checkNotNull(nbt, "nbt == null!");
-    return ByteString.of(((NBTTagString) nbt).getString());
+    return ByteString.of(nbt.getString());
   }
 
   public static Table toLua(NBTTagList nbt) {
@@ -290,7 +290,7 @@ public class NbtConverter {
   }
 
   private NBTBase toNbt(Table data, String path) {
-    Table table = (Table) data;
+    Table table = data;
     if (isArray(table)) {
       return toNbtList(table, path);
     } else {

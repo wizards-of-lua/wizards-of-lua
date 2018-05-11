@@ -49,4 +49,6 @@ public interface LuaConverters {
   <J> Object toLua(J javaObject);
 
   void registerLuaConverter(LuaConverter<?, ?> converter) throws IllegalArgumentException;
+
+  <J> LuaConverter<? super J, ?> getLuaConverterForJavaClass(Class<J> javaClass);
 }

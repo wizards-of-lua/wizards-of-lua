@@ -3,8 +3,6 @@ package net.wizardsoflua.lua.module.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
@@ -28,6 +26,7 @@ import net.wizardsoflua.extension.spell.api.resource.Config;
 import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
@@ -39,7 +38,6 @@ import net.wizardsoflua.lua.data.Data;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
-import net.wizardsoflua.lua.module.types.TypesModule;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = EventsModule.NAME, subtitle = "Knowing What Happened")
@@ -56,8 +54,8 @@ public class EventsModule extends LuaTableExtension {
   private TableFactory tableFactory;
   @Resource
   private Time time;
-  @Inject
-  private TypesModule types;
+  @Resource
+  private LuaTypes types;
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
   private final EventQueue.Context eventQueueContext = new EventQueue.Context() {
@@ -150,7 +148,7 @@ public class EventsModule extends LuaTableExtension {
   }
 
   @net.wizardsoflua.annotation.LuaFunction(name = OnFunction.NAME)
-  @LuaFunctionDoc(returnType = TypesModule.TABLE, args = {"eventName..."})
+  @LuaFunctionDoc(returnType = LuaTypes.TABLE, args = {"eventName..."})
   class OnFunction extends NamedFunctionAnyArg {
     public static final String NAME = "on";
 

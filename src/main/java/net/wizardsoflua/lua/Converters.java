@@ -223,8 +223,8 @@ public class Converters implements LuaConverters {
 
   private BadArgumentException badArgument(Class<?> expectedType, Object actualObject) {
     Types types = classLoader.getTypes();
-    String expected = types.getTypename(expectedType);
-    String actual = types.getTypename(actualObject);
+    String expected = types.getLuaTypeName(expectedType);
+    String actual = types.getLuaTypeName(actualObject);
     return new BadArgumentException(expected, actual);
   }
 
@@ -246,7 +246,8 @@ public class Converters implements LuaConverters {
     return result;
   }
 
-  private @Nullable <J> LuaConverter<? super J, ?> getConverterForJavaClass(Class<J> javaClass) {
+  @Override
+  public @Nullable <J> LuaConverter<? super J, ?> getLuaConverterForJavaClass(Class<J> javaClass) {
     Class<? super J> cls = javaClass;
     while (cls != null) {
       LuaConverter<? super J, ?> result = getConverter(cls);
@@ -267,7 +268,7 @@ public class Converters implements LuaConverters {
 
   private Object convertTo(Class<?> javaClass, Object luaObject)
       throws ClassCastException, BadArgumentException {
-    LuaConverter<?, ?> converter = getConverterForJavaClass(javaClass);
+    LuaConverter<?, ?> converter = getLuaConverterForJavaClass(javaClass);
     if (converter != null) {
       return convertToJava(luaObject, converter);
     }
@@ -366,7 +367,7 @@ public class Converters implements LuaConverters {
     requireNonNull(javaObject, "javaObject == null!");
     @SuppressWarnings("unchecked")
     Class<J> javaClass = (Class<J>) javaObject.getClass();
-    LuaConverter<? super J, ?> converter = getConverterForJavaClass(javaClass);
+    LuaConverter<? super J, ?> converter = getLuaConverterForJavaClass(javaClass);
     if (converter != null) {
       return converter.getLuaInstance(javaObject);
     }

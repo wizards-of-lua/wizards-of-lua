@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import com.google.common.reflect.TypeToken;
 
 public interface Delegator<D> {
+  @Deprecated
   public static <D> Class<D> getDelegateClassOf(Class<? extends Delegator<D>> delegatorClass) {
     TypeToken<? extends Delegator<D>> token = TypeToken.of(delegatorClass);
     Type superType = token.getSupertype(Delegator.class).getType();

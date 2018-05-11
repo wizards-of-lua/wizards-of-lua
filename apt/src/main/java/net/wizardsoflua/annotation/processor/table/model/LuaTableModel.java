@@ -157,15 +157,8 @@ public class LuaTableModel {
       AnnotationMirror mirror = getAnnotationMirror(annotatedElement, GenerateLuaClassTable.class);
       DeclaredType additionalType = getClassValue(mirror, GenerateLuaClassTable.INSTANCE, env);
       return (TypeElement) additionalType.asElement();
-    } else if (annotatedElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
-      return null;
-    } else if (annotatedElement.getAnnotation(GenerateLuaModuleTable.class) != null) {
-      return null;
     } else {
-      throw new IllegalArgumentException(annotatedElement + " is not annotated with @"
-          + GenerateLuaClassTable.class.getSimpleName() + ", @"
-          + GenerateLuaInstanceTable.class.getSimpleName() + " or @"
-          + GenerateLuaModuleTable.class);
+      return null;
     }
   }
 

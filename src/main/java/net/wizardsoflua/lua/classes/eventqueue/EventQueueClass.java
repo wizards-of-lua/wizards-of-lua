@@ -25,14 +25,16 @@ import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 /**
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
  * is connected to the event source.
  */
-@GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
-@GenerateLuaDoc(name = EventQueueClass.NAME, subtitle = "Collecting Events")
 @AutoService(LuaConverter.class)
+@LuaClassAttributes(name = EventQueueClass.NAME)
+@GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
+@GenerateLuaDoc(subtitle = "Collecting Events")
 public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
   public static final String NAME = "EventQueue";
   @Resource
@@ -41,12 +43,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
   private LuaScheduler scheduler;
 
   @Override
-  public String getName() {
-    return NAME;
-  }
-
-  @Override
-  public Table createRawTable() {
+  protected Table createRawTable() {
     return new EventQueueClassTable<>(this, converters);
   }
 
@@ -67,7 +64,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaProperty
     public ImmutableSet<String> getNames() {
-      return getDelegate().getNames();
+      return delegate.getNames();
     }
 
     /**
@@ -86,7 +83,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaFunction
     public void stop() {
-      getDelegate().stop();
+      delegate.stop();
     }
 
     /**
@@ -108,7 +105,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaFunction
     public boolean isEmpty() {
-      return getDelegate().isEmpty();
+      return delegate.isEmpty();
     }
 
     /**
@@ -133,7 +130,6 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
      */
     @LuaFunction
     public Event latest() {
-      D delegate = getDelegate();
       Event latest = delegate.latest();
       delegate.clear();
       return latest;

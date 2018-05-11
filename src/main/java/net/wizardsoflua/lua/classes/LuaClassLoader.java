@@ -24,7 +24,6 @@ import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 import net.wizardsoflua.lua.extension.ServiceLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
-import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.lua.view.ViewFactory;
 
@@ -87,8 +86,6 @@ public class LuaClassLoader {
   @Inject
   private EventsModule events;
   @Inject
-  private TypesModule typesModule;
-  @Inject
   private ViewFactory viewFactory;
 
   public interface Context {
@@ -99,7 +96,7 @@ public class LuaClassLoader {
   public LuaClassLoader(Table env, Context context) {
     this.env = requireNonNull(env, "env == null!");
     this.context = requireNonNull(context, "context == null!");
-    types = new Types(env, this);
+    types = new Types(this, converters);
   }
 
   public Table getEnv() {
@@ -157,7 +154,7 @@ public class LuaClassLoader {
       JavaLuaClass<?, ?> javaLuaClass = (JavaLuaClass<?, ?>) luaClass;
       luaClassByJavaClass.put(javaLuaClass.getJavaClass(), javaLuaClass);
     }
-    typesModule.registerClass(luaClass.getName(), luaClass.getMetaTable());
+    types.registerLuaClass(luaClass.getName(), luaClass.getMetaTable());
     env.rawset(luaClass.getName(), luaClass.getMetaTable());
   }
 

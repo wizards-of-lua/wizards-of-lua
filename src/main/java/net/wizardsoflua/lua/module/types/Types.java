@@ -1,146 +1,117 @@
 package net.wizardsoflua.lua.module.types;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.lua.classes.CustomLuaClass;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
-import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
-@Deprecated
-public class Types {
-  public static final String NIL_META = "nil";
-  public static final String BOOLEAN_META = "boolean";
-  public static final String FUNCTION_META = "function";
-  public static final String NUMBER_META = "number";
-  public static final String STRING_META = "string";
-  public static final String TABLE_META = "table";
-
-  private final Table env;
+public class Types implements LuaTypes {
   private final LuaClassLoader classLoader;
+  private final LuaConverters converters;
+  private final BiMap<String, Table> classes = HashBiMap.create();
 
-  public Types(Table env, LuaClassLoader classLoader) {
-    this.env = checkNotNull(env, "env == null!");
+  public Types(LuaClassLoader classLoader, @Resource LuaConverters converters) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+    this.converters = requireNonNull(converters, "converters == null!");
   }
 
-  /**
-   * Declares a new {@link LuaClass} with the specified name and the optional superclass meta table.
-   *
-   * @param luaClassName
-   * @param superClassMetaTable
-   */
-  public void declareClass(String luaClassName, @Nullable Table superClassMetaTable) {
+  @Override
+  public @Nullable Table getLuaClassTableForName(String luaClassName) {
     requireNonNull(luaClassName, "luaClassName == null!");
-    checkState(env.rawget(luaClassName) == null,
-        "bad argument #%s: a global variable with name '%s' is already defined", 1, luaClassName);
-
-    LuaClass superClass;
-    if (superClassMetaTable != null) {
-      superClass = classLoader.getLuaClassForClassTable(superClassMetaTable);
-      checkArgument(superClass != null,
-          "The table '%s' does not represent a LuaClass loaded by this LuaClassLoader",
-          superClassMetaTable);
-    } else {
-      superClass = classLoader.getLuaClassOfType(ObjectClass.class);
-    }
-    classLoader.load(new CustomLuaClass(luaClassName, superClass));
+    return classes.get(luaClassName);
   }
 
-  /**
-   * Returns {@code true} if the specified Lua object is an instance of the Lua class represented by
-   * the specified class meta table.
-   *
-   * @param classMetaTable
-   * @param luaObject
-   * @return {@code true} if the specified Lua object is an instance of the Lua class
-   */
-  public boolean isInstanceOf(Table classMetaTable, Object luaObject) {
-    if (luaObject == null) {
-      return false;
-    }
-    if (!(luaObject instanceof Table)) {
-      return false;
-    }
-    Table actualMetaTable = ((Table) luaObject).getMetatable();
-    return actualMetaTable != null
-        && (actualMetaTable == classMetaTable || isInstanceOf(classMetaTable, actualMetaTable));
+  @Override
+  public Table registerLuaClass(String className, Table classTable) {
+    requireNonNull(className, "className == null!");
+    requireNonNull(classTable, "classTable == null!");
+    return classes.put(className, classTable);
   }
 
-  /**
-   * Returns the Lua type name of the given Lua object.
-   *
-   * @param luaObject
-   * @return the Lua type name of the given Lua object
-   */
-  public @Nullable String getTypename(@Nullable Object luaObject) {
-    if (luaObject == null) {
-      return NIL_META;
+  @Override
+  public String getLuaTypeName(@Nullable Object instance) {
+    if (instance == null) {
+      return NIL;
     }
-    if (luaObject instanceof Table) {
-      Table table = (Table) luaObject;
-      String classname = getClassname(table);
-      if (classname != null) {
-        return classname;
+    if (instance instanceof Table) {
+      Table instanceTable = (Table) instance;
+      String result = getLuaClassName(instanceTable);
+      if (result != null) {
+        return result;
       }
     }
-    return getTypename(luaObject.getClass());
+    return getLuaTypeName(instance.getClass());
   }
 
-  public @Nullable String getTypename(Class<?> type) {
-    if (Delegator.class.isAssignableFrom(type)) {
-      type = unproxy(type);
+  @Override
+  public @Nullable String getLuaClassName(Table instance) {
+    requireNonNull(instance, "instance == null!");
+    BiMap<Table, String> inverse = classes.inverse();
+    if (inverse.containsKey(instance)) {
+      return "class";
     }
-    JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(type);
-    if (luaClass != null) {
-      return luaClass.getName();
-    }
-    if (Table.class.isAssignableFrom(type)) {
-      return TABLE_META;
-    }
-    if (ByteString.class.isAssignableFrom(type) || String.class.isAssignableFrom(type)) {
-      return STRING_META;
-    }
-    if (Number.class.isAssignableFrom(type)) {
-      return NUMBER_META;
-    }
-    if (Boolean.class.isAssignableFrom(type)) {
-      return BOOLEAN_META;
-    }
-    if (LuaFunction.class.isAssignableFrom(type)) {
-      return FUNCTION_META;
-    }
-    return type.getName();
+    Table metatable = instance.getMetatable();
+    return inverse.get(metatable);
   }
 
-  private <T> Class<T> unproxy(Class<?> type) {
-    @SuppressWarnings("unchecked")
-    Class<? extends Delegator<T>> delegatorClass = (Class<? extends Delegator<T>>) type;
-    return Delegator.getDelegateClassOf(delegatorClass);
+  @Override
+  public String getLuaTypeName(Class<?> javaClass) throws IllegalArgumentException {
+    LuaConverter<?, ?> converter = converters.getLuaConverterForJavaClass(javaClass);
+    if (converter != null) {
+      return converter.getName();
+    }
+    String legacyResult = getLegacyLuaTypeName(javaClass);
+    if (legacyResult != null) {
+      return legacyResult;
+    }
+    if (Table.class.isAssignableFrom(javaClass)) {
+      return TABLE;
+    }
+    if (ByteString.class.isAssignableFrom(javaClass) || String.class.isAssignableFrom(javaClass)) {
+      return STRING;
+    }
+    if (Number.class.isAssignableFrom(javaClass)) {
+      return NUMBER;
+    }
+    if (Boolean.class.isAssignableFrom(javaClass)) {
+      return BOOLEAN;
+    }
+    if (LuaFunction.class.isAssignableFrom(javaClass)) {
+      return FUNCTION;
+    }
+    throw new IllegalArgumentException("Unknown lua type: " + javaClass.getName());
   }
 
-  /**
-   * Returns the name of the {@link LuaClass} of the specified {@link Table} or {@code null} if the
-   * {@link Table} is not an instance of a {@link LuaClass}.
-   *
-   * @param table
-   * @return the name of the {@link LuaClass} of the specified {@link Table} or {@code null}
-   */
-  public @Nullable String getClassname(Table table) {
-    LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
+  // TODO Adrodoc 11.05.2018: Remove this when we got rid of LuaClassApi
+  @Deprecated
+  private String getLegacyLuaTypeName(Class<?> javaClass) {
+    if (Delegator.class.isAssignableFrom(javaClass)) {
+      javaClass = unproxy(javaClass);
+    }
+    JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(javaClass);
     if (luaClass != null) {
       return luaClass.getName();
     }
     return null;
+  }
+
+  @Deprecated
+  private <T> Class<T> unproxy(Class<?> type) {
+    @SuppressWarnings("unchecked")
+    Class<? extends Delegator<T>> delegatorClass = (Class<? extends Delegator<T>>) type;
+    return Delegator.getDelegateClassOf(delegatorClass);
   }
 }

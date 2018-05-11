@@ -12,10 +12,11 @@ import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.extension.util.BasicLuaClass;
-import net.wizardsoflua.lua.extension.util.LuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
+@LuaClassAttributes(name = LivingEventClass2.NAME, superClass = EventClass2.class)
 @GenerateLuaClassTable(instance = LivingEventClass2.Instance.class)
-@GenerateLuaDoc(name = LivingEventClass2.NAME)
+@GenerateLuaDoc(type = EventClass2.TYPE)
 public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventClass2.Instance<?>> {
   public static final String NAME = "LivingEvent";
   @Resource
@@ -24,17 +25,7 @@ public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventCla
   private Injector injector;
 
   @Override
-  public String getName() {
-    return NAME;
-  }
- 
-  @Override
-  protected Class<? extends LuaClass> getSuperClassClass() {
-    return EventClass2.class;
-  }
-
-  @Override
-  public Table createRawTable() {
+  protected Table createRawTable() {
     return new LivingEventClass2Table<>(this, converters);
   }
 
@@ -52,7 +43,7 @@ public class LivingEventClass2 extends BasicLuaClass<LivingEvent, LivingEventCla
 
     @LuaProperty
     public EntityLivingBase getEntity() {
-      return getDelegate().getEntityLiving();
+      return delegate.getEntityLiving();
     }
   }
 }

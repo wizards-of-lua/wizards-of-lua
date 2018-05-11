@@ -1,30 +1,29 @@
 package net.wizardsoflua.lua.extension.util;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.common.Named;
+import net.wizardsoflua.extension.api.Named;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.ObjectClass2;
-import net.wizardsoflua.lua.module.types.TypesModule;
 
 public abstract class LuaClass implements SpellExtension, Named {
   @Resource
   private Table env;
   @Resource
   private Injector injector;
-  @Inject
-  private TypesModule types;
+  @Resource
+  private LuaTypes types;
 
   private @Nullable Table table;
 
   @PostConstruct
   protected void registerClass() {
-    types.registerClass(getName(), getTable());
+    types.registerLuaClass(getName(), getTable());
   }
 
   @PostConstruct

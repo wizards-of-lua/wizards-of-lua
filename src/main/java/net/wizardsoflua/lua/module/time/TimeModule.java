@@ -22,10 +22,10 @@ import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Config;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
-import net.wizardsoflua.lua.module.types.TypesModule;
 
 /**
  * The Time module provides access to time related properties of the active Spell's world.
@@ -142,7 +142,7 @@ public class TimeModule extends LuaTableExtension {
    * Forces the current spell to sleep for the given amount of game ticks.
    */
   @LuaFunction(name = SleepFunction.NAME)
-  @LuaFunctionDoc(args = {"ticks"}, returnType = TypesModule.NIL)
+  @LuaFunctionDoc(args = {"ticks"}, returnType = LuaTypes.NIL)
   public class SleepFunction extends AbstractFunction1 {
     public static final String NAME = "sleep";
 

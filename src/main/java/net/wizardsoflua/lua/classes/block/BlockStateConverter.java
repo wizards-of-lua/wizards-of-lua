@@ -11,6 +11,10 @@ import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @AutoService(LuaConverter.class)
 public class BlockStateConverter implements LuaConverter<WolBlockState, Table> {
+  @Override
+  public String getName() {
+    return "BlockState";
+  }
 
   @Override
   public Class<WolBlockState> getJavaClass() {

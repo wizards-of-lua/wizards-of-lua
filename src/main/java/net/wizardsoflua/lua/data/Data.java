@@ -9,9 +9,9 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.util.TraversableHashMap;
 import net.wizardsoflua.event.CustomLuaEvent;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.lua.classes.common.DelegatingProxy;
 import net.wizardsoflua.lua.classes.event.CustomEventClass;
-import net.wizardsoflua.lua.module.types.TypesModule;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class Data {
@@ -23,7 +23,7 @@ public class Data {
     return new Data(javaObj);
   }
 
-  public static Data createData(Object luaObj, TypesModule types) {
+  public static Data createData(Object luaObj, LuaTypes types) {
     return new Data(transferObj(luaObj, new IdentityHashMap<>(), types));
   }
 
@@ -38,7 +38,7 @@ public class Data {
   }
 
   private static Object transferObj(Object luaObj, IdentityHashMap<Object, Object> copies,
-      TypesModule types) {
+      LuaTypes types) {
     if (luaObj == null) {
       return null;
     }
@@ -77,12 +77,12 @@ public class Data {
       TableData result = transferTable(table, copies, types);
       return result;
     }
-    throw new IllegalArgumentException(String
-        .format("Can't transfer Lua object. Unsupported data type: %s", types.type(luaObj)));
+    throw new IllegalArgumentException(String.format(
+        "Can't transfer Lua object. Unsupported data type: %s", types.getLuaTypeName(luaObj)));
   }
 
   private static TableData transferTable(Table table, IdentityHashMap<Object, Object> copies,
-      TypesModule types) {
+      LuaTypes types) {
     if (table == null) {
       return null;
     }
@@ -93,7 +93,7 @@ public class Data {
     }
 
     TraversableHashMap<Object, Object> contents = new TraversableHashMap<>();
-    String classname = types.getClassName(table);
+    String classname = types.getLuaClassName(table);
     TableData result = new TableData(contents, classname);
     copies.put(table, result);
 
