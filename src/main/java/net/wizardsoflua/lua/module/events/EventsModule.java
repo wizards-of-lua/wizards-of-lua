@@ -3,6 +3,8 @@ package net.wizardsoflua.lua.module.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
@@ -34,10 +36,10 @@ import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
 import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptorClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueueClass;
-import net.wizardsoflua.lua.data.Data;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
+import net.wizardsoflua.lua.view.ViewFactory;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = EventsModule.NAME, subtitle = "Knowing What Happened")
@@ -54,8 +56,8 @@ public class EventsModule extends LuaTableExtension {
   private TableFactory tableFactory;
   @Resource
   private Time time;
-  @Resource
-  private LuaTypes types;
+  @Inject
+  private ViewFactory viewFactory;
 
   private final Multimap<String, EventQueue> queues = HashMultimap.create();
   private final EventQueue.Context eventQueueContext = new EventQueue.Context() {
@@ -115,9 +117,7 @@ public class EventsModule extends LuaTableExtension {
 
   @net.wizardsoflua.annotation.LuaFunction
   public void fire(String eventName, Object data) {
-    // TODO Adrodoc 15.04.2018: Rewrite using proxies (see SpellEntity.data)
-    Data data2 = Data.createData(data, types);
-    MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data2));
+    MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data, viewFactory));
   }
 
   @net.wizardsoflua.annotation.LuaFunction(name = CollectFunction.NAME)

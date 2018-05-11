@@ -30,8 +30,6 @@ import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
 import net.wizardsoflua.lua.classes.LuaClassApi;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.data.TableData;
-import net.wizardsoflua.lua.data.TableDataConverter;
 import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
@@ -39,13 +37,11 @@ import net.wizardsoflua.lua.table.TableIterable;
 public class Converters implements LuaConverters {
   private final LuaClassLoader classLoader;
   private final NbtConverter nbtConverter;
-  private final TableDataConverter tableDataConverter;
   private final EnumConverter enumConverter = new EnumConverter();
 
   public Converters(LuaClassLoader classLoader) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
     nbtConverter = new NbtConverter(classLoader);
-    tableDataConverter = new TableDataConverter(classLoader);
   }
 
   public NbtConverter getNbtConverter() {
@@ -374,10 +370,6 @@ public class Converters implements LuaConverters {
     JavaLuaClass<? super J, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
     if (cls != null) {
       return cls.getLuaInstance(javaObject);
-    }
-    if (javaObject instanceof TableData) {
-      TableData data = (TableData) javaObject;
-      return tableDataConverter.toLua(data);
     }
     if (javaObject instanceof Iterable<?>) {
       DefaultTable result = new DefaultTable();
