@@ -13,7 +13,7 @@ modification that gives players the power to casts spells written in Lua.
 -----
 ### Join Us on our Public Server!
 
-We want to invite you to join our public server at <tt>5.35.245.30</tt>.
+We want to invite you to join our public server at <tt>mc.wizards-of-lua.net</tt>.
 
 On this server we are running the development version of our upcoming Red Magic mod,
 which is completely powered by Wizards of Lua magic.
