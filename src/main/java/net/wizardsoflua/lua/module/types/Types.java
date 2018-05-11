@@ -13,7 +13,7 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
-import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.Delegator;
@@ -69,7 +69,7 @@ public class Types implements LuaTypes {
 
   @Override
   public String getLuaTypeName(Class<?> javaClass) throws IllegalArgumentException {
-    LuaConverter<?, ?> converter = converters.getLuaConverterForJavaClass(javaClass);
+    LuaToJavaConverter<?, ?> converter = converters.getLuaToJavaConverter(javaClass);
     if (converter != null) {
       return converter.getName();
     }

@@ -6,31 +6,12 @@ import com.google.auto.service.AutoService;
 
 import net.minecraft.block.properties.IProperty;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
+import net.wizardsoflua.lua.extension.util.TypeTokenJavaToLuaConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
-@AutoService(LuaConverter.class)
-public class BlockStateConverter implements LuaConverter<WolBlockState, Table> {
-  @Override
-  public String getName() {
-    return "BlockState";
-  }
-
-  @Override
-  public Class<WolBlockState> getJavaClass() {
-    return WolBlockState.class;
-  }
-
-  @Override
-  public Class<Table> getLuaClass() {
-    return Table.class;
-  }
-
-  @Override
-  public WolBlockState getJavaInstance(Table luaInstance) {
-    throw new UnsupportedOperationException();
-  }
-
+@AutoService(JavaToLuaConverter.class)
+public class BlockStateConverter extends TypeTokenJavaToLuaConverter<WolBlockState> {
   @Override
   public Table getLuaInstance(WolBlockState blockState) {
     PatchedImmutableTable.Builder b = new PatchedImmutableTable.Builder();
@@ -42,5 +23,4 @@ public class BlockStateConverter implements LuaConverter<WolBlockState, Table> {
     }
     return b.build();
   }
-
 }
