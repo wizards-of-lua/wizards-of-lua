@@ -5,8 +5,9 @@ import static java.util.Objects.requireNonNull;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.Transferable;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.lua.classes.common.Delegator;
 
-public class LuaModuleApi<D> implements Transferable {
+public class LuaModuleApi<D> implements Transferable, Delegator<D> {
   protected final LuaClassLoader classLoader;
   protected D delegate;
 
@@ -19,6 +20,7 @@ public class LuaModuleApi<D> implements Transferable {
     return classLoader;
   }
 
+  @Override
   public D getDelegate() {
     return delegate;
   }
