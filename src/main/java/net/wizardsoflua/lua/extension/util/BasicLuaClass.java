@@ -45,6 +45,11 @@ public abstract class BasicLuaClass<J, I extends Delegator<? extends J>>
   public void registerInstanceConverter(@Resource LuaConverters converters) {
     converters.registerLuaConverter(new TypeTokenLuaConverter<I, Delegator<? extends I>>() {
       @Override
+      public String getName() {
+        return BasicLuaClass.this.getName();
+      }
+
+      @Override
       public Class<I> getJavaClass() {
         return getInstanceClass();
       }

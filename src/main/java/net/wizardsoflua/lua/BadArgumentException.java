@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 
-public class BadArgumentException extends RuntimeException {
+public class BadArgumentException extends IllegalArgumentException {
   private static final long serialVersionUID = 1L;
 
   private String detailMessage;

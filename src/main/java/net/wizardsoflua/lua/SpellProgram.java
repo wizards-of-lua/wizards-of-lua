@@ -44,6 +44,7 @@ import net.wizardsoflua.extension.spell.api.resource.Config;
 import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.api.resource.ScriptGatewayConfig;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.api.resource.Time;
@@ -222,6 +223,7 @@ public class SpellProgram {
       }
     });
     scope.registerResource(LuaConverters.class, luaClassLoader.getConverters());
+    scope.registerResource(LuaTypes.class, luaClassLoader.getTypes());
     scope.registerResource(Table.class, env);
     scope.registerResource(ExceptionHandler.class, new ExceptionHandler() {
       @Override

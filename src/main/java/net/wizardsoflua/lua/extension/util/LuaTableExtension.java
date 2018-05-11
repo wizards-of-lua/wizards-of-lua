@@ -1,7 +1,7 @@
 package net.wizardsoflua.lua.extension.util;
 
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.common.Named;
+import net.wizardsoflua.extension.api.Named;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;

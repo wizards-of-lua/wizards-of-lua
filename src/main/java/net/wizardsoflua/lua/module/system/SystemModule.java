@@ -26,10 +26,10 @@ import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Config;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.util.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
-import net.wizardsoflua.lua.module.types.TypesModule;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = SystemModule.NAME, subtitle = "Interacting with the Server's OS")
@@ -71,7 +71,7 @@ public class SystemModule extends LuaTableExtension {
   }
 
   @net.wizardsoflua.annotation.LuaFunction(name = ExecuteFunction.NAME)
-  @LuaFunctionDoc(returnType = TypesModule.NIL, args = {"name", "arg..."})
+  @LuaFunctionDoc(returnType = LuaTypes.NIL, args = {"name", "arg..."})
   class ExecuteFunction extends NamedFunctionAnyArg {
     public static final String NAME = "execute";
 
