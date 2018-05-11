@@ -38,18 +38,17 @@ import net.wizardsoflua.lua.table.TableIterable;
 
 public class Converters implements LuaConverters {
   private final LuaClassLoader classLoader;
-  private final NbtConverter nbtConverter;
   private final TableDataConverter tableDataConverter;
   private final EnumConverter enumConverter = new EnumConverter();
 
   public Converters(LuaClassLoader classLoader) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
-    nbtConverter = new NbtConverter(classLoader);
     tableDataConverter = new TableDataConverter(classLoader);
   }
 
+  @Deprecated
   public NbtConverter getNbtConverter() {
-    return nbtConverter;
+    return classLoader.getNbtConverter();
   }
 
   @Override

@@ -24,6 +24,7 @@ import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 import net.wizardsoflua.lua.extension.ServiceLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.types.Types;
+import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.lua.view.ViewFactory;
 
@@ -86,6 +87,8 @@ public class LuaClassLoader {
   @Inject
   private EventsModule events;
   @Inject
+  private NbtConverter nbtConverter;
+  @Inject
   private ViewFactory viewFactory;
 
   public interface Context {
@@ -125,6 +128,14 @@ public class LuaClassLoader {
   @Deprecated
   public EventsModule getEventsModule() {
     return events;
+  }
+
+  /**
+   * @deprecated Use @{@link Inject}
+   */
+  @Deprecated
+  public NbtConverter getNbtConverter() {
+    return nbtConverter;
   }
 
   public void loadStandardClasses() {

@@ -27,16 +27,19 @@ import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.SpellScoped;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.lua.table.TableIterable;
 
+@SpellScoped
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
+  private final LuaTypes types;
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
-  private final LuaClassLoader classLoader;
 
-  public NbtConverter(LuaClassLoader classLoader) {
-    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+  public NbtConverter(@Resource LuaTypes types) {
+    this.types = requireNonNull(types, "types == null!");
   }
 
   private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
@@ -72,7 +75,7 @@ public class NbtConverter {
   private String keyToString(Object luaKey, int index, String path) {
     ByteString result = Conversions.stringValueOf(luaKey);
     if (result == null) {
-      String actualType = classLoader.getTypes().getLuaTypeName(luaKey);
+      String actualType = types.getLuaTypeName(luaKey);
       throw new ConversionException("Can't convert key " + index + " in " + path
           + "! string/number expected, but got " + actualType);
     }
@@ -80,7 +83,7 @@ public class NbtConverter {
   }
 
   ConversionException conversionException(String path, Object actual, String expected) {
-    String actualType = classLoader.getTypes().getLuaTypeName(actual);
+    String actualType = types.getLuaTypeName(actual);
     return new ConversionException(
         "Can't convert " + path + "! " + expected + " expected, but got " + actualType);
   }
