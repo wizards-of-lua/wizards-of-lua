@@ -7,7 +7,7 @@ import com.google.auto.service.AutoService;
 import net.minecraft.block.properties.IProperty;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
-import net.wizardsoflua.lua.extension.util.TypeTokenJavaToLuaConverter;
+import net.wizardsoflua.lua.converter.TypeTokenJavaToLuaConverter;
 import net.wizardsoflua.lua.table.PatchedImmutableTable;
 
 @AutoService(JavaToLuaConverter.class)

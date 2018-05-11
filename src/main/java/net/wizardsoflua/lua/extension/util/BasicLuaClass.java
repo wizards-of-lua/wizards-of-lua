@@ -7,6 +7,7 @@ import com.google.common.reflect.TypeToken;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.converter.TypeTokenLuaToJavaConverter;
 
 @SuppressWarnings("serial")
 public abstract class BasicLuaClass<J, I extends Delegator<? extends J>>

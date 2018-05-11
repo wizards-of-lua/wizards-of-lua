@@ -217,7 +217,9 @@ public class Converters implements LuaConverters {
       Object result = convertTo(type, luaObject);
       return type.cast(result);
     } catch (ClassCastException ex) {
-      throw badArgument(type, luaObject);
+      BadArgumentException e = badArgument(type, luaObject);
+      e.initCause(ex);
+      throw e;
     }
   }
 
