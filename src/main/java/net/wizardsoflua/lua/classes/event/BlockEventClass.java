@@ -3,7 +3,8 @@ package net.wizardsoflua.lua.classes.event;
 import com.google.auto.service.AutoService;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.world.BlockEvent;
 import net.wizardsoflua.block.ImmutableWolBlock;
@@ -12,7 +13,7 @@ import net.wizardsoflua.lua.classes.DelegatorLuaClass;
 import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
 
 @AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = BlockEventClass.NAME, superClass = EventClass.class)
+@DeclareLuaClass(name = BlockEventClass.NAME, superClass = EventClass.class)
 public class BlockEventClass
     extends DelegatorLuaClass<BlockEvent, BlockEventClass.Proxy<BlockEvent>> {
   public static final String NAME = "BlockEvent";
@@ -35,8 +36,9 @@ public class BlockEventClass
 
     protected Object getBlock() {
       IBlockState blockState = delegate.getState();
-      NBTTagCompound nbt = null;
-      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
+      BlockPos pos = delegate.getPos();
+      TileEntity tileEntity = delegate.getWorld().getTileEntity(pos);
+      return getConverters().toLua(new ImmutableWolBlock(blockState, tileEntity));
     }
   }
 }
