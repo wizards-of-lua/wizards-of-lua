@@ -20,6 +20,11 @@ properties:
     "
     examples:
       - url: BlockPlaceEvent/placedAgainst.md
+  - name: replacedBlock
+    type: "[Block](/modules/Block/)"
+    access: r
+    description: "The block that is replaced by this event.
+    "
   - name: player
     type: "[Player](/modules/Player/)"
     access: r
