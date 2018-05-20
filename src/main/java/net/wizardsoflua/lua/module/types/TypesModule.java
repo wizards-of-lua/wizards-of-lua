@@ -74,7 +74,7 @@ public class TypesModule extends LuaTableExtension {
   }
 
   @LuaFunction
-  public String type(@Nullable Object instance) {
-    return types.getLuaTypeName(instance);
+  public String type(@Nullable Object LuaObject) {
+    return types.getLuaTypeNameOfLuaObject(LuaObject);
   }
 }

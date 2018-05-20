@@ -6,9 +6,11 @@ import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
@@ -38,6 +40,19 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
 
 public class Converters implements LuaConverters {
+  private static final Set<Class<?>> supportedJavaClasses = new HashSet<>();
+
+  /**
+   * Returns {@code true} if there exists a spell that can receive an object of the specified java
+   * class.
+   *
+   * @param javaClass
+   * @return {@code true} if the specified java class is supported, {@code false} otherwise
+   */
+  public static boolean isSupported(Class<?> javaClass) {
+    return supportedJavaClasses.contains(javaClass);
+  }
+
   private final LuaClassLoader classLoader;
   private final TableDataConverter tableDataConverter;
   private final EnumConverter enumConverter = new EnumConverter();
@@ -225,8 +240,8 @@ public class Converters implements LuaConverters {
 
   private BadArgumentException badArgument(Class<?> expectedType, Object actualObject) {
     Types types = classLoader.getTypes();
-    String expected = types.getLuaTypeName(expectedType);
-    String actual = types.getLuaTypeName(actualObject);
+    String expected = types.getLuaTypeNameForJavaClass(expectedType);
+    String actual = types.getLuaTypeNameOfLuaObject(actualObject);
     return new BadArgumentException(expected, actual);
   }
 
@@ -255,6 +270,7 @@ public class Converters implements LuaConverters {
   public void registerJavaToLuaConverter(JavaToLuaConverter<?> converter)
       throws IllegalArgumentException {
     Class<?> javaClass = converter.getJavaClass();
+    supportedJavaClasses.add(javaClass);
     if (javaToLuaConverters.containsKey(javaClass)) {
       throw new IllegalArgumentException(
           "A JavaToLuaConverter for java " + javaClass + " is already registered");
@@ -262,7 +278,6 @@ public class Converters implements LuaConverters {
     javaToLuaConverters.put(javaClass, converter);
   }
 
-  @Override
   public <J> LuaToJavaConverter<? super J, ?> getLuaToJavaConverter(Class<J> javaClass) {
     for (Class<? super J> cls = javaClass; cls != null; cls = cls.getSuperclass()) {
       @SuppressWarnings("unchecked")

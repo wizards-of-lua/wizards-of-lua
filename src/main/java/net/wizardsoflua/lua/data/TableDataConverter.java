@@ -60,9 +60,9 @@ public class TableDataConverter {
       return null;
     }
     LuaClass luaClass = classLoader.getLuaClassForName(classname);
-    if (luaClass == null) {
-      return null;
+    if (luaClass != null) {
+      return luaClass.getMetaTable();
     }
-    return luaClass.getMetaTable();
+    return classLoader.getTypes().getLuaClassTableForName(classname);
   }
 }

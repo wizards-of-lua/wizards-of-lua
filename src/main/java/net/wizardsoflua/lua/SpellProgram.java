@@ -7,8 +7,6 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -51,9 +49,7 @@ import net.wizardsoflua.extension.spell.api.resource.ScriptGatewayConfig;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
-import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
-import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerApi;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
@@ -61,7 +57,6 @@ import net.wizardsoflua.lua.classes.entity.PlayerInstance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
-import net.wizardsoflua.lua.extension.ServiceLoader;
 import net.wizardsoflua.lua.extension.SpellScope;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventsModule;
@@ -72,6 +67,7 @@ import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.spell.SpellsModule;
+import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
@@ -158,15 +154,11 @@ public class SpellProgram {
       }
     });
     injectionScope = createInjectionScope();
-    loadServices(logger);
+    loadExtensions();
     injectionScope.injectMembers(luaClassLoader);
     luaClassLoader.loadStandardClasses();
-    PrintRedirector.installInto(env, new PrintRedirector.Context() {
-      @Override
-      public void send(String message) {
-        SpellProgram.this.owner.sendMessage(new TextComponentString(message));
-      }
-    });
+    PrintRedirector.installInto(env,
+        message -> SpellProgram.this.owner.sendMessage(new TextComponentString(message)));
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
@@ -228,20 +220,12 @@ public class SpellProgram {
     scope.registerResource(LuaConverters.class, luaClassLoader.getConverters());
     scope.registerResource(LuaTypes.class, luaClassLoader.getTypes());
     scope.registerResource(Table.class, env);
-    scope.registerResource(ExceptionHandler.class, new ExceptionHandler() {
-      @Override
-      public void handle(String contextMessage, Throwable t) {
-        handleException(contextMessage, t);
-      }
-    });
+    scope.registerResource(ExceptionHandler.class,
+        (contextMessage, t) -> handleException(contextMessage, t));
     scope.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
         scheduler);
-    scope.registerResource(Spell.class, new Spell() {
-      @Override
-      public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
-        parallelTaskFactories.add(parallelTaskFactory);
-      }
-    });
+    scope.registerResource(Spell.class,
+        parallelTaskFactory -> parallelTaskFactories.add(parallelTaskFactory));
     scope.registerResource(TableFactory.class, stateContext);
     scope.registerResource(Time.class, new Time() {
       @Override
@@ -257,19 +241,10 @@ public class SpellProgram {
     return scope;
   }
 
-  private void loadServices(Logger logger) {
-    Set<Class<? extends LuaConverter<?, ?>>> converters =
-        ServiceLoader.load(logger, LuaConverter.getClassWithWildcards());
-
-    Set<Class<? extends LuaToJavaConverter<?, ?>>> luaToJava = new HashSet<>(converters);
-    luaToJava.addAll(ServiceLoader.load(logger, LuaToJavaConverter.getClassWithWildcards()));
-    luaToJava.forEach(this::registerLuaToJavaConverter);
-
-    Set<Class<? extends JavaToLuaConverter<?>>> javaToLua = new HashSet<>(converters);
-    javaToLua.addAll(ServiceLoader.load(logger, JavaToLuaConverter.getClassWithWildcards()));
-    javaToLua.forEach(this::registerJavaToLuaConverter);
-
-    ServiceLoader.load(logger, SpellExtension.class).forEach(injectionScope::getInstance);
+  private void loadExtensions() {
+    ExtensionLoader.getLuaToJavaConverters().forEach(this::registerLuaToJavaConverter);
+    ExtensionLoader.getJavaToLuaConverters().forEach(this::registerJavaToLuaConverter);
+    ExtensionLoader.getSpellExtension().forEach(injectionScope::getInstance);
   }
 
   private <C extends LuaToJavaConverter<?, ?>> void registerLuaToJavaConverter(
@@ -288,8 +263,12 @@ public class SpellProgram {
     return luaClassLoader;
   }
 
-  private Converters getConverters() {
+  public Converters getConverters() {
     return luaClassLoader.getConverters();
+  }
+
+  public Types getTypes() {
+    return luaClassLoader.getTypes();
   }
 
   public EventsModule getEvents() {
@@ -368,7 +347,7 @@ public class SpellProgram {
     s.printStackTrace();
     String message = String.format("%s: %s", contextMessage, s.getMessage());
     TextComponentString txt = new TextComponentString(message);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
   }
 
@@ -399,12 +378,7 @@ public class SpellProgram {
     // Instead we install our own two searchers
     ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache, classLoader);
     PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader, fileSystem,
-        new PatchedChunkLoadPathSearcher.Context() {
-          @Override
-          public String getLuaPath() {
-            return defaultLuaPath;
-          }
-        });
+        () -> defaultLuaPath);
 
     CoroutineLib.installInto(stateContext, env);
     StringLib.installInto(stateContext, env);

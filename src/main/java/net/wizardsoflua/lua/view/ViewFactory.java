@@ -36,7 +36,7 @@ public class ViewFactory {
       CacheBuilder.newBuilder().weakKeys().softValues().build();
 
   public @Nullable String getClassName(Table table) {
-    return types.getLuaClassName(table);
+    return types.getLuaClassNameOfLuaObject(table);
   }
 
   public @Nullable Table getClassTableForName(String className) {

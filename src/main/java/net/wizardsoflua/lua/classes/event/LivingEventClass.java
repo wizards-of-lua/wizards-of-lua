@@ -4,31 +4,50 @@ import com.google.auto.service.AutoService;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = LivingEventClass.NAME, superClass = EventClass.class)
-public class LivingEventClass extends
-    DelegatorLuaClass<LivingEvent, LivingEventClass.Proxy<LivingEventApi<LivingEvent>, LivingEvent>> {
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = LivingEventClass.NAME, superClass = EventClass.class)
+@GenerateLuaClassTable(instance = LivingEventClass.Instance.class)
+@GenerateLuaDoc(type = EventClass.TYPE)
+public class LivingEventClass extends BasicLuaClass<LivingEvent, LivingEventClass.Instance<?>> {
   public static final String NAME = "LivingEvent";
+  @Resource
+  private LuaConverters converters;
+  @Resource
+  private Injector injector;
 
   @Override
-  public Proxy<LivingEventApi<LivingEvent>, LivingEvent> toLua(LivingEvent javaObj) {
-    return new Proxy<>(new LivingEventApi<>(this, javaObj));
+  protected Table createRawTable() {
+    return new LivingEventClassTable<>(this, converters);
   }
 
-  public static class Proxy<A extends LivingEventApi<D>, D extends LivingEvent>
-      extends EventClass.Proxy<A, D> {
-    public Proxy(A api) {
-      super(api);
-      addReadOnly("entity", this::getEntity);
+  @Override
+  protected Delegator<Instance<?>> toLuaInstance(LivingEvent javaInstance) {
+    return new LivingEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
+        getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends LivingEvent> extends EventClass.Instance<D> {
+    public Instance(D delegate, String name, Injector injector) {
+      super(delegate, name, injector);
     }
 
-    protected Object getEntity() {
-      EntityLivingBase entity = delegate.getEntityLiving();
-      return getConverters().toLua(entity);
+    @LuaProperty
+    public EntityLivingBase getEntity() {
+      return delegate.getEntityLiving();
     }
   }
 }

@@ -11,19 +11,19 @@ import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.extension.api.inject.Resource;
-import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 public class Types implements LuaTypes {
   private final LuaClassLoader classLoader;
-  private final LuaConverters converters;
+  private final Converters converters;
   private final BiMap<String, Table> classes = HashBiMap.create();
 
-  public Types(LuaClassLoader classLoader, @Resource LuaConverters converters) {
+  public Types(LuaClassLoader classLoader, @Resource Converters converters) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
     this.converters = requireNonNull(converters, "converters == null!");
   }
@@ -42,33 +42,32 @@ public class Types implements LuaTypes {
   }
 
   @Override
-  public String getLuaTypeName(@Nullable Object instance) {
-    if (instance == null) {
+  public String getLuaTypeNameOfLuaObject(@Nullable Object luaObject) {
+    if (luaObject == null) {
       return NIL;
     }
-    if (instance instanceof Table) {
-      Table instanceTable = (Table) instance;
-      String result = getLuaClassName(instanceTable);
+    if (luaObject instanceof Table) {
+      Table instanceTable = (Table) luaObject;
+      String result = getLuaClassNameOfLuaObject(instanceTable);
       if (result != null) {
         return result;
       }
     }
-    return getLuaTypeName(instance.getClass());
+    return getLuaTypeName(luaObject.getClass());
   }
 
   @Override
-  public @Nullable String getLuaClassName(Table instance) {
-    requireNonNull(instance, "instance == null!");
+  public @Nullable String getLuaClassNameOfLuaObject(Table luaObject) {
+    requireNonNull(luaObject, "luaObject == null!");
     BiMap<Table, String> inverse = classes.inverse();
-    if (inverse.containsKey(instance)) {
+    if (inverse.containsKey(luaObject)) {
       return "class";
     }
-    Table metatable = instance.getMetatable();
+    Table metatable = luaObject.getMetatable();
     return inverse.get(metatable);
   }
 
-  @Override
-  public String getLuaTypeName(Class<?> javaClass) throws IllegalArgumentException {
+  public String getLuaTypeNameForJavaClass(Class<?> javaClass) throws IllegalArgumentException {
     LuaToJavaConverter<?, ?> converter = converters.getLuaToJavaConverter(javaClass);
     if (converter != null) {
       return converter.getName();
@@ -77,22 +76,26 @@ public class Types implements LuaTypes {
     if (legacyResult != null) {
       return legacyResult;
     }
-    if (Table.class.isAssignableFrom(javaClass)) {
+    return getLuaTypeName(javaClass);
+  }
+
+  private String getLuaTypeName(Class<?> cls) {
+    if (Table.class.isAssignableFrom(cls)) {
       return TABLE;
     }
-    if (ByteString.class.isAssignableFrom(javaClass) || String.class.isAssignableFrom(javaClass)) {
+    if (ByteString.class.isAssignableFrom(cls) || String.class.isAssignableFrom(cls)) {
       return STRING;
     }
-    if (Number.class.isAssignableFrom(javaClass)) {
+    if (Number.class.isAssignableFrom(cls)) {
       return NUMBER;
     }
-    if (Boolean.class.isAssignableFrom(javaClass)) {
+    if (Boolean.class.isAssignableFrom(cls)) {
       return BOOLEAN;
     }
-    if (LuaFunction.class.isAssignableFrom(javaClass)) {
+    if (LuaFunction.class.isAssignableFrom(cls)) {
       return FUNCTION;
     }
-    throw new IllegalArgumentException("Unknown lua type: " + javaClass.getName());
+    throw new IllegalArgumentException("Unknown lua type: " + cls.getName());
   }
 
   // TODO Adrodoc 11.05.2018: Remove this when we got rid of LuaClassApi

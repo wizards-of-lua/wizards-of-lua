@@ -12,15 +12,13 @@ public interface LuaTypes {
   static final String STRING = "string";
   static final String TABLE = "table";
 
-  Table registerLuaClass(String className, Table classTable);
-
-  String getLuaTypeName(@Nullable Object instance);
-
-  @Nullable
-  String getLuaClassName(Table instance);
-
-  String getLuaTypeName(Class<?> javaClass) throws IllegalArgumentException;
+  Table registerLuaClass(String luaClassName, Table classTable);
 
   @Nullable
   Table getLuaClassTableForName(String luaClassName);
+
+  String getLuaTypeNameOfLuaObject(@Nullable Object luaObject);
+
+  @Nullable
+  String getLuaClassNameOfLuaObject(Table luaObject);
 }
