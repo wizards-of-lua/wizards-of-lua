@@ -25,7 +25,7 @@ public class NbtConverterTest extends AssertionsFactory {
         public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
           return null;
         }
-      }));
+      }).getTypes());
 
   @Test
   public void test_merge__Uses_NbtType_of_existing_Tag() {

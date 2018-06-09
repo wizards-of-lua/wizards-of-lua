@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 
 public interface LuaConverters {
   @Nullable
@@ -50,5 +52,10 @@ public interface LuaConverters {
 
   void registerLuaConverter(LuaConverter<?, ?> converter) throws IllegalArgumentException;
 
-  <J> LuaConverter<? super J, ?> getLuaConverterForJavaClass(Class<J> javaClass);
+  void registerLuaToJavaConverter(LuaToJavaConverter<?, ?> converter)
+      throws IllegalArgumentException;
+
+  void registerJavaToLuaConverter(JavaToLuaConverter<?> converter) throws IllegalArgumentException;
+
+  <J> LuaToJavaConverter<? super J, ?> getLuaToJavaConverter(Class<J> javaClass);
 }

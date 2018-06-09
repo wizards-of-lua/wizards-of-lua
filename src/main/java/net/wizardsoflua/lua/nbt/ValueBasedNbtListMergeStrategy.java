@@ -35,11 +35,12 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
       Object keyValue = luaValue.rawget(key);
       checkNotNull(keyValue, "Expected each value to contain the key: '" + key + "'");
       NBTTagCompound oldValue = getCompoundByValueKey(nbt, keyValue);
+      String entryPath = path + "[" + keyValue + "]";
       if (oldValue != null) {
-        NBTBase newValue = converter.merge(oldValue, luaValue, path + "[" + keyValue + "]");
+        NBTBase newValue = converter.merge(oldValue, luaValue, entryPath);
         result.appendTag(newValue);
       } else {
-        NBTBase newValue = converter.toNbtCompound(luaValue);
+        NBTBase newValue = converter.toNbtCompound(luaValue, entryPath);
         result.appendTag(newValue);
       }
     }

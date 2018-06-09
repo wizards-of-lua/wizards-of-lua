@@ -16,13 +16,9 @@ public class ItemTest extends WolTestBase {
     // Given:
     String expected = "3";
 
-    // TODO this is not working when we won't initialize the repairCost with 2
-    // since the value of 3 is considered a Long value but the ItemStack repairCost NBT value
-    // must be an Integer value. This NBT stuff really sucks!
-
     // When:
     mc().player().chat(
-        "/lua i=Items.get('diamond_axe'); i.repairCost=2; i:putNbt({tag={RepairCost=3}});  print( i.repairCost)");
+        "/lua i=Items.get('diamond_axe'); i:putNbt({tag={RepairCost=3}});  print( i.repairCost)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

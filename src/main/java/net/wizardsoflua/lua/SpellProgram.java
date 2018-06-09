@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -48,7 +50,9 @@ import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.api.resource.ScriptGatewayConfig;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.api.resource.Time;
+import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.classes.entity.PlayerApi;
@@ -103,7 +107,7 @@ public class SpellProgram {
     InjectionScope getRootScope();
   }
 
-  private static final String ROOT_CLASS_PREFIX = "SpellByteCode";
+  public static final String ROOT_CLASS_PREFIX = "SpellByteCode";
   private final String code;
   private final ModuleDependencies dependencies;
   private final LuaScheduler scheduler;
@@ -145,7 +149,7 @@ public class SpellProgram {
     env = stateContext.newTable();
     runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
-    exceptionFactory = new SpellExceptionFactory(ROOT_CLASS_PREFIX);
+    exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
     luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
       @Override
@@ -154,8 +158,7 @@ public class SpellProgram {
       }
     });
     injectionScope = createInjectionScope();
-    ServiceLoader.load(logger, LuaConverter.class).forEach(this::registerLuaConverter);
-    ServiceLoader.load(logger, SpellExtension.class).forEach(injectionScope::getInstance);
+    loadServices(logger);
     injectionScope.injectMembers(luaClassLoader);
     luaClassLoader.loadStandardClasses();
     PrintRedirector.installInto(env, new PrintRedirector.Context() {
@@ -254,9 +257,31 @@ public class SpellProgram {
     return scope;
   }
 
-  private <C extends LuaConverter<?, ?>> void registerLuaConverter(Class<C> converterClass) {
+  private void loadServices(Logger logger) {
+    Set<Class<? extends LuaConverter<?, ?>>> converters =
+        ServiceLoader.load(logger, LuaConverter.getClassWithWildcards());
+
+    Set<Class<? extends LuaToJavaConverter<?, ?>>> luaToJava = new HashSet<>(converters);
+    luaToJava.addAll(ServiceLoader.load(logger, LuaToJavaConverter.getClassWithWildcards()));
+    luaToJava.forEach(this::registerLuaToJavaConverter);
+
+    Set<Class<? extends JavaToLuaConverter<?>>> javaToLua = new HashSet<>(converters);
+    javaToLua.addAll(ServiceLoader.load(logger, JavaToLuaConverter.getClassWithWildcards()));
+    javaToLua.forEach(this::registerJavaToLuaConverter);
+
+    ServiceLoader.load(logger, SpellExtension.class).forEach(injectionScope::getInstance);
+  }
+
+  private <C extends LuaToJavaConverter<?, ?>> void registerLuaToJavaConverter(
+      Class<C> converterClass) {
     C converter = injectionScope.getInstance(converterClass);
-    getConverters().registerLuaConverter(converter);
+    getConverters().registerLuaToJavaConverter(converter);
+  }
+
+  private <C extends JavaToLuaConverter<?>> void registerJavaToLuaConverter(
+      Class<C> converterClass) {
+    C converter = injectionScope.getInstance(converterClass);
+    getConverters().registerJavaToLuaConverter(converter);
   }
 
   public LuaClassLoader getLuaClassLoader() {

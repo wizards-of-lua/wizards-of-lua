@@ -1,73 +1,41 @@
 package net.wizardsoflua.spell;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.sandius.rembulan.LuaRuntimeException;
-import net.sandius.rembulan.parser.ParseException;
+import net.sandius.rembulan.exec.CallException;
+import net.sandius.rembulan.load.LoaderException;
+import net.wizardsoflua.lua.SpellProgram;
 
 public class SpellExceptionFactory {
-
-  private final Pattern stackTracePattern;
-
-  public SpellExceptionFactory(String rootClassPrefix) {
-    stackTracePattern = Pattern.compile(rootClassPrefix + ".*\\.run\\((.+):(.*)\\)");
+  public SpellException create(Throwable throwable) {
+    String message = getMessage(throwable);
+    CharSequence luaStackTrace = getLuaStackTrace(throwable);
+    return new SpellException(message + luaStackTrace, throwable);
   }
 
-  public SpellException create(Throwable throwable) {
-    if (throwable.getCause() instanceof ParseException) {
+  private static String getMessage(Throwable throwable) {
+    if (throwable instanceof LoaderException || throwable instanceof CallException) {
       throwable = throwable.getCause();
     }
-    if (throwable.getCause() instanceof UndeclaredThrowableException) {
-      throwable = ((UndeclaredThrowableException) throwable.getCause()).getUndeclaredThrowable();
+    String message = throwable.getMessage();
+    if (message != null) {
+      return message;
+    } else {
+      return "Unknown error";
     }
+  }
 
-    String exMessage = getExceptionMessage(throwable);
-    if (exMessage == null) {
-      exMessage = "Unknown error";
-    }
-    String stackTrace = getStackTrace(throwable);
-    Matcher m = stackTracePattern.matcher(stackTrace);
-    StringBuilder modules = new StringBuilder();
-    while (m.find()) {
-      String module = m.group(1);
-      String line = m.group(2);
-      if (modules.length() > 0) {
-        modules.append("\n");
+  private static CharSequence getLuaStackTrace(Throwable throwable) {
+    StringBuilder luaStackTrace = new StringBuilder();
+    for (Throwable t = throwable; t != null; t = t.getCause()) {
+      StackTraceElement[] stackTrace = t.getStackTrace();
+      for (StackTraceElement stackTraceElement : stackTrace) {
+        String className = stackTraceElement.getClassName();
+        int lineNumber = stackTraceElement.getLineNumber();
+        if (className.startsWith(SpellProgram.ROOT_CLASS_PREFIX) && lineNumber >= 0) {
+          String fileName = stackTraceElement.getFileName();
+          luaStackTrace.append("\n at line ").append(lineNumber).append(" of ").append(fileName);
+        }
       }
-      modules.append(" at line ").append(line).append(" of ").append(module);
     }
-    if (modules.length() > 0) {
-      String message = String.format("%s\n%s", exMessage, modules.toString());
-      return new SpellException(message, throwable);
-    }
-    return new SpellException(exMessage, throwable);
-  }
-
-  private String getExceptionMessage(Throwable top) {
-    Throwable cause = top;
-    while (cause != null && !(cause instanceof ParseException)) {
-      cause = cause.getCause();
-    }
-    if (cause instanceof ParseException) {
-      return cause.getMessage();
-    }
-    cause = top;
-    while (cause != null && !(cause instanceof LuaRuntimeException)) {
-      cause = cause.getCause();
-    }
-    if (cause instanceof LuaRuntimeException) {
-      return cause.getMessage();
-    }
-    return top.getMessage();
-  }
-
-  private String getStackTrace(Throwable throwable) {
-    StringWriter writer = new StringWriter();
-    throwable.printStackTrace(new PrintWriter(writer));
-    return writer.toString();
+    return luaStackTrace;
   }
 }

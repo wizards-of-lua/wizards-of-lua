@@ -51,7 +51,7 @@ public class TableUtils {
       return CONVERSION.toJava(type, value, key);
     } catch (BadArgumentException ex) {
       throw new ConversionException(format("Can't convert value '%s'! %s expected, but got: %s",
-          key, type.getName(), value.getClass().getName()));
+          key, type.getName(), value.getClass().getName()), ex);
     }
   }
 

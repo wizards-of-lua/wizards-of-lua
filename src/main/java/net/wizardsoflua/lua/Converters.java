@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
 
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -24,7 +23,9 @@ import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
 import net.wizardsoflua.lua.classes.JavaLuaClass;
 import net.wizardsoflua.lua.classes.LuaClass;
@@ -36,16 +37,15 @@ import net.wizardsoflua.lua.table.TableIterable;
 
 public class Converters implements LuaConverters {
   private final LuaClassLoader classLoader;
-  private final NbtConverter nbtConverter;
   private final EnumConverter enumConverter = new EnumConverter();
 
   public Converters(LuaClassLoader classLoader) {
     this.classLoader = requireNonNull(classLoader, "classLoader == null!");
-    nbtConverter = new NbtConverter(classLoader);
   }
 
+  @Deprecated
   public NbtConverter getNbtConverter() {
-    return nbtConverter;
+    return classLoader.getNbtConverter();
   }
 
   @Override
@@ -213,7 +213,9 @@ public class Converters implements LuaConverters {
       Object result = convertTo(type, luaObject);
       return type.cast(result);
     } catch (ClassCastException ex) {
-      throw badArgument(type, luaObject);
+      BadArgumentException e = badArgument(type, luaObject);
+      e.initCause(ex);
+      throw e;
     }
   }
 
@@ -224,38 +226,64 @@ public class Converters implements LuaConverters {
     return new BadArgumentException(expected, actual);
   }
 
-  private final Map<Class<?>, LuaConverter<?, ?>> convertersByJavaClass = new HashMap<>();
+  private final Map<Class<?>, LuaToJavaConverter<?, ?>> luaToJavaConverters = new HashMap<>();
+  private final Map<Class<?>, JavaToLuaConverter<?>> javaToLuaConverters = new HashMap<>();
 
   @Override
   public void registerLuaConverter(LuaConverter<?, ?> converter) throws IllegalArgumentException {
-    Class<?> javaClass = converter.getJavaClass();
-    if (convertersByJavaClass.containsKey(javaClass)) {
-      throw new IllegalArgumentException(
-          "A converter for java " + javaClass + " is already registered");
-    }
-    convertersByJavaClass.put(javaClass, converter);
-  }
-
-  private @Nullable <J> LuaConverter<J, ?> getConverter(Class<J> javaClass) {
-    @SuppressWarnings("unchecked")
-    LuaConverter<J, ?> result = (LuaConverter<J, ?>) convertersByJavaClass.get(javaClass);
-    return result;
+    registerLuaToJavaConverter(converter);
+    registerJavaToLuaConverter(converter);
   }
 
   @Override
-  public @Nullable <J> LuaConverter<? super J, ?> getLuaConverterForJavaClass(Class<J> javaClass) {
-    Class<? super J> cls = javaClass;
-    while (cls != null) {
-      LuaConverter<? super J, ?> result = getConverter(cls);
+  public void registerLuaToJavaConverter(LuaToJavaConverter<?, ?> converter)
+      throws IllegalArgumentException {
+    Class<?> javaClass = converter.getJavaClass();
+    if (luaToJavaConverters.containsKey(javaClass)) {
+      throw new IllegalArgumentException(
+          "A LuaToJavaConverter for java " + javaClass + " is already registered");
+    }
+    luaToJavaConverters.put(javaClass, converter);
+
+  }
+
+  @Override
+  public void registerJavaToLuaConverter(JavaToLuaConverter<?> converter)
+      throws IllegalArgumentException {
+    Class<?> javaClass = converter.getJavaClass();
+    if (javaToLuaConverters.containsKey(javaClass)) {
+      throw new IllegalArgumentException(
+          "A JavaToLuaConverter for java " + javaClass + " is already registered");
+    }
+    javaToLuaConverters.put(javaClass, converter);
+  }
+
+  @Override
+  public <J> LuaToJavaConverter<? super J, ?> getLuaToJavaConverter(Class<J> javaClass) {
+    for (Class<? super J> cls = javaClass; cls != null; cls = cls.getSuperclass()) {
+      @SuppressWarnings("unchecked")
+      LuaToJavaConverter<? super J, ?> result =
+          (LuaToJavaConverter<? super J, ?>) luaToJavaConverters.get(cls);
       if (result != null) {
         return result;
       }
-      cls = cls.getSuperclass();
     }
     return null;
   }
 
-  private <L> Object convertToJava(Object luaObject, LuaConverter<?, L> converter)
+  public <J> JavaToLuaConverter<? super J> getJavaToLuaConverter(Class<J> javaClass) {
+    for (Class<? super J> cls = javaClass; cls != null; cls = cls.getSuperclass()) {
+      @SuppressWarnings("unchecked")
+      JavaToLuaConverter<? super J> result =
+          (JavaToLuaConverter<? super J>) javaToLuaConverters.get(cls);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
+  }
+
+  private <L> Object convertToJava(Object luaObject, LuaToJavaConverter<?, L> converter)
       throws ClassCastException {
     Class<L> luaClass = converter.getLuaClass();
     L luaInstance = luaClass.cast(luaObject);
@@ -264,7 +292,7 @@ public class Converters implements LuaConverters {
 
   private Object convertTo(Class<?> javaClass, Object luaObject)
       throws ClassCastException, BadArgumentException {
-    LuaConverter<?, ?> converter = getLuaConverterForJavaClass(javaClass);
+    LuaToJavaConverter<?, ?> converter = getLuaToJavaConverter(javaClass);
     if (converter != null) {
       return convertToJava(luaObject, converter);
     }
@@ -363,7 +391,7 @@ public class Converters implements LuaConverters {
     requireNonNull(javaObject, "javaObject == null!");
     @SuppressWarnings("unchecked")
     Class<J> javaClass = (Class<J>) javaObject.getClass();
-    LuaConverter<? super J, ?> converter = getLuaConverterForJavaClass(javaClass);
+    JavaToLuaConverter<? super J> converter = getJavaToLuaConverter(javaClass);
     if (converter != null) {
       return converter.getLuaInstance(javaObject);
     }
@@ -389,9 +417,6 @@ public class Converters implements LuaConverters {
         return result;
       }
       return ByteString.of(enumValue.name());
-    }
-    if (javaObject instanceof NBTBase) {
-      return NbtConverter.toLua((NBTBase) javaObject);
     }
     if (javaObject instanceof String) {
       return ByteString.of((String) javaObject);

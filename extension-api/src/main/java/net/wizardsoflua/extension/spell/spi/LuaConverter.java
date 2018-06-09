@@ -1,13 +1,11 @@
 package net.wizardsoflua.extension.spell.spi;
 
-import net.wizardsoflua.extension.api.Named;
-
-public interface LuaConverter<J, L> extends SpellExtension, Named {
-  Class<J> getJavaClass();
-
-  Class<L> getLuaClass();
-
-  J getJavaInstance(L luaInstance);
-
+public interface LuaConverter<J, L> extends LuaToJavaConverter<J, L>, JavaToLuaConverter<J> {
+  @Override
   L getLuaInstance(J javaInstance);
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  static Class<LuaConverter<?, ?>> getClassWithWildcards() {
+    return (Class) LuaConverter.class;
+  }
 }

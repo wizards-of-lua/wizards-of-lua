@@ -27,16 +27,19 @@ import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.SpellScoped;
+import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.lua.table.TableIterable;
 
+@SpellScoped
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
+  private final LuaTypes types;
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
-  private final LuaClassLoader classLoader;
 
-  public NbtConverter(LuaClassLoader classLoader) {
-    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+  public NbtConverter(@Resource LuaTypes types) {
+    this.types = requireNonNull(types, "types == null!");
   }
 
   private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
@@ -72,7 +75,7 @@ public class NbtConverter {
   private String keyToString(Object luaKey, int index, String path) {
     ByteString result = Conversions.stringValueOf(luaKey);
     if (result == null) {
-      String actualType = classLoader.getTypes().getLuaTypeName(luaKey);
+      String actualType = types.getLuaTypeName(luaKey);
       throw new ConversionException("Can't convert key " + index + " in " + path
           + "! string/number expected, but got " + actualType);
     }
@@ -80,7 +83,7 @@ public class NbtConverter {
   }
 
   ConversionException conversionException(String path, Object actual, String expected) {
-    String actualType = classLoader.getTypes().getLuaTypeName(actual);
+    String actualType = types.getLuaTypeName(actual);
     return new ConversionException(
         "Can't convert " + path + "! " + expected + " expected, but got " + actualType);
   }
@@ -111,7 +114,7 @@ public class NbtConverter {
       if (oldNbtValue != null) {
         newNbtValue = merge(oldNbtValue, newLuaValue, key, entryPath);
       } else {
-        newNbtValue = toNbt(newLuaValue);
+        newNbtValue = toNbt(newLuaValue, entryPath);
       }
       nbt.setTag(key, newNbtValue);
     }
@@ -197,6 +200,7 @@ public class NbtConverter {
 
   private NBTBase toNbt(Object data, String path) {
     checkNotNull(data, "data == null!");
+    data = adjustType(data, path);
     if (data instanceof Boolean)
       return toNbt((Boolean) data);
     if (data instanceof Byte)
@@ -219,6 +223,35 @@ public class NbtConverter {
       return toNbt((Table) data, path);
     throw new IllegalArgumentException(
         "Unsupported type for NBT conversion: " + data.getClass().getName());
+  }
+
+  /**
+   * Workaround for <a href="https://bugs.mojang.com/browse/MC-112257">MC-112257</a>.
+   */
+  private Object adjustType(Object data, String path) {
+    switch (path) {
+      case DEFAULT_PATH + ".tag.RepairCost":
+        data = toIntIfPossible(data);
+        break;
+    }
+    return data;
+  }
+
+  /**
+   * Convert {@code data} to an {@code int} if possible.
+   *
+   * @param data
+   * @return an {@code int} or {@code data}
+   */
+  private static Object toIntIfPossible(Object data) {
+    if (data instanceof Number) {
+      Number number = (Number) data;
+      int result = number.intValue();
+      if (result == number.doubleValue()) {
+        return result;
+      }
+    }
+    return data;
   }
 
   public static NBTTagByte toNbt(boolean data) {
@@ -324,7 +357,7 @@ public class NbtConverter {
     return toNbtList(data, DEFAULT_PATH);
   }
 
-  private NBTTagList toNbtList(Table data, String path) {
+  NBTTagList toNbtList(Table data, String path) {
     NBTTagList result = new NBTTagList();
     int i = 0;
     for (Entry<Object, Object> entry : new TableIterable(data)) {
@@ -339,7 +372,7 @@ public class NbtConverter {
     return toNbtCompound(data, DEFAULT_PATH);
   }
 
-  private NBTTagCompound toNbtCompound(Table data, String path) {
+  NBTTagCompound toNbtCompound(Table data, String path) {
     NBTTagCompound result = new NBTTagCompound();
     int i = 0;
     for (Entry<Object, Object> entry : new TableIterable(data)) {

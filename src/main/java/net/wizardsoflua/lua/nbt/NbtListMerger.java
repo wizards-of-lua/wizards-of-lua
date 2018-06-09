@@ -45,7 +45,7 @@ public class NbtListMerger implements NbtMerger<NBTTagList> {
           return new ValueBasedNbtListMergeStrategy("Slot", converter).merge(nbt, table, path);
         case "AttributeModifiers":
         case "Tags":
-          return converter.toNbtList(table);
+          return converter.toNbtList(table, path);
         default:
           return new IndexBasedNbtListMergeStrategy(converter).merge(nbt, table, path);
       }
