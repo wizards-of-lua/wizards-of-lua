@@ -1,52 +1,93 @@
 package net.wizardsoflua.lua.classes.item;
 
+import javax.annotation.Nullable;
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.runtime.ExecutionContext;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
-import net.wizardsoflua.lua.function.NamedFunction2;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaFunction;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.LuaInstance;
+import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = ItemClass.NAME)
-public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Proxy> {
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = ItemClass.NAME)
+@GenerateLuaClassTable(instance = ItemClass.Instance.class)
+@GenerateLuaDoc(subtitle = "Things You can Carry Around")
+public class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance> {
   public static final String NAME = "Item";
+  @Resource
+  private LuaConverters converters;
+  @Resource
+  private Injector injector;
+  @Resource
+  private LuaScheduler scheduler;
 
   @Override
-  protected void onLoad() {
-    add(new PutNbtFunction());
+  protected Table createRawTable() {
+    return new ItemClassTable<>(this, converters);
   }
 
   @Override
-  public Proxy toLua(ItemStack delegate) {
-    return new Proxy(this, delegate);
+  protected Delegator<Instance> toLuaInstance(ItemStack javaInstance) {
+    return new ItemClassInstanceTable<>(new Instance(javaInstance, injector), getTable(),
+        converters);
   }
 
-  public static class Proxy extends LuaInstance<ItemStack> {
-    public Proxy(DelegatorLuaClass<?, ?> luaClass, ItemStack delegate) {
-      super(luaClass, delegate);
-      addReadOnly("id", this::getId);
-      add("displayName", delegate::getDisplayName, this::setDisplayName);
-      add("damage", delegate::getItemDamage, this::setDamage);
-      add("repairCost", this::getRepairCost, this::setRepairCost);
-      add("count", delegate::getCount, this::setCount);
-      addReadOnly("nbt", this::getNbt);
+  @GenerateLuaInstanceTable
+  public static class Instance extends LuaInstance<ItemStack> {
+    @Resource
+    private NbtConverter nbtConverter;
+
+    public Instance(ItemStack delegate, Injector injector) {
+      super(delegate);
+      injector.injectMembers(this);
     }
 
-    @Override
-    public boolean isTransferable() {
-      return true;
+    @LuaProperty
+    public int getCount() {
+      return delegate.getCount();
     }
 
-    private String getId() {
+    @LuaProperty
+    public void setCount(int count) {
+      delegate.setCount(count);
+    }
+
+    @LuaProperty
+    public int getDamage() {
+      return delegate.getItemDamage();
+    }
+
+    @LuaProperty
+    public void setDamage(int meta) {
+      delegate.setItemDamage(meta);
+    }
+
+    @LuaProperty
+    public String getDisplayName() {
+      return delegate.getDisplayName();
+    }
+
+    @LuaProperty
+    public void setDisplayName(String displayName) {
+      delegate.setStackDisplayName(displayName);
+    }
+
+    @LuaProperty
+    public String getId() {
       ResourceLocation name = delegate.getItem().getRegistryName();
       if ("minecraft".equals(name.getResourceDomain())) {
         return name.getResourcePath();
@@ -55,58 +96,26 @@ public class ItemClass extends InstanceCachingLuaClass<ItemStack, ItemClass.Prox
       }
     }
 
-    private Object getNbt() {
-      NBTTagCompound nbt = delegate.serializeNBT();
-      if (nbt == null) {
-        return null;
-      }
-      return NbtConverter.toLua(nbt);
+    @LuaProperty
+    public @Nullable NBTTagCompound getNbt() {
+      return delegate.serializeNBT();
     }
 
-    private void setDisplayName(Object luaObject) {
-      String displayName = getConverters().toJava(String.class, luaObject, "displayName");
-      delegate.setStackDisplayName(displayName);
+    @LuaProperty
+    public int getRepairCost() {
+      return delegate.getRepairCost();
     }
 
-    private void setDamage(Object luaObject) {
-      int damage = getConverters().toJava(Integer.class, luaObject, "damage");
-      delegate.setItemDamage(damage);
-    }
-
-    private void setRepairCost(Object luaObject) {
-      int repairCost = getConverters().toJava(Integer.class, luaObject, "repairCost");
+    @LuaProperty
+    public void setRepairCost(int repairCost) {
       delegate.setRepairCost(repairCost);
     }
 
-    private Object getRepairCost() {
-      int cost = delegate.getRepairCost();
-      return getConverters().toLua(cost);
-    }
-
-    private void setCount(Object luaObj) {
-      int count = getConverters().toJava(Integer.class, luaObj, "count");
-      delegate.setCount(count);
-    }
-
+    @LuaFunction
     public void putNbt(Table nbt) {
       NBTTagCompound oldNbt = delegate.serializeNBT();
-      NBTTagCompound newNbt = getClassLoader().getConverters().getNbtConverter().merge(oldNbt, nbt);
+      NBTTagCompound newNbt = nbtConverter.merge(oldNbt, nbt);
       delegate.deserializeNBT(newNbt);
-    }
-  }
-
-  private class PutNbtFunction extends NamedFunction2 {
-    @Override
-    public String getName() {
-      return "putNbt";
-    }
-
-    @Override
-    public void invoke(ExecutionContext context, Object arg1, Object arg2) {
-      Proxy proxy = getConverters().toJava(Proxy.class, arg1, 1, "self", getName());
-      Table nbt = getConverters().toJava(Table.class, arg2, 2, "nbt", getName());
-      proxy.putNbt(nbt);
-      context.getReturnBuffer().setTo();
     }
   }
 }
