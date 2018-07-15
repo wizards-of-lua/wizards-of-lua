@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ServerChatEvent;
 import net.sandius.rembulan.Table;
@@ -21,7 +20,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = ChatEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = ChatEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class ChatEventClass extends BasicLuaClass<ServerChatEvent, ChatEventClass.Instance<?>> {
+public class ChatEventClass
+    extends BasicLuaClass<ServerChatEvent, ChatEventClass.Instance<ServerChatEvent>> {
   public static final String NAME = "ChatEvent";
   @Resource
   private LuaConverters converters;
@@ -34,7 +34,7 @@ public class ChatEventClass extends BasicLuaClass<ServerChatEvent, ChatEventClas
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(ServerChatEvent javaInstance) {
+  protected Delegator<Instance<ServerChatEvent>> toLuaInstance(ServerChatEvent javaInstance) {
     return new ChatEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }

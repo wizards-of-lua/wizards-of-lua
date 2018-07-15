@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.sandius.rembulan.Table;
@@ -21,8 +20,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = BlockBreakEventClass.NAME, superClass = BlockEventClass.class)
 @GenerateLuaClassTable(instance = BlockBreakEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class BlockBreakEventClass
-    extends BasicLuaClass<BlockEvent.BreakEvent, BlockBreakEventClass.Instance<?>> {
+public class BlockBreakEventClass extends
+    BasicLuaClass<BlockEvent.BreakEvent, BlockBreakEventClass.Instance<BlockEvent.BreakEvent>> {
   public static final String NAME = "BlockBreakEvent";
   @Resource
   private LuaConverters converters;
@@ -35,7 +34,8 @@ public class BlockBreakEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(BlockEvent.BreakEvent javaInstance) {
+  protected Delegator<Instance<BlockEvent.BreakEvent>> toLuaInstance(
+      BlockEvent.BreakEvent javaInstance) {
     return new BlockBreakEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

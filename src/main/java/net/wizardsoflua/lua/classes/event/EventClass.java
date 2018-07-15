@@ -1,11 +1,8 @@
 package net.wizardsoflua.lua.classes.event;
 
 import static java.util.Objects.requireNonNull;
-
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
@@ -27,7 +24,7 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 @LuaClassAttributes(name = EventClass.NAME)
 @GenerateLuaClassTable(instance = EventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "The Event Base Class", type = EventClass.TYPE)
-public class EventClass extends BasicLuaClass<Event, EventClass.Instance<?>> {
+public class EventClass extends BasicLuaClass<Event, EventClass.Instance<Event>> {
   public static final String NAME = "Event";
   public static final String TYPE = "event";
   @Resource
@@ -41,7 +38,7 @@ public class EventClass extends BasicLuaClass<Event, EventClass.Instance<?>> {
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(Event javaInstance) {
+  protected Delegator<Instance<Event>> toLuaInstance(Event javaInstance) {
     return new EventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }

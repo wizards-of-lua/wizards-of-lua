@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -37,8 +36,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = UseItemStopEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemStopEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "When an Entity stops using an Item", type = EventClass.TYPE)
-public class UseItemStopEventClass
-    extends BasicLuaClass<LivingEntityUseItemEvent.Stop, UseItemStopEventClass.Instance<?>> {
+public class UseItemStopEventClass extends
+    BasicLuaClass<LivingEntityUseItemEvent.Stop, UseItemStopEventClass.Instance<LivingEntityUseItemEvent.Stop>> {
   public static final String NAME = "UseItemStopEvent";
   @Resource
   private LuaConverters converters;
@@ -51,7 +50,8 @@ public class UseItemStopEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(LivingEntityUseItemEvent.Stop javaInstance) {
+  protected Delegator<Instance<LivingEntityUseItemEvent.Stop>> toLuaInstance(
+      LivingEntityUseItemEvent.Stop javaInstance) {
     return new UseItemStopEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

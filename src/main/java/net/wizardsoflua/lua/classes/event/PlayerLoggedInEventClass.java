@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
@@ -21,8 +20,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = PlayerLoggedInEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerLoggedInEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class PlayerLoggedInEventClass
-    extends BasicLuaClass<PlayerEvent.PlayerLoggedInEvent, PlayerLoggedInEventClass.Instance<?>> {
+public class PlayerLoggedInEventClass extends
+    BasicLuaClass<PlayerEvent.PlayerLoggedInEvent, PlayerLoggedInEventClass.Instance<PlayerEvent.PlayerLoggedInEvent>> {
   public static final String NAME = "PlayerLoggedInEvent";
   @Resource
   private LuaConverters converters;
@@ -35,7 +34,8 @@ public class PlayerLoggedInEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(PlayerEvent.PlayerLoggedInEvent javaInstance) {
+  protected Delegator<Instance<PlayerEvent.PlayerLoggedInEvent>> toLuaInstance(
+      PlayerEvent.PlayerLoggedInEvent javaInstance) {
     return new PlayerLoggedInEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

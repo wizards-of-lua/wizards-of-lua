@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
@@ -23,7 +22,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @GenerateLuaClassTable(instance = LeftClickBlockEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
 public class LeftClickBlockEventClass extends
-    BasicLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Instance<?>> {
+    BasicLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Instance<PlayerInteractEvent.LeftClickBlock>> {
   public static final String NAME = "LeftClickBlockEvent";
   @Resource
   private LuaConverters converters;
@@ -36,7 +35,8 @@ public class LeftClickBlockEventClass extends
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(PlayerInteractEvent.LeftClickBlock javaInstance) {
+  protected Delegator<Instance<PlayerInteractEvent.LeftClickBlock>> toLuaInstance(
+      PlayerInteractEvent.LeftClickBlock javaInstance) {
     return new LeftClickBlockEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -36,8 +35,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = UseItemStartEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemStartEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "When an Entity starts using an Item", type = EventClass.TYPE)
-public class UseItemStartEventClass
-    extends BasicLuaClass<LivingEntityUseItemEvent.Start, UseItemStartEventClass.Instance<?>> {
+public class UseItemStartEventClass extends
+    BasicLuaClass<LivingEntityUseItemEvent.Start, UseItemStartEventClass.Instance<LivingEntityUseItemEvent.Start>> {
   public static final String NAME = "UseItemStartEvent";
   @Resource
   private LuaConverters converters;
@@ -50,7 +49,8 @@ public class UseItemStartEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(LivingEntityUseItemEvent.Start javaInstance) {
+  protected Delegator<Instance<LivingEntityUseItemEvent.Start>> toLuaInstance(
+      LivingEntityUseItemEvent.Start javaInstance) {
     return new UseItemStartEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

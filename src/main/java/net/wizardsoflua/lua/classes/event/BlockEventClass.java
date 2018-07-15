@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +23,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = BlockEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = BlockEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class BlockEventClass extends BasicLuaClass<BlockEvent, BlockEventClass.Instance<?>> {
+public class BlockEventClass
+    extends BasicLuaClass<BlockEvent, BlockEventClass.Instance<BlockEvent>> {
   public static final String NAME = "BlockEvent";
   @Resource
   private LuaConverters converters;
@@ -37,7 +37,7 @@ public class BlockEventClass extends BasicLuaClass<BlockEvent, BlockEventClass.I
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(BlockEvent javaInstance) {
+  protected Delegator<Instance<BlockEvent>> toLuaInstance(BlockEvent javaInstance) {
     return new BlockEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }

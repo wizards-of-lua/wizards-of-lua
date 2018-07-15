@@ -1,10 +1,8 @@
 package net.wizardsoflua.lua.classes.eventqueue;
 
 import static java.util.Objects.requireNonNull;
-
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
-
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -35,7 +33,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = EventQueueClass.NAME)
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Collecting Events")
-public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
+public class EventQueueClass
+    extends BasicLuaClass<EventQueue, EventQueueClass.Instance<EventQueue>> {
   public static final String NAME = "EventQueue";
   @Resource
   private LuaConverters converters;
@@ -48,7 +47,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(EventQueue javaInstance) {
+  protected Delegator<Instance<EventQueue>> toLuaInstance(EventQueue javaInstance) {
     return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
   }
 

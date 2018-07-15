@@ -22,7 +22,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = BlockHitClass.NAME)
 @GenerateLuaClassTable(instance = BlockHitClass.Instance.class)
 @GenerateLuaDoc(subtitle = "What Lies in View")
-public class BlockHitClass extends BasicLuaClass<RayTraceResult, BlockHitClass.Instance<?>> {
+public class BlockHitClass
+    extends BasicLuaClass<RayTraceResult, BlockHitClass.Instance<RayTraceResult>> {
   public static final String NAME = "BlockHit";
   @Resource
   private LuaConverters converters;
@@ -33,7 +34,7 @@ public class BlockHitClass extends BasicLuaClass<RayTraceResult, BlockHitClass.I
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(RayTraceResult javaInstance) {
+  protected Delegator<Instance<RayTraceResult>> toLuaInstance(RayTraceResult javaInstance) {
     return new BlockHitClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
   }
 

@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.sandius.rembulan.Table;
@@ -22,7 +21,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @GenerateLuaClassTable(instance = LivingDeathEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
 public class LivingDeathEventClass
-    extends BasicLuaClass<LivingDeathEvent, LivingDeathEventClass.Instance<?>> {
+    extends BasicLuaClass<LivingDeathEvent, LivingDeathEventClass.Instance<LivingDeathEvent>> {
   public static final String NAME = "LivingDeathEvent";
   @Resource
   private LuaConverters converters;
@@ -35,7 +34,7 @@ public class LivingDeathEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(LivingDeathEvent javaInstance) {
+  protected Delegator<Instance<LivingDeathEvent>> toLuaInstance(LivingDeathEvent javaInstance) {
     return new LivingDeathEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

@@ -23,7 +23,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = MaterialClass.NAME)
 @GenerateLuaClassTable(instance = MaterialClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Physical Properties of Blocks")
-public class MaterialClass extends BasicLuaClass<Material, MaterialClass.Instance<?>> {
+public class MaterialClass extends BasicLuaClass<Material, MaterialClass.Instance<Material>> {
   public static final String NAME = "Material";
 
   private static final Map<Material, String> NAMES = new IdentityHashMap<>();
@@ -79,7 +79,7 @@ public class MaterialClass extends BasicLuaClass<Material, MaterialClass.Instanc
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(Material javaInstance) {
+  protected Delegator<Instance<Material>> toLuaInstance(Material javaInstance) {
     return new MaterialClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
   }
 

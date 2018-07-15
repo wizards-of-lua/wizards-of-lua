@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.sandius.rembulan.Table;
@@ -21,7 +20,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = LivingEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = LivingEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class LivingEventClass extends BasicLuaClass<LivingEvent, LivingEventClass.Instance<?>> {
+public class LivingEventClass
+    extends BasicLuaClass<LivingEvent, LivingEventClass.Instance<LivingEvent>> {
   public static final String NAME = "LivingEvent";
   @Resource
   private LuaConverters converters;
@@ -34,7 +34,7 @@ public class LivingEventClass extends BasicLuaClass<LivingEvent, LivingEventClas
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(LivingEvent javaInstance) {
+  protected Delegator<Instance<LivingEvent>> toLuaInstance(LivingEvent javaInstance) {
     return new LivingEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }

@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
@@ -31,8 +30,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = UseItemEventClass.NAME, superClass = LivingEventClass.class)
 @GenerateLuaClassTable(instance = UseItemEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "When an Entity uses an Item", type = EventClass.TYPE)
-public class UseItemEventClass
-    extends BasicLuaClass<LivingEntityUseItemEvent, UseItemEventClass.Instance<?>> {
+public class UseItemEventClass extends
+    BasicLuaClass<LivingEntityUseItemEvent, UseItemEventClass.Instance<LivingEntityUseItemEvent>> {
   public static final String NAME = "UseItemEvent";
   @Resource
   private LuaConverters converters;
@@ -45,7 +44,8 @@ public class UseItemEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(LivingEntityUseItemEvent javaInstance) {
+  protected Delegator<Instance<LivingEntityUseItemEvent>> toLuaInstance(
+      LivingEntityUseItemEvent javaInstance) {
     return new UseItemEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }

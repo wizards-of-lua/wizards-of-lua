@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
@@ -49,8 +48,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = UseItemFinishEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemFinishEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "When an Entity finishes using an Item", type = EventClass.TYPE)
-public class UseItemFinishEventClass
-    extends BasicLuaClass<LivingEntityUseItemEvent.Finish, UseItemFinishEventClass.Instance<?>> {
+public class UseItemFinishEventClass extends
+    BasicLuaClass<LivingEntityUseItemEvent.Finish, UseItemFinishEventClass.Instance<LivingEntityUseItemEvent.Finish>> {
   public static final String NAME = "UseItemFinishEvent";
   @Resource
   private LuaConverters converters;
@@ -63,7 +62,8 @@ public class UseItemFinishEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(LivingEntityUseItemEvent.Finish javaInstance) {
+  protected Delegator<Instance<LivingEntityUseItemEvent.Finish>> toLuaInstance(
+      LivingEntityUseItemEvent.Finish javaInstance) {
     return new UseItemFinishEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

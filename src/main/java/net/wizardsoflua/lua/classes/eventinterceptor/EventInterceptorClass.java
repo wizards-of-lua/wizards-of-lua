@@ -19,7 +19,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @GenerateLuaClassTable(instance = EventInterceptorClass.Instance.class)
 @GenerateLuaDoc
 public class EventInterceptorClass
-    extends BasicLuaClass<EventInterceptor, EventInterceptorClass.Instance<?>> {
+    extends BasicLuaClass<EventInterceptor, EventInterceptorClass.Instance<EventInterceptor>> {
   public static final String NAME = "EventInterceptor";
   @Resource
   private LuaConverters converters;
@@ -30,7 +30,7 @@ public class EventInterceptorClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(EventInterceptor javaInstance) {
+  protected Delegator<Instance<EventInterceptor>> toLuaInstance(EventInterceptor javaInstance) {
     return new EventInterceptorClassInstanceTable<>(new Instance<>(javaInstance), getTable(),
         converters);
   }

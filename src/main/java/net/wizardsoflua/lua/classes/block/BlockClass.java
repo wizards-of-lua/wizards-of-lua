@@ -33,7 +33,7 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 @LuaClassAttributes(name = BlockClass.NAME)
 @GenerateLuaClassTable(instance = BlockClass.Instance.class)
 @GenerateLuaDoc(subtitle = "All There is to Know About a Block")
-public class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instance<?>> {
+public class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instance<WolBlock>> {
   public static final String NAME = "Block";
   @Resource
   private LuaConverters converters;
@@ -46,7 +46,7 @@ public class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instance<?>> 
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(WolBlock javaInstance) {
+  protected Delegator<Instance<WolBlock>> toLuaInstance(WolBlock javaInstance) {
     return new BlockClassInstanceTable<>(new Instance<>(javaInstance, injector), getTable(),
         converters);
   }

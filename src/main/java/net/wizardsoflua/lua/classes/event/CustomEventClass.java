@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -20,7 +19,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = CustomEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = CustomEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class CustomEventClass extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<?>> {
+public class CustomEventClass
+    extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<CustomLuaEvent>> {
   public static final String NAME = "CustomEvent";
   @Resource
   private LuaConverters converters;
@@ -33,7 +33,7 @@ public class CustomEventClass extends BasicLuaClass<CustomLuaEvent, CustomEventC
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(CustomLuaEvent javaInstance) {
+  protected Delegator<Instance<CustomLuaEvent>> toLuaInstance(CustomLuaEvent javaInstance) {
     return new CustomEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }

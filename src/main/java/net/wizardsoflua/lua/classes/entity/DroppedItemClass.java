@@ -24,7 +24,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = DroppedItemClass.NAME, superClass = EntityClass.class)
 @GenerateLuaClassTable(instance = DroppedItemClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Things That are Lying Around")
-public class DroppedItemClass extends BasicLuaClass<EntityItem, DroppedItemClass.Instance<?>> {
+public class DroppedItemClass
+    extends BasicLuaClass<EntityItem, DroppedItemClass.Instance<EntityItem>> {
   public static final String NAME = "DroppedItem";
   @Resource
   private LuaConverters converters;
@@ -37,7 +38,7 @@ public class DroppedItemClass extends BasicLuaClass<EntityItem, DroppedItemClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(EntityItem javaInstance) {
+  protected Delegator<Instance<EntityItem>> toLuaInstance(EntityItem javaInstance) {
     return new DroppedItemClassInstanceTable<>(new Instance<>(javaInstance, injector), getTable(),
         converters);
   }

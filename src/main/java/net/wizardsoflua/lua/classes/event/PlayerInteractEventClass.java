@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -25,8 +24,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = PlayerInteractEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerInteractEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class PlayerInteractEventClass
-    extends BasicLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Instance<?>> {
+public class PlayerInteractEventClass extends
+    BasicLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Instance<PlayerInteractEvent>> {
   public static final String NAME = "PlayerInteractEvent";
   @Resource
   private LuaConverters converters;
@@ -39,7 +38,8 @@ public class PlayerInteractEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(PlayerInteractEvent javaInstance) {
+  protected Delegator<Instance<PlayerInteractEvent>> toLuaInstance(
+      PlayerInteractEvent javaInstance) {
     return new PlayerInteractEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }

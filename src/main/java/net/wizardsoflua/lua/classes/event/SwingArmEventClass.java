@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -24,7 +23,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @GenerateLuaClassTable(instance = SwingArmEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
 public class SwingArmEventClass
-    extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<?>> {
+    extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<SwingArmEvent>> {
   public static final String NAME = "SwingArmEvent";
   @Resource
   private LuaConverters converters;
@@ -37,7 +36,7 @@ public class SwingArmEventClass
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(SwingArmEvent javaInstance) {
+  protected Delegator<Instance<SwingArmEvent>> toLuaInstance(SwingArmEvent javaInstance) {
     return new SwingArmEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }
