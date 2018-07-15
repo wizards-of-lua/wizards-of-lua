@@ -2,13 +2,13 @@ package net.wizardsoflua.lua.module.types;
 
 import static java.util.Objects.requireNonNull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.SpellScoped;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
@@ -19,7 +19,8 @@ public class Types implements LuaTypes {
   private final Provider<Converters> convertersProvider;
   private final BiMap<String, Table> classes = HashBiMap.create();
 
-  public Types(@Resource Provider<Converters> convertersProvider) {
+  @Inject
+  public Types(Provider<Converters> convertersProvider) {
     this.convertersProvider = requireNonNull(convertersProvider, "convertersProvider == null!");
   }
 

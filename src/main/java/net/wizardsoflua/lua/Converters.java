@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import com.google.common.primitives.Primitives;
 import net.minecraft.util.IStringSerializable;
@@ -21,7 +22,6 @@ import net.sandius.rembulan.LuaMathOperators;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.SpellScoped;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
@@ -48,7 +48,8 @@ public class Converters implements LuaConverters {
   private final Provider<Types> typesProvider;
   private final EnumConverter enumConverter = new EnumConverter();
 
-  public Converters(@Resource Provider<Types> typesProvider) {
+  @Inject
+  public Converters(Provider<Types> typesProvider) {
     this.typesProvider = requireNonNull(typesProvider, "typesProvider == null!");
   }
 
