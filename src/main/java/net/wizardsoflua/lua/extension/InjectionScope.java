@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.extension;
 
 import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
@@ -24,16 +23,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.inject.Singleton;
-
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.reflect.ReflectionUtils;
@@ -114,27 +110,24 @@ public class InjectionScope {
   }
 
   public <T> T getInstance(Class<T> cls) throws IllegalStateException {
-    Annotation scopeAnnotation = getScopeAnnotation(cls);
-    if (scopeAnnotation == null) {
+    Class<? extends Annotation> scopeType = getScopeType(cls);
+    if (scopeType == null) {
       return provideNewInstance(cls);
-    } else {
-      Class<? extends Annotation> scopeType = scopeAnnotation.annotationType();
-      if (scopeAnnotationType.equals(scopeType)) {
-        T result = cache.get(cls);
-        if (result == null) {
-          result = provideNewInstance(cls);
-          cache.add(result);
-        }
-        return result;
-      } else if (parent != null) {
-        return parent.getInstance(cls);
-      } else {
-        throw fail(cls, "unsupported scope annotation @" + scopeType.getSimpleName());
+    } else if (scopeType.equals(scopeAnnotationType)) {
+      T result = cache.get(cls);
+      if (result == null) {
+        result = provideNewInstance(cls);
+        cache.add(result);
       }
+      return result;
+    } else if (parent != null) {
+      return parent.getInstance(cls);
+    } else {
+      throw fail(cls, "There is no active scope for @" + scopeType.getSimpleName());
     }
   }
 
-  protected @Nullable Annotation getScopeAnnotation(Class<?> cls) {
+  protected @Nullable Class<? extends Annotation> getScopeType(Class<?> cls) {
     List<Annotation> scopeAnnotations = new ArrayList<>();
     Annotation[] annotations = cls.getAnnotations();
     for (Annotation annotation : annotations) {
@@ -147,7 +140,8 @@ public class InjectionScope {
     if (size < 1) {
       return null;
     } else if (size == 1) {
-      return scopeAnnotations.get(0);
+      Annotation scopeAnnotation = scopeAnnotations.get(0);
+      return scopeAnnotation.annotationType();
     } else {
       throw fail(cls, "encountered multiple scope annotations: " + scopeAnnotations);
     }
