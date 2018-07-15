@@ -2,6 +2,7 @@ package net.wizardsoflua.lua.classes.block;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -53,7 +54,7 @@ public class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instance<WolB
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends WolBlock> extends LuaInstance<D> {
-    @Resource
+    @Inject
     private NbtConverter nbtConverters;
 
     public Instance(D delegate, Injector injector) {

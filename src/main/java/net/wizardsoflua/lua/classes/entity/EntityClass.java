@@ -5,6 +5,7 @@ import static java.util.Optional.ofNullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -60,7 +61,7 @@ public class EntityClass extends BasicLuaClass<Entity, EntityClass.Instance<Enti
   public static class Instance<D extends Entity> extends LuaInstance<D> {
     @Resource
     private LuaConverters converters;
-    @Resource
+    @Inject
     private NbtConverter nbtConverters;
 
     public Instance(D delegate, Injector injector) {
