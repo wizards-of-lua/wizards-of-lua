@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.processor.model;
+package net.wizardsoflua.annotation.processor.table.model;
 
 import static java.util.Objects.requireNonNull;
 

@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
-
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
@@ -13,12 +12,8 @@ import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
-
 import org.eclipse.jdt.internal.compiler.batch.Main;
-
 import net.wizardsoflua.annotation.processor.doc.GenerateLuaDocProcessor;
-import net.wizardsoflua.annotation.processor.luaclass.GenerateLuaClassProcessor;
-import net.wizardsoflua.annotation.processor.module.GenerateLuaModuleProcessor;
 import net.wizardsoflua.annotation.processor.table.GenerateLuaTableProcessor;
 
 /**
@@ -26,6 +21,7 @@ import net.wizardsoflua.annotation.processor.table.GenerateLuaTableProcessor;
  *
  * @author Adrodoc55
  */
+@SuppressWarnings("unused")
 public class RunAnnotationProcessor {
   public static void main(String[] args) throws Exception {
     runEclipseCompiler();
@@ -53,9 +49,7 @@ public class RunAnnotationProcessor {
     CompilationTask task =
         compiler.getTask(new PrintWriter(System.out), null, null, null, null, files);
     task.setProcessors(Arrays.asList(//
-        new GenerateLuaClassProcessor(), //
         new GenerateLuaDocProcessor(), //
-        new GenerateLuaModuleProcessor(), //
         new GenerateLuaTableProcessor() //
     ));
 

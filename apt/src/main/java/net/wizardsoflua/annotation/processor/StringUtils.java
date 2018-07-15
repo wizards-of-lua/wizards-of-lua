@@ -1,9 +1,6 @@
 package net.wizardsoflua.annotation.processor;
 
-import com.google.common.base.Joiner;
-import com.squareup.javapoet.ClassName;
-
-public class Utils {
+public class StringUtils {
   /**
    * <p>
    * Capitalizes a String changing the first letter to title case as per
@@ -43,12 +40,5 @@ public class Utils {
 
     return new StringBuilder(strLen).append(Character.toTitleCase(firstChar))
         .append(str.substring(1)).toString();
-  }
-
-  public static String getQualifiedName(ClassName className) {
-    Joiner joiner = Joiner.on('.');
-    String packageName = className.packageName();
-    String simpleNames = joiner.join(className.simpleNames());
-    return packageName.isEmpty() ? simpleNames : joiner.join(packageName, simpleNames);
   }
 }

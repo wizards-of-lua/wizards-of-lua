@@ -2,21 +2,16 @@ package net.wizardsoflua.annotation.processor.table.model;
 
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.checkAnnotated;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-
 import com.google.common.collect.Lists;
-
 import net.wizardsoflua.annotation.LuaFunction;
-import net.wizardsoflua.annotation.processor.model.ArgumentModel;
 
-public class FunctionModel extends net.wizardsoflua.annotation.processor.model.FunctionModel {
+public class FunctionModel {
   public static FunctionModel of(ExecutableElement method) {
     LuaFunction luaFunction = checkAnnotated(method, LuaFunction.class);
 
@@ -39,7 +34,6 @@ public class FunctionModel extends net.wizardsoflua.annotation.processor.model.F
 
   public FunctionModel(TypeElement enclosingElement, String name, TypeMirror returnType,
       List<ArgumentModel> args) {
-    super(name, returnType, args);
     this.enclosingElement = requireNonNull(enclosingElement, "enclosingElement == null!");
     this.name = requireNonNull(name, "name == null!");
     this.returnType = requireNonNull(returnType, "returnType == null!");

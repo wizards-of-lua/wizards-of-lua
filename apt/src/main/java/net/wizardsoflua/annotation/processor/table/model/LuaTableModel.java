@@ -2,7 +2,6 @@ package net.wizardsoflua.annotation.processor.table.model;
 
 import static com.squareup.javapoet.WildcardTypeName.subtypeOf;
 import static java.util.Objects.requireNonNull;
-import static net.wizardsoflua.annotation.processor.Constants.TABLE_SUFFIX;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getClassValue;
 
@@ -40,8 +39,6 @@ import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.annotation.processor.Constants;
 import net.wizardsoflua.annotation.processor.ProcessingException;
-import net.wizardsoflua.annotation.processor.model.ManualFunctionModel;
-import net.wizardsoflua.annotation.processor.model.PropertyModel;
 
 public class LuaTableModel {
   public static LuaTableModel of(TypeElement annotatedElement, ProcessingEnvironment env)
@@ -247,7 +244,7 @@ public class LuaTableModel {
 
   private static String getGeneratedSimpleName(ClassName sourceClassName) {
     List<String> sourceSimpleNames = sourceClassName.simpleNames();
-    return Joiner.on("").join(sourceSimpleNames) + TABLE_SUFFIX;
+    return Joiner.on("").join(sourceSimpleNames) + "Table";
   }
 
   public ClassName getSuperTableClassName() {

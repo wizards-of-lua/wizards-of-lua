@@ -1,4 +1,4 @@
-package net.wizardsoflua.annotation.processor.model;
+package net.wizardsoflua.annotation.processor.table.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;

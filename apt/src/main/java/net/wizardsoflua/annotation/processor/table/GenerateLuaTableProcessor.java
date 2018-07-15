@@ -1,12 +1,11 @@
 package net.wizardsoflua.annotation.processor.table;
 
-import static net.wizardsoflua.annotation.processor.ProcessorUtils.write;
-
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Processor;
@@ -15,11 +14,9 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
-
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
@@ -66,8 +63,9 @@ public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
     JavaFile luaTable = new LuaTableGenerator(model, processingEnv).generate();
 
     Filer filer = processingEnv.getFiler();
-    try {
-      write(luaTable, filer);
+    String qualifiedName = luaTable.packageName + '.' + luaTable.typeSpec.name;
+    try (Writer writer = new BufferedWriter(filer.createSourceFile(qualifiedName).openWriter())) {
+      luaTable.writeTo(writer);
     } catch (IOException ex) {
       throw new UndeclaredThrowableException(ex);
     }

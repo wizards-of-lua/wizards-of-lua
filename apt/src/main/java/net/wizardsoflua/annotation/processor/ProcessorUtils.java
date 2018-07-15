@@ -2,10 +2,6 @@ package net.wizardsoflua.annotation.processor;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static javax.lang.model.type.TypeKind.DECLARED;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -13,9 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.element.AnnotationMirror;
@@ -34,14 +28,26 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import javax.lang.model.util.Types;
-
-import com.squareup.javapoet.JavaFile;
-
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
 
 public class ProcessorUtils {
+  /**
+   * Opposite of {@link Types#erasure(TypeMirror)} for {@link DeclaredType}s.
+   *
+   * @param type
+   * @param env
+   * @return the de-erased type
+   */
+  public static TypeMirror derasure(DeclaredType type, ProcessingEnvironment env) {
+    Elements elements = env.getElementUtils();
+    TypeElement element = (TypeElement) type.asElement();
+    Name qualifiedName = element.getQualifiedName();
+    TypeElement derasedElement = elements.getTypeElement(qualifiedName);
+    return derasedElement.asType();
+  }
+
   public static <A extends Annotation> A checkAnnotated(Element element, Class<A> annotationClass)
       throws IllegalArgumentException {
     A annotation = element.getAnnotation(annotationClass);
@@ -190,13 +196,6 @@ public class ProcessorUtils {
     return false;
   }
 
-  public static void write(JavaFile file, Filer filer) throws IOException {
-    String qualifiedName = file.packageName + '.' + file.typeSpec.name;
-    try (Writer writer = new BufferedWriter(filer.createSourceFile(qualifiedName).openWriter())) {
-      file.writeTo(writer);
-    }
-  }
-
   public static DeclaredType getUpperBound(TypeMirror type) {
     return type.accept(new SimpleTypeVisitor8<DeclaredType, Void>() {
       @Override
@@ -225,5 +224,4 @@ public class ProcessorUtils {
       }
     }, null);
   }
-
 }
