@@ -414,6 +414,9 @@ public class Converters implements LuaConverters {
     if (javaObject instanceof String) {
       return ByteString.of((String) javaObject);
     }
+    if (javaObject instanceof Table) {
+      return javaObject;
+    }
     if (javaObject instanceof Number) {
       return javaObject;
     }
