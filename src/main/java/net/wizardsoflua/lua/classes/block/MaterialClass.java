@@ -2,24 +2,31 @@ package net.wizardsoflua.lua.classes.block;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
+import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.InstanceCachingLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.LuaInstance;
+import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = MaterialClass.NAME)
-public class MaterialClass
-    extends InstanceCachingLuaClass<Material, MaterialClass.Proxy<Material>> {
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = MaterialClass.NAME)
+@GenerateLuaClassTable(instance = MaterialClass.Instance.class)
+@GenerateLuaDoc(subtitle = "Physical Properties of Blocks")
+public class MaterialClass extends BasicLuaClass<Material, MaterialClass.Instance<?>> {
+  public static final String NAME = "Material";
+
   private static final Map<Material, String> NAMES = new IdentityHashMap<>();
-
   static {
     NAMES.put(Material.AIR, "AIR");
     NAMES.put(Material.GRASS, "GRASS");
@@ -59,43 +66,77 @@ public class MaterialClass
     NAMES.put(Material.STRUCTURE_VOID, "STRUCTURE_VOID");
   }
 
-  public static String GET_NAME(Material material) {
+  public static @Nullable String getName(Material material) {
     return NAMES.get(material);
   }
 
-  public static final String NAME = "Material";
+  @Resource
+  private LuaConverters converters;
 
   @Override
-  public Proxy<Material> toLua(Material delegate) {
-    return new Proxy<>(this, delegate);
+  protected Table createRawTable() {
+    return new MaterialClassTable<>(this, converters);
   }
 
-  public static class Proxy<D extends Material> extends LuaInstance<D> {
-    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
-      addImmutable("blocksLight", delegate.blocksLight());
-      addImmutable("blocksMovement", delegate.blocksMovement());
-      addImmutable("canBurn", delegate.getCanBurn());
-      addImmutable("liquid", delegate.isLiquid());
-      addImmutable("mobility", getMobilityFlag());
-      addImmutableNullable("name", getName());
-      addImmutable("opaque", delegate.isOpaque());
-      addImmutable("replaceable", delegate.isReplaceable());
-      addImmutable("requiresNoTool", delegate.isToolNotRequired());
-      addImmutable("solid", delegate.isSolid());
+  @Override
+  protected Delegator<Instance<?>> toLuaInstance(Material javaInstance) {
+    return new MaterialClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends Material> extends LuaInstance<D> {
+    public Instance(D delegate) {
+      super(delegate);
     }
 
-    @Override
-    public boolean isTransferable() {
-      return true;
+    @LuaProperty
+    public boolean getBlocksLight() {
+      return delegate.blocksLight();
     }
 
-    private Object getMobilityFlag() {
-      return getConverters().toLua(delegate.getMobilityFlag());
+    @LuaProperty
+    public boolean getBlocksMovement() {
+      return delegate.blocksMovement();
     }
 
-    private @Nullable String getName() {
-      return GET_NAME(delegate);
+    @LuaProperty
+    public boolean getCanBurn() {
+      return delegate.getCanBurn();
+    }
+
+    @LuaProperty
+    public EnumPushReaction getMobility() {
+      return delegate.getMobilityFlag();
+    }
+
+    @LuaProperty
+    public @Nullable String getName() {
+      return MaterialClass.getName(delegate);
+    }
+
+    @LuaProperty
+    public boolean getRequiresNoTool() {
+      return delegate.isToolNotRequired();
+    }
+
+    @LuaProperty
+    public boolean isLiquid() {
+      return delegate.isLiquid();
+    }
+
+    @LuaProperty
+    public boolean isOpaque() {
+      return delegate.isOpaque();
+    }
+
+    @LuaProperty
+    public boolean isReplaceable() {
+      return delegate.isReplaceable();
+    }
+
+    @LuaProperty
+    public boolean isSolid() {
+      return delegate.isSolid();
     }
   }
 }
