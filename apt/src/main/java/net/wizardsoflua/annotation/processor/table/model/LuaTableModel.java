@@ -87,8 +87,8 @@ public class LuaTableModel {
 
   private static ClassName getSuperTableClassName(TypeElement annotatedElement) {
     TypeMirror superclass = annotatedElement.getSuperclass();
-    TypeKind kind = superclass.getKind();
-    if (kind == TypeKind.DECLARED || kind == TypeKind.ERROR) {
+    TypeKind superKind = superclass.getKind();
+    if (superKind == TypeKind.DECLARED || superKind == TypeKind.ERROR) {
       DeclaredType superType = (DeclaredType) superclass;
       TypeElement superElement = (TypeElement) superType.asElement();
       if (superElement.getAnnotation(GenerateLuaInstanceTable.class) != null) {
