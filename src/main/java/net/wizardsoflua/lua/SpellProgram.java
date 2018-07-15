@@ -1,19 +1,14 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.cache.Cache;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -51,9 +46,9 @@ import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.entity.PlayerApi;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
-import net.wizardsoflua.lua.classes.entity.PlayerInstance;
+import net.wizardsoflua.lua.classes.entity.PlayerClass.Instance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
@@ -392,15 +387,15 @@ public class SpellProgram {
         owner = newPlayer;
       }
     }
-    PlayerClass playerClass = luaClassLoader.getLuaClassOfType(PlayerClass.class);
-    Cache<EntityPlayerMP, PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP>> cache =
+    PlayerClass playerClass = injectionScope.getInstance(PlayerClass.class);
+    Cache<EntityPlayerMP, Delegator<? extends Instance<EntityPlayerMP>>> cache =
         playerClass.getCache();
     for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
       if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
-        PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP> oldValue =
-            cache.asMap().remove(oldPlayer);
+        Delegator<? extends Instance<EntityPlayerMP>> oldValue = cache.asMap().remove(oldPlayer);
         cache.put(newPlayer, oldValue);
-        oldValue.setDelegate(newPlayer);
+        Instance<EntityPlayerMP> instance = oldValue.getDelegate();
+        instance.setDelegate(newPlayer);
       }
     }
   }

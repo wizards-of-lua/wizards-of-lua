@@ -25,7 +25,7 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = PlayerClass.NAME, superClass = EntityClass.class)
 @GenerateLuaClassTable(instance = PlayerClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Controlling the Player")
-public class PlayerClass extends BasicLuaClass<EntityPlayerMP, PlayerClass.Instance<?>> {
+public class PlayerClass extends BasicLuaClass<EntityPlayerMP, PlayerClass.Instance<EntityPlayerMP>> {
   public static final String NAME = "Player";
   @Resource
   private LuaConverters converters;
@@ -38,7 +38,7 @@ public class PlayerClass extends BasicLuaClass<EntityPlayerMP, PlayerClass.Insta
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(EntityPlayerMP javaInstance) {
+  protected Delegator<Instance<EntityPlayerMP>> toLuaInstance(EntityPlayerMP javaInstance) {
     return new PlayerClassInstanceTable<>(new Instance<>(javaInstance, injector), getTable(),
         converters);
   }
