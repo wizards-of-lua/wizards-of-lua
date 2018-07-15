@@ -1,36 +1,61 @@
 package net.wizardsoflua.lua.classes.scan;
 
 import com.google.auto.service.AutoService;
-
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.common.LuaInstance;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.LuaInstance;
+import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.extension.util.BasicLuaClass;
+import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = BlockHitClass.NAME)
-public class BlockHitClass
-    extends DelegatorLuaClass<RayTraceResult, BlockHitClass.Proxy<RayTraceResult>> {
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = BlockHitClass.NAME)
+@GenerateLuaClassTable(instance = BlockHitClass.Instance.class)
+@GenerateLuaDoc(subtitle = "What Lies in View")
+public class BlockHitClass extends BasicLuaClass<RayTraceResult, BlockHitClass.Instance<?>> {
   public static final String NAME = "BlockHit";
+  @Resource
+  private LuaConverters converters;
 
   @Override
-  public Proxy<RayTraceResult> toLua(RayTraceResult javaObj) {
-    return new Proxy<>(this, javaObj);
+  protected Table createRawTable() {
+    return new BlockHitClassTable<>(this, converters);
   }
 
-  public static class Proxy<D extends RayTraceResult> extends LuaInstance<D> {
-    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
-      addImmutable("hitVec", getConverters().toLuaNullable(delegate.hitVec));
-      addImmutable("pos", getConverters().toLuaNullable(new Vec3d(delegate.getBlockPos())));
-      addImmutable("sideHit", getConverters().toLuaNullable(delegate.sideHit));
+  @Override
+  protected Delegator<Instance<?>> toLuaInstance(RayTraceResult javaInstance) {
+    return new BlockHitClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends RayTraceResult> extends LuaInstance<D> {
+    public Instance(D delegate) {
+      super(delegate);
     }
 
-    @Override
-    public boolean isTransferable() {
-      return true;
+    @LuaProperty
+    public Vec3d getHitVec() {
+      return delegate.hitVec;
+    }
+
+    @LuaProperty
+    public BlockPos getPos() {
+      return delegate.getBlockPos();
+    }
+
+    @LuaProperty
+    public EnumFacing getSideHit() {
+      return delegate.sideHit;
     }
   }
 }
