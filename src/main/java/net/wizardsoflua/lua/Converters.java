@@ -3,7 +3,6 @@ package net.wizardsoflua.lua;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,11 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
-
+import javax.inject.Provider;
 import com.google.common.primitives.Primitives;
-
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -24,19 +21,16 @@ import net.sandius.rembulan.LuaMathOperators;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.SpellScoped;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
-import net.wizardsoflua.lua.classes.GeneratedLuaInstance;
-import net.wizardsoflua.lua.classes.JavaLuaClass;
-import net.wizardsoflua.lua.classes.LuaClass;
-import net.wizardsoflua.lua.classes.LuaClassApi;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.module.types.Types;
-import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.table.TableIterable;
 
+@SpellScoped
 public class Converters implements LuaConverters {
   private static final Set<Class<?>> supportedJavaClasses = new HashSet<>();
 
@@ -51,16 +45,15 @@ public class Converters implements LuaConverters {
     return supportedJavaClasses.contains(javaClass);
   }
 
-  private final LuaClassLoader classLoader;
+  private final Provider<Types> typesProvider;
   private final EnumConverter enumConverter = new EnumConverter();
 
-  public Converters(LuaClassLoader classLoader) {
-    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
+  public Converters(@Resource Provider<Types> typesProvider) {
+    this.typesProvider = requireNonNull(typesProvider, "typesProvider == null!");
   }
 
-  @Deprecated
-  public NbtConverter getNbtConverter() {
-    return classLoader.getNbtConverter();
+  public Types getTypes() {
+    return typesProvider.get();
   }
 
   @Override
@@ -235,7 +228,7 @@ public class Converters implements LuaConverters {
   }
 
   private BadArgumentException badArgument(Class<?> expectedType, Object actualObject) {
-    Types types = classLoader.getTypes();
+    Types types = getTypes();
     String expected = types.getLuaTypeNameForJavaClass(expectedType);
     String actual = types.getLuaTypeNameOfLuaObject(actualObject);
     return new BadArgumentException(expected, actual);
@@ -310,17 +303,6 @@ public class Converters implements LuaConverters {
     LuaToJavaConverter<?, ?> converter = getLuaToJavaConverter(javaClass);
     if (converter != null) {
       return convertToJava(luaObject, converter);
-    }
-    if (LuaClassLoader.isSupported(javaClass) && luaObject instanceof Table) {
-      Table table = (Table) luaObject;
-      LuaClass luaClass = classLoader.getLuaClassOfInstance(table);
-      if (luaClass instanceof JavaLuaClass) {
-        return ((JavaLuaClass<?, ?>) luaClass).getJavaInstance(table);
-      }
-    }
-    if (LuaClassApi.class.isAssignableFrom(javaClass)
-        && luaObject instanceof GeneratedLuaInstance) {
-      return ((GeneratedLuaInstance<?, ?>) luaObject).getApi();
     }
     if (javaClass == String.class) {
       return Conversions.javaRepresentationOf(luaObject);
@@ -409,10 +391,6 @@ public class Converters implements LuaConverters {
     JavaToLuaConverter<? super J> converter = getJavaToLuaConverter(javaClass);
     if (converter != null) {
       return converter.getLuaInstance(javaObject);
-    }
-    JavaLuaClass<? super J, ?> cls = classLoader.getLuaClassForJavaClassRecursively(javaClass);
-    if (cls != null) {
-      return cls.getLuaInstance(javaObject);
     }
     if (javaObject instanceof Iterable<?>) {
       DefaultTable result = new DefaultTable();

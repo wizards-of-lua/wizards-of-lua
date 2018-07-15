@@ -2,34 +2,32 @@ package net.wizardsoflua.lua.table;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
-
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
+import net.wizardsoflua.lua.module.types.Types;
 
 public class TableUtils {
 
   private static final Pattern LUA_IDENTIFIER = Pattern.compile("^[_a-zA-Z][_a-zA-Z0-9]*$");
 
-  private static final Converters CONVERSION =
-      new LuaClassLoader(new DefaultTable(), new LuaClassLoader.Context() {
-        @Override
-        public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
-          return null;
-        }
-      }).getConverters();
+  private static final Converters CONVERSION = new Converters(TableUtils::getTypes);
+  private static final Types TYPES = new Types(TableUtils::getConversion);
+
+  private static Converters getConversion() {
+    return CONVERSION;
+  }
+
+  private static Types getTypes() {
+    return TYPES;
+  }
 
   private TableUtils() {}
 

@@ -9,8 +9,8 @@ import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
-import net.wizardsoflua.lua.extension.util.AnnotatedLuaClass;
-import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
+import net.wizardsoflua.lua.classes.AnnotatedLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
 @AutoService(LuaConverter.class)

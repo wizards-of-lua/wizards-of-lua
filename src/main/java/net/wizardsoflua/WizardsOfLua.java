@@ -1,19 +1,14 @@
 package net.wizardsoflua;
 
 import static java.lang.String.format;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeVersion;
@@ -41,7 +36,6 @@ import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.lua.ExtensionLoader;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.permissions.Permissions;
@@ -99,7 +93,6 @@ public class WizardsOfLua {
   public void preInit(FMLPreInitializationEvent event) throws Exception {
     logger = event.getModLog();
     ExtensionLoader.initialize(logger);
-    LuaClassLoader.initialize(logger);
     config = WolConfig.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 

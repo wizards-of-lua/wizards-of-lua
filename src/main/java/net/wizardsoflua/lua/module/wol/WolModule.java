@@ -10,7 +10,7 @@ import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.extension.util.LuaTableExtension;
+import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
  * The Time module provides some information about the Wizards of Lua modification.

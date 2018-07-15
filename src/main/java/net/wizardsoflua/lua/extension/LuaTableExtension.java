@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension.util;
+package net.wizardsoflua.lua.extension;
 
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.api.Named;

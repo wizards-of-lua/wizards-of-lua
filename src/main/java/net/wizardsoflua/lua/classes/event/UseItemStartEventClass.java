@@ -10,9 +10,9 @@ import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.BasicLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.extension.util.BasicLuaClass;
-import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 /**
  * The <span class="notranslate">UseItemStartEvent</span> class is fired when a [Mob](/modules/Mob)

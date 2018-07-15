@@ -1,31 +1,29 @@
 package net.wizardsoflua.lua.module.types;
 
 import static java.util.Objects.requireNonNull;
-
 import javax.annotation.Nullable;
-
+import javax.inject.Provider;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.SpellScoped;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 import net.wizardsoflua.lua.Converters;
-import net.wizardsoflua.lua.classes.JavaLuaClass;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.common.Delegator;
 
+@SpellScoped
 public class Types implements LuaTypes {
-  private final LuaClassLoader classLoader;
-  private final Converters converters;
+  private final Provider<Converters> convertersProvider;
   private final BiMap<String, Table> classes = HashBiMap.create();
 
-  public Types(LuaClassLoader classLoader, @Resource Converters converters) {
-    this.classLoader = requireNonNull(classLoader, "classLoader == null!");
-    this.converters = requireNonNull(converters, "converters == null!");
+  public Types(Provider<Converters> convertersProvider) {
+    this.convertersProvider = requireNonNull(convertersProvider, "convertersProvider == null!");
+  }
+
+  public Converters getConverters() {
+    return convertersProvider.get();
   }
 
   @Override
@@ -68,13 +66,9 @@ public class Types implements LuaTypes {
   }
 
   public String getLuaTypeNameForJavaClass(Class<?> javaClass) throws IllegalArgumentException {
-    LuaToJavaConverter<?, ?> converter = converters.getLuaToJavaConverter(javaClass);
+    LuaToJavaConverter<?, ?> converter = getConverters().getLuaToJavaConverter(javaClass);
     if (converter != null) {
       return converter.getName();
-    }
-    String legacyResult = getLegacyLuaTypeName(javaClass);
-    if (legacyResult != null) {
-      return legacyResult;
     }
     return getLuaTypeName(javaClass);
   }
@@ -96,25 +90,5 @@ public class Types implements LuaTypes {
       return FUNCTION;
     }
     throw new IllegalArgumentException("Unknown lua type: " + cls.getName());
-  }
-
-  // TODO Adrodoc 11.05.2018: Remove this when we got rid of LuaClassApi
-  @Deprecated
-  private String getLegacyLuaTypeName(Class<?> javaClass) {
-    if (Delegator.class.isAssignableFrom(javaClass)) {
-      javaClass = unproxy(javaClass);
-    }
-    JavaLuaClass<?, ?> luaClass = classLoader.getLuaClassForJavaClass(javaClass);
-    if (luaClass != null) {
-      return luaClass.getName();
-    }
-    return null;
-  }
-
-  @Deprecated
-  private <T> Class<T> unproxy(Class<?> type) {
-    @SuppressWarnings("unchecked")
-    Class<? extends Delegator<T>> delegatorClass = (Class<? extends Delegator<T>>) type;
-    return Delegator.getDelegateClassOf(delegatorClass);
   }
 }
