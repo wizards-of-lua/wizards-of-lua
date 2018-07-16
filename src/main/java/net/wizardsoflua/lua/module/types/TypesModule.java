@@ -15,8 +15,8 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.BadArgumentException;
-import net.wizardsoflua.lua.classes.ObjectClass2;
-import net.wizardsoflua.lua.extension.util.LuaTableExtension;
+import net.wizardsoflua.lua.classes.ObjectClass;
+import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = TypesModule.NAME)
@@ -32,7 +32,7 @@ public class TypesModule extends LuaTableExtension {
   @Resource
   private LuaTypes types;
   @Inject
-  private ObjectClass2 objectClass;
+  private ObjectClass objectClass;
 
   @Override
   public String getName() {
@@ -74,7 +74,7 @@ public class TypesModule extends LuaTableExtension {
   }
 
   @LuaFunction
-  public String type(@Nullable Object instance) {
-    return types.getLuaTypeName(instance);
+  public String type(@Nullable Object LuaObject) {
+    return types.getLuaTypeNameOfLuaObject(LuaObject);
   }
 }

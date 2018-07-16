@@ -36,7 +36,7 @@ import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptor;
 import net.wizardsoflua.lua.classes.eventinterceptor.EventInterceptorClass;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueue;
 import net.wizardsoflua.lua.classes.eventqueue.EventQueueClass;
-import net.wizardsoflua.lua.extension.util.LuaTableExtension;
+import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.lua.view.ViewFactory;

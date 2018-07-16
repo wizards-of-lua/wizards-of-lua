@@ -13,6 +13,11 @@ import net.wizardsoflua.lua.table.PatchedImmutableTable;
 @AutoService(JavaToLuaConverter.class)
 public class BlockStateConverter extends TypeTokenJavaToLuaConverter<WolBlockState> {
   @Override
+  public String getName() {
+    return "BlockState";
+  }
+
+  @Override
   public Table getLuaInstance(WolBlockState blockState) {
     PatchedImmutableTable.Builder b = new PatchedImmutableTable.Builder();
     Collection<IProperty<?>> names = blockState.getDelegate().getPropertyKeys();

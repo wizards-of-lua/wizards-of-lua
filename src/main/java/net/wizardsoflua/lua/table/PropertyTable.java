@@ -1,13 +1,10 @@
 package net.wizardsoflua.lua.table;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
-
 import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
@@ -28,11 +25,6 @@ public class PropertyTable extends Table {
    * in a {@link TableProperty}.
    */
   private final boolean modifiable;
-
-  @Deprecated
-  public PropertyTable() {
-    this(false);
-  }
 
   public PropertyTable(boolean modifiable) {
     this.modifiable = modifiable;
@@ -120,24 +112,5 @@ public class PropertyTable extends Table {
     checkKey(key);
     checkNotNull(value, "value == null!");
     values.put(key, value);
-  }
-
-  /**
-   * @deprecated <a href= "https://github.com/wizards-of-lua/wizards-of-lua/issues/29">#29</a>
-   */
-  @Deprecated
-  public void addImmutable(Object key, Object value) {
-    TableProperty<?> property = new TableProperty<>(() -> value, null);
-    addProperty(key, property);
-  }
-
-  /**
-   * @deprecated <a href= "https://github.com/wizards-of-lua/wizards-of-lua/issues/29">#29</a>
-   */
-  @Deprecated
-  public void addImmutableNullable(Object key, @Nullable Object value) {
-    if (value != null) {
-      addImmutable(key, value);
-    }
   }
 }

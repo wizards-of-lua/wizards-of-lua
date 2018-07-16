@@ -1,9 +1,6 @@
 package net.wizardsoflua.lua.nbt;
 
-import javax.annotation.Nullable;
-
 import org.junit.Test;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
@@ -12,20 +9,24 @@ import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
+import net.wizardsoflua.lua.Converters;
+import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.testenv.assertion.AssertionsFactory;
 
 public class NbtConverterTest extends AssertionsFactory {
   private static final int NBT_STRING_TYPE = 8;
+  private final Converters conversion = new Converters(this::getTypes);
+  private final Types types = new Types(this::getConversion);
 
-  private final NbtConverter underTest =
-      new NbtConverter(new LuaClassLoader(new DefaultTable(), new LuaClassLoader.Context() {
-        @Override
-        public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
-          return null;
-        }
-      }).getTypes());
+  public Converters getConversion() {
+    return conversion;
+  }
+
+  private Types getTypes() {
+    return types;
+  }
+
+  private final NbtConverter underTest = new NbtConverter(types);
 
   @Test
   public void test_merge__Uses_NbtType_of_existing_Tag() {

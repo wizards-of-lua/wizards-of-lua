@@ -2,6 +2,8 @@ package net.wizardsoflua.event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.annotation.Nullable;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,6 +16,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.spell.SpellEntity;
 
@@ -24,10 +28,6 @@ public class WolEventHandler {
 
   public interface Context {
     Iterable<SpellEntity> getSpells();
-
-    boolean isSupportedLuaEvent(Event event);
-
-    String getEventName(Event event);
   }
 
   private final Context context;
@@ -41,21 +41,35 @@ public class WolEventHandler {
     if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
       return;
     }
-    if ( event instanceof ServerTickEvent) {
-      onServerTickEvent((ServerTickEvent)event);
+    if (event instanceof ServerTickEvent) {
+      onServerTickEvent((ServerTickEvent) event);
     }
-    if (context.isSupportedLuaEvent(event)) {
+    if (Converters.isSupported(event.getClass())) {
       for (SpellEntity spellEntity : context.getSpells()) {
-        String eventName = context.getEventName(event);
-        EventsModule events = spellEntity.getProgram().getEvents();
-        events.onEvent(eventName, event);
+        String eventName = getEventName(event, spellEntity);
+        if (eventName != null) {
+          EventsModule events = spellEntity.getProgram().getEvents();
+          events.onEvent(eventName, event);
+        }
       }
     }
   }
 
+  private @Nullable String getEventName(Event event, SpellEntity spell) {
+    if (event instanceof CustomLuaEvent) {
+      return ((CustomLuaEvent) event).getName();
+    }
+    Converters converters = spell.getProgram().getConverters();
+    JavaToLuaConverter<?> converter = converters.getJavaToLuaConverter(event.getClass());
+    if (converter != null) {
+      return converter.getName();
+    }
+    return null;
+  }
+
   private void onServerTickEvent(ServerTickEvent event) {
     for (SpellEntity spellEntity : context.getSpells()) {
-      if ( spellEntity.isAlive()) {
+      if (spellEntity.isAlive()) {
         spellEntity.onUpdate();
       }
     }

@@ -12,5 +12,4 @@ public class WolBlockState {
   public IBlockState getDelegate() {
     return delegate;
   }
-
 }

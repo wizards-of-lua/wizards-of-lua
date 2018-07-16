@@ -1,29 +1,53 @@
 package net.wizardsoflua.lua.classes.event;
 
 import javax.annotation.Nullable;
-
+import javax.inject.Inject;
 import com.google.auto.service.AutoService;
-
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.event.CustomLuaEvent;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.BasicLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
+import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.view.ViewFactory;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass(name = CustomEventClass.NAME, superClass = EventClass.class)
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = CustomEventClass.NAME, superClass = EventClass.class)
+@GenerateLuaClassTable(instance = CustomEventClass.Instance.class)
+@GenerateLuaDoc(type = EventClass.TYPE)
 public class CustomEventClass
-    extends DelegatorLuaClass<CustomLuaEvent, CustomEventClass.Proxy<CustomLuaEvent>> {
+    extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<CustomLuaEvent>> {
   public static final String NAME = "CustomEvent";
+  @Resource
+  private LuaConverters converters;
+  @Resource
+  private Injector injector;
 
   @Override
-  public Proxy<CustomLuaEvent> toLua(CustomLuaEvent javaObj) {
-    return new Proxy<>(this, javaObj);
+  protected Table createRawTable() {
+    return new CustomEventClassTable<>(this, converters);
   }
 
-  public static class Proxy<D extends CustomLuaEvent> extends EventClass.Proxy<EventApi<D>, D> {
-    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
-      super(new EventApi<>(luaClass, delegate));
-      addReadOnly("data", this::getData);
+  @Override
+  protected Delegator<Instance<CustomLuaEvent>> toLuaInstance(CustomLuaEvent javaInstance) {
+    return new CustomEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
+        getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends CustomLuaEvent> extends EventClass.Instance<D> {
+    @Inject
+    private ViewFactory viewFactory;
+
+    public Instance(D delegate, String name, Injector injector) {
+      super(delegate, name, injector);
     }
 
     @Override
@@ -31,8 +55,9 @@ public class CustomEventClass
       return delegate.getName();
     }
 
-    private @Nullable Object getData() {
-      return delegate.getData(classLoader.getViewFactory());
+    @LuaProperty
+    public @Nullable Object getData() {
+      return delegate.getData(viewFactory);
     }
   }
 }

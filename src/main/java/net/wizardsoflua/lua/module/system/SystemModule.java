@@ -28,7 +28,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.extension.util.LuaTableExtension;
+import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
 @GenerateLuaModuleTable

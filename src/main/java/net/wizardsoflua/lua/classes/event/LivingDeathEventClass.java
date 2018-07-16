@@ -1,34 +1,54 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.BasicLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
+import net.wizardsoflua.lua.classes.common.Delegator;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = LivingDeathEventClass.NAME, superClass = LivingEventClass.class)
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = LivingDeathEventClass.NAME, superClass = LivingEventClass.class)
+@GenerateLuaClassTable(instance = LivingDeathEventClass.Instance.class)
+@GenerateLuaDoc(type = EventClass.TYPE)
 public class LivingDeathEventClass
-    extends DelegatorLuaClass<LivingDeathEvent, LivingDeathEventClass.Proxy<LivingDeathEvent>> {
+    extends BasicLuaClass<LivingDeathEvent, LivingDeathEventClass.Instance<LivingDeathEvent>> {
   public static final String NAME = "LivingDeathEvent";
+  @Resource
+  private LuaConverters converters;
+  @Resource
+  private Injector injector;
 
   @Override
-  public Proxy<LivingDeathEvent> toLua(LivingDeathEvent javaObj) {
-    return new Proxy<>(this, javaObj);
+  protected Table createRawTable() {
+    return new LivingDeathEventClassTable<>(this, converters);
   }
 
-  public static class Proxy<D extends LivingDeathEvent>
-      extends LivingEventClass.Proxy<LivingEventApi<D>, D> {
-    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
-      super(new LivingEventApi<>(luaClass, delegate));
-      addReadOnly("cause", this::getCause);
+  @Override
+  protected Delegator<Instance<LivingDeathEvent>> toLuaInstance(LivingDeathEvent javaInstance) {
+    return new LivingDeathEventClassInstanceTable<>(
+        new Instance<>(javaInstance, getName(), injector), getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends LivingDeathEvent> extends LivingEventClass.Instance<D> {
+    public Instance(D delegate, String name, Injector injector) {
+      super(delegate, name, injector);
     }
 
-    protected Object getCause() {
+    @LuaProperty
+    public String getCause() {
       DamageSource source = delegate.getSource();
-      return getConverters().toLua(source.damageType);
+      return source.damageType;
     }
   }
 }

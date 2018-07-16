@@ -75,7 +75,7 @@ public class NbtConverter {
   private String keyToString(Object luaKey, int index, String path) {
     ByteString result = Conversions.stringValueOf(luaKey);
     if (result == null) {
-      String actualType = types.getLuaTypeName(luaKey);
+      String actualType = types.getLuaTypeNameOfLuaObject(luaKey);
       throw new ConversionException("Can't convert key " + index + " in " + path
           + "! string/number expected, but got " + actualType);
     }
@@ -83,7 +83,7 @@ public class NbtConverter {
   }
 
   ConversionException conversionException(String path, Object actual, String expected) {
-    String actualType = types.getLuaTypeName(actual);
+    String actualType = types.getLuaTypeNameOfLuaObject(actual);
     return new ConversionException(
         "Can't convert " + path + "! " + expected + " expected, but got " + actualType);
   }

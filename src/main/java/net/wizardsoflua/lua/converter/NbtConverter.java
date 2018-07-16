@@ -8,6 +8,11 @@ import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 @AutoService(JavaToLuaConverter.class)
 public class NbtConverter extends TypeTokenJavaToLuaConverter<NBTBase> {
   @Override
+  public String getName() {
+    return "Nbt";
+  }
+
+  @Override
   public Object getLuaInstance(NBTBase javaInstance) {
     return net.wizardsoflua.lua.nbt.NbtConverter.toLua(javaInstance);
   }

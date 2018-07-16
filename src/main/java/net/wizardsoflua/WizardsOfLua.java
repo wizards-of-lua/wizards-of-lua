@@ -1,19 +1,14 @@
 package net.wizardsoflua;
 
 import static java.lang.String.format;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeVersion;
@@ -30,26 +25,23 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
 import net.wizardsoflua.config.WolConfig;
-import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.gist.GistRepo;
+import net.wizardsoflua.lua.ExtensionLoader;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
 import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.rest.WolRestApiServer;
 import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
-import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellEntityFactory;
 import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.startup.Startup;
@@ -100,7 +92,7 @@ public class WizardsOfLua {
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) throws Exception {
     logger = event.getModLog();
-    LuaClassLoader.initialize(logger);
+    ExtensionLoader.initialize(logger);
     config = WolConfig.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 
@@ -219,25 +211,7 @@ public class WizardsOfLua {
       }
 
     });
-    eventHandler = new WolEventHandler(new WolEventHandler.Context() {
-      @Override
-      public Iterable<SpellEntity> getSpells() {
-        return spellRegistry.getAll();
-      }
-
-      @Override
-      public boolean isSupportedLuaEvent(Event event) {
-        return event instanceof CustomLuaEvent || LuaClassLoader.isSupported(event.getClass());
-      }
-
-      @Override
-      public String getEventName(Event event) {
-        if (event instanceof CustomLuaEvent) {
-          return ((CustomLuaEvent) event).getName();
-        }
-        return LuaClassLoader.getLuaClassNameOf(event.getClass());
-      }
-    });
+    eventHandler = new WolEventHandler(() -> spellRegistry.getAll());
     fileRepository = new LuaFileRepository(new LuaFileRepository.Context() {
       @Override
       public File getPlayerLibDir(UUID playerId) {
@@ -295,7 +269,7 @@ public class WizardsOfLua {
 
       @Override
       public MinecraftServer getMinecraftServer() {
-        return WizardsOfLua.this.server;
+        return server;
       }
     });
   }
@@ -315,7 +289,7 @@ public class WizardsOfLua {
     server = event.getServer();
     gameProfiles = new GameProfiles(server);
     permissions = new Permissions(server);
-    event.registerServerCommand(new WolCommand(this, this.logger));
+    event.registerServerCommand(new WolCommand(this, logger));
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();

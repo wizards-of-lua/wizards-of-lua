@@ -25,7 +25,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.extension.util.LuaTableExtension;
+import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
  * The Time module provides access to time related properties of the active Spell's world.

@@ -1,55 +1,80 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.world.BlockEvent;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.block.ImmutableWolBlock;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.BasicLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
+import net.wizardsoflua.lua.classes.common.Delegator;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass(name = BlockPlaceEventClass.NAME, superClass = BlockEventClass.class)
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = BlockPlaceEventClass.NAME, superClass = BlockEventClass.class)
+@GenerateLuaClassTable(instance = BlockPlaceEventClass.Instance.class)
+@GenerateLuaDoc(type = EventClass.TYPE)
 public class BlockPlaceEventClass extends
-    DelegatorLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Proxy<BlockEvent.PlaceEvent>> {
+    BasicLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.PlaceEvent>> {
   public static final String NAME = "BlockPlaceEvent";
+  @Resource
+  private LuaConverters converters;
+  @Resource
+  private Injector injector;
 
   @Override
-  public Proxy<BlockEvent.PlaceEvent> toLua(BlockEvent.PlaceEvent javaObj) {
-    return new Proxy<>(this, javaObj);
+  protected Table createRawTable() {
+    return new BlockPlaceEventClassTable<>(this, converters);
   }
 
-  public static class Proxy<D extends BlockEvent.PlaceEvent> extends BlockEventClass.Proxy<D> {
-    public Proxy(DelegatorLuaClass<?, ?> luaClass, D delegate) {
-      super(luaClass, delegate);
-      addReadOnly("hand", this::getHand);
-      addReadOnly("placedAgainst", this::getPlacedAgainst);
-      addReadOnly("replacedBlock", this::getReplacedBlock);
-      addReadOnly("player", this::getPlayer);
+  @Override
+  protected Delegator<Instance<BlockEvent.PlaceEvent>> toLuaInstance(
+      BlockEvent.PlaceEvent javaInstance) {
+    return new BlockPlaceEventClassInstanceTable<>(
+        new Instance<>(javaInstance, getName(), injector), getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends BlockEvent.PlaceEvent>
+      extends BlockEventClass.Instance<D> {
+    public Instance(D delegate, String name, Injector injector) {
+      super(delegate, name, injector);
     }
 
-    protected Object getHand() {
-      return getConverters().toLua(delegate.getHand());
+    @LuaProperty
+    public EnumHand getHand() {
+      return delegate.getHand();
     }
 
-    protected Object getPlacedAgainst() {
+    @LuaProperty
+    public ImmutableWolBlock getPlacedAgainst() {
       IBlockState blockState = delegate.getPlacedAgainst();
       NBTTagCompound nbt = null;
-      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
+      return new ImmutableWolBlock(blockState, nbt);
     }
 
-    protected Object getReplacedBlock() {
+    @LuaProperty
+    public ImmutableWolBlock getReplacedBlock() {
       BlockSnapshot blockSnapshot = delegate.getBlockSnapshot();
       IBlockState blockState = blockSnapshot.getReplacedBlock();
       NBTTagCompound nbt = blockSnapshot.getNbt();
-      return getConverters().toLua(new ImmutableWolBlock(blockState, nbt));
+      return new ImmutableWolBlock(blockState, nbt);
     }
 
-    protected Object getPlayer() {
-      return getConverters().toLua(delegate.getPlayer());
+    @LuaProperty
+    public EntityPlayer getPlayer() {
+      return delegate.getPlayer();
     }
   }
 }

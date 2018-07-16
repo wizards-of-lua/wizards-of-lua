@@ -103,7 +103,7 @@ public class MaterialTest extends WolTestBase {
     }
     // When:
     for (Map.Entry<Material, String> entry : expectedNames.entrySet()) {
-      String act = MaterialClass.GET_NAME(entry.getKey());
+      String act = MaterialClass.getName(entry.getKey());
       // Then
       assertThat(act).isEqualTo(entry.getValue());
     }

@@ -1,21 +1,13 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.cache.Cache;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -51,17 +43,13 @@ import net.wizardsoflua.extension.spell.api.resource.ScriptGatewayConfig;
 import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
-import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
-import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.classes.LuaClassLoader;
-import net.wizardsoflua.lua.classes.entity.PlayerApi;
+import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
-import net.wizardsoflua.lua.classes.entity.PlayerInstance;
+import net.wizardsoflua.lua.classes.entity.PlayerClass.Instance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
-import net.wizardsoflua.lua.extension.ServiceLoader;
 import net.wizardsoflua.lua.extension.SpellScope;
 import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventsModule;
@@ -72,9 +60,9 @@ import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.spell.SpellsModule;
+import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
-import net.wizardsoflua.lua.scheduling.LuaSchedulingContext;
 import net.wizardsoflua.lua.view.ViewFactory;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
@@ -116,7 +104,6 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
-  private final LuaClassLoader luaClassLoader;
   private final InjectionScope injectionScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
@@ -151,22 +138,10 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
-    luaClassLoader = new LuaClassLoader(env, new LuaClassLoader.Context() {
-      @Override
-      public @Nullable LuaSchedulingContext getCurrentSchedulingContext() {
-        return scheduler.getCurrentSchedulingContext();
-      }
-    });
     injectionScope = createInjectionScope();
-    loadServices(logger);
-    injectionScope.injectMembers(luaClassLoader);
-    luaClassLoader.loadStandardClasses();
-    PrintRedirector.installInto(env, new PrintRedirector.Context() {
-      @Override
-      public void send(String message) {
-        SpellProgram.this.owner.sendMessage(new TextComponentString(message));
-      }
-    });
+    loadExtensions();
+    PrintRedirector.installInto(env,
+        message -> SpellProgram.this.owner.sendMessage(new TextComponentString(message)));
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
@@ -225,23 +200,15 @@ public class SpellProgram {
         };
       }
     });
-    scope.registerResource(LuaConverters.class, luaClassLoader.getConverters());
-    scope.registerResource(LuaTypes.class, luaClassLoader.getTypes());
+    scope.registerResource(LuaConverters.class, scope.getInstance(Converters.class));
+    scope.registerResource(LuaTypes.class, scope.getInstance(Types.class));
     scope.registerResource(Table.class, env);
-    scope.registerResource(ExceptionHandler.class, new ExceptionHandler() {
-      @Override
-      public void handle(String contextMessage, Throwable t) {
-        handleException(contextMessage, t);
-      }
-    });
+    scope.registerResource(ExceptionHandler.class,
+        (contextMessage, t) -> handleException(contextMessage, t));
     scope.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
         scheduler);
-    scope.registerResource(Spell.class, new Spell() {
-      @Override
-      public void addParallelTaskFactory(ParallelTaskFactory parallelTaskFactory) {
-        parallelTaskFactories.add(parallelTaskFactory);
-      }
-    });
+    scope.registerResource(Spell.class,
+        parallelTaskFactory -> parallelTaskFactories.add(parallelTaskFactory));
     scope.registerResource(TableFactory.class, stateContext);
     scope.registerResource(Time.class, new Time() {
       @Override
@@ -257,19 +224,10 @@ public class SpellProgram {
     return scope;
   }
 
-  private void loadServices(Logger logger) {
-    Set<Class<? extends LuaConverter<?, ?>>> converters =
-        ServiceLoader.load(logger, LuaConverter.getClassWithWildcards());
-
-    Set<Class<? extends LuaToJavaConverter<?, ?>>> luaToJava = new HashSet<>(converters);
-    luaToJava.addAll(ServiceLoader.load(logger, LuaToJavaConverter.getClassWithWildcards()));
-    luaToJava.forEach(this::registerLuaToJavaConverter);
-
-    Set<Class<? extends JavaToLuaConverter<?>>> javaToLua = new HashSet<>(converters);
-    javaToLua.addAll(ServiceLoader.load(logger, JavaToLuaConverter.getClassWithWildcards()));
-    javaToLua.forEach(this::registerJavaToLuaConverter);
-
-    ServiceLoader.load(logger, SpellExtension.class).forEach(injectionScope::getInstance);
+  private void loadExtensions() {
+    ExtensionLoader.getLuaToJavaConverters().forEach(this::registerLuaToJavaConverter);
+    ExtensionLoader.getJavaToLuaConverters().forEach(this::registerJavaToLuaConverter);
+    ExtensionLoader.getSpellExtension().forEach(injectionScope::getInstance);
   }
 
   private <C extends LuaToJavaConverter<?, ?>> void registerLuaToJavaConverter(
@@ -284,12 +242,8 @@ public class SpellProgram {
     getConverters().registerJavaToLuaConverter(converter);
   }
 
-  public LuaClassLoader getLuaClassLoader() {
-    return luaClassLoader;
-  }
-
-  private Converters getConverters() {
-    return luaClassLoader.getConverters();
+  public Converters getConverters() {
+    return injectionScope.getInstance(Converters.class);
   }
 
   public EventsModule getEvents() {
@@ -368,7 +322,7 @@ public class SpellProgram {
     s.printStackTrace();
     String message = String.format("%s: %s", contextMessage, s.getMessage());
     TextComponentString txt = new TextComponentString(message);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
   }
 
@@ -399,12 +353,7 @@ public class SpellProgram {
     // Instead we install our own two searchers
     ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache, classLoader);
     PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader, fileSystem,
-        new PatchedChunkLoadPathSearcher.Context() {
-          @Override
-          public String getLuaPath() {
-            return defaultLuaPath;
-          }
-        });
+        () -> defaultLuaPath);
 
     CoroutineLib.installInto(stateContext, env);
     StringLib.installInto(stateContext, env);
@@ -418,15 +367,15 @@ public class SpellProgram {
         owner = newPlayer;
       }
     }
-    PlayerClass playerClass = luaClassLoader.getLuaClassOfType(PlayerClass.class);
-    Cache<EntityPlayerMP, PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP>> cache =
+    PlayerClass playerClass = injectionScope.getInstance(PlayerClass.class);
+    Cache<EntityPlayerMP, Delegator<? extends Instance<EntityPlayerMP>>> cache =
         playerClass.getCache();
     for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
       if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
-        PlayerInstance<PlayerApi<EntityPlayerMP>, EntityPlayerMP> oldValue =
-            cache.asMap().remove(oldPlayer);
+        Delegator<? extends Instance<EntityPlayerMP>> oldValue = cache.asMap().remove(oldPlayer);
         cache.put(newPlayer, oldValue);
-        oldValue.setDelegate(newPlayer);
+        Instance<EntityPlayerMP> instance = oldValue.getDelegate();
+        instance.setDelegate(newPlayer);
       }
     }
   }

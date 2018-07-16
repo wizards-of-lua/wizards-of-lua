@@ -1,10 +1,8 @@
 package net.wizardsoflua.lua.classes.eventqueue;
 
 import static java.util.Objects.requireNonNull;
-
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
-
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.AbstractFunction2;
@@ -21,11 +19,11 @@ import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.BasicLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
-import net.wizardsoflua.lua.extension.util.BasicLuaClass;
-import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 
 /**
  * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
@@ -35,7 +33,8 @@ import net.wizardsoflua.lua.extension.util.LuaClassAttributes;
 @LuaClassAttributes(name = EventQueueClass.NAME)
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Collecting Events")
-public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<?>> {
+public class EventQueueClass
+    extends BasicLuaClass<EventQueue, EventQueueClass.Instance<EventQueue>> {
   public static final String NAME = "EventQueue";
   @Resource
   private LuaConverters converters;
@@ -48,7 +47,7 @@ public class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.I
   }
 
   @Override
-  protected Delegator<Instance<?>> toLuaInstance(EventQueue javaInstance) {
+  protected Delegator<Instance<EventQueue>> toLuaInstance(EventQueue javaInstance) {
     return new EventQueueClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
   }
 

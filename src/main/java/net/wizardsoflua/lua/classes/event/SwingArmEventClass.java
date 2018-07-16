@@ -1,29 +1,65 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
+import net.sandius.rembulan.Table;
+import net.wizardsoflua.annotation.GenerateLuaClassTable;
+import net.wizardsoflua.annotation.GenerateLuaDoc;
+import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.event.SwingArmEvent;
-import net.wizardsoflua.lua.classes.DeclareLuaClass;
-import net.wizardsoflua.lua.classes.DelegatorLuaClass;
-import net.wizardsoflua.lua.classes.spi.DeclaredLuaClass;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.spi.LuaConverter;
+import net.wizardsoflua.lua.classes.BasicLuaClass;
+import net.wizardsoflua.lua.classes.LuaClassAttributes;
+import net.wizardsoflua.lua.classes.common.Delegator;
 
-@AutoService(DeclaredLuaClass.class)
-@DeclareLuaClass (name = SwingArmEventClass.NAME, superClass = EventClass.class)
+@AutoService(LuaConverter.class)
+@LuaClassAttributes(name = SwingArmEventClass.NAME, superClass = EventClass.class)
+@GenerateLuaClassTable(instance = SwingArmEventClass.Instance.class)
+@GenerateLuaDoc(type = EventClass.TYPE)
 public class SwingArmEventClass
-    extends DelegatorLuaClass<SwingArmEvent, SwingArmEventClass.Proxy<SwingArmEvent>> {
+    extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<SwingArmEvent>> {
   public static final String NAME = "SwingArmEvent";
+  @Resource
+  private LuaConverters converters;
+  @Resource
+  private Injector injector;
 
   @Override
-  public Proxy<SwingArmEvent> toLua(SwingArmEvent javaObj) {
-    return new Proxy<>(this, javaObj);
+  protected Table createRawTable() {
+    return new SwingArmEventClassTable<>(this, converters);
   }
 
-  public static class Proxy<D extends SwingArmEvent> extends EventClass.Proxy<EventApi<D>, D> {
-    public Proxy(DelegatorLuaClass<D, ? extends Proxy<D>> luaClass, D delegate) {
-      super(new EventApi<>(luaClass, delegate));
-      addImmutable("hand", getConverters().toLua(delegate.getHand()));
-      addImmutable("item", getConverters().toLua(delegate.getItemStack()));
-      addImmutable("player", getConverters().toLua(delegate.getPlayer()));
+  @Override
+  protected Delegator<Instance<SwingArmEvent>> toLuaInstance(SwingArmEvent javaInstance) {
+    return new SwingArmEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
+        getTable(), converters);
+  }
+
+  @GenerateLuaInstanceTable
+  public static class Instance<D extends SwingArmEvent> extends EventClass.Instance<D> {
+    public Instance(D delegate, String name, Injector injector) {
+      super(delegate, name, injector);
+    }
+
+    @LuaProperty
+    public EnumHand getHand() {
+      return delegate.getHand();
+    }
+
+    @LuaProperty
+    public ItemStack getItem() {
+      return delegate.getItemStack();
+    }
+
+    @LuaProperty
+    public EntityPlayer getPlayer() {
+      return delegate.getPlayer();
     }
   }
 }
