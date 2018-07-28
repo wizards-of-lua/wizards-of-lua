@@ -20,8 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = ChatEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = ChatEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class ChatEventClass
-    extends BasicLuaClass<ServerChatEvent, ChatEventClass.Instance<ServerChatEvent>> {
+public final class ChatEventClass extends BasicLuaClass<ServerChatEvent, ChatEventClass.Instance<ServerChatEvent>> {
   public static final String NAME = "ChatEvent";
   @Resource
   private LuaConverters converters;

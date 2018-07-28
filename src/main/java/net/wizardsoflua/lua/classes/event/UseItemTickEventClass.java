@@ -35,8 +35,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = UseItemTickEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemTickEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "While an Entity uses an Item", type = EventClass.TYPE)
-public class UseItemTickEventClass extends
-    BasicLuaClass<LivingEntityUseItemEvent.Tick, UseItemTickEventClass.Instance<LivingEntityUseItemEvent.Tick>> {
+public final class UseItemTickEventClass extends BasicLuaClass<LivingEntityUseItemEvent.Tick, UseItemTickEventClass.Instance<LivingEntityUseItemEvent.Tick>> {
   public static final String NAME = "UseItemTickEvent";
   @Resource
   private LuaConverters converters;

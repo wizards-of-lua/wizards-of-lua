@@ -23,7 +23,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = MobClass.NAME, superClass = EntityClass.class)
 @GenerateLuaClassTable(instance = MobClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Mobile Creatures")
-public class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instance<EntityLiving>> {
+public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instance<EntityLiving>> {
   public static final String NAME = "Mob";
   @Resource
   private LuaConverters converters;

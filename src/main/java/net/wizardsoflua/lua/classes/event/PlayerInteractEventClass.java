@@ -24,8 +24,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerInteractEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerInteractEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class PlayerInteractEventClass extends
-    BasicLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Instance<PlayerInteractEvent>> {
+public final class PlayerInteractEventClass extends BasicLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Instance<PlayerInteractEvent>> {
   public static final String NAME = "PlayerInteractEvent";
   @Resource
   private LuaConverters converters;

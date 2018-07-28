@@ -20,7 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = BlockBreakEventClass.NAME, superClass = BlockEventClass.class)
 @GenerateLuaClassTable(instance = BlockBreakEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class BlockBreakEventClass extends
+public final class BlockBreakEventClass extends
     BasicLuaClass<BlockEvent.BreakEvent, BlockBreakEventClass.Instance<BlockEvent.BreakEvent>> {
   public static final String NAME = "BlockBreakEvent";
   @Resource

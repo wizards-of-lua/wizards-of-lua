@@ -20,8 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerChangedDimensionEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerChangedDimensionEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class PlayerChangedDimensionEventClass extends
-    BasicLuaClass<PlayerChangedDimensionEvent, PlayerChangedDimensionEventClass.Instance<PlayerChangedDimensionEvent>> {
+public final class PlayerChangedDimensionEventClass extends BasicLuaClass<PlayerChangedDimensionEvent, PlayerChangedDimensionEventClass.Instance<PlayerChangedDimensionEvent>> {
   public static final String NAME = "PlayerChangedDimensionEvent";
   @Resource
   private LuaConverters converters;

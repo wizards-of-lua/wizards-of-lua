@@ -22,8 +22,7 @@ import net.wizardsoflua.lua.view.ViewFactory;
 @LuaClassAttributes(name = CustomEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = CustomEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class CustomEventClass
-    extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<CustomLuaEvent>> {
+public final class CustomEventClass extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<CustomLuaEvent>> {
   public static final String NAME = "CustomEvent";
   @Resource
   private LuaConverters converters;

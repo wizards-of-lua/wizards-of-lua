@@ -36,8 +36,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = UseItemStopEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemStopEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "When an Entity stops using an Item", type = EventClass.TYPE)
-public class UseItemStopEventClass extends
-    BasicLuaClass<LivingEntityUseItemEvent.Stop, UseItemStopEventClass.Instance<LivingEntityUseItemEvent.Stop>> {
+public final class UseItemStopEventClass extends BasicLuaClass<LivingEntityUseItemEvent.Stop, UseItemStopEventClass.Instance<LivingEntityUseItemEvent.Stop>> {
   public static final String NAME = "UseItemStopEvent";
   @Resource
   private LuaConverters converters;

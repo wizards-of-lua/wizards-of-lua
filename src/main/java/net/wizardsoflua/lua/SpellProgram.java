@@ -1,13 +1,17 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import org.apache.logging.log4j.Logger;
+
 import com.google.common.cache.Cache;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -33,6 +37,7 @@ import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
 import net.wizardsoflua.extension.spell.api.resource.Config;
 import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
@@ -155,6 +160,10 @@ public class SpellProgram {
     });
   }
 
+  /**
+   * Create the {@link InjectionScope} for this spell with all {@link Resource resources} for later
+   * injection.
+   */
   private InjectionScope createInjectionScope() {
     InjectionScope rootScope = context.getRootScope();
     InjectionScope scope = new SpellScope(rootScope);

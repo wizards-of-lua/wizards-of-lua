@@ -33,8 +33,7 @@ import net.wizardsoflua.lua.classes.event.EventClass;
 @LuaClassAttributes(name = EventQueueClass.NAME)
 @GenerateLuaClassTable(instance = EventQueueClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Collecting Events")
-public class EventQueueClass
-    extends BasicLuaClass<EventQueue, EventQueueClass.Instance<EventQueue>> {
+public final class EventQueueClass extends BasicLuaClass<EventQueue, EventQueueClass.Instance<EventQueue>> {
   public static final String NAME = "EventQueue";
   @Resource
   private LuaConverters converters;

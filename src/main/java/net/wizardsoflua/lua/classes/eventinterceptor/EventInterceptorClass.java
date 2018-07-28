@@ -18,8 +18,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = EventInterceptorClass.NAME)
 @GenerateLuaClassTable(instance = EventInterceptorClass.Instance.class)
 @GenerateLuaDoc
-public class EventInterceptorClass
-    extends BasicLuaClass<EventInterceptor, EventInterceptorClass.Instance<EventInterceptor>> {
+public final class EventInterceptorClass extends BasicLuaClass<EventInterceptor, EventInterceptorClass.Instance<EventInterceptor>> {
   public static final String NAME = "EventInterceptor";
   @Resource
   private LuaConverters converters;

@@ -21,8 +21,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
     superClass = PlayerInteractEventClass.class)
 @GenerateLuaClassTable(instance = LeftClickBlockEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class LeftClickBlockEventClass extends
-    BasicLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Instance<PlayerInteractEvent.LeftClickBlock>> {
+public final class LeftClickBlockEventClass extends BasicLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Instance<PlayerInteractEvent.LeftClickBlock>> {
   public static final String NAME = "LeftClickBlockEvent";
   @Resource
   private LuaConverters converters;

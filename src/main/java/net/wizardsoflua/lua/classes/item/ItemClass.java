@@ -27,7 +27,7 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 @LuaClassAttributes(name = ItemClass.NAME)
 @GenerateLuaClassTable(instance = ItemClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Things You can Carry Around")
-public class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance> {
+public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance> {
   public static final String NAME = "Item";
   @Resource
   private LuaConverters converters;

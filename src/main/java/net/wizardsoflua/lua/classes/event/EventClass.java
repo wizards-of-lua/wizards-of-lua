@@ -24,7 +24,7 @@ import net.wizardsoflua.lua.module.events.EventsModule;
 @LuaClassAttributes(name = EventClass.NAME)
 @GenerateLuaClassTable(instance = EventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "The Event Base Class", type = EventClass.TYPE)
-public class EventClass extends BasicLuaClass<Event, EventClass.Instance<Event>> {
+public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<Event>> {
   public static final String NAME = "Event";
   public static final String TYPE = "event";
   @Resource

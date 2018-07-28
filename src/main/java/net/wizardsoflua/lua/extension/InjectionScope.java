@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.extension;
 
 import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
@@ -23,13 +24,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.inject.Singleton;
+
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
+
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.reflect.ReflectionUtils;
@@ -305,6 +309,15 @@ public class InjectionScope {
     return getArgument(parameter.getParameterizedType(), parameter);
   }
 
+  /**
+   * Provides the resource or instance of the given {@link Type} which is to be injected into the
+   * annotated element.
+   * 
+   * @param type
+   * @param annotatedElement
+   * @return
+   * @throws IllegalStateException
+   */
   private Object getArgument(Type type, AnnotatedElement annotatedElement)
       throws IllegalStateException {
     if (annotatedElement.isAnnotationPresent(Resource.class)) {

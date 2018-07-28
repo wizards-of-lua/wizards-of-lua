@@ -20,8 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerLoggedOutEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerLoggedOutEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class PlayerLoggedOutEventClass extends
-    BasicLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Instance<PlayerEvent.PlayerLoggedOutEvent>> {
+public final class PlayerLoggedOutEventClass extends BasicLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Instance<PlayerEvent.PlayerLoggedOutEvent>> {
   public static final String NAME = "PlayerLoggedOutEvent";
   @Resource
   private LuaConverters converters;

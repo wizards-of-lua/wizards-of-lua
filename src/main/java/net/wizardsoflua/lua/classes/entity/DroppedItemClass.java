@@ -24,8 +24,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = DroppedItemClass.NAME, superClass = EntityClass.class)
 @GenerateLuaClassTable(instance = DroppedItemClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Things That are Lying Around")
-public class DroppedItemClass
-    extends BasicLuaClass<EntityItem, DroppedItemClass.Instance<EntityItem>> {
+public final class DroppedItemClass extends BasicLuaClass<EntityItem, DroppedItemClass.Instance<EntityItem>> {
   public static final String NAME = "DroppedItem";
   @Resource
   private LuaConverters converters;

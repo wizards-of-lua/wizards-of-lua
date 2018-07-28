@@ -37,8 +37,7 @@ import net.wizardsoflua.spell.VirtualEntity;
 @LuaClassAttributes(name = VirtualEntityClass.NAME)
 @GenerateLuaClassTable(instance = VirtualEntityClass.Instance.class)
 @GenerateLuaDoc(subtitle = "The Base Class of all Virtual Entities")
-public class VirtualEntityClass
-    extends BasicLuaClass<VirtualEntity, VirtualEntityClass.Instance<VirtualEntity>> {
+public final class VirtualEntityClass extends BasicLuaClass<VirtualEntity, VirtualEntityClass.Instance<VirtualEntity>> {
   public static final String NAME = "VirtualEntity";
   @Resource
   private LuaConverters converters;

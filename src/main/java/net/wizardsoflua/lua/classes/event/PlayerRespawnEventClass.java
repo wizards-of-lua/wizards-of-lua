@@ -20,8 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerRespawnEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerRespawnEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class PlayerRespawnEventClass extends
-    BasicLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Instance<PlayerEvent.PlayerRespawnEvent>> {
+public final class PlayerRespawnEventClass extends BasicLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Instance<PlayerEvent.PlayerRespawnEvent>> {
   public static final String NAME = "PlayerRespawnEvent";
   @Resource
   private LuaConverters converters;

@@ -20,8 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = LivingEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = LivingEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class LivingEventClass
-    extends BasicLuaClass<LivingEvent, LivingEventClass.Instance<LivingEvent>> {
+public final class LivingEventClass extends BasicLuaClass<LivingEvent, LivingEventClass.Instance<LivingEvent>> {
   public static final String NAME = "LivingEvent";
   @Resource
   private LuaConverters converters;

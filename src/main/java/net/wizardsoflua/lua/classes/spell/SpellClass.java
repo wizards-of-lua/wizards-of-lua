@@ -36,7 +36,7 @@ import net.wizardsoflua.spell.SpellEntity;
 @LuaClassAttributes(name = SpellClass.NAME, superClass = VirtualEntityClass.class)
 @GenerateLuaClassTable(instance = SpellClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Aspects of an Active Spell")
-public class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Instance<SpellEntity>> {
+public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Instance<SpellEntity>> {
   public static final String NAME = "Spell";
   @Resource
   private LuaConverters converters;

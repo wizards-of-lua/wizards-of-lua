@@ -48,8 +48,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = UseItemFinishEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemFinishEventClass.Instance.class)
 @GenerateLuaDoc(subtitle = "When an Entity finishes using an Item", type = EventClass.TYPE)
-public class UseItemFinishEventClass extends
-    BasicLuaClass<LivingEntityUseItemEvent.Finish, UseItemFinishEventClass.Instance<LivingEntityUseItemEvent.Finish>> {
+public final class UseItemFinishEventClass extends BasicLuaClass<LivingEntityUseItemEvent.Finish, UseItemFinishEventClass.Instance<LivingEntityUseItemEvent.Finish>> {
   public static final String NAME = "UseItemFinishEvent";
   @Resource
   private LuaConverters converters;

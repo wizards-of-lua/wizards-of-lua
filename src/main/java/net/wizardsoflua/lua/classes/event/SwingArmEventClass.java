@@ -22,8 +22,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = SwingArmEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = SwingArmEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class SwingArmEventClass
-    extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<SwingArmEvent>> {
+public final class SwingArmEventClass extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<SwingArmEvent>> {
   public static final String NAME = "SwingArmEvent";
   @Resource
   private LuaConverters converters;

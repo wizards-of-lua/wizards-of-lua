@@ -25,8 +25,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = BlockPlaceEventClass.NAME, superClass = BlockEventClass.class)
 @GenerateLuaClassTable(instance = BlockPlaceEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public class BlockPlaceEventClass extends
-    BasicLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.PlaceEvent>> {
+public final class BlockPlaceEventClass extends BasicLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.PlaceEvent>> {
   public static final String NAME = "BlockPlaceEvent";
   @Resource
   private LuaConverters converters;

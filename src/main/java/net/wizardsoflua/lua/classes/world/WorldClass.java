@@ -29,7 +29,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = WorldClass.NAME)
 @GenerateLuaClassTable(instance = WorldClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Where We All Exist")
-public class WorldClass extends BasicLuaClass<World, WorldClass.Instance<World>> {
+public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<World>> {
   public static final String NAME = "World";
   @Resource
   private LuaConverters converters;
