@@ -28,7 +28,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = WorldClass.NAME)
 @GenerateLuaClassTable(instance = WorldClass.Instance.class)
-@GenerateLuaDoc(subtitle = "Where We All Exist")
+@GenerateLuaDoc(subtitle = "Where All Exists")
 public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<World>> {
   public static final String NAME = "World";
   @Resource
@@ -68,7 +68,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     }
 
     /**
-     * The spawn point is a certain point in this world where [Players](/omdule/Player) will spawn
+     * The spawn point is a certain point in this world where [Players](/module/Player) will spawn
      * when they enter the world the first time, or when their personal spawn point is somehow not
      * accessible anymore.
      */
@@ -83,7 +83,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     }
 
     /**
-     * The difficulty defines how difficult it is for the player to live in this world.
+     * The difficulty defines how difficult it is for the players to live in this world.
      */
     @LuaProperty
     public EnumDifficulty getDifficulty() {
