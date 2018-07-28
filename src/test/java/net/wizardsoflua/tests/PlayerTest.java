@@ -218,4 +218,17 @@ public class PlayerTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("false");
   }
 
+  // /test net.wizardsoflua.tests.PlayerTest test_can_set_rotationYaw_to_float_value
+  @Test
+  public void test_can_set_rotationYaw_to_float_value() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().chat("/lua spell.owner.rotationYaw = 180.1; print('ok')");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+  }
+
 }

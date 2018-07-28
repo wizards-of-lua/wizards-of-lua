@@ -3,6 +3,7 @@ package net.wizardsoflua.lua;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,10 +12,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+
 import com.google.common.primitives.Primitives;
+
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -345,7 +349,8 @@ public class Converters implements LuaConverters {
   private Float castToFloat(Object luaObject) throws ClassCastException, BadArgumentException {
     Number number = (Number) luaObject;
     float result = number.floatValue();
-    if (result == number.doubleValue()) {
+    double doubleValue = number.doubleValue();
+    if (Math.abs(doubleValue - result) < 1) {
       return result;
     } else {
       throw new BadArgumentException("number has no float representation");
