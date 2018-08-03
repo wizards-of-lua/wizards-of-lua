@@ -55,7 +55,7 @@ run successfully when executed from Gradle.
 As a result you will find the mod JAR file in `build/libs`.
 
 ## How to Run the Integration Tests
-* Start the 
+* Join the server and execute the ```/test``` from the player's chat input line.
 
 ## How to Install the Mod into Minecraft 
 * Install Forge
