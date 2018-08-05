@@ -1,11 +1,17 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static java.lang.String.format;
+
+import java.util.EnumSet;
+import java.util.Set;
+
 import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
@@ -25,7 +31,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerClass.NAME, superClass = EntityClass.class)
 @GenerateLuaClassTable(instance = PlayerClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Controlling the Player")
-public final class PlayerClass extends BasicLuaClass<EntityPlayerMP, PlayerClass.Instance<EntityPlayerMP>> {
+public final class PlayerClass
+    extends BasicLuaClass<EntityPlayerMP, PlayerClass.Instance<EntityPlayerMP>> {
   public static final String NAME = "Player";
   @Resource
   private LuaConverters converters;
@@ -87,29 +94,34 @@ public final class PlayerClass extends BasicLuaClass<EntityPlayerMP, PlayerClass
     }
 
     @Override
-    public void setRotationYawAndPitch(float yaw, float pitch) {
-      super.setRotationYawAndPitch(yaw, pitch);
-      delegate.connection.setPlayerLocation(delegate.posX, delegate.posY, delegate.posZ,
-          delegate.rotationYaw, delegate.rotationPitch);
-    }
-
-    @Override
-    public float getRotationYaw() {
-      return MathHelper.wrapDegrees(delegate.rotationYaw);
-    }
-
-    @Override
-    public void setRotationYaw(float rotationYaw) {
-      super.setRotationYaw(rotationYaw);
-      delegate.connection.setPlayerLocation(delegate.posX, delegate.posY, delegate.posZ,
-          delegate.rotationYaw, delegate.rotationPitch);
+    protected void setPos(double x, double y, double z) {
+      Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      relativeFlags.remove(EnumFlags.X);
+      relativeFlags.remove(EnumFlags.Y);
+      relativeFlags.remove(EnumFlags.Z);
+      delegate.connection.setPlayerLocation(x, y, z, 0, 0, relativeFlags);
     }
 
     @Override
     public void setRotationPitch(float rotationPitch) {
-      super.setRotationPitch(rotationPitch);
-      delegate.connection.setPlayerLocation(delegate.posX, delegate.posY, delegate.posZ,
-          delegate.rotationYaw, delegate.rotationPitch);
+      Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      relativeFlags.remove(EnumFlags.X_ROT);
+      delegate.connection.setPlayerLocation(0, 0, 0, 0, rotationPitch, relativeFlags);
+    }
+
+    @Override
+    public void setRotationYaw(float rotationYaw) {
+      Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      relativeFlags.remove(EnumFlags.Y_ROT);
+      delegate.connection.setPlayerLocation(0, 0, 0, rotationYaw, 0, relativeFlags);
+    }
+
+    @Override
+    protected void setRotation(float rotationYaw, float rotationPitch) {
+      Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      relativeFlags.remove(EnumFlags.X_ROT);
+      relativeFlags.remove(EnumFlags.Y_ROT);
+      delegate.connection.setPlayerLocation(0, 0, 0, rotationYaw, rotationPitch, relativeFlags);
     }
   }
 }

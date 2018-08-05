@@ -1,10 +1,10 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
@@ -14,11 +14,6 @@ public class EntityLivingBaseClass {
   public static class Instance<D extends EntityLivingBase> extends EntityClass.Instance<D> {
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
-    }
-
-    @Override
-    public float getRotationYaw() {
-      return MathHelper.wrapDegrees(delegate.renderYawOffset);
     }
 
     /**

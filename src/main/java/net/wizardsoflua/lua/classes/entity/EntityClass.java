@@ -2,11 +2,15 @@ package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Optional.ofNullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -114,9 +118,9 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
 
     @LuaProperty
     public void setLookVec(Vec3d lookVec) {
-      double pitch = Math.toDegrees(Math.asin(-lookVec.y));
-      double yaw = Math.toDegrees(MathHelper.atan2(-lookVec.x, lookVec.z));
-      setRotationYawAndPitch((float) yaw, (float) pitch);
+      float rotationYaw = (float) Math.toDegrees(MathHelper.atan2(-lookVec.x, lookVec.z));
+      float rotationPitch = (float) Math.toDegrees(Math.asin(-lookVec.y));
+      setRotation(rotationYaw, rotationPitch);
     }
 
     /**
@@ -193,7 +197,27 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
 
     @LuaProperty
     public void setPos(Vec3d pos) {
-      delegate.setPositionAndUpdate(pos.x, pos.y, pos.z);
+      setPos(pos.x, pos.y, pos.z);
+    }
+
+    protected void setPos(double x, double y, double z) {
+      delegate.setPosition(x, y, z);
+    }
+
+    /**
+     * The 'rotationYaw' is the rotation of this entity around its Y axis in degrees. For example, a
+     * value of 0 means the entity is facing south. 90 corresponds to west, and 45 to south-west.
+     */
+    @LuaProperty
+    public float getRotationYaw() {
+      return delegate.rotationYaw;
+    }
+
+    @LuaProperty
+    public void setRotationYaw(float rotationYaw) {
+      rotationYaw = MathHelper.wrapDegrees(rotationYaw);
+      delegate.rotationYaw = rotationYaw;
+      delegate.setRotationYawHead(rotationYaw);
     }
 
     /**
@@ -208,31 +232,14 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
 
     @LuaProperty
     public void setRotationPitch(float rotationPitch) {
-      delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ,
-          delegate.rotationYaw, rotationPitch);
+      rotationPitch = MathHelper.wrapDegrees(rotationPitch);
+      rotationPitch = MathHelper.clamp(rotationPitch, -90.0F, 90.0F);
+      delegate.rotationPitch = rotationPitch;
     }
 
-    /**
-     * The 'rotationYaw' is the rotation of this entity around its Y axis in degrees. For example, a
-     * value of 0 means the entity is facing south. 90 corresponds to west, and 45 to south-west.
-     */
-    @LuaProperty
-    public float getRotationYaw() {
-      return MathHelper.wrapDegrees(delegate.rotationYaw);
-    }
-
-    @LuaProperty
-    public void setRotationYaw(float rotationYaw) {
-      delegate.setRotationYawHead(rotationYaw);
-      delegate.setRenderYawOffset(rotationYaw);
-      delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, rotationYaw,
-          delegate.rotationPitch);
-    }
-
-    protected void setRotationYawAndPitch(float yaw, float pitch) {
-      delegate.setRotationYawHead(yaw);
-      delegate.setRenderYawOffset(yaw);
-      delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw, pitch);
+    protected void setRotation(float rotationYaw, float rotationPitch) {
+      setRotationYaw(rotationYaw);
+      setRotationPitch(rotationPitch);
     }
 
     /**
@@ -330,7 +337,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
       double x = delegate.posX + vec.x * distance;
       double y = delegate.posY + vec.y * distance;
       double z = delegate.posZ + vec.z * distance;
-      delegate.setPositionAndUpdate(x, y, z);
+      setPos(x, y, z);
     }
 
     /**
