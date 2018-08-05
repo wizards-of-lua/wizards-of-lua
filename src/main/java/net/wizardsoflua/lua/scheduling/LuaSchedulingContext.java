@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.SchedulingContext;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
@@ -24,7 +25,7 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
 
   public LuaSchedulingContext(long luaTickLimit, Context context) {
     this.context = checkNotNull(context, "context == null!");
-    this.allowance = luaTickLimit;
+    allowance = luaTickLimit;
   }
 
   @Override
@@ -62,9 +63,11 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
 
   public abstract boolean isAutosleep();
 
-  public abstract void setAutosleep(boolean autosleep);
+  public abstract void setAutosleep(boolean autosleep) throws IllegalOperationAttemptException;
 
-  public abstract void pause(ExecutionContext context) throws UnresolvedControlThrowable;
+  public abstract void pause(ExecutionContext context)
+      throws UnresolvedControlThrowable, IllegalOperationAttemptException;
 
-  public abstract void pauseIfRequested(ExecutionContext context) throws UnresolvedControlThrowable;
+  public abstract void pauseIfRequested(ExecutionContext context)
+      throws UnresolvedControlThrowable, IllegalOperationAttemptException;
 }

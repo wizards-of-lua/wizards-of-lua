@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
-import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.lua.scheduling.LuaSchedulingContext.Context;
 
 public class UnpausableSchedulingContextFactory implements LuaSchedulingContextFactory {
@@ -25,17 +24,18 @@ public class UnpausableSchedulingContextFactory implements LuaSchedulingContextF
       }
 
       @Override
-      public void setAutosleep(boolean autosleep) {
+      public void setAutosleep(boolean autosleep) throws IllegalOperationAttemptException {
         throw new IllegalOperationAttemptException("attempt to set autosleep");
       }
 
       @Override
-      public void pause(ExecutionContext context) throws UnresolvedControlThrowable {
+      public void pause(ExecutionContext context) throws IllegalOperationAttemptException {
         throw new IllegalOperationAttemptException("attempt to sleep");
       }
 
       @Override
-      public void pauseIfRequested(ExecutionContext context) {
+      public void pauseIfRequested(ExecutionContext context)
+          throws IllegalOperationAttemptException {
         throw new IllegalOperationAttemptException("attempt to sleep");
       }
     };

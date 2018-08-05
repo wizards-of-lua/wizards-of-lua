@@ -16,6 +16,7 @@ import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.exec.DirectCallExecutor;
 import net.sandius.rembulan.runtime.ExecutionContext;
+import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
 import net.wizardsoflua.extension.spell.api.LuaTickListener;
@@ -80,13 +81,13 @@ public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resour
   }
 
   @Override
-  public boolean addPauseContext(PauseContext context) {
-    return pauseContexts.add(context);
+  public boolean addPauseContext(PauseContext pauseContext) {
+    return pauseContexts.add(pauseContext);
   }
 
   @Override
-  public boolean removePauseContext(PauseContext context) {
-    return pauseContexts.remove(context);
+  public boolean removePauseContext(PauseContext pauseContext) {
+    return pauseContexts.remove(pauseContext);
   }
 
   @Override
@@ -174,12 +175,14 @@ public class LuaScheduler implements net.wizardsoflua.extension.spell.api.resour
   }
 
   @Override
-  public void pause(ExecutionContext context) throws UnresolvedControlThrowable {
+  public void pause(ExecutionContext context)
+      throws UnresolvedControlThrowable, IllegalOperationAttemptException {
     getCurrentSchedulingContextNonNull().pause(context);
   }
 
   @Override
-  public void pauseIfRequested(ExecutionContext context) throws UnresolvedControlThrowable {
+  public void pauseIfRequested(ExecutionContext context)
+      throws UnresolvedControlThrowable, IllegalOperationAttemptException {
     getCurrentSchedulingContextNonNull().pauseIfRequested(context);
   }
 
