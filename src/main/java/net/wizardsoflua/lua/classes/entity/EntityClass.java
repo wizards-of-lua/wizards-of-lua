@@ -1,6 +1,8 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
 
 import java.util.ArrayList;
@@ -142,13 +144,13 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
       double z = motion.z;
 
       // see SPacketEntityVelocity
-      double maxLen = 3.9;
-      double lenSqr = x * x + y * y + z * z;
-      if (lenSqr > maxLen * maxLen) {
-        double f = maxLen / Math.sqrt(lenSqr);
-        x = x * f;
-        y = y * f;
-        z = z * f;
+      double maxAllowed = 3.9;
+      double greatestValue = max(max(abs(x), abs(y)), abs(z));
+      if (maxAllowed < greatestValue) {
+        double factor = maxAllowed / greatestValue;
+        x = x * factor;
+        y = y * factor;
+        z = z * factor;
       }
 
       delegate.motionX = x;
