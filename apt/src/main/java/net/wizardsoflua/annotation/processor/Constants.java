@@ -3,7 +3,7 @@ package net.wizardsoflua.annotation.processor;
 import com.squareup.javapoet.ClassName;
 
 public interface Constants {
-  final String LUA_CLASS_ATTRIBUTES = "net.wizardsoflua.lua.extension.util.LuaClassAttributes";
+  final String LUA_CLASS_ATTRIBUTES = "net.wizardsoflua.lua.classes.LuaClassAttributes";
 
   final ClassName LUA_TABLE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaTable");
