@@ -11,7 +11,9 @@ public interface Constants {
       ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaInstanceTable");
 
   final String OBJECT_CLASS = "net.wizardsoflua.lua.classes.ObjectClass";
-  final String DELEGATOR = "net.wizardsoflua.lua.classes.common.Delegator";
+
+  final String JAVA_TO_LUA_CONVERTER = "net.wizardsoflua.extension.spell.spi.JavaToLuaConverter";
+
   final ClassName LUA_CONVERTERS =
       ClassName.get("net.wizardsoflua.extension.spell.api.resource", "LuaConverters");
 
