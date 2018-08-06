@@ -15,7 +15,7 @@ import net.wizardsoflua.lua.table.DefaultTableBuilder;
 
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = Vec3Class.NAME)
-@GenerateLuaDoc(subtitle = "Manipulating Location and Motion")
+@GenerateLuaDoc(subtitle = "Manipulating Location and Motion", type = "class")
 public class Vec3Class extends AnnotatedLuaClass implements LuaConverter<Vec3d, Table> {
   public static final String NAME = "Vec3";
   @Resource
