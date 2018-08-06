@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import com.google.auto.service.AutoService;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
 import net.minecraft.scoreboard.Team;
@@ -32,7 +33,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @GenerateLuaClassTable(instance = PlayerClass.Instance.class)
 @GenerateLuaDoc(subtitle = "Controlling the Player")
 public final class PlayerClass
-    extends BasicLuaClass<EntityPlayerMP, PlayerClass.Instance<EntityPlayerMP>> {
+    extends BasicLuaClass<EntityPlayer, PlayerClass.Instance<EntityPlayerMP>> {
   public static final String NAME = "Player";
   @Resource
   private LuaConverters converters;
@@ -45,8 +46,8 @@ public final class PlayerClass
   }
 
   @Override
-  protected Delegator<Instance<EntityPlayerMP>> toLuaInstance(EntityPlayerMP javaInstance) {
-    return new PlayerClassInstanceTable<>(new Instance<>(javaInstance, injector), getTable(),
+  protected Delegator<Instance<EntityPlayerMP>> toLuaInstance(EntityPlayer javaInstance) {
+    return new PlayerClassInstanceTable<>(new Instance<>((EntityPlayerMP) javaInstance, injector), getTable(),
         converters);
   }
 

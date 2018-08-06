@@ -29,7 +29,7 @@ public class SpellEntity extends VirtualEntity {
     // Used by MC when loading this entity from persistent data
     super(checkNotNull(world, "world==null!"));
   }
-  
+
   public SpellEntity(World world, ICommandSender owner, SpellProgram program,
       PositionAndRotation posRot, long sid) {
     this(world);
@@ -130,14 +130,14 @@ public class SpellEntity extends VirtualEntity {
     if (visible) {
       SpellAuraFX.spawnParticle(this);
     }
-    //applyMotion();
+    // applyMotion();
   }
 
-//  private void applyMotion() {
-//    if (motionX != 0 || motionY != 0 || motionZ != 0) {
-//      setPosition(posX + motionX, posY + motionY, posZ + motionZ);
-//    }
-//  }
+  // private void applyMotion() {
+  // if (motionX != 0 || motionY != 0 || motionZ != 0) {
+  // setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+  // }
+  // }
 
   @Override
   public void setDead() {
@@ -152,8 +152,9 @@ public class SpellEntity extends VirtualEntity {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      if (owner.getCommandSenderEntity().getUniqueID().equals(player.getUniqueID())) {
+    Entity commandSender = owner.getCommandSenderEntity();
+    if (commandSender instanceof EntityPlayer) {
+      if (commandSender.getUniqueID().equals(player.getUniqueID())) {
         owner = player;
       }
     }

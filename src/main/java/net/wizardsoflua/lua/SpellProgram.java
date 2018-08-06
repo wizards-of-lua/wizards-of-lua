@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.cache.Cache;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.Style;
@@ -371,13 +372,14 @@ public class SpellProgram {
   }
 
   public void replacePlayerInstance(EntityPlayerMP newPlayer) {
-    if (owner.getCommandSenderEntity() instanceof EntityPlayer) {
-      if (owner.getCommandSenderEntity().getUniqueID().equals(newPlayer.getUniqueID())) {
+    Entity commandSender = owner.getCommandSenderEntity();
+    if (commandSender instanceof EntityPlayer) {
+      if (commandSender.getUniqueID().equals(newPlayer.getUniqueID())) {
         owner = newPlayer;
       }
     }
     PlayerClass playerClass = injectionScope.getInstance(PlayerClass.class);
-    Cache<EntityPlayerMP, Delegator<? extends Instance<EntityPlayerMP>>> cache =
+    Cache<EntityPlayer, Delegator<? extends Instance<EntityPlayerMP>>> cache =
         playerClass.getCache();
     for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
       if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
