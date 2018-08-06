@@ -41,9 +41,9 @@ import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.lua.view.ViewFactory;
 
+@AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = EventsModule.NAME, subtitle = "Knowing What Happened")
-@AutoService(SpellExtension.class)
 public class EventsModule extends LuaTableExtension {
   public static final String NAME = "Events";
   @Resource

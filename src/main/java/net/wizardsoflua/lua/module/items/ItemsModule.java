@@ -15,9 +15,9 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
+@AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = ItemsModule.NAME, subtitle = "Creating Items")
-@AutoService(SpellExtension.class)
 public class ItemsModule extends LuaTableExtension {
   public static final String NAME = "Items";
   @Resource

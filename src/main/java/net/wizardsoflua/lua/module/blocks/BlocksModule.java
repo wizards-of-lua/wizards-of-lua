@@ -20,9 +20,9 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
+@AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = BlocksModule.NAME, subtitle = "The Building Blocks Directory")
-@AutoService(SpellExtension.class)
 public class BlocksModule extends LuaTableExtension {
   public static final String NAME = "Blocks";
   @Resource

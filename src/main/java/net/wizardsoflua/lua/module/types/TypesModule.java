@@ -18,9 +18,9 @@ import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
+@AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = TypesModule.NAME)
-@AutoService(SpellExtension.class)
 public class TypesModule extends LuaTableExtension {
   public static final String NAME = "Types";
   @Resource

@@ -13,11 +13,11 @@ import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
- * The Time module provides some information about the Wizards of Lua modification.
+ * The Wol module provides some information about the Wizards of Lua modification.
  */
+@AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = WolModule.NAME, subtitle = "Some Information about the Wizards of Lua")
-@AutoService(SpellExtension.class)
 public class WolModule extends LuaTableExtension {
   public static final String NAME = "Wol";
   @Resource

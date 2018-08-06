@@ -31,9 +31,9 @@ import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
+@AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = SystemModule.NAME, subtitle = "Interacting with the Server's OS")
-@AutoService(SpellExtension.class)
 public class SystemModule extends LuaTableExtension {
   public static final String NAME = "System";
   @Resource
