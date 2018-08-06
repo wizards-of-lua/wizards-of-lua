@@ -1,8 +1,9 @@
 package net.wizardsoflua.lua.classes.item;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -98,7 +99,7 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
     }
 
     @LuaProperty
-    public @Nullable NBTTagCompound getNbt() {
+    public NBTTagCompound getNbt() {
       return delegate.serializeNBT();
     }
 

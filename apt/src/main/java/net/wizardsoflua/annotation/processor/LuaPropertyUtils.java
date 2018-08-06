@@ -74,7 +74,7 @@ public class LuaPropertyUtils {
     return methodName;
   }
 
-  public static String getPropertyType(ExecutableElement method, Map<String, String> luaClassNames,
+  public static String getPropertyType(ExecutableElement method, Map<String, String> luaTypeNames,
       ProcessingEnvironment env) throws ProcessingException {
     LuaProperty luaProperty = checkAnnotated(method, LuaProperty.class);
     String type = LuaDocGenerator.renderType(luaProperty.type());
@@ -83,11 +83,11 @@ public class LuaPropertyUtils {
     }
     if (isGetter(method)) {
       TypeMirror returnType = method.getReturnType();
-      return LuaDocGenerator.renderType(returnType, method, luaClassNames, env);
+      return LuaDocGenerator.renderType(returnType, method, luaTypeNames, env);
     }
     if (isSetter(method)) {
       TypeMirror parameterType = method.getParameters().get(0).asType();
-      return LuaDocGenerator.renderType(parameterType, method, luaClassNames, env);
+      return LuaDocGenerator.renderType(parameterType, method, luaTypeNames, env);
     }
     throw neitherGetterNorSetter(method);
   }

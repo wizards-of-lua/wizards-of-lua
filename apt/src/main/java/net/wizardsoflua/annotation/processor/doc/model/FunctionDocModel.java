@@ -24,7 +24,7 @@ import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 
 public class FunctionDocModel {
-  public static FunctionDocModel of(ExecutableElement method, Map<String, String> luaClassNames,
+  public static FunctionDocModel of(ExecutableElement method, Map<String, String> luaTypeNames,
       ProcessingEnvironment env) throws ProcessingException {
     LuaFunction luaFunction = checkAnnotated(method, LuaFunction.class);
     String name = luaFunction.name();
@@ -38,7 +38,7 @@ public class FunctionDocModel {
       returnType = renderType(luaFunctionDoc.returnType());
       args = Arrays.asList(luaFunctionDoc.args());
     } else {
-      returnType = renderType(method.getReturnType(), method, luaClassNames, env);
+      returnType = renderType(method.getReturnType(), method, luaTypeNames, env);
       args = Lists.transform(method.getParameters(), p -> p.getSimpleName().toString());
     }
     String description = LuaDocGenerator.getDescription(method, env);

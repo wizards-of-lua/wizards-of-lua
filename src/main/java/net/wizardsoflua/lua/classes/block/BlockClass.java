@@ -81,13 +81,13 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
       return mat;
     }
 
-    @LuaProperty(type = "table")
+    @LuaProperty
     public WolBlockState getData() {
       IBlockState blockState = delegate.getBlockState();
       return new WolBlockState(blockState);
     }
 
-    @LuaProperty(type = "table")
+    @LuaProperty
     public @Nullable NBTTagCompound getNbt() {
       NBTTagCompound nbt = delegate.getNbt();
       if (nbt == null) {

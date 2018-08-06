@@ -181,7 +181,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      * contents, but to activate them you have to assign the modified table to the entity by using
      * the [putNbt()](/modules/Entity/#putNbt) function.
      */
-    @LuaProperty(type = "table")
+    @LuaProperty
     public NBTTagCompound getNbt() {
       NBTTagCompound nbt = new NBTTagCompound();
       delegate.writeToNBT(nbt);

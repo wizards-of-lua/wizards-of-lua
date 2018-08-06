@@ -79,7 +79,7 @@ public class LuaDocGenerator {
   }
 
   public static String renderType(TypeMirror typeMirror, Element annotatedElement,
-      Map<String, String> luaClassNames, ProcessingEnvironment env)
+      Map<String, String> luaTypeNames, ProcessingEnvironment env)
       throws ProcessingException, IllegalArgumentException {
     TypeKind typeKind = typeMirror.getKind();
     switch (typeKind) {
@@ -101,7 +101,7 @@ public class LuaDocGenerator {
         Types types = env.getTypeUtils();
         try {
           PrimitiveType primitiveType = types.unboxedType(typeMirror);
-          return renderType(primitiveType, annotatedElement, luaClassNames, env);
+          return renderType(primitiveType, annotatedElement, luaTypeNames, env);
         } catch (IllegalArgumentException ignore) {
         }
         TypeElement typeElement = (TypeElement) declaredType.asElement();
@@ -114,7 +114,7 @@ public class LuaDocGenerator {
             TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
 
             Name qualifiedSuperName = superElement.getQualifiedName();
-            String luaName = luaClassNames.get(qualifiedSuperName.toString());
+            String luaName = luaTypeNames.get(qualifiedSuperName.toString());
             if (luaName != null) {
               return toReference(luaName);
             }

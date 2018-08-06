@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName;
 
 public interface Constants {
   final String LUA_CLASS_ATTRIBUTES = "net.wizardsoflua.lua.classes.LuaClassAttributes";
+  final String LUA_CONVERTER_ATTRIBUTES = "net.wizardsoflua.lua.converter.LuaConverterAttributes";
 
   final ClassName LUA_TABLE_SUPERCLASS =
       ClassName.get("net.wizardsoflua.lua.table", "GeneratedLuaTable");

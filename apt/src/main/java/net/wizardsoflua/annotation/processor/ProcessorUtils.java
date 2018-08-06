@@ -103,7 +103,7 @@ public class ProcessorUtils {
     return getAnnotationMirror(annotatedConstruct, annoationClass.getName());
   }
 
-  public @Nullable static AnnotationMirror getAnnotationMirror(
+  public static @Nullable AnnotationMirror getAnnotationMirror(
       AnnotatedConstruct annotatedConstruct, String annotationClassName) {
     for (AnnotationMirror mirror : annotatedConstruct.getAnnotationMirrors()) {
       TypeElement annotationElement = (TypeElement) mirror.getAnnotationType().asElement();

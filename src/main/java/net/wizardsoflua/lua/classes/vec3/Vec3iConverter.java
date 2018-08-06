@@ -8,17 +8,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
-import net.wizardsoflua.lua.converter.TypeTokenJavaToLuaConverter;
+import net.wizardsoflua.lua.converter.AnnotatedJavaToLuaConverter;
+import net.wizardsoflua.lua.converter.LuaConverterAttributes;
 
 @AutoService(JavaToLuaConverter.class)
-public class Vec3iConverter extends TypeTokenJavaToLuaConverter<Vec3i> {
+@LuaConverterAttributes(name = Vec3Class.NAME)
+public class Vec3iConverter extends AnnotatedJavaToLuaConverter<Vec3i> {
   @Inject
   private Vec3Class vec3Class;
-
-  @Override
-  public String getName() {
-    return vec3Class.getName();
-  }
 
   @Override
   public Table getLuaInstance(Vec3i javaInstance) {

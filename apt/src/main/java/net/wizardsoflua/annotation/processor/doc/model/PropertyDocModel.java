@@ -26,10 +26,10 @@ import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 
 public class PropertyDocModel {
-  public static PropertyDocModel of(ExecutableElement method, Map<String, String> luaClassNames,
+  public static PropertyDocModel of(ExecutableElement method, Map<String, String> luaTypeNames,
       ProcessingEnvironment env) throws ProcessingException {
     String name = LuaPropertyUtils.getPropertyName(method);
-    String type = LuaPropertyUtils.getPropertyType(method, luaClassNames, env);
+    String type = LuaPropertyUtils.getPropertyType(method, luaTypeNames, env);
     PropertyAccess access = LuaPropertyUtils.getPropertyAccess(method);
     String description = LuaDocGenerator.getDescription(method, env);
     List<Element> elements = Arrays.asList(method);

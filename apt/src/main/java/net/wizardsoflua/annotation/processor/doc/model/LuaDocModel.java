@@ -32,7 +32,7 @@ import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.table.model.LuaTableModel;
 
 public class LuaDocModel {
-  public static LuaDocModel of(TypeElement annotatedElement, Map<String, String> luaClassNames,
+  public static LuaDocModel of(TypeElement annotatedElement, Map<String, String> luaTypeNames,
       ProcessingEnvironment env) throws ProcessingException, MultipleProcessingExceptions {
     GenerateLuaDoc annotation = checkAnnotated(annotatedElement, GenerateLuaDoc.class);
     Elements elements = env.getElementUtils();
@@ -40,7 +40,7 @@ public class LuaDocModel {
     String name = getName(annotatedElement, env);
     String subtitle = annotation.subtitle();
     String type = getType(annotatedElement);
-    String superClass = getSuperClassName(annotatedElement, luaClassNames, env);
+    String superClass = getSuperClassName(annotatedElement, luaTypeNames, env);
     String description = LuaDocGenerator.getDescription(annotatedElement, env);
     Map<String, PropertyDocModel> properties = new TreeMap<>();
     Map<String, FunctionDocModel> functions = new TreeMap<>();
@@ -56,7 +56,7 @@ public class LuaDocModel {
       if (kind == ElementKind.METHOD) {
         ExecutableElement method = (ExecutableElement) element;
         if (method.getAnnotation(LuaProperty.class) != null) {
-          PropertyDocModel property = PropertyDocModel.of(method, luaClassNames, env);
+          PropertyDocModel property = PropertyDocModel.of(method, luaTypeNames, env);
           PropertyDocModel existingProperty = properties.remove(property.getName());
           if (existingProperty != null) {
             property = existingProperty.merge(property);
@@ -64,7 +64,7 @@ public class LuaDocModel {
           properties.put(property.getName(), property);
         }
         if (method.getAnnotation(LuaFunction.class) != null) {
-          FunctionDocModel function = FunctionDocModel.of(method, luaClassNames, env);
+          FunctionDocModel function = FunctionDocModel.of(method, luaTypeNames, env);
           functions.put(function.getName(), function);
         }
       } else if (kind == ElementKind.CLASS) {
@@ -114,7 +114,7 @@ public class LuaDocModel {
   }
 
   private static @Nullable String getSuperClassName(TypeElement annotatedElement,
-      Map<String, String> luaClassNames, ProcessingEnvironment env) throws ProcessingException {
+      Map<String, String> luaTypeNames, ProcessingEnvironment env) throws ProcessingException {
     if (annotatedElement.getQualifiedName().contentEquals(Constants.OBJECT_CLASS)) {
       return null;
     }
