@@ -77,7 +77,8 @@ public class LuaDocGenerator {
   }
 
   public static String renderType(TypeMirror typeMirror, Element annotatedElement,
-      Map<String, String> luaClassNames, ProcessingEnvironment env) throws ProcessingException {
+      Map<String, String> luaClassNames, ProcessingEnvironment env)
+      throws ProcessingException, IllegalArgumentException {
     TypeKind typeKind = typeMirror.getKind();
     switch (typeKind) {
       case ARRAY:
@@ -120,9 +121,14 @@ public class LuaDocGenerator {
         String javaName = typeElement.getQualifiedName().toString();
         String luaName = luaClassNames.get(javaName);
         if (luaName == null) {
-          CharSequence msg = "Could not determine the lua name of " + javaName + " at "
-              + annotatedElement + " of " + annotatedElement.getEnclosingElement();
-          throw new ProcessingException(msg, annotatedElement);
+          TypeMirror superType = typeElement.getSuperclass();
+          try {
+            return renderType(superType, annotatedElement, luaClassNames, env);
+          } catch (ProcessingException | IllegalArgumentException e) {
+            CharSequence msg = "Could not determine the lua name of " + javaName + " at "
+                + annotatedElement + " of " + annotatedElement.getEnclosingElement();
+            throw new ProcessingException(msg, annotatedElement);
+          }
         }
         return toReference(luaName);
       case VOID:
