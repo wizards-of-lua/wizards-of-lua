@@ -71,5 +71,5 @@ public enum Direction {
 
   public Vec3d getDirectionVec(float rotationYaw) {
     return directionVec;
-  };
+  }
 }
