@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
@@ -18,6 +19,7 @@ import javax.lang.model.util.Types;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
+import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.doc.model.FunctionDocModel;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
@@ -96,6 +98,12 @@ public class LuaDocGenerator {
         return "string";
       case DECLARED:
         DeclaredType declaredType = (DeclaredType) typeMirror;
+        Types types = env.getTypeUtils();
+        try {
+          PrimitiveType primitiveType = types.unboxedType(typeMirror);
+          return renderType(primitiveType, annotatedElement, luaClassNames, env);
+        } catch (IllegalArgumentException ignore) {
+        }
         TypeElement typeElement = (TypeElement) declaredType.asElement();
         if (typeElement.getQualifiedName().contentEquals(String.class.getName())) {
           return "string";
@@ -104,33 +112,27 @@ public class LuaDocGenerator {
         for (TypeMirror superType : getAllSuperTypes(typeMirror, env)) {
           if (superType.getKind() == TypeKind.DECLARED) {
             TypeElement superElement = (TypeElement) ((DeclaredType) superType).asElement();
-            if (superElement.getQualifiedName().contentEquals(Enum.class.getName())) {
+
+            Name qualifiedSuperName = superElement.getQualifiedName();
+            String luaName = luaClassNames.get(qualifiedSuperName.toString());
+            if (luaName != null) {
+              return toReference(luaName);
+            }
+            if (qualifiedSuperName.contentEquals(Table.class.getName())) {
+              return "table";
+            }
+            if (qualifiedSuperName.contentEquals(Enum.class.getName())) {
               return "string";
             }
-            if (superElement.getQualifiedName().contentEquals(Iterable.class.getName())) {
+            if (qualifiedSuperName.contentEquals(Iterable.class.getName())) {
               return "table";
             }
           }
         }
-        try {
-          Types types = env.getTypeUtils();
-          PrimitiveType primitiveType = types.unboxedType(typeMirror);
-          return renderType(primitiveType, annotatedElement, luaClassNames, env);
-        } catch (IllegalArgumentException ignore) {
-        }
-        String javaName = typeElement.getQualifiedName().toString();
-        String luaName = luaClassNames.get(javaName);
-        if (luaName == null) {
-          TypeMirror superType = typeElement.getSuperclass();
-          try {
-            return renderType(superType, annotatedElement, luaClassNames, env);
-          } catch (ProcessingException | IllegalArgumentException e) {
-            CharSequence msg = "Could not determine the lua name of " + javaName + " at "
-                + annotatedElement + " of " + annotatedElement.getEnclosingElement();
-            throw new ProcessingException(msg, annotatedElement);
-          }
-        }
-        return toReference(luaName);
+        Name javaName = typeElement.getQualifiedName();
+        CharSequence msg = "Could not determine the lua name of " + javaName + " at "
+            + annotatedElement + " of " + annotatedElement.getEnclosingElement();
+        throw new ProcessingException(msg, annotatedElement);
       case VOID:
         return "nil";
       case EXECUTABLE:

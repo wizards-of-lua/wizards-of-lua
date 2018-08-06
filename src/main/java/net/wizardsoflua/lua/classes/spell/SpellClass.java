@@ -1,10 +1,14 @@
 package net.wizardsoflua.lua.classes.spell;
 
 import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -78,7 +82,7 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
     }
 
     @LuaProperty
-    public Object getData() {
+    public Table getData() {
       return delegate.getData(viewFactory);
     }
 

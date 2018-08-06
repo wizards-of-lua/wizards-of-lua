@@ -90,12 +90,12 @@ public class SpellEntity extends VirtualEntity {
     this.visible = visible;
   }
 
-  public Object getData(ViewFactory viewer) {
+  public Table getData(ViewFactory viewer) {
     ViewFactory provider = program.getViewFactory();
     if (viewer == provider) {
       return data;
     }
-    return viewer.getView(data, provider);
+    return (Table) viewer.getView(data, provider);
   }
 
   // @Override
