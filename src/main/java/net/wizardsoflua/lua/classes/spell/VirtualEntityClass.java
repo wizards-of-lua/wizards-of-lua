@@ -2,10 +2,14 @@ package net.wizardsoflua.lua.classes.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Optional.ofNullable;
+
 import java.util.Collection;
 import java.util.List;
+
 import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -37,7 +41,8 @@ import net.wizardsoflua.spell.VirtualEntity;
 @LuaClassAttributes(name = VirtualEntityClass.NAME)
 @GenerateLuaClassTable(instance = VirtualEntityClass.Instance.class)
 @GenerateLuaDoc(subtitle = "The Base Class of all Virtual Entities")
-public final class VirtualEntityClass extends BasicLuaClass<VirtualEntity, VirtualEntityClass.Instance<VirtualEntity>> {
+public final class VirtualEntityClass
+    extends BasicLuaClass<VirtualEntity, VirtualEntityClass.Instance<VirtualEntity>> {
   public static final String NAME = "VirtualEntity";
   @Resource
   private LuaConverters converters;
@@ -250,13 +255,6 @@ public final class VirtualEntityClass extends BasicLuaClass<VirtualEntity, Virtu
     @LuaProperty(type = "table")
     public void setTags(Object luaObj) {
       List<String> tags = converters.toJavaList(String.class, luaObj, "tags");
-
-      // for (String oldTag : new ArrayList<>(delegate.getTags())) {
-      // delegate.removeTag(oldTag);
-      // }
-      // for (String newTag : tags) {
-      // delegate.addTag(newTag);
-      // }
       delegate.setTags(tags);
     }
 
