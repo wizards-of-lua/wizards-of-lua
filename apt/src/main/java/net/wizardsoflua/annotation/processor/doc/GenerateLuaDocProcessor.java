@@ -20,6 +20,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
@@ -30,6 +31,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.StandardLocation;
 
+import com.google.auto.service.AutoService;
 import com.google.common.collect.Maps;
 
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -40,7 +42,7 @@ import net.wizardsoflua.annotation.processor.ProcessorUtils;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.doc.model.LuaDocModel;
 
-// @AutoService(Processor.class)
+@AutoService(Processor.class)
 public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   private @Nullable Map<String, String> luaTypeNames;
 
