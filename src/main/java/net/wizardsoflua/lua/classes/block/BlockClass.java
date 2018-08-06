@@ -1,9 +1,12 @@
 package net.wizardsoflua.lua.classes.block;
 
 import java.util.Optional;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -72,7 +75,7 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
       }
     }
 
-    @LuaProperty(type = "Material")
+    @LuaProperty
     public Material getMaterial() {
       Material mat = delegate.getBlockState().getMaterial();
       return mat;
