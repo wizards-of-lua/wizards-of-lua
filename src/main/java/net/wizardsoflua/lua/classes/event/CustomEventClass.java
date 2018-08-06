@@ -2,7 +2,9 @@ package net.wizardsoflua.lua.classes.event;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
+
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -22,7 +24,8 @@ import net.wizardsoflua.lua.view.ViewFactory;
 @LuaClassAttributes(name = CustomEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = CustomEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class CustomEventClass extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<CustomLuaEvent>> {
+public final class CustomEventClass
+    extends BasicLuaClass<CustomLuaEvent, CustomEventClass.Instance<CustomLuaEvent>> {
   public static final String NAME = "CustomEvent";
   @Resource
   private LuaConverters converters;
@@ -54,7 +57,7 @@ public final class CustomEventClass extends BasicLuaClass<CustomLuaEvent, Custom
       return delegate.getName();
     }
 
-    @LuaProperty
+    @LuaProperty(type = "any")
     public @Nullable Object getData() {
       return delegate.getData(viewFactory);
     }
