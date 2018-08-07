@@ -8,10 +8,9 @@ import java.lang.annotation.Target;
 
 @Retention(SOURCE)
 @Target(METHOD)
-public @interface LuaProperty {
+public @interface LuaPropertyDoc {
   /**
-   * The name of the property. Defaults to the lowercase method name without getter or setter
-   * prefix.
+   * The type of the property. Defaults to a value appropriate for the return / parameter type.
    */
-  String name() default "";
+  String type() default "";
 }

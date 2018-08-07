@@ -28,6 +28,7 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.LuaPropertyDoc;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
@@ -260,7 +261,8 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
       return delegate.getTags();
     }
 
-    @LuaProperty(type = "table")
+    @LuaProperty
+    @LuaPropertyDoc(type = "table")
     public void setTags(Object luaObj) {
       Collection<String> tags = converters.toJavaList(String.class, luaObj, "tags");
 

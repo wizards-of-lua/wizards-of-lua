@@ -10,6 +10,7 @@ import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.LuaPropertyDoc;
 import net.wizardsoflua.event.CustomLuaEvent;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
@@ -57,7 +58,8 @@ public final class CustomEventClass
       return delegate.getName();
     }
 
-    @LuaProperty(type = "any")
+    @LuaProperty
+    @LuaPropertyDoc(type = "any")
     public @Nullable Object getData() {
       return delegate.getData(viewFactory);
     }

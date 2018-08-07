@@ -14,6 +14,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.annotation.LuaPropertyDoc;
 import net.wizardsoflua.annotation.processor.doc.generator.LuaDocGenerator;
 import net.wizardsoflua.annotation.processor.doc.model.PropertyAccess;
 
@@ -76,10 +77,9 @@ public class LuaPropertyUtils {
 
   public static String getPropertyType(ExecutableElement method, Map<String, String> luaTypeNames,
       ProcessingEnvironment env) throws ProcessingException {
-    LuaProperty luaProperty = checkAnnotated(method, LuaProperty.class);
-    String type = LuaDocGenerator.renderType(luaProperty.type());
-    if (!type.isEmpty()) {
-      return type;
+    LuaPropertyDoc luaPropertyDoc = method.getAnnotation(LuaPropertyDoc.class);
+    if (luaPropertyDoc != null) {
+      return LuaDocGenerator.renderType(luaPropertyDoc.type());
     }
     if (isGetter(method)) {
       TypeMirror returnType = method.getReturnType();
