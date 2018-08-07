@@ -106,7 +106,7 @@ public class InjectionScope {
         return provide(rawType, instanceForClass);
       }
     }
-    throw fail(type, "unknown type kind");
+    throw fail(type, "unsupported type kind");
   }
 
   private Object provideInstance(Type type) throws IllegalStateException {
@@ -311,12 +311,12 @@ public class InjectionScope {
 
   /**
    * Provides the resource or instance of the given {@link Type} which is to be injected into the
-   * annotated element.
-   * 
+   * {@link AnnotatedElement}.
+   *
    * @param type
    * @param annotatedElement
-   * @return
-   * @throws IllegalStateException
+   * @return the resource or instance of the given {@link Type}
+   * @throws IllegalStateException if the type is not a {@link Class} or {@link ParameterizedType}
    */
   private Object getArgument(Type type, AnnotatedElement annotatedElement)
       throws IllegalStateException {
