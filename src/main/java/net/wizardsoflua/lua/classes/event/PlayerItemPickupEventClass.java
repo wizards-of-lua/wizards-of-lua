@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -21,7 +22,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerItemPickupEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerItemPickupEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerItemPickupEventClass extends BasicLuaClass<PlayerEvent.ItemPickupEvent, PlayerItemPickupEventClass.Instance<PlayerEvent.ItemPickupEvent>> {
+public final class PlayerItemPickupEventClass extends
+    BasicLuaClass<PlayerEvent.ItemPickupEvent, PlayerItemPickupEventClass.Instance<PlayerEvent.ItemPickupEvent>> {
   public static final String NAME = "PlayerItemPickupEvent";
   @Resource
   private LuaConverters converters;
@@ -54,7 +56,7 @@ public final class PlayerItemPickupEventClass extends BasicLuaClass<PlayerEvent.
 
     @LuaProperty
     public EntityItem getItem() {
-      return delegate.pickedUp;
+      return delegate.getOriginalEntity();
     }
   }
 }
