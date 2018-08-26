@@ -223,7 +223,7 @@ public class EventsModule extends LuaTableExtension {
 
     for (EventQueue queue : queues.values()) {
       long waitUntil = queue.getWaitUntil();
-      if (now <= waitUntil) {
+      if (now < waitUntil) {
         // we are still waiting for a message
         if (!queue.isEmpty()) {
           // but we have received one -> wake up
