@@ -1,14 +1,19 @@
 package net.wizardsoflua;
 
 import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
+
 import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
+
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeVersion;
@@ -149,12 +154,22 @@ public class WizardsOfLua {
 
       @Override
       public @Nullable String getLuaPathElementOfPlayer(String nameOrUuid) {
-        GameProfile profile = gameProfiles.getGameProfile(nameOrUuid);
-        if (profile == null) {
-          throw new IllegalArgumentException(
-              format("Player not found with name or uuid '%s'", nameOrUuid));
+        UUID uuid = getUUID(nameOrUuid);
+        return getConfig().getOrCreateWizardConfig(uuid).getLibDirPathElement();
+      }
+
+      private UUID getUUID(String nameOrUuid) {
+        try {
+          return UUID.fromString(nameOrUuid);
+        } catch (IllegalArgumentException e) {
+          GameProfile profile = gameProfiles.getGameProfileByName(nameOrUuid);
+          if (profile != null) {
+            return profile.getId();
+          } else {
+            throw new IllegalArgumentException(
+                format("Player not found with name '%s'", nameOrUuid));
+          }
         }
-        return getConfig().getOrCreateWizardConfig(profile.getId()).getLibDirPathElement();
       }
 
       @Override

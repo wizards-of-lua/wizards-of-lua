@@ -29,7 +29,7 @@ public class GameProfiles {
     }
   }
 
-  private GameProfile getGameProfileByName(String playerName) {
+  public GameProfile getGameProfileByName(String playerName) {
     // TODO optimize performance
     Map<UUID, String> map = UsernameCache.getMap();
     for (Map.Entry<UUID, String> entry : map.entrySet()) {
@@ -40,7 +40,7 @@ public class GameProfiles {
     return null;
   }
 
-  private GameProfile getGameProfileById(UUID uuid) {
+  public GameProfile getGameProfileById(UUID uuid) {
     return server.getPlayerProfileCache().getProfileByUUID(uuid);
   }
 
