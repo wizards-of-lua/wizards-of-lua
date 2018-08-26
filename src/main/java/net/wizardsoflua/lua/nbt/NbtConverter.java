@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagFloat;
@@ -54,6 +55,7 @@ public class NbtConverter {
       registerMerger(NBTTagLong.class, new NbtLongMerger(this));
       registerMerger(NBTTagShort.class, new NbtShortMerger(this));
       registerMerger(NBTTagString.class, new NbtStringMerger(this));
+      registerMerger(NBTTagByteArray.class, new NbtByteArrayMerger(this));
     }
     return mergers;
   }
@@ -142,6 +144,8 @@ public class NbtConverter {
       return toLua((NBTTagCompound) nbt);
     if (nbt instanceof NBTTagIntArray)
       return toLua((NBTTagIntArray) nbt);
+    if (nbt instanceof NBTTagByteArray)
+      return toLua((NBTTagByteArray) nbt);
     throw new IllegalArgumentException(
         "Unsupported NBT type for conversion: " + nbt.getClass().getName());
   }
@@ -186,6 +190,18 @@ public class NbtConverter {
     checkNotNull(nbt, "nbt == null!");
     Table result = new DefaultTable();
     int[] arr = nbt.getIntArray();
+    for (int i = 0; i < arr.length; ++i) {
+      long key = i + 1;
+      Object value = arr[i];
+      result.rawset(key, value);
+    }
+    return result;
+  }
+  
+  public static Table toLua(NBTTagByteArray nbt) {
+    checkNotNull(nbt, "nbt == null!");
+    Table result = new DefaultTable();
+    byte[] arr = nbt.getByteArray();
     for (int i = 0; i < arr.length; ++i) {
       long key = i + 1;
       Object value = arr[i];
