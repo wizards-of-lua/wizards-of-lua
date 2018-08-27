@@ -111,6 +111,14 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     public EnumFacing getFacing() {
       return delegate.getHorizontalFacing();
     }
+    
+    /**
+     * The 'invisible' property is true if this entity can not be seen by others.
+     */
+    @LuaProperty
+    public boolean isInvisible() {
+      return delegate.isInvisible();
+    }
 
     /**
      * The 'lookVec' is a 3-dimensional vector that points into the direction this entity is looking

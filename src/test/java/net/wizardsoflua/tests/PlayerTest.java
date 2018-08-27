@@ -244,4 +244,32 @@ public class PlayerTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("player");
   }
 
+  // /test net.wizardsoflua.tests.PlayerTest test_invisible_is_false
+  @Test
+  public void test_invisible_is_false() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.invisible)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("false");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_invisible_is_true
+  @Test
+  public void test_invisible_is_true() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().chat("/effect %s minecraft:invisibility 2 1", mc().player().getName());
+    mc().player().chat("/lua p=spell.owner; print(p.invisible)");
+    mc().player().chat("/effect %s clear", mc().player().getName());
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("true");
+  }
+
 }
