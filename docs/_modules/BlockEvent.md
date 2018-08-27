@@ -10,7 +10,6 @@ properties:
     type: "[Block](/modules/Block/)"
     access: r
     description: "This is the block this event is about.
-    Please note that the [nbt value](/modules/Block/#nbt) value of the block is only available for a [BlockPlaceEvent](/modules/BlockPlaceEvent/).
     "
   - name: pos
     type: "[Vec3](/modules/Vec3/)"
