@@ -14,10 +14,12 @@ import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -173,6 +175,22 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     @LuaProperty
     public void setName(String name) {
       delegate.setCustomNameTag(name);
+    }
+
+    /**
+     * The 'entity type' of this entity is something like 'pig' or 'creeper'. For a player this is
+     * "player". This is nil if the entity type isn't known.
+     */
+    @LuaProperty
+    public @Nullable String getEntityType() {
+      ResourceLocation key = EntityList.getKey(delegate.getClass());
+      if (key != null) {
+        if ("minecraft".equals(key.getResourceDomain())) {
+          return key.getResourcePath();
+        }
+        return key.toString();
+      }
+      return null;
     }
 
     /**

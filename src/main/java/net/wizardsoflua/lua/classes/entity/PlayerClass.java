@@ -58,6 +58,11 @@ public final class PlayerClass
     }
 
     @Override
+    public String getEntityType() {
+      return "player";
+    }
+    
+    @Override
     public void putNbt(Table nbt) {
       throw new LuaRuntimeException(format("%s not supported for class %s", "putNbt", NAME));
     }

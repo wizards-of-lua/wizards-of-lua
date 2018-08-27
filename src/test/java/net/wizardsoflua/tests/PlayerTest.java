@@ -231,4 +231,17 @@ public class PlayerTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("ok");
   }
 
+  // /test net.wizardsoflua.tests.PlayerTest test_entityType_is_player
+  @Test
+  public void test_entityType_is_player() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.entityType)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("player");
+  }
+
 }
