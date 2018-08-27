@@ -353,7 +353,7 @@ public class NbtConverter {
    * @param table
    * @return true if we guess it's an array
    */
-  private static boolean isArray(Table table) {
+  public static boolean isArray(Table table) {
     long count = 0;
     for (Map.Entry<Object, Object> entry : new TableIterable(table)) {
       count++;
