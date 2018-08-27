@@ -13,7 +13,7 @@ properties:
     This means if entities have the same ID they are actually the same object.
     "
   - name: world
-    type: "[World](/modules/world/)"
+    type: "[World](/modules/World/)"
     access: r
     description: |
       The world the the space this entity is living in.
