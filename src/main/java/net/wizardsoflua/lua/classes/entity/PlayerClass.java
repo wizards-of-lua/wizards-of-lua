@@ -68,7 +68,7 @@ public final class PlayerClass
     }
 
     @LuaProperty
-    public GameType getGamemode() {
+    public GameType getGamemode() {      
       return delegate.interactionManager.getGameType();
     }
 

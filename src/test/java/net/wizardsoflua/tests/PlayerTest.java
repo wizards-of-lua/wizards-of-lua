@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
+import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
@@ -40,6 +41,7 @@ public class PlayerTest extends WolTestBase {
     mc().clearWizardConfigs();
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
+    mc().player().setHealth(20.0f);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported
@@ -270,6 +272,33 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_health_is_readable
+  @Test
+  public void test_health_is_readable() throws Exception {
+    // Given
+    String expected = format(mc().player().getHealth());
+    
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.health)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_health_is_readable
+  @Test
+  public void test_health_is_writable() throws Exception {
+    // Given
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; p.health=5.5; print(p.health)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("5.5");
   }
 
 }

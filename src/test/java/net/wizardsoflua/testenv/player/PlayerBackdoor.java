@@ -104,6 +104,14 @@ public class PlayerBackdoor {
     }
   }
 
+  public void setHealth(float value) {
+    getDelegate().setHealth(value);
+  }
+
+  public float getHealth() {
+    return getDelegate().getHealth();
+  }
+
   public EnumFacing getFacing() {
     return getDelegate().getHorizontalFacing();
   }
@@ -193,6 +201,5 @@ public class PlayerBackdoor {
       throw new RuntimeException(e);
     }
   }
-
 
 }

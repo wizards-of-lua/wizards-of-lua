@@ -71,6 +71,10 @@ public class WolTestBase extends TestDataFactory {
     return formatPos(pos.x, pos.y, pos.z);
   }
 
+  protected String format(float value) {
+    return String.valueOf(value);
+  }
+
   protected String formatPos(int x, int y, int z) {
     return "{" + x + ", " + y + ", " + z + "}";
   }

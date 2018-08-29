@@ -96,6 +96,22 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     }
 
     /**
+     * The 'entity type' of this entity is something like 'pig' or 'creeper'. For a player this is
+     * "player". This is nil if the entity type isn't known.
+     */
+    @LuaProperty
+    public @Nullable String getEntityType() {
+      ResourceLocation key = EntityList.getKey(delegate.getClass());
+      if (key != null) {
+        if ("minecraft".equals(key.getResourceDomain())) {
+          return key.getResourcePath();
+        }
+        return key.toString();
+      }
+      return null;
+    }
+
+    /**
      * The 'eyeHeight' is the distance from this entity's feet to its eyes in Y direction.
      */
     @LuaProperty
@@ -111,7 +127,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     public EnumFacing getFacing() {
       return delegate.getHorizontalFacing();
     }
-    
+
     /**
      * The 'invisible' property is true if this entity can not be seen by others.
      */
@@ -183,22 +199,6 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     @LuaProperty
     public void setName(String name) {
       delegate.setCustomNameTag(name);
-    }
-
-    /**
-     * The 'entity type' of this entity is something like 'pig' or 'creeper'. For a player this is
-     * "player". This is nil if the entity type isn't known.
-     */
-    @LuaProperty
-    public @Nullable String getEntityType() {
-      ResourceLocation key = EntityList.getKey(delegate.getClass());
-      if (key != null) {
-        if ("minecraft".equals(key.getResourceDomain())) {
-          return key.getResourcePath();
-        }
-        return key.toString();
-      }
-      return null;
     }
 
     /**

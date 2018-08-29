@@ -90,4 +90,41 @@ public class MobTest extends WolTestBase {
     assertThat(((EntityLiving) actEntities.get(0)).isAIDisabled()).as("isAIDisabled()").isFalse();
   }
 
+  // /test net.wizardsoflua.tests.MobTest test_health_is_readable
+  @Test
+  public void test_health_is_readable() throws Exception {
+    // Given
+    BlockPos pos = mc().getWorldSpawnPoint();
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
+        pos.getY(), pos.getZ());
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.health)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("10.0");
+  }
+
+  // /test net.wizardsoflua.tests.MobTest test_health_is_readable
+  @Test
+  public void test_health_is_writable() throws Exception {
+    // Given
+    BlockPos pos = mc().getWorldSpawnPoint();
+
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
+        pos.getY(), pos.getZ());
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand(
+        "/lua p=Entities.find('@e[name=testpig]')[1]; p.health=5.5; print(p.health)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("5.5");
+  }
+
 }
