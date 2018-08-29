@@ -279,7 +279,7 @@ public class PlayerTest extends WolTestBase {
   public void test_health_is_readable() throws Exception {
     // Given
     String expected = format(mc().player().getHealth());
-    
+
     // When:
     mc().player().chat("/lua p=spell.owner; print(p.health)");
 
@@ -299,6 +299,19 @@ public class PlayerTest extends WolTestBase {
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("5.5");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_sprinting_is_readable
+  @Test
+  public void test_sprinting_is_readable() throws Exception {
+    // Given:
+
+    // When:
+    mc().player().chat("/lua p=spell.owner; print(p.sprinting)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("false");
   }
 
 }

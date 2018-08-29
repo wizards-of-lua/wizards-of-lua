@@ -17,18 +17,18 @@ public class EntityLivingBaseClass {
     }
 
     /**
-     * The 'health' is the energy of this entity. When it falls to zero this entity normally dies. 
+     * The 'health' is the energy of this entity. When it falls to zero this entity normally dies.
      */
     @LuaProperty
     public float getHealth() {
       return delegate.getHealth();
     }
-    
+
     @LuaProperty
     public void setHealth(float value) {
       delegate.setHealth(value);
     }
-    
+
     /**
      * This is the [item](/modules/Item) this entity is holding in its main hand.
      */
@@ -68,5 +68,6 @@ public class EntityLivingBaseClass {
       }
       delegate.setHeldItem(EnumHand.OFF_HAND, offhand);
     }
+
   }
 }

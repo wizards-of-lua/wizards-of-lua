@@ -280,6 +280,14 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     }
 
     /**
+     * The 'sprinting' property is true whenever this entity is running fast.
+     */
+    @LuaProperty
+    public boolean isSprinting() {
+      return delegate.isSprinting();
+    }
+
+    /**
      * The 'tags' value is a list of strings that have been assigned to this entity.
      */
     @LuaProperty
