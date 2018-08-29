@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Joiner;
 
 import net.minecraft.command.CommandBase;
@@ -49,9 +51,14 @@ public class LuaCommand extends CommandBase {
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
+    execute(server, sender, concat(args), null);
+  }
+
+  public void execute(MinecraftServer server, ICommandSender sender, String luaCode,
+      @Nullable String[] luaArgs) throws CommandException {
     try {
       World world = sender.getEntityWorld();
-      wol.getSpellEntityFactory().create(world, sender, concat(args));
+      wol.getSpellEntityFactory().create(world, sender, luaCode, luaArgs);
     } catch (Throwable t) {
       handleException(t, sender);
     }

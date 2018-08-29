@@ -265,13 +265,14 @@ public class PlayerTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().chat("/effect %s minecraft:invisibility 5 1", mc().player().getName());
+    mc().player().chat("/effect %s minecraft:invisibility 10 1", mc().player().getName());
     mc().player().chat("/lua p=spell.owner; print(p.invisible)");
-    mc().player().chat("/effect %s clear", mc().player().getName());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
+
+    mc().player().chat("/effect %s clear", mc().player().getName());
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_health_is_readable

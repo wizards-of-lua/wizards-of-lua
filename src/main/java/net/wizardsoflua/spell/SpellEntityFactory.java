@@ -3,6 +3,8 @@ package net.wizardsoflua.spell;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.ICommandSender;
@@ -31,10 +33,11 @@ public class SpellEntityFactory {
     this.programFactory = checkNotNull(programFactory, "programFactory==null!");
   }
 
-  public SpellEntity create(World world, ICommandSender sender, String code) {
+  public SpellEntity create(World world, ICommandSender sender, String code,
+      @Nullable String[] arguments) {
     checkNotNull(world, "world==null!");
     ICommandSender owner = getOwner(sender);
-    SpellProgram program = programFactory.create(world, owner, code);
+    SpellProgram program = programFactory.create(world, owner, code, arguments);
     PositionAndRotation pos = getPositionAndRotation(sender);
     nextSid++;
     SpellEntity result = new SpellEntity(world, owner, program, pos, nextSid);
@@ -44,11 +47,11 @@ public class SpellEntityFactory {
   }
 
   private ICommandSender getOwner(ICommandSender sender) {
-//    Entity entity = sender.getCommandSenderEntity();
-//    if (entity instanceof SpellEntity) {
-//      return ((SpellEntity) entity).getOwner();
-//    }
-    if ( isSpell(sender)) {
+    // Entity entity = sender.getCommandSenderEntity();
+    // if (entity instanceof SpellEntity) {
+    // return ((SpellEntity) entity).getOwner();
+    // }
+    if (isSpell(sender)) {
       return getSpellOwner(sender);
     }
     return sender;
@@ -57,9 +60,9 @@ public class SpellEntityFactory {
   private boolean isSpell(ICommandSender sender) {
     return sender instanceof SpellEntity;
   }
-  
+
   private ICommandSender getSpellOwner(ICommandSender sender) {
-    SpellEntity spell = (SpellEntity)sender;
+    SpellEntity spell = (SpellEntity) sender;
     return spell.getOwner();
   }
 
@@ -102,10 +105,10 @@ public class SpellEntityFactory {
       float rotationYaw = SpellUtil.getRotationYaw(e.getHorizontalFacing());
       float rotationPitch = 0;
       return new PositionAndRotation(pos, rotationYaw, rotationPitch);
-//    } else if (entity instanceof SpellEntity) {
-//      return ((SpellEntity) entity).getPositionAndRotation();
-    } else if ( isSpell(sender)) {
-      return ((SpellEntity)sender).getPositionAndRotation();
+      // } else if (entity instanceof SpellEntity) {
+      // return ((SpellEntity) entity).getPositionAndRotation();
+    } else if (isSpell(sender)) {
+      return ((SpellEntity) sender).getPositionAndRotation();
     } else {
       throw new IllegalArgumentException(
           format("Unexpected command sender entity: %s", entity.getClass().getName()));

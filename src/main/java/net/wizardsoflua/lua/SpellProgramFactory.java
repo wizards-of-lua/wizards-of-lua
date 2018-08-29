@@ -2,6 +2,8 @@ package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.command.ICommandSender;
@@ -28,10 +30,12 @@ public class SpellProgramFactory {
     this.context = checkNotNull(context, "context==null!");
   }
 
-  public SpellProgram create(World world, ICommandSender owner, String code) {
+  public SpellProgram create(World world, ICommandSender owner, String code,
+      @Nullable String[] arguments) {
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
-    return new SpellProgram(owner, code, dependencies, defaultLuaPath, world, context, logger);
+    return new SpellProgram(owner, code, arguments, dependencies, defaultLuaPath, world, context,
+        logger);
   }
 
   private String getDefaultLuaPath(ICommandSender owner) {

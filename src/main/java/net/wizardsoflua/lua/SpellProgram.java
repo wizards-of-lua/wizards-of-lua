@@ -8,6 +8,8 @@ import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.cache.Cache;
@@ -16,10 +18,12 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
@@ -125,11 +129,14 @@ public class SpellProgram {
   private String defaultLuaPath;
   private final World world;
   private final Context context;
+  private final String[] arguments;
 
-  SpellProgram(ICommandSender owner, String code, ModuleDependencies dependencies,
-      String defaultLuaPath, World world, Context context, Logger logger) {
+  SpellProgram(ICommandSender owner, String code, @Nullable String[] arguments,
+      ModuleDependencies dependencies, String defaultLuaPath, World world, Context context,
+      Logger logger) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
+    this.arguments = arguments;
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");
     this.world = checkNotNull(world, "world == null!");
@@ -229,6 +236,12 @@ public class SpellProgram {
       @Override
       public Clock getClock() {
         return context.getClock();
+      }
+    });
+    scope.registerResource(MinecraftServerProvider.class, new MinecraftServerProvider() {
+      @Override
+      public MinecraftServer getServer() {
+        return world.getMinecraftServer();
       }
     });
     return scope;
@@ -346,7 +359,14 @@ public class SpellProgram {
     dependencies.installModules(env, scheduler, luaTickLimit);
 
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
-    scheduler.call(luaTickLimit, commandLineFunc);
+    if (arguments != null) { 
+      Object[] luaArgs = new Object[arguments.length];
+      System.arraycopy(arguments, 0, luaArgs, 0, luaArgs.length);
+      Conversions.toCanonicalValues(luaArgs);
+      scheduler.call(luaTickLimit, commandLineFunc, luaArgs);
+    } else {
+      scheduler.call(luaTickLimit, commandLineFunc);
+    }
   }
 
   private void installSystemLibraries() {
