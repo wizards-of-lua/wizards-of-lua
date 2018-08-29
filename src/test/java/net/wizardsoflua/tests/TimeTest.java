@@ -154,9 +154,9 @@ public class TimeTest extends WolTestBase {
     assertThat(actual).isEqualTo(1);
   }
 
-  // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_broken_when_autosleep_is_off
+  // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_terminated_when_autosleep_is_off
   @Test
-  public void test_spell_will_be_broken_when_autosleep_is_off() throws Exception {
+  public void test_spell_will_be_terminated_when_autosleep_is_off() throws Exception {
     // Given:
     int repetitions = 2000;
     mc().setLuaTicksLimit(5 * repetitions); // 5 ticks per cycle
@@ -171,14 +171,15 @@ public class TimeTest extends WolTestBase {
       assertThat(act.getMessage()).isEqualTo(String.valueOf(i));
     }
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).contains("Spell has been broken automatically");
+    assertThat(act.getMessage()).contains("Spell has been terminated automatically");
   }
 
   // @formatter:off
-  // /test net.wizardsoflua.tests.TimeTest test_spell_will_be_broken_when_event_listener_takes_to_long
+  // /test net.wizardsoflua.tests.TimeTest
+  // test_spell_will_be_terminated_when_event_listener_takes_to_long
   // @formatter:on
   @Test
-  public void test_spell_will_be_broken_when_event_listener_takes_to_long() throws Exception {
+  public void test_spell_will_be_terminated_when_event_listener_takes_to_long() throws Exception {
     // Given:
     int repetitions = 1000;
     mc().setEventListenerLuaTicksLimit(5 * repetitions); // 5 ticks per cycle
@@ -194,7 +195,7 @@ public class TimeTest extends WolTestBase {
       assertThat(act.getMessage()).isEqualTo(String.valueOf(i));
     }
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).contains("Spell has been broken automatically");
+    assertThat(act.getMessage()).contains("Spell has been terminated automatically");
   }
 
 }

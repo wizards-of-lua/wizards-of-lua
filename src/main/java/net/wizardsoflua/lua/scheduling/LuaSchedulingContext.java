@@ -41,7 +41,7 @@ public abstract class LuaSchedulingContext implements SchedulingContext {
         return true;
       } else {
         throw new LuaRuntimeException(
-            "Spell has been broken automatically since it has exceeded its tick allowance!");
+            "Spell has been terminated automatically since it has exceeded its tick allowance!");
       }
     } else {
       return false;

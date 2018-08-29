@@ -141,13 +141,14 @@ public class SpellEntity extends VirtualEntity {
 
   @Override
   public void setDead() {
+    MinecraftForge.EVENT_BUS.post(new SpellBreakEvent(this));
+    super.setDead();
     if (program != null) {
       program.terminate();
     }
     if (chunkLoaderTicketSupport != null) {
       chunkLoaderTicketSupport.release();
     }
-    super.setDead();
     MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
 

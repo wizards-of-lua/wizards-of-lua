@@ -1,6 +1,5 @@
 package net.wizardsoflua.spell;
 
-
 import static com.google.common.collect.Lists.transform;
 import static java.lang.String.valueOf;
 import static java.util.Collections.unmodifiableCollection;

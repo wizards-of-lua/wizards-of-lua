@@ -202,4 +202,19 @@ public class SpellTest extends WolTestBase {
     assertThat(message).matches("\\[Spell-\\d+\\] ho");
   }
 
+  // /test net.wizardsoflua.tests.SpellTest test_spell_can_intercept_its_own_break_event
+  @Test
+  public void test_spell_can_intercept_its_own_break_event() {
+    // Given:
+
+    // When:
+    mc().executeCommand(
+        "/lua spell.name='runner'; Events.on('SpellBreakEvent'):call(function(e) print('Gotcha'); end);");
+    mc().executeCommand("/wol spell break byName runner");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("Gotcha");
+  }
+
 }

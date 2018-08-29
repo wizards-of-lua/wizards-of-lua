@@ -265,7 +265,7 @@ public class PlayerTest extends WolTestBase {
     // Given:
 
     // When:
-    mc().player().chat("/effect %s minecraft:invisibility 2 1", mc().player().getName());
+    mc().player().chat("/effect %s minecraft:invisibility 5 1", mc().player().getName());
     mc().player().chat("/lua p=spell.owner; print(p.invisible)");
     mc().player().chat("/effect %s clear", mc().player().getName());
 
