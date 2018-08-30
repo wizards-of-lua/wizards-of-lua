@@ -103,6 +103,7 @@ public class SpellProgram {
     SpellRegistry getSpellRegistry();
 
     InjectionScope getRootScope();
+
   }
 
   public static final String ROOT_CLASS_PREFIX = "SpellByteCode";

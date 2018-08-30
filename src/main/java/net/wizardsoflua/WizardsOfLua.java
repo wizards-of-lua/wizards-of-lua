@@ -211,6 +211,7 @@ public class WizardsOfLua {
       public InjectionScope getRootScope() {
         return rootScope;
       }
+
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {
