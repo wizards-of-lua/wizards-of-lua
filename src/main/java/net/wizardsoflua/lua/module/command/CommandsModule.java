@@ -23,7 +23,6 @@ import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.LuaCommand;
-import net.wizardsoflua.lua.MinecraftServerProvider;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
@@ -39,7 +38,7 @@ public class CommandsModule extends LuaTableExtension {
   @Resource
   private LuaConverters converters;
   @Resource
-  private MinecraftServerProvider serverProvider;
+  private MinecraftServer server;
 
   @Override
   public String getName() {
@@ -96,7 +95,6 @@ public class CommandsModule extends LuaTableExtension {
    */
   @LuaFunction
   public void register(String name, String luaCode, @Nullable String usage) {
-    MinecraftServer server = serverProvider.getServer();
     CommandHandler ch = (CommandHandler) server.getCommandManager();
     ICommand old = ch.getCommands().get(name);
     if (name.matches(".*\\s.*")) {
@@ -121,7 +119,6 @@ public class CommandsModule extends LuaTableExtension {
    */
   @LuaFunction
   public void deregister(String name) {
-    MinecraftServer server = serverProvider.getServer();
     CommandHandler ch = (CommandHandler) server.getCommandManager();
     ICommand cmd = ch.getCommands().get(name);
     if (cmd instanceof CustomCommand) {

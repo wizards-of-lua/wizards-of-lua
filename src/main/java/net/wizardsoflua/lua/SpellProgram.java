@@ -238,12 +238,7 @@ public class SpellProgram {
         return context.getClock();
       }
     });
-    scope.registerResource(MinecraftServerProvider.class, new MinecraftServerProvider() {
-      @Override
-      public MinecraftServer getServer() {
-        return world.getMinecraftServer();
-      }
-    });
+    scope.registerResource(MinecraftServer.class, world.getMinecraftServer());
     return scope;
   }
 
@@ -359,7 +354,7 @@ public class SpellProgram {
     dependencies.installModules(env, scheduler, luaTickLimit);
 
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
-    if (arguments != null) { 
+    if (arguments != null) {
       Object[] luaArgs = new Object[arguments.length];
       System.arraycopy(arguments, 0, luaArgs, 0, luaArgs.length);
       Conversions.toCanonicalValues(luaArgs);
