@@ -17,7 +17,7 @@ public class EntityLivingBaseClass {
     }
 
     /**
-     * The 'health' is the energy of this entity. When it falls to zero this entity normally dies.
+     * The 'health' is the energy of this entity. When it falls to zero this entity dies.
      */
     @LuaProperty
     public float getHealth() {

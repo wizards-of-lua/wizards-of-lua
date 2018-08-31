@@ -26,9 +26,8 @@ import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
- * The <span class="notranslate">Commands</span> module allows the registration of custom commands
- * that execute Lua code.
- * 
+ * The <span class="notranslate">Commands</span> module allows the registration of custom commands than
+ * can be used from the chat line.
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable

@@ -25,7 +25,9 @@ import net.wizardsoflua.spell.SpellBreakEvent;
  *
  * <code>
  * Events.on('SpellBreakEvent'):call(function(event)
- *   -- do some clean-up here
+ *   if event.spell == spell then
+ *     -- do some clean-up here
+ *   end
  * end)
  * </code>
  */
@@ -58,6 +60,9 @@ public final class SpellBreakEventClass
       super(delegate, name, injector);
     }
 
+    /**
+     * The [Spell](/modules/Spell) that is being terminated.
+     */
     @LuaProperty
     public SpellEntity getSpell() {
       return delegate.getSpell();
