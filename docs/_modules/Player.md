@@ -5,6 +5,11 @@ type: class
 extends: Entity
 layout: module
 properties:
+  - name: health
+    type: number
+    access: r/w
+    description: |
+      The 'health' is the energy of this entity. When it falls to zero this entity dies.
   - name: team
     type: string
     access: r/w

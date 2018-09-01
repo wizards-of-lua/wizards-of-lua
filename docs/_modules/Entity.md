@@ -7,10 +7,21 @@ properties:
   - name: uuid
     type: string
     access: r
-    description: "The 'uuid' is a string of 36 characters forming an immutable universally
-    unique identifier that identifies this entity inside the world.
-    This means if entities have the same ID they are actually the same object.
-    "
+    description: |
+      The 'uuid' is a string of 36 characters forming an immutable universally
+      unique identifier that identifies this entity inside the world.
+      This means if entities have the same ID they are actually the same object.
+  - name: entityType
+    type: string
+    access: r
+    description: |
+      The 'entity type' of this entity is something like 'pig' or 'creeper'. For a player this is
+      "player". This is nil if the entity type isn't known.
+  - name: invisible
+    type: boolean
+    access: r
+    description: |
+      The 'invisible' property is true if this entity can not be seen by others.  
   - name: world
     type: "[World](/modules/World/)"
     access: r
@@ -69,6 +80,11 @@ properties:
     access: r/w
     description: "The 'rotationPitch' is the rotation of this entity's head around its X axis in degrees. A value of -90 means the entity is looking straight up. A value of 90 means it is looking straight down.
     "
+  - name: sprinting
+    type: number
+    access: r
+    description: |
+      The 'sprinting' property is true whenever this entity is running fast.
   - name: eyeHeight
     type: number
     access: r

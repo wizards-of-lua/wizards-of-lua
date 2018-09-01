@@ -13,6 +13,11 @@ properties:
     If set to false this creature becomes dumb and just stands around. It even won't react to physical forces.
     Default is true.
     "
+  - name: health
+    type: number
+    access: r/w
+    description: |
+      The 'health' is the energy of this entity. When it falls to zero this entity dies.
   - name: mainhand
     type: "[Item](/modules/Item/)"
     access: r/w
