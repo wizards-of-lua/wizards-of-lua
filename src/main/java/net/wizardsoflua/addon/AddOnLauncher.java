@@ -96,7 +96,6 @@ public class AddOnLauncher {
     }
   }
 
-
   private void printException(String message, Throwable t) {
     context.getLogger().error(message, t);
     String stackTrace = getStackTrace(t);

@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.ForgeVersion;
@@ -333,6 +334,11 @@ public class WizardsOfLua {
   @EventHandler
   public void serverStarted(FMLServerStartedEvent event) {
     logger.info(aboutMessage);
+    runStartupSequence(server);
+  }
+
+  public void runStartupSequence(ICommandSender sender) {
+    sender.sendMessage(new WolAnnouncementMessage("Running startup sequence"));
     addOnLauncher.execute();
     startup.execute();
   }

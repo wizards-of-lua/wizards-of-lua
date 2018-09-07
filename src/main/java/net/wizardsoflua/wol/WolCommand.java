@@ -35,6 +35,7 @@ import net.wizardsoflua.wol.sharedfile.SharedFileEditAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileMoveAction;
 import net.wizardsoflua.wol.spell.SpellBreakAction;
 import net.wizardsoflua.wol.spell.SpellListAction;
+import net.wizardsoflua.wol.startup.StartupAction;
 
 public class WolCommand extends CommandBase {
   private static final String CMD_NAME = "wol";
@@ -65,6 +66,7 @@ public class WolCommand extends CommandBase {
       put("shared-file", new SharedFileMenu());
       put("luaTicksLimit", new LuaTicksLimitMenu());
       put("eventListenerLuaTicksLimit", new EventListenerLuaTicksLimitMenu());
+      put("startup", new StartupAction(wol));
     }
   }
   class FileMenu extends Menu {
