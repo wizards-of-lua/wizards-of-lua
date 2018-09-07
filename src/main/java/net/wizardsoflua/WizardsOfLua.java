@@ -30,6 +30,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.wizardsoflua.addon.AddOnLauncher;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
@@ -84,6 +85,7 @@ public class WizardsOfLua {
   private MinecraftServer server;
   private GameProfiles gameProfiles;
   private Startup startup;
+  private AddOnLauncher addOnLauncher;
   private Permissions permissions;
 
   /**
@@ -288,6 +290,18 @@ public class WizardsOfLua {
         return server;
       }
     });
+    addOnLauncher = new AddOnLauncher(new AddOnLauncher.Context() {
+
+      @Override
+      public MinecraftServer getServer() {
+        return server;
+      }
+
+      @Override
+      public Logger getLogger() {
+        return logger;
+      }
+    });
   }
 
   @EventHandler
@@ -319,6 +333,7 @@ public class WizardsOfLua {
   @EventHandler
   public void serverStarted(FMLServerStartedEvent event) {
     logger.info(aboutMessage);
+    addOnLauncher.execute();
     startup.execute();
   }
 
