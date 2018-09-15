@@ -111,7 +111,7 @@ functions:
 
       ```lua
       local logger = Loggers.get("my-logger")
-      logger:info("Some debug message with some value %s", value)
+      logger:debug("Some debug message with some value %s", value)
       ```
   - name: trace
     parameters: message, args...
