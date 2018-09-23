@@ -23,7 +23,7 @@ task wrapper(type: Wrapper) { gradleVersion = '4.6' }
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileJava { sourceCompatibility = targetCompatibility = "1.8" }
 
-version = "1.12.2-2.3.0"
+version = "1.12.2-2.4.0-SNAPSHOT"
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
@@ -45,6 +45,7 @@ minecraft {
 allprojects {
   repositories {
     jcenter()
+    mavenLocal()
     mavenCentral()
     maven {
       name = "sonatype-ossrh-snapshots"
@@ -73,9 +74,9 @@ ext.libs = [
   javax_inject:         'javax.inject:javax.inject:1',
   jsr305:               'com.google.code.findbugs:jsr305:3.0.1',
   junit:                'junit:junit:4.12',
-  rembulan_compiler:    'net.sandius.rembulan:rembulan-compiler:0.1-SNAPSHOT',
-  rembulan_runtime:     'net.sandius.rembulan:rembulan-runtime:0.1-SNAPSHOT',
-  rembulan_stdlib:      'net.sandius.rembulan:rembulan-stdlib:0.1-SNAPSHOT',
+  rembulan_compiler:    'net.sandius.rembulan:rembulan-compiler:0.2-SNAPSHOT',
+  rembulan_runtime:     'net.sandius.rembulan:rembulan-runtime:0.2-SNAPSHOT',
+  rembulan_stdlib:      'net.sandius.rembulan:rembulan-stdlib:0.2-SNAPSHOT',
 ]
 
 configurations {

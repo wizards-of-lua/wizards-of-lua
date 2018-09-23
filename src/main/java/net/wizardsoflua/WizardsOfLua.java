@@ -1,9 +1,12 @@
 package net.wizardsoflua;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
@@ -39,6 +42,7 @@ import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRepository;
+import net.wizardsoflua.filesystem.RestrictedFileSystem;
 import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.lua.ExtensionLoader;
 import net.wizardsoflua.lua.LuaCommand;
@@ -88,6 +92,7 @@ public class WizardsOfLua {
   private Startup startup;
   private AddOnLauncher addOnLauncher;
   private Permissions permissions;
+  private FileSystem worldFileSystem;
 
   /**
    * Clock used for RuntimeModule
@@ -215,6 +220,11 @@ public class WizardsOfLua {
         return rootScope;
       }
 
+      @Override
+      public FileSystem getWorldFileSystem() {
+        return WizardsOfLua.this.getWorldFileSystem();
+      }
+
     });
     spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
     profiles = new Profiles(new Profiles.Context() {
@@ -311,19 +321,24 @@ public class WizardsOfLua {
     MinecraftForge.EVENT_BUS.register(getSpellRegistry());
     MinecraftForge.EVENT_BUS.register(aboutMessage);
     MinecraftForge.EVENT_BUS.register(eventHandler);
-
-    // SpellEntity.register();
   }
 
   @EventHandler
   public void serverStarting(FMLServerStartingEvent event) throws IOException {
     server = event.getServer();
+    worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
     gameProfiles = new GameProfiles(server);
     permissions = new Permissions(server);
     event.registerServerCommand(new WolCommand(this, logger));
     event.registerServerCommand(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();
+  }
+
+  private FileSystem createWorldFileSystem(File serverDir, String worldFolderName) {
+    Path worldDirectory =
+        new File(serverDir, worldFolderName).toPath().normalize().toAbsolutePath();
+    return new RestrictedFileSystem(FileSystems.getDefault(), worldDirectory);
   }
 
   @EventHandler
@@ -344,19 +359,19 @@ public class WizardsOfLua {
   }
 
   public WolConfig getConfig() {
-    return config;
+    return checkNotNull(config, "config==null!");
   }
 
   public Profiles getProfiles() {
-    return profiles;
+    return checkNotNull(profiles, "profiles==null!");
   }
 
   public SpellEntityFactory getSpellEntityFactory() {
-    return spellEntityFactory;
+    return checkNotNull(spellEntityFactory, "spellEntityFactory==null!");
   }
 
   public SpellRegistry getSpellRegistry() {
-    return spellRegistry;
+    return checkNotNull(spellRegistry, "spellRegistry==null!");
   }
 
   public Clock getClock() {
@@ -364,7 +379,7 @@ public class WizardsOfLua {
   }
 
   public void setClock(Clock clock) {
-    this.clock = clock;
+    this.clock = checkNotNull(clock, "clock==null!");
   }
 
   public Clock getDefaultClock() {
@@ -376,15 +391,19 @@ public class WizardsOfLua {
   }
 
   public LuaFileRepository getFileRepository() {
-    return fileRepository;
+    return checkNotNull(fileRepository, "fileRepository==null!");
   }
 
   public WolRestApiServer getRestServer() {
-    return restApiServer;
+    return checkNotNull(restApiServer, "restApiServer==null!");
   }
 
   public GistRepo getGistRepo() {
-    return gistRepo;
+    return checkNotNull(gistRepo, "gistRepo==null!");
+  }
+
+  public FileSystem getWorldFileSystem() {
+    return checkNotNull(worldFileSystem, "worldFileSystem==null!");
   }
 
 }

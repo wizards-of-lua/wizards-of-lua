@@ -1,0 +1,50 @@
+{
+    "homepage": "http://www.wizards-of-lua.net",
+    "promos": {
+        "1.12.2-latest": "1.12.2-2.3.0",
+        "1.12.2-recommended": "1.12.2-2.3.0"     
+    },
+    "1.12.2": {
+      "1.12.2-2.3.0": "* Fixed #198\n* #163\n* #199\n* #162\n* #119\n* #76\n* #147\n",
+      "1.12.2-2.2.0": "* Fixed #193\n* #196\n* #190\n* #195\n",
+      "1.12.2-2.1.0": "* Fixed #186\n* #191\n",
+      "1.12.2-2.0.3": "* Fixed #182\n* #184\n",
+      "1.12.2-2.0.2": "* Fixed #181\n",
+      "1.12.2-2.0.1": "* Fixed #165\n* Fixed #178\n*",
+      "1.12.2-2.0.0": "* Fixed #141\n* Fixed #161\n* Fixed #169\n* Fixed #168\n* Fixed #154\n* Fixed #172\n* Fixed #173\n* Fixed #145\n* Fixed #166\n* Fixed #164\n* Fixed #171\n* Fixed #177\n"
+    },
+    "1.11.2": {
+        "1.11.2-1.18.1-alpha": "* Fixed #151\n",
+        "1.11.2-1.18.0-alpha": "* Fixed #31\n* Fixed #135\n* Fixed #44\n* Fixed #150\n",
+        "1.11.2-1.17.1-alpha": "* Fixed #137\n* Fixed #146\n",
+        "1.11.2-1.17.0-alpha": "* Fixed #42\n",
+        "1.11.2-1.16.0-alpha": "* Fixed #56\n",
+        "1.11.2-1.15.1-alpha": "* Fixed #130\n",
+        "1.11.2-1.15.0-alpha": "* Fixed #113\n* Fixed #128\n* Fixed #129\n",
+        "1.11.2-1.14.0-alpha": "* Fixed #41\n",
+        "1.11.2-1.13.1-alpha": "* Fixed #125\n",
+        "1.11.2-1.13.0-alpha": "* Fixed #123\nFixed #124\n",
+        "1.11.2-1.12.0-alpha": "* Fixed #120\nFixed #121\n",
+        "1.11.2-1.11.2-alpha": "* Fixed #113\nFixed #114\nFixed #118\n",
+        "1.11.2-1.11.1-alpha": "* Fixed #110\n",
+        "1.11.2-1.11.0-alpha": "* Fixed #107\n* Fixed #108\n* Fixed #109\n",
+        "1.11.2-1.10.0-alpha": "* Fixed #91\n* Fixed #92\n* Fixed #93\n* Fixed #94\n* Fixed #95\n* Fixed #96\n* Fixed #97\n* Fixed #98\n* Fixed #99\n* Fixed #100\n* Fixed #101\n* Fixed #102\n* Fixed #103\n* Fixed #104\n",
+        "1.11.2-1.9.1-alpha": "* Fixed #90\n",
+        "1.11.2-1.9.0-alpha": "* Fixed #85\n* Fixed #86\n* Fixed #87\n* Fixed #88\n* Fixed #89\n",
+        "1.11.2-1.8.2-alpha": "* Fixed #55\n* Fixed #84\n",
+        "1.11.2-1.8.1-alpha": "* Fixed #82\n",
+        "1.11.2-1.8.0-alpha": "* Fixed #67\n* Fixed #71\n* Fixed #74\n* Fixed #75\n* Fixed #77\n* Fixed #78\n* Fixed #79\n",
+        "1.11.2-1.7.4-alpha": "* Fixed #73\n",
+        "1.11.2-1.7.3-alpha": "* Fixed #72\n",
+        "1.11.2-1.7.2-alpha": "* Fixed #69\n* Fixed #70\n",
+        "1.11.2-1.7.1-alpha": "* Fixed #68\n",
+        "1.11.2-1.7.0-alpha": "* Fixed #38\n* Fixed #39\n",
+        "1.11.2-1.6.1-alpha": "* Fixed #66\n",
+        "1.11.2-1.6.0-alpha": "* Fixed #40\n* Fixed #43\n Fixed #65\n",
+        "1.11.2-1.5.0-alpha": "* Fixed #35\n* Fixed #58\n Fixed #61\n Fixed #62\n Fixed #63\n Fixed #64\n",
+        "1.11.2-1.4.0-alpha": "* Fixed #45\n* Fixed #60\n",
+        "1.11.2-1.3.0-alpha": "* Fixed #53\n* Fixed #54\n",
+        "1.11.2-1.2.1-alpha": "* Fixed #50\n* Fixed #51\n* Fixed #52\n",
+        "1.2.0-alpha": "* Fixed #36\n* Fixed #37\n"
+    }
+}

@@ -3,11 +3,13 @@ package net.wizardsoflua.lua.module.system;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -15,12 +17,15 @@ import org.apache.commons.io.IOUtils;
 
 import com.google.auto.service.AutoService;
 
+import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
+import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Config;
@@ -28,6 +33,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
+import net.wizardsoflua.filesystem.PathUtil;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
@@ -40,6 +46,8 @@ public class SystemModule extends LuaTableExtension {
   private LuaConverters converters;
   @Resource
   private LuaScheduler scheduler;
+  @Resource
+  private WizardsOfLua wizardsOfLua;
 
   private boolean enabled;
   private Path scriptDir;
@@ -68,6 +76,66 @@ public class SystemModule extends LuaTableExtension {
 
   public boolean shouldPause() {
     return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
+  }
+
+  @LuaFunction
+  public Collection<String> listFiles(String path) {
+    try {
+      FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
+      Path pathObj = fileSystem.getPath(path);
+      if (!Files.exists(pathObj)) {
+        throw new LuaRuntimeException(String.format("%s does not exist!", path));
+      }
+      if (!Files.isDirectory(pathObj)) {
+        throw new LuaRuntimeException(String.format("%s is not a directory!", path));
+      } else {
+        List<String> list =
+            Files.list(pathObj).map(p -> p.getFileName().toString()).collect(Collectors.toList());
+        return list;
+      }
+    } catch (IOException e) {
+      throw new LuaRuntimeException(e);
+    }
+  }
+
+  @LuaFunction
+  public boolean isDir(String path) {
+    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
+    Path pathObj = fileSystem.getPath(path);
+    return Files.exists(pathObj) && Files.isDirectory(pathObj);
+  }
+
+  @LuaFunction
+  public boolean isFile(String path) {
+    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
+    Path pathObj = fileSystem.getPath(path);
+    return Files.exists(pathObj) && Files.isRegularFile(pathObj);
+  }
+
+  @LuaFunction
+  public boolean makeDir(String path) {
+    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
+    Path pathObj = fileSystem.getPath(path);
+    if (Files.exists(pathObj) && Files.isRegularFile(pathObj)) {
+      throw new LuaRuntimeException(String.format("%s already exists!", path));
+    }
+    try {
+      Files.createDirectories(pathObj);
+      return Files.exists(pathObj) && Files.isDirectory(pathObj);
+    } catch (IOException ex) {
+      throw new LuaRuntimeException(ex);
+    }
+  }
+
+  @LuaFunction
+  public boolean delete(String path) {
+    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
+    Path pathObj = fileSystem.getPath(path);
+    try {
+      return Files.deleteIfExists(pathObj) && !Files.exists(pathObj);
+    } catch (IOException ex) {
+      throw new LuaRuntimeException(ex);
+    }
   }
 
   @net.wizardsoflua.annotation.LuaFunction(name = ExecuteFunction.NAME)
@@ -166,11 +234,7 @@ public class SystemModule extends LuaTableExtension {
   }
 
   private String toFilename(String name) {
-    Path commandFile = scriptDir.resolve(name).normalize();
-    if (!commandFile.startsWith(scriptDir)) {
-      throw new IllegalArgumentException(
-          String.format("Illegal command! Execution of file '%s' not allowed!", commandFile));
-    }
+    Path commandFile = PathUtil.toPath(scriptDir, name);
     if (!Files.exists(commandFile)) {
       throw new IllegalArgumentException(
           String.format("Invalid command! File '%s' found!", commandFile));

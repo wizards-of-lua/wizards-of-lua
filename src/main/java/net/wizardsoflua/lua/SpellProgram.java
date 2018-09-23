@@ -36,12 +36,14 @@ import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.lib.CoroutineLib;
+import net.sandius.rembulan.lib.IoLib;
 import net.sandius.rembulan.lib.MathLib;
 import net.sandius.rembulan.lib.ModuleLib;
 import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
 import net.wizardsoflua.extension.spell.api.resource.Config;
@@ -103,6 +105,8 @@ public class SpellProgram {
     SpellRegistry getSpellRegistry();
 
     InjectionScope getRootScope();
+
+    FileSystem getWorldFileSystem();
 
   }
 
@@ -240,6 +244,7 @@ public class SpellProgram {
       }
     });
     scope.registerResource(MinecraftServer.class, world.getMinecraftServer());
+    scope.registerResource(WizardsOfLua.class, WizardsOfLua.instance);
     return scope;
   }
 
@@ -385,6 +390,11 @@ public class SpellProgram {
     StringLib.installInto(stateContext, env);
     MathLib.installInto(stateContext, env);
     TableLib.installInto(stateContext, env);
+
+    FileSystem wolFs = context.getWorldFileSystem();
+    WolRuntimeEnvironment runtimeEnvironment =
+        new WolRuntimeEnvironment(RuntimeEnvironments.system(), wolFs);
+    IoLib.installInto(stateContext, env, runtimeEnvironment);
   }
 
   public void replacePlayerInstance(EntityPlayerMP newPlayer) {
