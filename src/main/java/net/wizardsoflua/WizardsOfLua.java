@@ -34,7 +34,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.wizardsoflua.addon.AddOnLauncher;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
@@ -70,7 +69,6 @@ public class WizardsOfLua {
   @Instance(MODID)
   public static WizardsOfLua instance;
 
-  // public final Logger logger = LogManager.getLogger(WizardsOfLua.class.getName());
   public Logger logger;
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
@@ -90,7 +88,6 @@ public class WizardsOfLua {
   private MinecraftServer server;
   private GameProfiles gameProfiles;
   private Startup startup;
-  private AddOnLauncher addOnLauncher;
   private Permissions permissions;
   private FileSystem worldFileSystem;
 
@@ -291,17 +288,11 @@ public class WizardsOfLua {
 
     });
     startup = new Startup(new Startup.Context() {
-      @Override
-      public File getSharedLibDir() {
-        return getConfig().getSharedLibDir();
-      }
 
       @Override
-      public MinecraftServer getMinecraftServer() {
-        return server;
+      public Path getSharedLibDir() {
+        return getConfig().getSharedLibDir().toPath();
       }
-    });
-    addOnLauncher = new AddOnLauncher(new AddOnLauncher.Context() {
 
       @Override
       public MinecraftServer getServer() {
@@ -353,9 +344,7 @@ public class WizardsOfLua {
   }
 
   public void runStartupSequence(ICommandSender sender) {
-    sender.sendMessage(new WolAnnouncementMessage("Running startup sequence"));
-    addOnLauncher.execute();
-    startup.execute();
+    startup.runStartupSequence(sender);
   }
 
   public WolConfig getConfig() {
