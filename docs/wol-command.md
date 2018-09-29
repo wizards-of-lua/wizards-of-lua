@@ -308,6 +308,22 @@ Alternatively you also could use the Gist's URL instead of its ID:
 /wol shared-file gist get https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3
 ```
 
+
+<br/>
+
+
+<a name="Startup-Sequence" style="position:relative; top:-70px; display:block;"></a>
+## Initiating the Startup Sequence
+This command manually initiates the startup sequence. This is the same sequence that is automatically executed
+when the server is started.
+
+It searches all add-ons and the shared directory for startup modules (these are Lua files called "startup.lua")
+and launches them. The locations are searched breadth first, and in this order the startup modules are launched.
+This ensures that startup modules in a lower directory are launched only after all startup modules in all upper directory have been launched. However, the launch order of modules with the same directory level is unspecified.
+
+```
+/wol startup
+```
 <br/>
 
 
