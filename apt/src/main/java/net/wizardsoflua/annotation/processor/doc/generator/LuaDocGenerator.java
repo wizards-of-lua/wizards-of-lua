@@ -151,18 +151,36 @@ public class LuaDocGenerator {
   }
 
   public static String renderType(String type) {
-    switch (type) {
+    String[] parts = type.split("\\s*,\\s*");
+    StringBuilder result = new StringBuilder();
+    for (String part : parts) {
+      if (result.length() > 0) {
+        result.append(", ");
+      }
+      result.append(renderPart(part));
+    }
+    return result.toString();
+  }
+
+  private static String renderPart(String part) {
+    if (part.startsWith("\"") && part.endsWith("\"")) {
+      return part.substring(1, part.length() - 1);
+    }
+    if (part.startsWith("'") && part.endsWith("'")) {
+      return part.substring(1, part.length() - 1);
+    }
+    switch (part) {
       case "boolean":
       case "function":
       case "number":
       case "string":
       case "table":
-        return type;
+        return part;
     }
-    if (type.startsWith("number (")) {
-      return type;
+    if (part.startsWith("number (")) {
+      return part;
     }
-    return toReference(type);
+    return toReference(part);
   }
 
   private static String toReference(CharSequence simpleName) {
