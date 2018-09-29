@@ -31,12 +31,15 @@ import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Config;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
-import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.filesystem.PathUtil;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
+/**
+ * The <span class="notranslate">System</span> module provides functions for interacting with the
+ * server's operating system.
+ */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = SystemModule.NAME, subtitle = "Interacting with the Server's OS")
@@ -78,6 +81,23 @@ public class SystemModule extends LuaTableExtension {
     return enabled && currentProcess != null && currentProcess.isAlive() && !isTimeoutReached();
   }
 
+  /**
+   * The <span class="notranslate">'listFiles'</span> function returns a table with the names of all
+   * files that exist inside the directory at the given path. The path is interpreted relative to
+   * the server's world folder.
+   * 
+   * #### Example
+   * 
+   * Printing the names of all files inside the "region" folder of the server's world folder.
+   * 
+   * <code>
+   * local path = "/region"
+   * local names = System.listFiles(path)
+   * for _,name in pairs(names) do
+   *   print(name)
+   * end
+   * </code>
+   */
   @LuaFunction
   public Collection<String> listFiles(String path) {
     try {
@@ -98,6 +118,25 @@ public class SystemModule extends LuaTableExtension {
     }
   }
 
+  /**
+   * The <span class="notranslate">'isDir'</span> function checks whether the given path points to a
+   * directory (in contrast to a regular file). The path is interpreted relative to the server's
+   * world folder.
+   * 
+   * #### Example
+   * 
+   * Printing the file type of the file "some/file" inside the server's world folder.
+   * 
+   * <code>
+   * local path = "/some/file"
+   * if System.isFile(path) then
+   *   print(string.format("% is a regular file",path))
+   * end
+   * if System.isDir(path) then
+   *   print(string.format("% is a directory",path))
+   * end
+   * </code>
+   */
   @LuaFunction
   public boolean isDir(String path) {
     FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
@@ -105,6 +144,25 @@ public class SystemModule extends LuaTableExtension {
     return Files.exists(pathObj) && Files.isDirectory(pathObj);
   }
 
+  /**
+   * The <span class="notranslate">'isFile'</span> function checks whether the given path points to
+   * a regular file (in contrast to a directory). The path is interpreted relative to the server's
+   * world folder.
+   * 
+   * #### Example
+   * 
+   * Printing the file type of the file "some/file" inside the server's world folder.
+   * 
+   * <code>
+   * local path = "/some/file"
+   * if System.isFile(path) then
+   *   print(string.format("% is a regular file",path))
+   * end
+   * if System.isDir(path) then
+   *   print(string.format("% is a directory",path))
+   * end
+   * </code>
+   */
   @LuaFunction
   public boolean isFile(String path) {
     FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
@@ -112,6 +170,22 @@ public class SystemModule extends LuaTableExtension {
     return Files.exists(pathObj) && Files.isRegularFile(pathObj);
   }
 
+  /**
+   * The <span class="notranslate">'makeDir'</span> function creates a new directory with the given
+   * path if it did not already exist. The path is interpreted relative to the server's world
+   * folder. This function returns true if the directory already exists of if it could be created.
+   * 
+   * #### Example
+   * 
+   * Creating the directory "some/dir" in the server's world folder.
+   * 
+   * <code>
+   * local created = System.makeDir("/some/dir")
+   * if not created then
+   *   error("Couldn't create directory")
+   * end
+   * </code>
+   */
   @LuaFunction
   public boolean makeDir(String path) {
     FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
@@ -127,6 +201,22 @@ public class SystemModule extends LuaTableExtension {
     }
   }
 
+  /**
+   * The <span class="notranslate">'delete'</span> function deletes the file with the given path.
+   * The path is interpreted relative to the server's world folder. This function returns true if
+   * the file did exist and could be deleted.
+   * 
+   * Please note that deleting a directory is only supported if its empty.
+   * 
+   * #### Example
+   * 
+   * Deleting the file "some-file-to-delete.txt" from the server's world folder.
+   * 
+   * <code> 
+   * System.delete("/some-file-to-delete.txt")
+   * </code>
+   * 
+   */
   @LuaFunction
   public boolean delete(String path) {
     FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
@@ -138,8 +228,22 @@ public class SystemModule extends LuaTableExtension {
     }
   }
 
+  /**
+   * The <span class="notranslate">'execute'</span> function invokes the program with the given name
+   * and the given arguments on the server's operating system. Please note that you only can execute
+   * programs living inside the server's [script gateway directory](/configuration-file). Please
+   * note that this is a blocking call. The spell will resume its execution only after the program
+   * has terminated.
+   * 
+   * #### Example Calling the "echo.sh" shell script from the server's script gateway directory.
+   * <code> 
+   * exitcode, result = System.execute("echo.sh","some argument")
+   * print("exitcode", exitcode)
+   * print("result", result)
+   * </code>
+   */
   @net.wizardsoflua.annotation.LuaFunction(name = ExecuteFunction.NAME)
-  @LuaFunctionDoc(returnType = LuaTypes.NIL, args = {"name", "arg..."})
+  @LuaFunctionDoc(returnType = "'exitcode', 'result'", args = {"name", "arg..."})
   class ExecuteFunction extends NamedFunctionAnyArg {
     public static final String NAME = "execute";
 
