@@ -117,7 +117,7 @@ public class SystemModule extends LuaTableExtension {
     FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
     Path pathObj = fileSystem.getPath(path);
     if (Files.exists(pathObj) && Files.isRegularFile(pathObj)) {
-      throw new LuaRuntimeException(String.format("%s already exists!", path));
+      return false;
     }
     try {
       Files.createDirectories(pathObj);
