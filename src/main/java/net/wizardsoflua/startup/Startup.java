@@ -7,10 +7,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.Lists;
+
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -19,8 +26,18 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.lua.LuaCommand;
 
 public class Startup {
+
+  private static final Comparator<String> MODULE_COMPARATOR = new Comparator<String>() {
+    @Override
+    public int compare(String o1, String o2) {
+      int levels1 = StringUtils.countMatches(o1, ".");
+      int levels2 = StringUtils.countMatches(o2, ".");
+      return levels1 - levels2;
+    }
+  };
 
   public interface Context extends AddOnFinder.Context {
     Path getSharedLibDir();
@@ -41,28 +58,41 @@ public class Startup {
 
   public void runStartupSequence(ICommandSender aSender) {
     ICommandSender sender = wrap(checkNotNull(aSender, "sender==null!"));
-    sender.sendMessage(new WolAnnouncementMessage("Running startup sequence"));
+    sender.sendMessage(new WolAnnouncementMessage("Running startup sequence..."));
     Path sharedLibDir = context.getSharedLibDir();
     try {
-      List<String> sharedStartupModules = startupModuleFinder.findStartupModulesIn(sharedLibDir);
-      executeModules(sender, addOnFinder.getStartupModules());
-      executeModules(sender, sharedStartupModules);
+      List<String> modules = merge(startupModuleFinder.findStartupModulesIn(sharedLibDir),
+          addOnFinder.getStartupModules());
+      launchModules(sender, modules);
     } catch (IOException e) {
       sendException(format("Error while searching %s for startup modules", sharedLibDir), e,
           sender);
     }
   }
 
-  private void executeModules(ICommandSender sender, List<String> modules) {
+  private List<String> merge(List<String> modules1, List<String> modules2) {
+    List<String> result = Lists.newArrayList(modules1);
+    result.addAll(modules2);
+    Collections.sort(result, MODULE_COMPARATOR);
+    return result.stream().distinct().collect(Collectors.toList());
+  }
+
+  private void launchModules(ICommandSender sender, List<String> modules) {
     for (String module : modules) {
-      context.getLogger().debug(format("Executing module '%s'", module));
-      executeModule(sender, module);
+      launchModule(sender, module);
     }
   }
 
-  private void executeModule(ICommandSender sender, String module) {
-    String cmd = format("/lua require('%s')", module);
-    context.getServer().getCommandManager().executeCommand(sender, cmd);
+  private void launchModule(ICommandSender sender, String module) {
+    sendMessage(format("Launching module '%s'", module), sender);
+    String code = format("require('%s')", module);
+    LuaCommand luaCommand =
+        (LuaCommand) context.getServer().getCommandManager().getCommands().get("lua");
+    try {
+      luaCommand.execute(context.getServer(), sender, code, null);
+    } catch (CommandException e) {
+      sendException(format("Error while executing module %s", module), e, sender);
+    }
   }
 
   private ICommandSender wrap(final ICommandSender sender) {
@@ -110,6 +140,11 @@ public class Startup {
     txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
     commandSender.sendMessage(txt);
+  }
+
+  private void sendMessage(String message, ICommandSender sender) {
+    WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
+    sender.sendMessage(txt);
   }
 
   private String getStackTrace(Throwable throwable) {
