@@ -20,6 +20,9 @@ public class RestrictedFileSystem extends DelegatingFileSystem {
 
   @Override
   public Path getPath(String first, String... more) {
+    if (first.startsWith("/")) {
+      first = first.substring(1);
+    }
     List<String> parts = Lists.asList(first, more);
     String filename = Joiner.on(File.separatorChar).join(parts);
     Path result = PathUtil.toPath(topmostDirectory, filename);
