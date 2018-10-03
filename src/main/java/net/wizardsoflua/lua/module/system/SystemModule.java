@@ -91,11 +91,19 @@ public class SystemModule extends LuaTableExtension {
    * Printing the names of all files inside the "region" folder of the server's world folder.
    * 
    * <code>
-   * local path = "/region"
+   * local path = '/region'
    * local names = System.listFiles(path)
    * for _,name in pairs(names) do
    *   print(name)
    * end
+   * </code>
+   * 
+   * #### Example
+   *
+   * Getting the names of all files inside server's world folder.
+   *
+   * <code>        
+   * local names = System.listFiles('/')
    * </code>
    */
   @LuaFunction
@@ -109,8 +117,8 @@ public class SystemModule extends LuaTableExtension {
       if (!Files.isDirectory(pathObj)) {
         throw new LuaRuntimeException(String.format("%s is not a directory!", path));
       } else {
-        List<String> list =
-            Files.list(pathObj).map(p -> p.getFileName().toString()).collect(Collectors.toList());
+        List<String> list = Files.list(pathObj).map(p -> p.getFileName().toString()).sorted()
+            .collect(Collectors.toList());
         return list;
       }
     } catch (IOException e) {
@@ -128,12 +136,12 @@ public class SystemModule extends LuaTableExtension {
    * Printing the file type of the file "some/file" inside the server's world folder.
    * 
    * <code>
-   * local path = "/some/file"
+   * local path = '/some/file'
    * if System.isFile(path) then
-   *   print(string.format("% is a regular file",path))
+   *   print(string.format('% is a regular file',path))
    * end
    * if System.isDir(path) then
-   *   print(string.format("% is a directory",path))
+   *   print(string.format('% is a directory',path))
    * end
    * </code>
    */
@@ -154,12 +162,12 @@ public class SystemModule extends LuaTableExtension {
    * Printing the file type of the file "some/file" inside the server's world folder.
    * 
    * <code>
-   * local path = "/some/file"
+   * local path = '/some/file'
    * if System.isFile(path) then
-   *   print(string.format("% is a regular file",path))
+   *   print(string.format('% is a regular file',path))
    * end
    * if System.isDir(path) then
-   *   print(string.format("% is a directory",path))
+   *   print(string.format('% is a directory',path))
    * end
    * </code>
    */
@@ -173,16 +181,17 @@ public class SystemModule extends LuaTableExtension {
   /**
    * The <span class="notranslate">'makeDir'</span> function creates a new directory with the given
    * path if it did not already exist. The path is interpreted relative to the server's world
-   * folder. This function returns true if the directory already exists of if it could be created.
+   * folder. This function returns true if the directory already existed or if it has been be
+   * created.
    * 
    * #### Example
    * 
    * Creating the directory "some/dir" in the server's world folder.
    * 
    * <code>
-   * local created = System.makeDir("/some/dir")
+   * local created = System.makeDir('/some/dir')
    * if not created then
-   *   error("Couldn't create directory")
+   *   error('Could not create directory')
    * end
    * </code>
    */
@@ -204,7 +213,7 @@ public class SystemModule extends LuaTableExtension {
   /**
    * The <span class="notranslate">'delete'</span> function deletes the file with the given path.
    * The path is interpreted relative to the server's world folder. This function returns true if
-   * the file did exist and could be deleted.
+   * the file did exist and has been deleted.
    * 
    * Please note that deleting a directory is only supported if its empty.
    * 
@@ -213,7 +222,7 @@ public class SystemModule extends LuaTableExtension {
    * Deleting the file "some-file-to-delete.txt" from the server's world folder.
    * 
    * <code> 
-   * System.delete("/some-file-to-delete.txt")
+   * System.delete('/some-file-to-delete.txt')
    * </code>
    * 
    */
@@ -235,15 +244,18 @@ public class SystemModule extends LuaTableExtension {
    * note that this is a blocking call. The spell will resume its execution only after the program
    * has terminated.
    * 
-   * #### Example Calling the "echo.sh" shell script from the server's script gateway directory.
+   * #### Example
+   * 
+   * Calling the "echo.sh" shell script from the server's script gateway directory.
+   * 
    * <code> 
-   * exitcode, result = System.execute("echo.sh","some argument")
-   * print("exitcode", exitcode)
-   * print("result", result)
+   * exitcode, result = System.execute('echo.sh','some argument')
+   * print('exitcode', exitcode)
+   * print('result', result)
    * </code>
    */
   @net.wizardsoflua.annotation.LuaFunction(name = ExecuteFunction.NAME)
-  @LuaFunctionDoc(returnType = "'exitcode', 'result'", args = {"name", "arg..."})
+  @LuaFunctionDoc(returnType = "'number', 'string'", args = {"name", "arg..."})
   class ExecuteFunction extends NamedFunctionAnyArg {
     public static final String NAME = "execute";
 

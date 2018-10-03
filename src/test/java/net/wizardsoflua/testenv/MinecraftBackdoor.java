@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -231,7 +234,7 @@ public class MinecraftBackdoor {
     }
     moduleFile.getParentFile().mkdirs();
     try {
-      Files.write(content, moduleFile, Charsets.UTF_8);
+      Files.asCharSink(moduleFile, Charsets.UTF_8).write(content);
     } catch (IOException e) {
       throw new UndeclaredThrowableException(e);
     }
@@ -254,6 +257,55 @@ public class MinecraftBackdoor {
     file.delete();
   }
 
+  public void writeWorldFile(String path, String content) {
+    FileSystem fs = testEnv.getWol().getWorldFileSystem();
+    Path p = fs.getPath(path);
+    try {
+      Files.createParentDirs(p.toFile());
+      Files.asCharSink(p.toFile(), Charsets.UTF_8).write(content);
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
+  public String readWorldFile(String path) {
+    FileSystem fs = testEnv.getWol().getWorldFileSystem();
+    Path p = fs.getPath(path);
+    try {
+      if (java.nio.file.Files.exists(p)) {
+        return Files.asByteSource(p.toFile()).asCharSource(Charsets.UTF_8).read();
+      } else {
+        return null;
+      }
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
+  public void deleteWorldFile(String path) {
+    try {
+      FileSystem fs = testEnv.getWol().getWorldFileSystem();
+      delete(fs.getPath(path));
+    } catch (IOException e) {
+      throw new UndeclaredThrowableException(e);
+    }
+  }
+
+  private void delete(Path path) throws IOException {
+    if (java.nio.file.Files.isDirectory(path)) {
+      for (Path child : java.nio.file.Files.list(path).collect(Collectors.toList())) {
+        delete(child);
+      }
+    } 
+    java.nio.file.Files.deleteIfExists(path);
+  }
+
+  public boolean existsWorldFile(String path) {
+    FileSystem fs = testEnv.getWol().getWorldFileSystem();
+    Path p = fs.getPath(path);
+    return java.nio.file.Files.exists(p);
+  }
+
   public void clearLuaFunctionCache() {
     testEnv.getWol().clearLuaFunctionCache();
   }
@@ -265,7 +317,5 @@ public class MinecraftBackdoor {
       setBlock(pos, blockType);
     }
   }
-
-
 
 }

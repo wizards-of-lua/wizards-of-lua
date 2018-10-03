@@ -18,17 +18,20 @@ public class WolRuntimeEnvironment implements RuntimeEnvironment {
 
   @Override
   public InputStream standardInput() {
-    return delegate.standardInput();
+    //return delegate.standardInput();
+    return null;
   }
 
   @Override
   public OutputStream standardOutput() {
-    return delegate.standardOutput();
+    //return delegate.standardOutput();
+    return null;
   }
 
   @Override
   public OutputStream standardError() {
-    return delegate.standardError();
+    //return delegate.standardError();
+    return null;
   }
 
   @Override
