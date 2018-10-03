@@ -15,7 +15,7 @@ Here is an overview of the {{ page.name }} *functions*:
 
 | Function             | Parameters    | Results      |
 | ---------------------|---------------| :-----------:|
-{% for func in functions %}| [<span class="notranslate">{{ func.name }}</span>](#{{ func.name }}) | <span class="notranslate">{{ func.parameters }}</span> | <span class="notranslate">{{ func.results }}</span> |
+{% for func in functions %}| {% if func.unsupported %}<span style="text-decoration:line-through">{% endif %}[&nbsp;<span class="notranslate">{{ func.name }}</span>&nbsp;](#{{ func.name }}){% if func.supported %}</span>{% endif %} | <span class="notranslate">{{ func.parameters }}</span> | <span class="notranslate">{{ func.results }}</span> |
 {% endfor %}
 {% endif %}
 
@@ -48,10 +48,12 @@ and some examples about how to use them in your spells.
 {% for func in functions %}
 <a style="position:relative; top:-70px; display:block;" name="{{ func.name }}"></a>
 ### <span class="notranslate">{{ func.name }} ({{ func.parameters }}) -> {{ func.results }}</span>
+{% if func.unsupported %}The <span class="notranslate">'{{ func.name }}'</span> function is <span style="color:#ff6666">*currently not supported!*</span>{% endif %}
 
 {{ func.description }}
 {% for ex in func.examples %}
 {% include_relative {{ ex.url }} %}
+
 {% endfor %}
 ---
 {% endfor %}
