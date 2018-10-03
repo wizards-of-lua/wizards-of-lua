@@ -24,18 +24,21 @@ public class SpellExceptionFactory {
   }
 
   private static CharSequence getLuaStackTrace(Throwable throwable) {
-    StringBuilder luaStackTrace = new StringBuilder();
+    Throwable deepestCause = null;
     for (Throwable t = throwable; t != null; t = t.getCause()) {
-      StackTraceElement[] stackTrace = t.getStackTrace();
-      for (StackTraceElement stackTraceElement : stackTrace) {
-        String className = stackTraceElement.getClassName();
-        int lineNumber = stackTraceElement.getLineNumber();
-        if (className.startsWith(SpellProgram.ROOT_CLASS_PREFIX) && lineNumber >= 0) {
-          String fileName = stackTraceElement.getFileName();
-          luaStackTrace.append("\n at line ").append(lineNumber).append(" of ").append(fileName);
-        }
+      deepestCause = t;
+    }
+    StringBuilder luaStackTrace = new StringBuilder();
+    StackTraceElement[] stackTrace = deepestCause.getStackTrace();
+    for (StackTraceElement stackTraceElement : stackTrace) {
+      String className = stackTraceElement.getClassName();
+      int lineNumber = stackTraceElement.getLineNumber();
+      if (className.startsWith(SpellProgram.ROOT_CLASS_PREFIX) && lineNumber >= 0) {
+        String fileName = stackTraceElement.getFileName();
+        luaStackTrace.append("\n at line ").append(lineNumber).append(" of ").append(fileName);
       }
     }
     return luaStackTrace;
   }
+
 }
