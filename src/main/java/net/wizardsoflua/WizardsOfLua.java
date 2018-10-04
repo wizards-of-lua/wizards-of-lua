@@ -390,4 +390,8 @@ public class WizardsOfLua {
     return checkNotNull(worldFileSystem, "worldFileSystem==null!");
   }
 
+  public Permissions getPermissions() {
+    return checkNotNull(permissions, "permissions==null!");
+  }
+
 }

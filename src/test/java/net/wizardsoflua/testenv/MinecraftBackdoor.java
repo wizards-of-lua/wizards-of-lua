@@ -55,7 +55,7 @@ public class MinecraftBackdoor {
   public MinecraftBackdoor(WolTestEnvironment testEnv, EventBus eventBus) {
     this.testEnv = testEnv;
     this.eventBus = eventBus;
-    this.player = new PlayerBackdoor(testEnv);
+    this.player = new PlayerBackdoor(this);
   }
 
   public String getName() {
@@ -296,7 +296,7 @@ public class MinecraftBackdoor {
       for (Path child : java.nio.file.Files.list(path).collect(Collectors.toList())) {
         delete(child);
       }
-    } 
+    }
     java.nio.file.Files.deleteIfExists(path);
   }
 
@@ -316,6 +316,10 @@ public class MinecraftBackdoor {
       BlockPos pos = startPos.offset(direction, i);
       setBlock(pos, blockType);
     }
+  }
+
+  public WolTestEnvironment getTestEnv() {
+    return testEnv;
   }
 
 }

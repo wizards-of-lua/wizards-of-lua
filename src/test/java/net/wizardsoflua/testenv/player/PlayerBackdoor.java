@@ -22,6 +22,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.spell.SpellUtil;
+import net.wizardsoflua.testenv.MinecraftBackdoor;
 import net.wizardsoflua.testenv.WolTestEnvironment;
 import net.wizardsoflua.testenv.net.ChatAction;
 import net.wizardsoflua.testenv.net.ClientAction;
@@ -32,9 +33,23 @@ import net.wizardsoflua.testenv.net.RightClickAction;
 
 public class PlayerBackdoor {
   private WolTestEnvironment testEnv;
+  private MinecraftBackdoor minecraftBackdoor;
 
-  public PlayerBackdoor(WolTestEnvironment testEnv) {
-    this.testEnv = testEnv;
+  public PlayerBackdoor(MinecraftBackdoor minecraftBackdoor) {
+    this.minecraftBackdoor = minecraftBackdoor;
+    this.testEnv = minecraftBackdoor.getTestEnv();
+  }
+
+  public void setOperator(boolean value) {
+    if (value) {
+      minecraftBackdoor.executeCommand("/op " + getName());
+    } else {
+      minecraftBackdoor.executeCommand("/deop " + getName());
+    }
+  }
+
+  public boolean isOperator() {
+    return testEnv.getWol().getPermissions().hasOperatorPrivileges(getDelegate().getPersistentID());
   }
 
   public EntityPlayerMP getDelegate() {

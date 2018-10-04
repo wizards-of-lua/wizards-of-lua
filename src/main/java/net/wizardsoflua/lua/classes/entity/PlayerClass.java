@@ -16,6 +16,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
@@ -53,6 +54,10 @@ public final class PlayerClass
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends EntityPlayerMP> extends EntityLivingBaseClass.Instance<D> {
+    
+    @Resource
+    private WizardsOfLua wol;
+    
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
     }
@@ -68,7 +73,7 @@ public final class PlayerClass
     }
 
     @LuaProperty
-    public GameType getGamemode() {      
+    public GameType getGamemode() {         
       return delegate.interactionManager.getGameType();
     }
 
@@ -77,6 +82,11 @@ public final class PlayerClass
       delegate.setGameType(gamemode);
     }
 
+    @LuaProperty
+    public boolean isOperator() {
+      return wol.getPermissions().hasOperatorPrivileges(delegate.getPersistentID());
+    }
+    
     @LuaProperty
     public @Nullable String getTeam() {
       Team team = delegate.getTeam();
