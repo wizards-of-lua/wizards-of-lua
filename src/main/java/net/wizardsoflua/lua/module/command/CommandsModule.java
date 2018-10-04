@@ -58,11 +58,13 @@ public class CommandsModule extends LuaTableExtension {
    * 
    * The command stays registered until it is deregistered or the server is being restarted.
    * 
-   * #### Permission Level Set the permission level to nil if all players may use the command (this
-   * is the default). Set the permission level ta a value between 1 and 4 if only operators may use
-   * the command. See section "op-permission-level" of the [Minecraft
-   * Wiki](https://minecraft.gamepedia.com/Server.properties) for more information of the permission
-   * level.
+   * #### Permission Level
+   * 
+   * Set the permission level to <tt>nil</tt> if you want that all players can use the command (this
+   * is the default). Set the permission level to a value between 1 and 4 if you want only operators
+   * to use it. See section "op-permission-level" of the [Minecraft
+   * Wiki](https://minecraft.gamepedia.com/Server.properties) for more information about the meaning
+   * of the different permission levels.
    * 
    * #### Example
    * 
