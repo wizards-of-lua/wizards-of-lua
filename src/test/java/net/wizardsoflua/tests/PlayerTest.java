@@ -26,11 +26,8 @@ public class PlayerTest extends WolTestBase {
 
   BlockPos playerPos = new BlockPos(0, 4, 0);
 
-  private boolean wasOperator;
-
   @Before
   public void before() {
-    wasOperator = mc().player().isOperator();
     mc().player().setPosition(playerPos);
   }
 
@@ -45,7 +42,6 @@ public class PlayerTest extends WolTestBase {
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
     mc().player().setHealth(20.0f);
-    mc().player().setOperator(wasOperator);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_putNbt_is_not_supported
@@ -339,7 +335,7 @@ public class PlayerTest extends WolTestBase {
     // Given:
     mc().player().setOperator(false);
     mc().clearEvents();
-    
+
     // When:
     mc().executeCommand("/lua p=Entities.find('@a[name=%s]')[1]; print(p.operator)",
         mc().player().getName());

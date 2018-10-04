@@ -26,8 +26,8 @@ import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
- * The <span class="notranslate">Commands</span> module allows the registration of custom commands than
- * can be used from the chat line.
+ * The <span class="notranslate">Commands</span> module allows the registration of custom commands
+ * than can be used from the chat line.
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
@@ -51,11 +51,18 @@ public class CommandsModule extends LuaTableExtension {
 
   /**
    * Registers a new custom command with the given name and the given Lua code (provided as text).
-   * Optionally accepts the usage string as a third parameter.
-   * 
+   * Optionally accepts the usage string as a third parameter and the command's permission level as
+   * a fourth parameter.
+   *
    * The Lua code will be compiled every time when the command is issued.
    * 
    * The command stays registered until it is deregistered or the server is being restarted.
+   * 
+   * #### Permission Level Set the permission level to nil if all players may use the command (this
+   * is the default). Set the permission level ta a value between 1 and 4 if only operators may use
+   * the command. See section "op-permission-level" of the [Minecraft
+   * Wiki](https://minecraft.gamepedia.com/Server.properties) for more information of the permission
+   * level.
    * 
    * #### Example
    * 
@@ -91,9 +98,20 @@ public class CommandsModule extends LuaTableExtension {
    * ]], "/health <player> <new health>")
    * </code>
    * 
+   * #### Example
+   * 
+   * Registering a command that needs operator permission level 4.
+   * 
+   * <code>
+   * Commands.register("cool-command",[[
+   *   print("you are very cool")
+   * ]], "/cool-command", 4)
+   * </code>
+   * 
    */
   @LuaFunction
-  public void register(String name, String luaCode, @Nullable String usage) {
+  public void register(String name, String luaCode, @Nullable String usage,
+      @Nullable Integer permissionLevel) {
     CommandHandler ch = (CommandHandler) server.getCommandManager();
     ICommand old = ch.getCommands().get(name);
     if (name.matches(".*\\s.*")) {
@@ -108,7 +126,7 @@ public class CommandsModule extends LuaTableExtension {
     if (usage == null) {
       usage = "/" + name;
     }
-    ICommand cmd = new CustomCommand(name, luaCode, usage);
+    ICommand cmd = new CustomCommand(name, luaCode, usage, permissionLevel);
     ch.registerCommand(cmd);
   }
 
@@ -131,11 +149,14 @@ public class CommandsModule extends LuaTableExtension {
     private final String name;
     private final String luaCode;
     private final String usage;
+    private final @Nullable Integer permissionLevel;
 
-    public CustomCommand(String name, String luaCode, String usage) {
+    public CustomCommand(String name, String luaCode, String usage,
+        @Nullable Integer permissionLevel) {
       this.name = checkNotNull(name, "name==null!").trim();
       this.luaCode = checkNotNull(luaCode, "luaCode==null!").trim();
       this.usage = checkNotNull(usage, "usage==null!");
+      this.permissionLevel = permissionLevel;
     }
 
     @Override
@@ -167,7 +188,11 @@ public class CommandsModule extends LuaTableExtension {
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-      return true;
+      if (permissionLevel != null) {
+        return sender.canUseCommand(permissionLevel, name);
+      } else {
+        return true;
+      }
     }
 
     @Override

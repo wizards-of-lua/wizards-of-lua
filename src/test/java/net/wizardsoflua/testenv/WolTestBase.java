@@ -18,7 +18,8 @@ import net.wizardsoflua.testenv.net.PrepareForTestAction;
 public class WolTestBase extends TestDataFactory {
   private static int testIdCount = 0;
   private WolTestEnvironment testEnv = WolTestEnvironment.instance;
-  private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);;
+  private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
+  private boolean wasOperator;
 
   @Before
   public void beforeTest() throws IOException {
@@ -41,11 +42,13 @@ public class WolTestBase extends TestDataFactory {
     mc().clearLuaFunctionCache();
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
+    wasOperator = mc().player().isOperator();
   }
 
   @After
   public void afterTest() {
     testEnv.runAndWait(() -> testEnv.getEventRecorder().setEnabled(false));
+    mc().player().setOperator(wasOperator);
     mc().clearEvents();
     mc().breakAllSpells();
     mc().resetClock();
