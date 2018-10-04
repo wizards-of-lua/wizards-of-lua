@@ -17,8 +17,6 @@ public class AboutMessage {
   public interface Context {
     boolean shouldShowAboutMessage();
 
-    String getName();
-
     String getUrl();
 
     String getVersion();
@@ -48,10 +46,8 @@ public class AboutMessage {
   }
 
   public ITextComponent getTextComponent() {
-    String message = String.format(
-        "%s, Version %s - " + "Please read the instructions!"
-            + " For instructions, or sending suggestions and bug reports please visit ",
-        context.getName(), context.getVersion());
+    String message = String.format("This server is powered by the Wizards of Lua, version %s - ",
+        context.getVersion());
     WolAnnouncementMessage result = new WolAnnouncementMessage(message);
     result.appendSibling(newChatWithLinks(context.getUrl()));
     String recommendedVersion = context.getRecommendedVersion();

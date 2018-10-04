@@ -122,11 +122,6 @@ public class WizardsOfLua {
       }
 
       @Override
-      public String getName() {
-        return NAME;
-      }
-
-      @Override
       public @Nullable String getRecommendedVersion() {
         String result = null;
         for (ModContainer mod : Loader.instance().getModList()) {
