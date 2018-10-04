@@ -41,22 +41,35 @@ public class AboutMessage {
     if (context.shouldShowAboutMessage()) {
       if (notifiedPlayers.add(event.player.getUniqueID())) {
         event.player.sendMessage(getTextComponent());
+
+        String recommendedVersion = context.getRecommendedVersion();
+        if (recommendedVersion != null) {
+          TextComponentString component =
+              new TextComponentString("New version " + recommendedVersion + " available!");
+          component.setStyle((new Style()).setColor(TextFormatting.GREEN));
+          event.player.sendMessage(new WolAnnouncementMessage(component));
+        }
+
+        WolAnnouncementMessage instructions = new WolAnnouncementMessage("See instructions at ");
+        ITextComponent link = newChatWithLinks(context.getUrl());
+        link.getStyle().setColor(TextFormatting.YELLOW);
+        instructions.appendSibling(link);
+
+        event.player.sendMessage(instructions);
       }
     }
   }
 
   public ITextComponent getTextComponent() {
-    String message = String.format("This server is powered by the Wizards of Lua, version %s - ",
-        context.getVersion());
-    WolAnnouncementMessage result = new WolAnnouncementMessage(message);
-    result.appendSibling(newChatWithLinks(context.getUrl()));
-    String recommendedVersion = context.getRecommendedVersion();
-    if (recommendedVersion != null) {
-      TextComponentString component =
-          new TextComponentString("\n New version " + recommendedVersion + " available!");
-      component.setStyle((new Style()).setColor(TextFormatting.GREEN));
-      result.appendSibling(component);
-    }
+    WolAnnouncementMessage result = new WolAnnouncementMessage("Powered by the ");
+
+    TextComponentString modName = new TextComponentString("Wizards of Lua");
+    modName.setStyle((new Style()).setColor(TextFormatting.GOLD));
+    result.appendSibling(modName);
+
+    TextComponentString version = new TextComponentString(" - " + context.getVersion());
+    version.setStyle((new Style()).setColor(TextFormatting.WHITE));
+    result.appendSibling(version);
     return result;
   }
 
