@@ -3,8 +3,9 @@ title: The Wand of the Featherlight Flight
 excerpt_separator: <!--more-->
 author: mickkay
 order: 20
+download: https://minecraft.curseforge.com/projects/the-wand-of-the-featherlight-flight-spell-pack/files
 ---
-This spell pack is a Wizards of Lua add-on that adds a magic wand to the Minecraft game.
+This [spell pack](/spellpacks.html) is a Wizards of Lua add-on that adds a magic wand to the Minecraft game.
 
 <!--more-->
 

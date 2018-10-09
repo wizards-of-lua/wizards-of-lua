@@ -3,8 +3,9 @@ title: Rocket Launcher
 excerpt_separator: <!--more-->
 author: mickkay
 order: 30
+download: https://minecraft.curseforge.com/projects/rocket-launcher-spell-pack/files
 ---
-This spell pack is a Wizards of Lua add-on that adds a rocket launcher to the Minecraft game.
+This [spell pack](/spellpacks.html) is a Wizards of Lua add-on that adds a rocket launcher to the Minecraft game.
 
 <!--more-->
 

@@ -3,8 +3,9 @@ title: Claiming Heads
 excerpt_separator: <!--more-->
 author: mickkay
 order: 10
+download: https://minecraft.curseforge.com/projects/claiming-heads-spell-pack/files
 ---
-The Claiming Heads Spell Pack is a Wizards of Lua add-on that adds claiming support to Minecraft worlds.
+This [spell pack](/spellpacks.html) is a Wizards of Lua add-on that adds claiming support to Minecraft worlds.
 
 <!--more-->
 
