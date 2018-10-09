@@ -5,7 +5,7 @@ encoding: "utf-8"
 show_header: true
 repository: wizards-of-lua/webpage
 github:
-  project_url: https://github.com/wizards-of-lua/wizards-of-lua
+project_url: https://github.com/wizards-of-lua/wizards-of-lua
 show_dir_listing: false
 google_translate: true
 discord_url: https://discord.gg/9En5Drt
@@ -27,6 +27,10 @@ defaults:
       type: examples
     values:
       layout: example
+  - scope:
+      type: spellpacks
+    values:
+      layout: spellpack
 collections:
   modules:
     output: true
@@ -37,3 +41,6 @@ collections:
   examples:
     output: true
     permalink: /examples/:path/
+  spellpacks:
+    output: true
+    permalink: /spellpacks/:path/
