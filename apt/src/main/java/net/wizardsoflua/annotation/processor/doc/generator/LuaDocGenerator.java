@@ -36,6 +36,9 @@ public class LuaDocGenerator {
     StringBuilder doc = new StringBuilder();
     doc.append("---\n");
     doc.append("name: ").append(model.getName()).append('\n');
+    if (!model.getTitle().isEmpty()) {
+      doc.append("title: ").append(model.getTitle()).append('\n');
+    }
     doc.append("subtitle: ").append(model.getSubtitle()).append('\n');
     doc.append("type: ").append(model.getType()).append('\n');
     String superClass = model.getSuperClass();
@@ -62,8 +65,12 @@ public class LuaDocGenerator {
     }
     doc.append("---\n");
     doc.append("\n");
-    doc.append(model.getDescription()).append('\n');
+    doc.append(renderModuleDescription(model.getDescription())).append('\n');
     return doc.toString();
+  }
+
+  private String renderModuleDescription(String description) {
+    return description.replaceAll("^ ", "").replaceAll("\n ", "\n").replace("<code>", "```lua").replace("</code>", "```");
   }
 
   public static String getDescription(Element element, ProcessingEnvironment env) {

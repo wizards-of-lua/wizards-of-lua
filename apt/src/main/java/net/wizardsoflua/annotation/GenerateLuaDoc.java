@@ -19,6 +19,11 @@ public @interface GenerateLuaDoc {
   String name() default "";
 
   /**
+   * The title of the module. This containst the correct writing. Optional.
+   */
+  String title() default "";
+
+  /**
    * The subtitle of the module.
    */
   String subtitle() default "";
