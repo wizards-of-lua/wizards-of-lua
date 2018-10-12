@@ -11,6 +11,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class WorldTest extends WolTestBase {
@@ -160,6 +161,64 @@ public class WorldTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_world_isLoadedAt_returns_true_at_player_location
+  @Test
+  public void test_world_isLoadedAt_returns_true_at_player_location() {
+    // Given:
+    String expected = "true";
+
+    // When:
+    mc().player().chat("/lua v=spell.pos; w=spell.world; b=w:isLoadedAt(v); print(b)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_world_isLoadedAt_returns_false_far_away
+  @Test
+  public void test_world_isLoadedAt_returns_false_far_away() {
+    // Given:
+    String expected = "false";
+
+    // When:
+    mc().player()
+        .chat("/lua v=spell.pos+Vec3(10000,0,0); w=spell.world; b=w:isLoadedAt(v); print(b)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_world_isGeneratedAt_returns_true_at_player_location
+  @Test
+  public void test_world_isGeneratedAt_returns_true_at_player_location() {
+    // Given:
+    String expected = "true";
+
+    // When:
+    mc().player().chat("/lua v=spell.pos; w=spell.world; b=w:isGeneratedAt(v); print(b)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_world_isGeneratedAt_returns_false_far_away
+  @Test
+  public void test_world_isGeneratedAt_returns_false_far_away() {
+    // Given:
+    String expected = "false";
+     
+    // When:
+    mc().player()
+        .chat("/lua v=spell.pos+Vec3(9999999,0,9999999); w=spell.world; b=w:isLoadedAt(v); print(b)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 }

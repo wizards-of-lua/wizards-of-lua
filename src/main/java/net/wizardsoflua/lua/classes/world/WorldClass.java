@@ -1,9 +1,13 @@
 package net.wizardsoflua.lua.classes.world;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Village;
 import net.minecraft.world.EnumDifficulty;
@@ -46,6 +50,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends World> extends LuaInstance<D> {
+
     public Instance(D delegate) {
       super(delegate);
     }
@@ -119,5 +124,27 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
       }
       return new Vec3d(v.getCenter());
     }
+
+    /**
+     * The 'isLoadedAt' function returns true if the world chunk that contains the given world
+     * coordinates is currently loaded into the server.
+     */
+    @LuaFunction
+    public boolean isLoadedAt(Vec3d pos) {
+      return delegate.isBlockLoaded(new BlockPos(pos));
+    }
+
+    /**
+     * The 'isGeneratedAt' function returns true if the world chunk that contains the given world
+     * coordinates has already been generated. Please note that this doesn't imply that this chunk
+     * also is currently loaded.
+     */
+    @LuaFunction
+    public boolean isGeneratedAt(Vec3d pos) {
+      int chunkX = MathHelper.floor(pos.x) >> 4;
+      int chunkZ = MathHelper.floor(pos.z) >> 4;
+      return delegate.getChunkProvider().isChunkGeneratedAt(chunkX, chunkZ);
+    }
+
   }
 }
