@@ -36,12 +36,14 @@ import net.wizardsoflua.lua.classes.entity.Direction;
 import net.wizardsoflua.spell.VirtualEntity;
 
 /**
- * The VirtualEntity class is the base class of all server-only entities that populate the world.
+ * The <span class="notranslate">VirtualEntity</span> class is the base class of all virtual
+ * entities that populate the world. Virtual entities live on the server only and are never synced
+ * to the client.
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = VirtualEntityClass.NAME)
 @GenerateLuaClassTable(instance = VirtualEntityClass.Instance.class)
-@GenerateLuaDoc(subtitle = "The Base Class of all Virtual Entities")
+@GenerateLuaDoc(name = "VirtualEntity", subtitle = "The Base Class of all Virtual Entities")
 public final class VirtualEntityClass
     extends BasicLuaClass<VirtualEntity, VirtualEntityClass.Instance<VirtualEntity>> {
   public static final String NAME = "VirtualEntity";
@@ -131,6 +133,15 @@ public final class VirtualEntityClass
     /**
      * The 'lookVec' is a 3-dimensional vector that points into the direction this entity is looking
      * at, or nil, if it is not looking anywhere, for example, if it has no eyes.
+     * 
+     * #### Example
+     * 
+     * Moving the spell into the owners eye and pointing it into the owner's look direction.
+     * 
+     * <code>
+     * spell.pos = spell.owner.pos + Vec3(0, spell.owner.eyeHeight, 0)
+     * spell.lookVec = spell.owner.lookVec
+     * </code>
      */
     @LuaProperty
     public @Nullable Vec3d getLookVec() {
@@ -150,10 +161,6 @@ public final class VirtualEntityClass
      */
     @LuaProperty
     public Vec3d getMotion() {
-      // double x = delegate.motionX;
-      // double y = delegate.motionY;
-      // double z = delegate.motionZ;
-      // return new Vec3d(x, y, z);
       return delegate.getMotion();
     }
 
@@ -173,17 +180,14 @@ public final class VirtualEntityClass
         z = z * f;
       }
 
-      // delegate.motionX = x;
-      // delegate.motionY = y;
-      // delegate.motionZ = z;
-      // delegate.velocityChanged = true;
       delegate.setMotion(new Vec3d(x, y, z));
     }
 
     /**
      * The 'name' of this entity is unlike the UUID not unique in the world. For most entities it is
      * just something like 'Pig' or 'Zombie'. For player entities it is the nickkname of the
-     * character, like 'mickkay' or 'bytemage'.
+     * character, like 'mickkay' or 'bytemage'. And for spells it is typically the spell's id
+     * prefixed with "Spell-".
      */
     @LuaProperty
     public String getName() {
@@ -268,7 +272,7 @@ public final class VirtualEntityClass
     }
 
     /**
-     * The world the the space this entity is living in.
+     * The world is the space this entity is living in.
      */
     @LuaProperty
     public World getWorld() {
@@ -312,6 +316,35 @@ public final class VirtualEntityClass
      * 'north', 'east', 'south', and 'west'), as well as relative directions ('forward', 'back',
      * 'left', and 'right'). Relative directions are interpreted relative to the direction the
      * entity is [facing](/modules/VirtualEntity/#facing).
+     * 
+     * #### Example
+     * 
+     * Moving the spell 1 meter upwards.
+     * 
+     * <code>
+     * spell.move( "up")
+     * </code>
+     * 
+     * #### Example
+     * 
+     * Moving the spell 10 meters to the north.
+     * 
+     * <code>
+     * spell.move( "north", 10)
+     * </code>
+     * 
+     * #### Example
+     * 
+     * Building a huge circle of wool blocks.
+     * 
+     * <code>
+     * wool=Blocks.get( "wool")
+     * for i=1,360 do
+     *   spell.block=wool
+     *   spell.rotationYaw=spell.rotationYaw+1
+     *   spell:move("forward")
+     * end
+     * </code>
      */
     @LuaFunction
     public void move(String directionName, @Nullable Double distance) {
@@ -340,6 +373,20 @@ public final class VirtualEntityClass
      * The 'scanView' function scans the view of this entity for the next (non-liquid) block. On
      * success it returns a [BlockHit](/modules/BlockHit/), otherwise nil. It scans the view with a
      * line-of-sight-range of up to the given distance (meter).
+     * 
+     * #### Example
+     * 
+     * Prints the name of the block the spell's owner is looking at (up to a maximum distance of 10
+     * meters).
+     * 
+     * <code>
+     * maxDistance = 10
+     * hit = spell.owner:scanView( maxDistance)
+     * if hit then
+     *   spell.pos = hit.pos
+     *   print(spell.owner.name.." is looking at "..spell.block.name)
+     * end
+     * </code>
      */
     @LuaFunction
     public RayTraceResult scanView(float distance) {

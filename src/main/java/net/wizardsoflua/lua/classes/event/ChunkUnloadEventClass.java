@@ -18,6 +18,16 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 /**
  * The <span class="notranslate">ChunkUnloadEvent</span> occurs when a world chunk is unloaded from
  * the server's memory.
+ * 
+ * #### Example
+ * 
+ * Printing all <tt>ChunkUnloadEvent</tt>s when they occur.
+ * 
+ * <code>
+ * Events.on('ChunkUnloadEvent'):call(function(event)
+ *  print(string.format("Unloaded world chunk at %s,%s", event.chunkX, event.chunkZ))
+ * end)
+ * </code>
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = ChunkUnloadEventClass.NAME, superClass = ChunkEventClass.class)

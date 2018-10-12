@@ -88,7 +88,8 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     }
 
     /**
-     * The difficulty defines how difficult it is for the players to live in this world.
+     * The difficulty defines how difficult it is for the players to live in this world. This is one
+     * of PEACEFUL, EASY, NORMAL, HARD.
      */
     @LuaProperty
     public EnumDifficulty getDifficulty() {
@@ -104,7 +105,6 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
      * The 'canSeeSky' function returns true if the sky is visible from the given position when
      * looking straight up.
      *
-     * @param pos
      */
     @LuaFunction
     public boolean canSeeSky(Vec3d pos) {

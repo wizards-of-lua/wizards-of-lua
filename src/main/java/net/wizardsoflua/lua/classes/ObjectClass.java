@@ -10,6 +10,10 @@ import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 
+/**
+ * The <span class="notranslate">Object</span> is the common base class of all classes provided by
+ * the WoL API.
+ */
 @AutoService(SpellExtension.class)
 @GenerateLuaDoc(name = ObjectClass.NAME, type = "class")
 public class ObjectClass extends LuaClass {

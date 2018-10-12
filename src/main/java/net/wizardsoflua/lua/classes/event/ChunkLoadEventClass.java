@@ -18,6 +18,16 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 /**
  * The <span class="notranslate">ChunkLoadEvent</span> occurs when a world chunk is loaded into the
  * server's memory.
+ * 
+ * #### Example
+ * 
+ * Printing all <tt>ChunkLoadEvent</tt>s when they occur.
+ * 
+ * <code>
+ * Events.on('ChunkLoadEvent'):call(function(event)
+ *  print(string.format("Loaded world chunk at %s,%s", event.chunkX, event.chunkZ))
+ * end)
+ * </code>
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = ChunkLoadEventClass.NAME, superClass = ChunkEventClass.class)
