@@ -21,27 +21,19 @@ public class SpellEntity extends VirtualEntity {
   private ICommandSender owner;
   private SpellProgram program;
   private long sid; // immutable spell id
-  private ServerOnlyEntityChunkLoaderTicketSupport chunkLoaderTicketSupport;
+  
   private boolean visible = false;
   private Table data = new DefaultTable();
 
-  public SpellEntity(World world) {
-    // Used by MC when loading this entity from persistent data
-    super(checkNotNull(world, "world==null!"));
-  }
-
   public SpellEntity(World world, ICommandSender owner, SpellProgram program,
       PositionAndRotation posRot, long sid) {
-    this(world);
+    super(checkNotNull(world, "world==null!"), posRot.getPos());
     this.owner = checkNotNull(owner, "owner==null!");
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
     setPositionAndRotation(posRot);
     String name = SpellEntity.NAME + "-" + sid;
     setName(name);
-    chunkLoaderTicketSupport =
-        new ServerOnlyEntityChunkLoaderTicketSupport(WizardsOfLua.instance, this);
-    chunkLoaderTicketSupport.request();
   }
 
   // @Override
@@ -98,23 +90,6 @@ public class SpellEntity extends VirtualEntity {
     return (Table) viewer.getView(data, provider);
   }
 
-  // @Override
-  // protected void readEntityFromNBT(NBTTagCompound compound) {}
-  //
-  // @Override
-  // protected void writeEntityToNBT(NBTTagCompound compound) {}
-  //
-  // @Override
-  // protected void entityInit() {}
-
-  @Override
-  public void setPosition(double x, double y, double z) {
-    if (chunkLoaderTicketSupport != null) {
-      chunkLoaderTicketSupport.updatePosition();
-    }
-    super.setPosition(x, y, z);
-  }
-
   @Override
   public void onUpdate() {
     super.onUpdate();
@@ -130,14 +105,7 @@ public class SpellEntity extends VirtualEntity {
     if (visible) {
       SpellAuraFX.spawnParticle(this);
     }
-    // applyMotion();
   }
-
-  // private void applyMotion() {
-  // if (motionX != 0 || motionY != 0 || motionZ != 0) {
-  // setPosition(posX + motionX, posY + motionY, posZ + motionZ);
-  // }
-  // }
 
   @Override
   public void setDead() {
@@ -145,10 +113,7 @@ public class SpellEntity extends VirtualEntity {
     super.setDead();
     if (program != null) {
       program.terminate();
-    }
-    if (chunkLoaderTicketSupport != null) {
-      chunkLoaderTicketSupport.release();
-    }
+    }    
     MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
 

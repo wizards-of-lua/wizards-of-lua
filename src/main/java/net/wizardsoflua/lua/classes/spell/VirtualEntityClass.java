@@ -89,6 +89,37 @@ public final class VirtualEntityClass
     }
 
     /**
+     * The 'forceChunk' property specifies whether the current world chunk that contains this entity
+     * should always stay loaded in the server's memory even when there is no player close to it.
+     * Default is true.
+     * 
+     * Please note that Minecraft Forge has an upper limit for the number of 'chunk loading tickets'
+     * that can be requested per Minecraft mod. By default this value is set to 200, which means
+     * that effectively a maximum number of 200 spells can exist concurrently with 'forceChunk' set
+     * to true. However, this value can be configured by setting the attribute
+     * <tt>defaults.maximumTicketCount</tt> in the file <tt>config/forgeChunkLoading.cfg</tt>.
+     * 
+     * If 'forceChunk' is set to false and there is no player close to the current world chunk, then
+     * this chunk will become unloaded eventually and stored to the disk. This means that entities
+     * that are inside this chunk will not take part in the update cycle anymore and neither can be
+     * found with [Entities.find()](/modules/Entities#find). Please also note that you can't summon
+     * any entities inside an unloaded chunk.
+     * 
+     * However, even when the world chunk has been unloaded, this virtual entity itself will always
+     * stay active. It will always take part in the update cycle and handle events. Additionally, if
+     * this entity accesses a block of an unloaded chunk, that chunk will get loaded.
+     */
+    @LuaProperty
+    public boolean isForceChunk() {
+      return delegate.isForceChunk();
+    }
+
+    @LuaProperty
+    public void setForceChunk(boolean value) {
+      delegate.setForceChunk(value);
+    }
+
+    /**
      * The 'facing' is the compass direction this entity is facing. This is one of 'north', 'east',
      * 'south', and 'west'.
      */
@@ -164,22 +195,6 @@ public final class VirtualEntityClass
       delegate.setName(name);
     }
 
-    // /**
-    // * The 'nbt' value (short for Named Binary Tag) is a table of entity-specifc key-value pairs
-    // also
-    // * called [data tags](https://minecraft.gamepedia.com/Commands#Data_tags). The nbt property is
-    // * readonly but gives you a modifiable copy of the internal value. You can change the
-    // contents,
-    // * but to activate them you have to assign the modified table to the entity by using the
-    // * [putNbt()](/modules/Entity/#putNbt) function.
-    // */
-    // @LuaProperty(type = "table")
-    // public NBTTagCompound getNbt() {
-    // NBTTagCompound nbt = new NBTTagCompound();
-    // delegate.writeToNBT(nbt);
-    // return nbt;
-    // }
-
     /**
      * The 'pos' is short for 'position'. It is a 3-dimensional vector containing the location of
      * the entity inside the world it is living in.
@@ -207,8 +222,6 @@ public final class VirtualEntityClass
     @LuaProperty
     public void setRotationPitch(float rotationPitch) {
       delegate.setRotationPitch(rotationPitch);
-      // delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ,
-      // delegate.rotationYaw, rotationPitch);
     }
 
     /**
@@ -217,33 +230,17 @@ public final class VirtualEntityClass
      */
     @LuaProperty
     public float getRotationYaw() {
-      // return MathHelper.wrapDegrees(delegate.rotationYaw);
       return delegate.getRotationYaw();
     }
 
     @LuaProperty
     public void setRotationYaw(float rotationYaw) {
-      // delegate.setRotationYawHead(rotationYaw);
-      // delegate.setRenderYawOffset(rotationYaw);
-      // delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, rotationYaw,
-      // delegate.rotationPitch);
       delegate.setRotationYaw(rotationYaw);
     }
 
     protected void setRotationYawAndPitch(float yaw, float pitch) {
-      // delegate.setRotationYawHead(yaw);
-      // delegate.setRenderYawOffset(yaw);
-      // delegate.setPositionAndRotation(delegate.posX, delegate.posY, delegate.posZ, yaw, pitch);
       delegate.setRotationYawAndPitch(yaw, pitch);
     }
-
-    // /**
-    // * This is true, if this entity is currently sneaking, false otherwise.
-    // */
-    // @LuaProperty
-    // public boolean isSneaking() {
-    // return delegate.isSneaking();
-    // }
 
     /**
      * The 'tags' value is a list of strings that have been assigned to this entity.
@@ -314,7 +311,7 @@ public final class VirtualEntityClass
      * is taken as default distance. Valid direction values are absolute directions ('up', 'down',
      * 'north', 'east', 'south', and 'west'), as well as relative directions ('forward', 'back',
      * 'left', and 'right'). Relative directions are interpreted relative to the direction the
-     * entity is [facing](/modules/Entity/#facing).
+     * entity is [facing](/modules/VirtualEntity/#facing).
      */
     @LuaFunction
     public void move(String directionName, @Nullable Double distance) {
@@ -328,18 +325,6 @@ public final class VirtualEntityClass
 
       delegate.setPosition(newVec);
     }
-
-    // /**
-    // * The 'putNbt' function inserts the given table entries into the [nbt](/modules/Entity/#nbt)
-    // * property of this entity. Please note that this function is not supported for
-    // * [Player](/modules/Player/) objects.
-    // */
-    // @LuaFunction
-    // public void putNbt(Table nbt) {
-    // NBTTagCompound oldNbt = delegate.serializeNBT();
-    // NBTTagCompound newNbt = getConverters().getNbtConverter().merge(oldNbt, nbt);
-    // delegate.readFromNBT(newNbt);
-    // }
 
     /**
      * The 'removeTag' function removes the given tag from the set of [tags](/modules/Entity/#tags)

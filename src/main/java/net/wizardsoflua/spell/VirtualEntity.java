@@ -18,39 +18,54 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.block.ItemUtil;
 
 public class VirtualEntity implements ICommandSender {
 
-  private World world;
-  private MinecraftServer server;
+  private final World world;
+  private final MinecraftServer server;
+  private final VirtualEntityChunkLoaderSupport chunkLoaderSupport;
 
   private UUID uuid;
-  private String name;
+  private boolean alive;
 
   protected double posX;
   protected double posY;
   protected double posZ;
 
+  private String name;
+
   protected double motionX;
   protected double motionY;
   protected double motionZ;
-
   protected float rotationYaw;
   protected float rotationPitch;
-
-  private boolean alive;
-  private int dimension;
-
   private int age;
-
   private final Set<String> tags = new HashSet<>();
 
-  public VirtualEntity(World world) {
-    this.world = world;
-    server = world.getMinecraftServer();
-    this.uuid = UUID.randomUUID();
+  public VirtualEntity(World aWorld, Vec3d position) {
+    world = aWorld;
+    server = aWorld.getMinecraftServer();
+    posX = position.x;
+    posY = position.y;
+    posZ = position.z;
+    chunkLoaderSupport = new VirtualEntityChunkLoaderSupport(WizardsOfLua.instance, this);
+    uuid = UUID.randomUUID();
     alive = true;
+    setForceChunk(true);
+  }
+
+  public void setForceChunk(boolean value) {
+    if (value) {
+      chunkLoaderSupport.requestNewTicket();
+    } else {
+      chunkLoaderSupport.releaseTicket();
+    }
+  }
+
+  public boolean isForceChunk() {
+    return chunkLoaderSupport.hasTicket();
   }
 
   public UUID getUniqueID() {
@@ -72,7 +87,7 @@ public class VirtualEntity implements ICommandSender {
 
   public void setDead() {
     alive = false;
-    // FIXME remove from tick listener
+    chunkLoaderSupport.releaseTicket();
   }
 
   public boolean isAlive() {
@@ -80,7 +95,7 @@ public class VirtualEntity implements ICommandSender {
   }
 
   public int getDimension() {
-    return dimension;
+    return world.provider.getDimension();
   }
 
   public EnumFacing getFacing() {
@@ -128,6 +143,7 @@ public class VirtualEntity implements ICommandSender {
     posX = x;
     posY = y;
     posZ = z;
+    chunkLoaderSupport.updatePosition();
   }
 
   public void setPosition(Vec3d pos) {

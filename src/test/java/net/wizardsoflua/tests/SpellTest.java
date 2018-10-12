@@ -217,4 +217,32 @@ public class SpellTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("Gotcha");
   }
 
+  // /test net.wizardsoflua.tests.SpellTest test_spell_forceChunk_is_true_by_default
+  @Test
+  public void test_spell_forceChunk_is_false_by_default() throws Exception {
+    // Given:
+    String expected = "true";
+
+    // When:
+    mc().player().chat("/lua print(spell.forceChunk)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.SpellTest test_spell_forceChunk_is_writable
+  @Test
+  public void test_spell_forceChunk_is_writable() throws Exception {
+    // Given:
+    String expected = "false";
+
+    // When:
+    mc().player().chat("/lua spell.forceChunk=false; print(spell.forceChunk)");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
 }

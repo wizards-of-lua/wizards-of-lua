@@ -5,16 +5,14 @@ import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 /**
- * The {@link ServerOnlyEntityChunkLoaderTicketSupport} ensures that the chunk at the server-only
- * entity's position will stay loaded all the time.
- *
+ * The {@link VirtualEntityChunkLoaderSupport} ensures that the chunk at the {@link VirtualEntity}'s
+ * position will stay loaded continuously.
  */
-public class ServerOnlyEntityChunkLoaderTicketSupport {
+public class VirtualEntityChunkLoaderSupport {
 
   public static void enableTicketSupport(Object mod) {
     ForgeChunkManager.setForcedChunkLoadingCallback(mod,
@@ -34,12 +32,18 @@ public class ServerOnlyEntityChunkLoaderTicketSupport {
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
 
-  public ServerOnlyEntityChunkLoaderTicketSupport(Object mod, VirtualEntity entity) {
+  public VirtualEntityChunkLoaderSupport(Object mod, VirtualEntity entity) {
     this.mod = mod;
     this.entity = entity;
+    this.chunkPos = new ChunkPos(entity.getPosition());
+    loadChunk(chunkPos);
+    loadChunkProximity(chunkPos);
   }
 
-  public void request() {
+  public void requestNewTicket() {
+    if (hasTicket()) {
+      releaseTicket();
+    }
     chunkPos = new ChunkPos(entity.getPosition());
     chunkLoaderTicket = ForgeChunkManager.requestTicket(mod, entity.getEntityWorld(),
         ForgeChunkManager.Type.NORMAL);
@@ -50,8 +54,12 @@ public class ServerOnlyEntityChunkLoaderTicketSupport {
     ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
   }
 
-  public void release() {
-    if (chunkLoaderTicket != null) {
+  public boolean hasTicket() {
+    return chunkLoaderTicket != null;
+  }
+
+  public void releaseTicket() {
+    if (hasTicket()) {
       try {
         ForgeChunkManager.releaseTicket(chunkLoaderTicket);
       } catch (Throwable e) {
@@ -61,17 +69,19 @@ public class ServerOnlyEntityChunkLoaderTicketSupport {
     }
   }
 
-  /**
-   * Updates the ChunkManager with the entity's current position
-   */
   public void updatePosition() {
-    if (chunkLoaderTicket != null) {
-      BlockPos pos = entity.getPosition();
-      if (!isInside(chunkPos, pos)) {
+    BlockPos pos = entity.getPosition();
+    // TODO probably better use "contains" instead of "isInside"
+    if (!isInside(chunkPos, pos)) {
+      if (chunkLoaderTicket != null) {
         ForgeChunkManager.unforceChunk(chunkLoaderTicket, chunkPos);
         chunkPos = new ChunkPos(pos);
         loadChunkProximity(chunkPos);
         ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
+      } else {
+        chunkPos = new ChunkPos(pos);
+        loadChunk(chunkPos);
+        loadChunkProximity(chunkPos);
       }
     }
   }
@@ -87,6 +97,20 @@ public class ServerOnlyEntityChunkLoaderTicketSupport {
   }
 
   /**
+   * The 'contains' function calculates whether the block with the given BlockPos is part of the
+   * world chunk with the given ChunkPos.
+   */
+  private boolean contains(ChunkPos cPos, BlockPos blockPos) {
+    int chunkX = blockPos.getX() >> 4;
+    int chunkZ = blockPos.getZ() >> 4;
+    return cPos.x == chunkX && cPos.z == chunkZ;
+  }
+
+  private void loadChunk(ChunkPos chunkPos) {
+    entity.getEntityWorld().getChunkFromChunkCoords(chunkPos.x, chunkPos.z);
+  }
+
+  /**
    * This loads the neighborhood of the chunk at the given position. This ensures that the
    * decoration elements of the world generation process are added to the chunk in the center.
    *
@@ -94,22 +118,13 @@ public class ServerOnlyEntityChunkLoaderTicketSupport {
    * @see https://www.reddit.com/r/feedthebeast/comments/5x0twz/investigating_extreme_worldgen_lag/
    */
   private void loadChunkProximity(ChunkPos center) {
-    IChunkProvider p = entity.getEntityWorld().getChunkProvider();
-    loadChunk(p, new ChunkPos(center.x + 1, center.z + 1));
-    loadChunk(p, new ChunkPos(center.x + 1, center.z));
-    loadChunk(p, new ChunkPos(center.x, center.z + 1));
-    loadChunk(p, new ChunkPos(center.x - 1, center.z + 1));
-    loadChunk(p, new ChunkPos(center.x + 1, center.z - 1));
-    loadChunk(p, new ChunkPos(center.x, center.z - 1));
-    loadChunk(p, new ChunkPos(center.x - 1, center.z - 1));
-    loadChunk(p, new ChunkPos(center.x - 1, center.z));
-  }
-
-  private void loadChunk(IChunkProvider p, ChunkPos pos) {
-    int x = chunkPos.x;
-    int z = chunkPos.z;
-    if (p.getLoadedChunk(x, z) == null) {
-      p.provideChunk(x, z);
+    for (int x = -1; x <= 1; ++x) {
+      for (int z = -1; z <= 1; ++z) {
+        if (!(x == 0 && z == 0)) {
+          entity.getEntityWorld().getChunkFromChunkCoords(center.x + x, center.z + z);
+        }
+      }
     }
   }
+
 }
