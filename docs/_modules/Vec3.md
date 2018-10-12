@@ -74,6 +74,19 @@ functions:
     "
     examples:
       - url: Vec3/normalize.md
+  - name: chunk
+    parameters:
+    results: number, number
+    description: |
+        The 'chunk' function interprets this vector as world coordinate, converts them into chunk coordinates, and returns them as a multi-value result.
+
+        #### Example
+
+        Converting the spell's world coordinates into chunk coordinates.
+
+        ```lua
+        local chunkX, chunkZ = spell.pos:chunk()
+        ```
 ---
 
 An instance of the <span class="notranslate">Vec3</span> class represents a '3-dimensional Vector'.
