@@ -2,7 +2,7 @@ package net.wizardsoflua.lua.module.print;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
+import java.nio.charset.Charset;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.LuaFunction;
@@ -29,7 +29,7 @@ public class PrintRedirector {
   private class ChatOutputStream extends org.apache.commons.io.output.ByteArrayOutputStream {
     @Override
     public void flush() throws IOException {
-      String message = toString();
+      String message = toString(Charset.defaultCharset());
       // Remove trailing line-feed.
       if (message.endsWith("\n")) {
         message = message.substring(0, message.length() - 1);
