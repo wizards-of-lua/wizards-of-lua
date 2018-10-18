@@ -2,9 +2,8 @@ package net.wizardsoflua.lua.module.searcher;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URL;
-
+import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
-
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.impl.NonsuspendableFunctionException;
@@ -75,7 +74,7 @@ public class ClasspathResourceSearcher {
         }
         LuaFunctionBinary fnBin = cache.get(resource);
         if (fnBin == null) {
-          String src = IOUtils.toString(resource);
+          String src = IOUtils.toString(resource, Charset.defaultCharset());
           fnBin = loader.compile(moduleName, src);
           cache.put(resource, fnBin);
         }
