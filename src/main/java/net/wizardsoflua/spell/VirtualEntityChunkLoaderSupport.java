@@ -96,16 +96,6 @@ public class VirtualEntityChunkLoaderSupport {
     return result;
   }
 
-  /**
-   * The 'contains' function calculates whether the block with the given BlockPos is part of the
-   * world chunk with the given ChunkPos.
-   */
-  private boolean contains(ChunkPos cPos, BlockPos blockPos) {
-    int chunkX = blockPos.getX() >> 4;
-    int chunkZ = blockPos.getZ() >> 4;
-    return cPos.x == chunkX && cPos.z == chunkZ;
-  }
-
   private void loadChunk(ChunkPos chunkPos) {
     entity.getEntityWorld().getChunkFromChunkCoords(chunkPos.x, chunkPos.z);
   }
