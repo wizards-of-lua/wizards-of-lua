@@ -1,9 +1,6 @@
 package net.wizardsoflua.testenv.net;
 
 import java.io.IOException;
-
-import com.google.common.base.Throwables;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -39,7 +36,7 @@ public abstract class AbstractMessage implements IMessage {
     try {
       read(new PacketBuffer(buffer));
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -48,7 +45,7 @@ public abstract class AbstractMessage implements IMessage {
     try {
       write(new PacketBuffer(buffer));
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
