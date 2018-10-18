@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -43,7 +42,7 @@ public class WolLuaTicksLimitTest extends WolTestBase {
     mc().executeCommand("/wol luaTicksLimit set 5555");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    mc().waitFor(ServerLog4jEvent.class);
     assertThat(mc().getLuaTicksLimit()).isEqualTo(5555);
   }
 
