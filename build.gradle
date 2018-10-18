@@ -72,6 +72,7 @@ ext.libs = [
   guava:                'com.google.guava:guava:21.0',
   javapoet:             'com.squareup:javapoet:1.10.0',
   javax_inject:         'javax.inject:javax.inject:1',
+  jlhttp:               'net.freeutils:jlhttp:2.4',
   jsr305:               'com.google.code.findbugs:jsr305:3.0.1',
   junit:                'junit:junit:4.12',
   rembulan_compiler:    'net.sandius.rembulan:rembulan-compiler:0.2-SNAPSHOT',
@@ -93,6 +94,7 @@ dependencies {
   compileOnly libs.auto_service
 
   embed project(':extension-api')
+  embed libs.jlhttp
   embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
   embed libs.rembulan_stdlib
 

@@ -1,15 +1,12 @@
 package net.wizardsoflua.rest;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,21 +26,17 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
@@ -94,19 +87,11 @@ public class WolRestApiServer {
 
     logger.info("[REST] REST service will cache static files at " + contextRoot.getAbsolutePath());
 
-    server = new HTTPServer(port) {
-      protected ServerSocket createServerSocket() throws IOException {
-        ServerSocketFactory factory =
-            this.secure ? createSSLServerSocketFactory(keystore, keystorePassword, keyPassword)
-                : ServerSocketFactory.getDefault();
-        ServerSocket serv = factory.createServerSocket();
-        serv.setReuseAddress(true);
-        serv.bind(new InetSocketAddress(port));
-        return serv;
-      }
-    };
-    server.setSecure(secure);
-    
+    server = new HTTPServer(port);
+    server.setServerSocketFactory(
+        secure ? createSSLServerSocketFactory(keystore, keystorePassword, keyPassword)
+            : ServerSocketFactory.getDefault());
+
     VirtualHost host = new VirtualHost(hostname);
     server.addVirtualHost(host);
 
@@ -118,7 +103,7 @@ public class WolRestApiServer {
     logger.info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
     server.start();
   }
-  
+
   public void stop() {
     if (server != null) {
       server.stop();
@@ -478,7 +463,7 @@ public class WolRestApiServer {
 
   private void addCookie(Response resp, String key, String value, int maxAge) {
     boolean secure = context.getRestApiConfig().isSecure();
-    String secureFlag = secure?" Secure;":"";
+    String secureFlag = secure ? " Secure;" : "";
     resp.getHeaders().add("Set-Cookie",
         String.format("%s=%s; Max-Age=%s;%s Path=/", key, value, maxAge, secureFlag));
   }
