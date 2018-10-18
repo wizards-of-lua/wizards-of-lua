@@ -4,12 +4,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-
 import net.minecraft.launchwrapper.Launch;
 
 public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
@@ -63,8 +61,8 @@ public class MinecraftJUnitRunner extends BlockJUnit4ClassRunner {
     try {
       // MinecraftStarter.start();
       Class<?> cls = Class.forName("net.wizardsoflua.testenv.MinecraftStarter");
-      Method start = cls.getMethod("start", null);
-      start.invoke(null, null);
+      Method start = cls.getMethod("start");
+      start.invoke(null);
     } catch (Throwable e) {
       throw new UndeclaredThrowableException(e);
     }
