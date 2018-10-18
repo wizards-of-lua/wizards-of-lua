@@ -1,20 +1,16 @@
 package net.wizardsoflua.testenv.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Optional.ofNullable;
 import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
 import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
 import static net.minecraft.item.ItemStack.EMPTY;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import javax.annotation.Nullable;
-
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
@@ -138,7 +134,7 @@ public class PlayerBackdoor {
     }
     moduleFile.getParentFile().mkdirs();
     try {
-      Files.write(content, moduleFile, Charsets.UTF_8);
+      Files.asCharSink(moduleFile, UTF_8).write(content);
     } catch (IOException e) {
       throw new UndeclaredThrowableException(e);
     }
