@@ -1,7 +1,6 @@
 package net.wizardsoflua.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,7 +10,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.view.ViewFactory;
 
@@ -21,7 +19,7 @@ public class SpellEntity extends VirtualEntity {
   private ICommandSender owner;
   private SpellProgram program;
   private long sid; // immutable spell id
-  
+
   private boolean visible = false;
   private Table data = new DefaultTable();
 
@@ -113,7 +111,7 @@ public class SpellEntity extends VirtualEntity {
     super.setDead();
     if (program != null) {
       program.terminate();
-    }    
+    }
     MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
 
