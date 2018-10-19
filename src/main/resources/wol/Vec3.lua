@@ -128,16 +128,8 @@ function Vec3:floor()
   return Vec3( math.floor(self.x), math.floor(self.y), math.floor(self.z))
 end
 
-local function _chunk(a)
-  if a<0 then 
-    return -(math.floor(-a)>>4)-1
-  else 
-    return math.floor(a)>>4
-  end
-end
-
 function Vec3:chunk()
-  return _chunk(self.x), _chunk(self.z)
+  return self.x//16, self.z//16
 end
 
 -- Here is some example code of how you could create a subclass of Vec3

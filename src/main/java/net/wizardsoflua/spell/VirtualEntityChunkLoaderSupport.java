@@ -7,6 +7,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.wizardsoflua.chunk.ChunkUtil;
 
 /**
  * The {@link VirtualEntityChunkLoaderSupport} ensures that the chunk at the {@link VirtualEntity}'s
@@ -71,8 +72,7 @@ public class VirtualEntityChunkLoaderSupport {
 
   public void updatePosition() {
     BlockPos pos = entity.getPosition();
-    // TODO probably better use "contains" instead of "isInside"
-    if (!isInside(chunkPos, pos)) {
+    if (!ChunkUtil.contains(chunkPos, pos)) {
       if (chunkLoaderTicket != null) {
         ForgeChunkManager.unforceChunk(chunkLoaderTicket, chunkPos);
         chunkPos = new ChunkPos(pos);
@@ -84,16 +84,6 @@ public class VirtualEntityChunkLoaderSupport {
         loadChunkProximity(chunkPos);
       }
     }
-  }
-
-  private boolean isInside(ChunkPos cPos, BlockPos pos) {
-    int xmin = cPos.getXStart();
-    int xmax = cPos.getXEnd();
-    int zmin = cPos.getZStart();
-    int zmax = cPos.getZEnd();
-    boolean result =
-        xmin <= pos.getX() && pos.getX() <= xmax && zmin <= pos.getZ() && pos.getZ() <= zmax;
-    return result;
   }
 
   private void loadChunk(ChunkPos chunkPos) {
