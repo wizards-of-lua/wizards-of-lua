@@ -6,6 +6,14 @@ type: class
 extends: Object
 layout: module
 properties:
+  - name: daytime
+    type: 'number (long)'
+    access: r
+    description: |
+        The 'daytime' is the number of game ticks that have passed since the last sunrise. In
+        Mincraft the day runs from sunrise to sunrise and is divided into 24000 game ticks. For
+        example, 0 means sunrise, 6000 noon, 12000 sunset, 18000 midnight, and 23999 is the end of
+        the night.
   - name: difficulty
     type: 'string'
     access: r/w
@@ -30,6 +38,13 @@ properties:
         The spawn point is a certain point in this world where [Players](/module/Player) will spawn
         when they enter the world the first time, or when their personal spawn point is somehow not
         accessible anymore.
+  - name: time
+    type: 'number (long)'
+    access: r/w
+    description: |
+        The 'time' is the number of game ticks that have passed since the world has been created. But
+        in contrast to [Time.gametime](/modules/Time#gametime) this value can be modified by
+        operators using the <tt>/time</tt> command.
 functions:
   - name: canSeeSky
     parameters: pos
