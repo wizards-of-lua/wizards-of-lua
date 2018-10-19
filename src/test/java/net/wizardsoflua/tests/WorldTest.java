@@ -1,5 +1,7 @@
 package net.wizardsoflua.tests;
 
+import static java.lang.String.valueOf;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -212,13 +214,62 @@ public class WorldTest extends WolTestBase {
   public void test_world_isGeneratedAt_returns_false_far_away() {
     // Given:
     String expected = "false";
-     
+
     // When:
-    mc().player()
-        .chat("/lua v=spell.pos+Vec3(9999999,0,9999999); w=spell.world; b=w:isLoadedAt(v); print(b)");
+    mc().player().chat(
+        "/lua v=spell.pos+Vec3(9999999,0,9999999); w=spell.world; b=w:isLoadedAt(v); print(b)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_time_is_readable
+  @Test
+  public void test_time_is_readable() throws Exception {
+    // Given:
+    mc().setDoDaylightCycle(false);
+    long expected = 1999;
+    mc().setWorldTime(expected);
+
+    // When:
+    mc().executeCommand("/lua print(spell.world.time)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(valueOf(expected));
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_time_is_writable
+  @Test
+  public void test_time_is_writable() throws Exception {
+    // Given:
+    mc().setDoDaylightCycle(false);
+    long expected = 2929;
+
+    // When:
+    mc().executeCommand("/lua spell.world.time=%s; print('ok')", expected);
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+
+    // Then:
+    long actual = mc().getWorldtime();
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.WorldTest test_daytime_is_readable
+  @Test
+  public void test_daytime_is_readable() throws Exception {
+    // Given:
+    mc().setDoDaylightCycle(false);
+    long expected = 3939;
+    mc().setWorldTime(24000 + expected);
+
+    // When:
+    mc().executeCommand("/lua print(spell.world.daytime)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(valueOf(expected));
   }
 }

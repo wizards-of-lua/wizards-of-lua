@@ -242,6 +242,7 @@ public class SpellProgram {
       public Clock getClock() {
         return context.getClock();
       }
+
     });
     scope.registerResource(MinecraftServer.class, world.getMinecraftServer());
     scope.registerResource(WizardsOfLua.class, WizardsOfLua.instance);

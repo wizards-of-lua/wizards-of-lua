@@ -20,6 +20,8 @@ public class WolTestBase extends TestDataFactory {
   private WolTestEnvironment testEnv = WolTestEnvironment.instance;
   private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
   private boolean wasOperator;
+  private boolean oldDoDaylighCycle;
+  private long oldDayTime;
 
   @Before
   public void beforeTest() throws IOException {
@@ -42,7 +44,9 @@ public class WolTestBase extends TestDataFactory {
     mc().clearLuaFunctionCache();
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
+    oldDoDaylighCycle = mc().isDoDaylighCycle();
     wasOperator = mc().player().isOperator();
+    oldDayTime = mc().getWorldtime();
   }
 
   @After
@@ -51,6 +55,9 @@ public class WolTestBase extends TestDataFactory {
     mc().player().setOperator(wasOperator);
     mc().clearEvents();
     mc().breakAllSpells();
+    mc().setDoDaylightCycle(oldDoDaylighCycle);
+    mc().setWorldTime(oldDayTime);
+    
     mc().resetClock();
   }
 

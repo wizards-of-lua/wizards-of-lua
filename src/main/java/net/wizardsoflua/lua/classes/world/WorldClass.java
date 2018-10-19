@@ -88,6 +88,17 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     }
 
     /**
+     * The 'daytime' is the number of game ticks that have passed since the last sunrise. In
+     * Mincraft the day runs from sunrise to sunrise and is divided into 24000 game ticks. For
+     * example, 0 means sunrise, 6000 noon, 12000 sunset, 18000 midnight, and 23999 is the end of
+     * the night.
+     */
+    @LuaProperty
+    public long getDaytime() {
+      return delegate.getWorldTime() % 24000;
+    }
+
+    /**
      * The difficulty defines how difficult it is for the players to live in this world. This is one
      * of PEACEFUL, EASY, NORMAL, HARD.
      */
@@ -99,6 +110,21 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     @LuaProperty
     public void setDifficulty(EnumDifficulty value) {
       delegate.getWorldInfo().setDifficulty(checkNotNull(value, "value==null!"));
+    }
+
+    /**
+     * The 'time' is the number of game ticks that have passed since the world has been created. But
+     * in contrast to [Time.gametime](/modules/Time#gametime) this value can be modified by
+     * operators using the <tt>/time</tt> command.
+     */
+    @LuaProperty
+    public long getTime() {
+      return delegate.getWorldTime();
+    }
+
+    @LuaProperty
+    public void setTime(long time) {
+      delegate.setWorldTime(time);
     }
 
     /**

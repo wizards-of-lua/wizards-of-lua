@@ -322,4 +322,21 @@ public class MinecraftBackdoor {
     return testEnv;
   }
 
+  public void setDoDaylightCycle(boolean value) {
+    testEnv.getServer().getWorld(0).getGameRules().setOrCreateGameRule("doDaylightCycle",
+        Boolean.valueOf(value).toString());
+  }
+
+  public boolean isDoDaylighCycle() {
+    return testEnv.getServer().getWorld(0).getGameRules().getBoolean("doDaylightCycle");
+  }
+
+  public void setWorldTime(long value) {
+    testEnv.getServer().getEntityWorld().setWorldTime(value);
+  }
+
+  public long getWorldtime() {
+    return testEnv.getServer().getEntityWorld().getWorldTime();
+  }
+
 }
