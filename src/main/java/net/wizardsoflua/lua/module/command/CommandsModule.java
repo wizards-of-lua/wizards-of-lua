@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -24,6 +25,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
+import net.wizardsoflua.reflect.Fields;
 
 /**
  * The <span class="notranslate">Commands</span> module allows the registration of custom commands
@@ -128,6 +130,7 @@ public class CommandsModule extends LuaTableExtension {
     if (usage == null) {
       usage = "/" + name;
     }
+    removeCommand(ch,name);
     ICommand cmd = new CustomCommand(name, luaCode, usage, permissionLevel);
     ch.registerCommand(cmd);
   }
@@ -141,9 +144,17 @@ public class CommandsModule extends LuaTableExtension {
     CommandHandler ch = (CommandHandler) server.getCommandManager();
     ICommand cmd = ch.getCommands().get(name);
     if (cmd instanceof CustomCommand) {
-      ch.getCommands().remove(name);
+      removeCommand(ch, name);
     } else {
       throw new IllegalArgumentException(String.format("Can't deregister command '%s'", name));
+    }
+  }
+
+  private void removeCommand(CommandHandler ch, String name) {
+    ICommand cmd = ch.getCommands().remove(name);
+    if (cmd != null) {
+      Set<ICommand> set = Fields.getCommandSet(ch);
+      set.remove(cmd);
     }
   }
 
