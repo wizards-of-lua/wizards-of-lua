@@ -1,5 +1,6 @@
 ---
 name: System
+title: System
 subtitle: Interacting with the Server's OS
 type: module
 layout: module
@@ -129,7 +130,23 @@ functions:
           error('Could not create directory')
         end
         ```
+  - name: move
+    parameters: path, newPath
+    results: 'boolean'
+    description: |
+        The <span class="notranslate">'move'</span> function moves or renames the file with the given
+        path so that the resulting file is accessible by the given new path. The path is interpreted
+        relative to the server's world folder. This function returns true if the operation was
+        successful.
+
+        #### Example
+
+        Renaming the file "aaa.txt" to "bbb.txt"
+
+        ```lua
+        System.move('aaa.txt','bbb.txt')
+        ```
 ---
 
 The <span class="notranslate">System</span> module provides functions for interacting with the
- server's operating system.
+server's operating system.
