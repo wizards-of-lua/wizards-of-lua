@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -232,6 +233,38 @@ public class SystemModule extends LuaTableExtension {
     Path pathObj = fileSystem.getPath(path);
     try {
       return Files.deleteIfExists(pathObj) && !Files.exists(pathObj);
+    } catch (IOException ex) {
+      throw new LuaRuntimeException(ex);
+    }
+  }
+
+  /**
+   * The <span class="notranslate">'move'</span> function moves or renames the file with the given
+   * path so that the resulting file is accessible by the given new path. The path is interpreted
+   * relative to the server's world folder. This function returns true if the operation was
+   * successful.
+   * 
+   * #### Example
+   * 
+   * Renaming the file "aaa.txt" to "bbb.txt"
+   * 
+   * <code> 
+   * System.move('aaa.txt','bbb.txt')
+   * </code>
+   * 
+   */
+  @LuaFunction
+  public boolean move(String path, String newPath) {
+    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
+    Path pathObj = fileSystem.getPath(path);
+    Path newPathObj = fileSystem.getPath(newPath);
+    boolean isFile = Files.isRegularFile(pathObj);
+    boolean isDir = Files.isDirectory(pathObj);
+    try {
+      Path target = Files.move(pathObj, newPathObj, StandardCopyOption.ATOMIC_MOVE,
+          StandardCopyOption.REPLACE_EXISTING);
+      return Files.exists(target)
+          && (isFile == Files.isRegularFile(target) || isDir == Files.isDirectory(target));
     } catch (IOException ex) {
       throw new LuaRuntimeException(ex);
     }

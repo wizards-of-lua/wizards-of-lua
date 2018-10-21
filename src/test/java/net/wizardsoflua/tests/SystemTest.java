@@ -8,12 +8,14 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class SystemTest extends WolTestBase {
 
-  private static final String SOME_TEST_TXT = "some-test.txt";
+  private static final String SOME_TEST_FILE = "some-test.txt";
+  private static final String SOME_OTHER_TEST_FILE = "some-other-test.txt";
   private static final String SOME_DIR = "some-dir";
 
   @Before
   public void cleanUp() {
-    mc().deleteWorldFile(SOME_TEST_TXT);
+    mc().deleteWorldFile(SOME_TEST_FILE);
+    mc().deleteWorldFile(SOME_OTHER_TEST_FILE);
     mc().deleteWorldFile(SOME_DIR);
   }
 
@@ -21,7 +23,7 @@ public class SystemTest extends WolTestBase {
   @Test
   public void test_delete() {
     // Given:
-    String filename = SOME_TEST_TXT;
+    String filename = SOME_TEST_FILE;
     String content = "some content";
     this.mc().writeWorldFile(filename, content);
 
@@ -53,7 +55,7 @@ public class SystemTest extends WolTestBase {
   @Test
   public void test_isFile() {
     // Given:
-    String filename = SOME_TEST_TXT;
+    String filename = SOME_TEST_FILE;
     String content = "some content";
     this.mc().writeWorldFile(filename, content);
 
@@ -98,5 +100,24 @@ public class SystemTest extends WolTestBase {
     assertThat(act1.getMessage()).isEqualTo("1.txt");
     ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act2.getMessage()).isEqualTo("2.txt");
+  }
+
+  // /test net.wizardsoflua.tests.SystemTest test_move
+  @Test
+  public void test_move() {
+    // Given:
+    String filename1 = SOME_TEST_FILE;
+    String content = "some special content";
+    this.mc().writeWorldFile(filename1, content);
+    String filename2 = SOME_OTHER_TEST_FILE;
+
+    // When:
+    mc().executeCommand("/lua System.move('%s','%s'); print('ok')", filename1, filename2);
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("ok");
+
+    // Then:
+    assertThat(mc().readWorldFile(filename1)).isNull();
+    assertThat(mc().readWorldFile(filename2)).isEqualTo(content);
   }
 }
