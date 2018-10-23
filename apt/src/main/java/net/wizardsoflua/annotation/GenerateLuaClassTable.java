@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 public @interface GenerateLuaClassTable {
   String INSTANCE = "instance";
 
-  Class<?> instance();
+  Class<?> instance() default Void.class;
 }

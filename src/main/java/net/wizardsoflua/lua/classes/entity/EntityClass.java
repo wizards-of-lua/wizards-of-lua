@@ -39,6 +39,8 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.classes.nbt.CompoundNbtClass;
+import net.wizardsoflua.lua.classes.nbt.CompoundNbtTable;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 
 /**
@@ -72,6 +74,8 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     private LuaConverters converters;
     @Inject
     private NbtConverter nbtConverters;
+    @Inject
+    private CompoundNbtClass compoundNbtClass;
 
     public Instance(D delegate, Injector injector) {
       super(delegate);
@@ -209,10 +213,8 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      * the [putNbt()](/modules/Entity/#putNbt) function.
      */
     @LuaProperty
-    public NBTTagCompound getNbt() {
-      NBTTagCompound nbt = new NBTTagCompound();
-      delegate.writeToNBT(nbt);
-      return nbt;
+    public CompoundNbtTable getNbt() {
+      return compoundNbtClass.toLuaInstance(new EntityNbtAccessor(delegate));
     }
 
     /**
