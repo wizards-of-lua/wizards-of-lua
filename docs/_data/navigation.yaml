@@ -1,0 +1,41 @@
+docs_list_title: Navigation
+docs:
+
+- title: Home
+  url: /
+
+- title: News
+  url: /news
+
+- title: Features
+  url: /features
+
+- title: Introduction
+  url: /introduction
+
+- title: Download & Installation
+  url: /installation
+
+- title: Configuration
+  url: /configuration-file
+
+- title: The /lua Command
+  url: /lua-command
+
+- title: The /wol Command
+  url: /wol-command
+
+- title: Spell Book Library
+  url: /spellbooklibrary
+
+- title: Spell Packs
+  url: /spellpacks.html
+
+- title: Examples
+  url: /examples.html
+
+- title: Tutorials
+  url: /tutorials.html
+
+- title: Feedback
+  url: /feedback

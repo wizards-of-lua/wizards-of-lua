@@ -1,0 +1,127 @@
+
+
+      #header nav {
+        max-width: initial;
+      }
+
+      #header nav li.translate {
+        float: right;
+      }
+      #header nav li.translate a {
+        color: transparent; border: none;
+        background: none;
+        box-shadow: none;
+        width: 20px;
+        height: 20px;
+        margin-left: 12px;
+        margin-top: 2px;
+        background-image: url("/images/ic_g_translate_white_128px.png");
+        background-size: 40px;
+        background-repeat: no-repeat;
+      }
+      #header nav li.discord {
+        float: right;
+      }
+      #header nav li.discord a {
+        color: transparent; border: none;
+        background: none;
+        box-shadow: none;
+        width: 20px;
+        height: 20px;
+        margin-left: 3px;
+        margin-top: 2px;
+        background-image: url("/images/discord-logo.png");
+        background-size: 45px;
+        background-repeat: no-repeat;
+      }
+      #header nav li.twitter {
+        float: right;
+      }
+      #header nav li.twitter a {
+        color: transparent; border: none;
+        background: none;
+        box-shadow: none;
+        width: 20px;
+        height: 20px;
+        margin-left: 1px;
+        margin-top: 6px;
+        background-image: url("/images/Twitter_Social_Icon_Rounded_Square_White.png");
+        background-size: 32px;
+        background-repeat: no-repeat;
+      }
+
+      #corner_banner {
+        position: absolute;
+        top: 40px;
+        right: -50px;
+        width: 300px;
+        transform: rotate(30deg);
+        font-family: Arial Black;
+        font-size: 24px;
+        text-align: center;
+        color: yellow;
+        background: red;
+        border: 1px solid yellow;
+      }
+
+      #title img {
+        position: absolute;
+        top: -10px;
+        right: 0;
+      }
+
+      #naviRight {
+        position: fixed;
+        width: 200px;
+        top: 100px;
+        padding: 10px;
+        background: #323232;
+        border: 2px solid #434343;
+        border-radius: 4px;
+        right: 10px;
+      }
+
+      #naviLeft {
+        position: absolute;
+        top: 30px;
+        left: -230px;
+        width: 200px;
+        padding: 0;
+      }
+
+      @media print, screen and (max-width: 1140px) {
+        #naviLeft,
+        #naviRight {
+          position: initial;
+          padding: 0;
+          background: none;
+          border: none;
+          width: auto;
+        }
+        #naviLeft ul,
+        #naviRight ul {
+          padding: 0 0 0 20px;
+          margin: 0 10px 20px;
+        }
+      }
+
+      @media print, screen and (max-width: 760px) {
+        #title img {
+          display: none;
+        }
+      }
+
+      @media print, screen and (max-width: 480px) {
+        section {
+          margin-top: 100px;
+        }
+        nav {
+          display: block;
+        }
+        #header nav li {
+          display: none;
+        }
+        #corner_banner {
+          top: 60px;
+        }
+      }

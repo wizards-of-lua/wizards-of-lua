@@ -1,0 +1,23 @@
+# founding-members:
+MickKay:
+  name: MickKay
+  github: mkarneim
+  fullname: Michael Karneim
+  roles: Lead Developer
+  category: founding-member
+Adrodoc55:
+  name: Adrodoc55
+  github: Adrodoc55
+  roles: Developer
+  category: founding-member
+Bytemage:
+  name: Bytemage
+  github: bytemage
+  roles: Wizard
+  category: founding-member
+MrNickKay:
+  name: MrNickKay
+  github: MrNickKay
+  roles: Apprentice
+  category: founding-member
+# contributors:

@@ -1,0 +1,46 @@
+title: Wizards of Lua
+description: The Art of Spell Crafting
+theme: jekyll-theme-midnight
+encoding: "utf-8"
+show_header: true
+repository: wizards-of-lua/webpage
+github:
+  project_url: https://github.com/wizards-of-lua/wizards-of-lua
+show_dir_listing: false
+google_translate: true
+discord_url: https://discord.gg/9En5Drt
+twitter_url: https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw
+defaults:
+  - scope:
+      path: "images"
+    values:
+      image: true
+  - scope:
+      type: modules
+    values:
+      layout: module
+  - scope:
+      type: tutorials
+    values:
+      layout: tutorial
+  - scope:
+      type: examples
+    values:
+      layout: example
+  - scope:
+      type: spellpacks
+    values:
+      layout: spellpack
+collections:
+  modules:
+    output: true
+    permalink: /modules/:path/
+  tutorials:
+    output: true
+    permalink: /tutorials/:path/
+  examples:
+    output: true
+    permalink: /examples/:path/
+  spellpacks:
+    output: true
+    permalink: /spellpacks/:path/
