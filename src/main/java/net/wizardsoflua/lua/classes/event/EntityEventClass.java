@@ -2,8 +2,8 @@ package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraft.entity.Entity;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -18,16 +18,16 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
- * The <span class="notranslate">LivingEvent</span> is the base class of events about living
- * entities.
+ * The <span class="notranslate">EntityEvent</span> is the base class of events about an entity.
+ *
  */
 @AutoService(LuaConverter.class)
-@LuaClassAttributes(name = LivingEventClass.NAME, superClass = EntityEventClass.class)
-@GenerateLuaClassTable(instance = LivingEventClass.Instance.class)
+@LuaClassAttributes(name = EntityEventClass.NAME, superClass = EventClass.class)
+@GenerateLuaClassTable(instance = EntityEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class LivingEventClass
-    extends BasicLuaClass<LivingEvent, LivingEventClass.Instance<LivingEvent>> {
-  public static final String NAME = "LivingEvent";
+public final class EntityEventClass
+    extends BasicLuaClass<EntityEvent, EntityEventClass.Instance<EntityEvent>> {
+  public static final String NAME = "EntityEvent";
   @Resource
   private LuaConverters converters;
   @Resource
@@ -35,17 +35,17 @@ public final class LivingEventClass
 
   @Override
   protected Table createRawTable() {
-    return new LivingEventClassTable<>(this, converters);
+    return new EntityEventClassTable<>(this, converters);
   }
 
   @Override
-  protected Delegator<Instance<LivingEvent>> toLuaInstance(LivingEvent javaInstance) {
-    return new LivingEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
+  protected Delegator<Instance<EntityEvent>> toLuaInstance(EntityEvent javaInstance) {
+    return new EntityEventClassInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
         getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
-  public static class Instance<D extends LivingEvent> extends EntityEventClass.Instance<D> {
+  public static class Instance<D extends EntityEvent> extends EventClass.Instance<D> {
     public Instance(D delegate, String name, Injector injector) {
       super(delegate, name, injector);
     }
@@ -54,9 +54,8 @@ public final class LivingEventClass
      * The entity that this event is about.
      */
     @LuaProperty
-    @Override
-    public EntityLivingBase getEntity() {
-      return delegate.getEntityLiving();
+    public Entity getEntity() {
+      return delegate.getEntity();
     }
   }
 }

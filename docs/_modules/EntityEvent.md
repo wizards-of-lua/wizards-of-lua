@@ -1,9 +1,9 @@
 ---
-name: LivingEvent
-title: LivingEvent
+name: EntityEvent
+title: EntityEvent
 subtitle:
 type: event
-extends: EntityEvent
+extends: Event
 layout: module
 properties:
   - name: entity
@@ -14,5 +14,4 @@ properties:
 functions:
 ---
 
-The <span class="notranslate">LivingEvent</span> is the base class of events about living
-entities.
+The <span class="notranslate">EntityEvent</span> is the base class of events about an entity.
