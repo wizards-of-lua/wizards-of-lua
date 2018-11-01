@@ -35,7 +35,7 @@ public class EntityNbtTest extends WolTestBase {
   @Test
   public void test_nbt_Pos_is_writable() throws Exception {
     // Given:
-    String expected = "{5.5, 6, 3.7}";
+    String expected = "{ 5.5, 6.0, 3.7 }";
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
 

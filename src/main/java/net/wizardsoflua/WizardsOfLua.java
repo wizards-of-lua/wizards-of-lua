@@ -2,7 +2,6 @@ package net.wizardsoflua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -11,13 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -105,6 +100,7 @@ public class WizardsOfLua {
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) throws Exception {
     logger = event.getModLog();
+    rootScope.registerResource(Logger.class, logger);
     ExtensionLoader.initialize(logger);
     tempDir = Files.createTempDirectory("wizards-of-lua");
     config = WolConfig.create(event, CONFIG_NAME);

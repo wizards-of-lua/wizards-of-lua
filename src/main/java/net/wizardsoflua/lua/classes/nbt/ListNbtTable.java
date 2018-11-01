@@ -7,9 +7,9 @@ import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
-import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
 
 public class ListNbtTable extends NbtTable<NBTTagList> {
@@ -19,12 +19,9 @@ public class ListNbtTable extends NbtTable<NBTTagList> {
 
   @Override
   protected @Nullable NBTBase getChild(NBTTagList parent, Object key) {
-    Long index = Conversions.integerValueOf(key);
-    if (index != null && index.intValue() == index.longValue()) {
-      int luaIndex = index.intValue();
-      if (1 <= luaIndex && luaIndex <= parent.tagCount()) {
-        return parent.get(luaIndex - 1);
-      }
+    Integer luaIndex = Converters.integerValueOf(key);
+    if (luaIndex != null && 1 <= luaIndex && luaIndex <= parent.tagCount()) {
+      return parent.get(luaIndex - 1);
     }
     return null;
   }

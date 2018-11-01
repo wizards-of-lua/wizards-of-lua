@@ -3,24 +3,28 @@ package net.wizardsoflua.lua.nbt;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.Set;
 import javax.annotation.Nullable;
-
+import org.apache.logging.log4j.Logger;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagEnd;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
@@ -30,17 +34,78 @@ import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.SpellScoped;
+import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaTypes;
+import net.wizardsoflua.lua.extension.ServiceLoader;
+import net.wizardsoflua.lua.nbt.factory.NbtFactory;
 import net.wizardsoflua.lua.table.TableIterable;
 
 @SpellScoped
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
+  @Resource
+  private Logger logger;
+  @Resource
+  private Injector injector;
   private final LuaTypes types;
+  private @Nullable ImmutableMap<Class<? extends NBTBase>, NbtFactory<?, ?>> factories;
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
 
   public NbtConverter(@Resource LuaTypes types) {
     this.types = requireNonNull(types, "types == null!");
+  }
+
+  public ImmutableMap<Class<? extends NBTBase>, NbtFactory<?, ?>> getFactories() {
+    if (factories == null) {
+      Class<NbtFactory<?, ?>> cls = NbtFactory.getClassWithWildcards();
+      Set<Class<? extends NbtFactory<?, ?>>> load = ServiceLoader.load(logger, cls);
+      Iterable<NbtFactory<?, ?>> factories = Iterables.transform(load, injector::getInstance);
+      this.factories = Maps.uniqueIndex(factories, NbtFactory::getNbtClass);
+    }
+    return factories;
+  }
+
+  public <NBT> NbtFactory<NBTBase, ?> getFactory(Class<NBT> nbtClass) {
+    @SuppressWarnings("unchecked")
+    NbtFactory<NBTBase, ?> result = (NbtFactory<NBTBase, ?>) getFactories().get(nbtClass);
+    checkArgument(result != null, "Unknown NBT " + nbtClass);
+    return result;
+  }
+
+  /**
+   * @see NBTBase#getTagTypeName(int)
+   */
+  public static Class<? extends NBTBase> getNbtClassById(int id) {
+    switch (id) {
+      case 0:
+        return NBTTagEnd.class;
+      case 1:
+        return NBTTagByte.class;
+      case 2:
+        return NBTTagShort.class;
+      case 3:
+        return NBTTagInt.class;
+      case 4:
+        return NBTTagLong.class;
+      case 5:
+        return NBTTagFloat.class;
+      case 6:
+        return NBTTagDouble.class;
+      case 7:
+        return NBTTagByteArray.class;
+      case 8:
+        return NBTTagString.class;
+      case 9:
+        return NBTTagList.class;
+      case 10:
+        return NBTTagCompound.class;
+      case 11:
+        return NBTTagIntArray.class;
+      case 12:
+        return NBTTagLongArray.class;
+      default:
+        throw new IllegalArgumentException("Unknown NBT id " + id);
+    }
   }
 
   private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
@@ -197,7 +262,7 @@ public class NbtConverter {
     }
     return result;
   }
-  
+
   public static Table toLua(NBTTagByteArray nbt) {
     checkNotNull(nbt, "nbt == null!");
     Table result = new DefaultTable();
@@ -208,6 +273,17 @@ public class NbtConverter {
       result.rawset(key, value);
     }
     return result;
+  }
+
+  public NBTBase toNbt(Object value, @Nullable NBTBase previousValue) {
+    if (previousValue != null) {
+      NbtFactory<NBTBase, ?> factory = getFactory(previousValue.getClass());
+      NBTBase nbt = factory.tryCreate(value, previousValue);
+      if (nbt != null) {
+        return nbt;
+      }
+    }
+    return toNbt(value);
   }
 
   public NBTBase toNbt(Object data) {

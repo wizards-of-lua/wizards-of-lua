@@ -1,14 +1,11 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import static java.util.Objects.requireNonNull;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -19,7 +16,6 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
 import net.wizardsoflua.lua.nbt.accessor.NbtChildAccessor;
-import net.wizardsoflua.lua.nbt.factory.NbtFactory;
 
 public abstract class NbtTable<NBT extends NBTBase> extends Table {
   @Resource
@@ -70,20 +66,9 @@ public abstract class NbtTable<NBT extends NBTBase> extends Table {
   public void rawset(Object key, Object value) {
     accessor.modifyNbt(nbt -> {
       NBTBase oldValue = getChild(nbt, key);
-      NBTBase newValue = toNbt(value, oldValue);
+      NBTBase newValue = nbtConverters.toNbt(value, oldValue);
       setChild(nbt, key, newValue);
     });
-  }
-
-  private NBTBase toNbt(Object value, @Nullable NBTBase previousValue) {
-    if (previousValue != null) {
-      NbtFactory<NBTBase, ?> nbtFactory = NbtFactory.get(previousValue.getClass());
-      NBTBase nbt = nbtFactory.tryCreate(value);
-      if (nbt != null) {
-        return nbt;
-      }
-    }
-    return nbtConverters.toNbt(value);
   }
 
   protected abstract void setChild(NBT nbt, Object key, NBTBase value);

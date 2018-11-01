@@ -3,7 +3,6 @@ package net.wizardsoflua.lua;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,13 +11,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
-
 import com.google.common.primitives.Primitives;
-
 import net.minecraft.util.IStringSerializable;
 import net.sandius.rembulan.ByteString;
 import net.sandius.rembulan.Conversions;
@@ -358,12 +354,22 @@ public class Converters implements LuaConverters {
   }
 
   private Integer castToInt(Object luaObject) throws ClassCastException, BadArgumentException {
-    Long result = Conversions.integerValueOf((Number) luaObject);
-    if (result != null && result.intValue() == result.longValue()) {
-      return result.intValue();
+    Integer result = integerValueOf((Number) luaObject);
+    if (result != null) {
+      return result;
     } else {
       throw new BadArgumentException("number has no int representation");
     }
+  }
+
+  public static @Nullable Integer integerValueOf(Object object) {
+    if (object instanceof Number) {
+      Long index = Conversions.integerValueOf((Number) object);
+      if (index != null && index.intValue() == index.longValue()) {
+        return index.intValue();
+      }
+    }
+    return null;
   }
 
   private Long castToLong(Object luaObject) throws ClassCastException, BadArgumentException {

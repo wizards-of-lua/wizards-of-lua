@@ -5,6 +5,8 @@ import static java.util.Optional.ofNullable;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.sandius.rembulan.ByteString;
@@ -119,4 +121,34 @@ public class TableUtils {
     return LUA_IDENTIFIER.matcher(text).matches();
   }
 
+  /**
+   * If the specified {@link Table} is a sequence, returns the length of the sequence.
+   * <p>
+   * According to §2.1 of the Lua Reference Manual, a <i>sequence</i> is
+   * </p>
+   * <blockquote> a table where the set of all positive numeric keys is equal to {1..<i>n</i>} for
+   * some non-negative integer <i>n</i>, which is called the length of the sequence </blockquote>
+   * <p>
+   * Note that unlike {@link Table#rawlen()}, this method returns {@code null} when the specified
+   * {@link Table} is not a sequence.
+   *
+   * @return the length of the sequence if the specified {@link Table} is a sequence, otherwise
+   *         {@code null}
+   */
+  public static @Nullable Integer getLengthIfSequence(Table table) {
+    SortedSet<Integer> keys = new TreeSet<>();
+    for (Object key = table.initialKey(); key != null; key = table.successorKeyOf(key)) {
+      Integer index = Converters.integerValueOf(key);
+      if (index != null) {
+        keys.add(index);
+      } else {
+        return null;
+      }
+    }
+    if (keys.first().equals(1) && keys.last().equals(keys.size())) {
+      return keys.size();
+    } else {
+      return null;
+    }
+  }
 }
