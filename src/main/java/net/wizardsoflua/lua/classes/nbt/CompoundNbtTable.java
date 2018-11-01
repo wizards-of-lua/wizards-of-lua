@@ -1,7 +1,7 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import java.util.Set;
-
+import javax.annotation.Nullable;
 import com.google.common.collect.Iterables;
 
 import net.minecraft.nbt.NBTBase;
@@ -19,7 +19,7 @@ public class CompoundNbtTable extends NbtTable<NBTTagCompound> {
   }
 
   @Override
-  protected NBTBase getChild(NBTTagCompound parent, Object key) {
+  protected @Nullable NBTBase getChild(NBTTagCompound parent, Object key) {
     key = Conversions.javaRepresentationOf(key);
     if (key instanceof String) {
       return parent.getTag((String) key);

@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import java.util.Collections;
+import javax.annotation.Nullable;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
@@ -17,7 +18,7 @@ public class ListNbtTable extends NbtTable<NBTTagList> {
   }
 
   @Override
-  protected NBTBase getChild(NBTTagList parent, Object key) {
+  protected @Nullable NBTBase getChild(NBTTagList parent, Object key) {
     Long index = Conversions.integerValueOf(key);
     if (index != null && index.intValue() == index.longValue()) {
       int luaIndex = index.intValue();
