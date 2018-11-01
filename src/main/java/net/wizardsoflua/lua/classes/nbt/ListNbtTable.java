@@ -1,11 +1,9 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import java.util.Collections;
-
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
-
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Conversions;
@@ -32,8 +30,17 @@ public class ListNbtTable extends NbtTable<NBTTagList> {
 
   @Override
   protected void setChild(NBTTagList nbt, Object key, NBTBase value) {
-    int index = converters.toJava(int.class, key, "key");
-    nbt.set(index - 1, value);
+    int luaIndex = converters.toJava(int.class, key, "key");
+    int javaIndex = luaIndex - 1;
+    if (value == null) {
+      if (0 <= javaIndex && javaIndex < nbt.tagCount()) {
+        nbt.removeTag(javaIndex);
+      }
+    } else if (javaIndex == nbt.tagCount()) {
+      nbt.appendTag(value);
+    } else {
+      nbt.set(javaIndex, value);
+    }
   }
 
   @Override
