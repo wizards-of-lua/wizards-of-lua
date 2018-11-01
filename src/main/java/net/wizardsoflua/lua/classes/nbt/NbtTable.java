@@ -40,10 +40,6 @@ public abstract class NbtTable<NBT extends NBTBase> extends Table {
     injector.injectMembers(this);
   }
 
-  public boolean isAttached() {
-    return accessor.isAttached();
-  }
-
   public NBT getNbt() {
     return accessor.getNbt();
   }

@@ -16,11 +16,6 @@ public class EntityNbtAccessor implements NbtAccessor<NBTTagCompound> {
   }
 
   @Override
-  public boolean isAttached() {
-    return true;
-  }
-
-  @Override
   public NBTTagCompound getNbt() {
     return entity.writeToNBT(new NBTTagCompound());
   }
