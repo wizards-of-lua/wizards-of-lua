@@ -1,6 +1,7 @@
 package net.wizardsoflua.rest;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,17 +27,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.Nullable;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
+
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
@@ -44,6 +49,7 @@ import net.freeutils.httpserver.HTTPServer.VirtualHost;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.file.LuaFile;
+import net.wizardsoflua.file.SpellPack;
 
 public class WolRestApiServer {
 
@@ -57,6 +63,8 @@ public class WolRestApiServer {
     void saveLuaFileByReference(String fileref, String content);
 
     boolean isValidLoginToken(UUID uuid, String token);
+
+    SpellPack createSpellPackByReference(String fileref);
   }
 
   private final Context context;
@@ -309,6 +317,33 @@ public class WolRestApiServer {
       }
     }
 
+    @HTTPServer.Context(value = "/wol/export", methods = {"GET"})
+    public int export(Request req, Response resp) throws IOException {
+      try {
+        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LoginCookie loginCookie = getLoginCookie(req);
+        if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
+          resp.sendError(401,
+              "Missing correct login token! Please login first by executing '/wol browser login' in Minecraft.");
+          return 0;
+        }
+        if (true || acceptsJarFile(req)) {
+          addLoginCookie(resp, loginCookie);
+          return sendSpellPack(req, resp);
+        } else {
+          String accepts = req.getHeaders().get("Accept");
+          resp.sendError(503,
+              "Only java-archive is supported, but your requests only accepts " + accepts);
+          return 0;
+        }
+      } catch (Exception e) {
+        logger.error("Error handling GET: " + req.getPath(), e);
+        resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
+            + "\n See fml-server-latest.log for more info!");
+        return 0;
+      }
+    }
+
     private int sendLuaFile(Request req, Response resp) throws IOException {
       Pattern pattern = Pattern.compile("/wol/lua/(.+)");
       Matcher matcher = pattern.matcher(req.getPath());
@@ -324,6 +359,22 @@ public class WolRestApiServer {
         long[] range = null;
         resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
         resp.sendBody(body, bytes.length, null);
+        return 0;
+      } else {
+        throw new RuntimeException("Unexpected path: '" + req.getPath() + "'");
+      }
+    }
+
+    private int sendSpellPack(Request req, Response resp) throws IOException {
+      Pattern pattern = Pattern.compile("/wol/export/(.+)");
+      Matcher matcher = pattern.matcher(req.getPath());
+      if (matcher.matches()) {
+        String fileref = matcher.group(1);
+        SpellPack spellPack = context.createSpellPackByReference(fileref);
+        InputStream body = spellPack.open();
+        long[] range = null;
+        resp.sendHeaders(200, spellPack.getSize(), -1L, null, "application/java-archive", range);
+        resp.sendBody(body, spellPack.getSize(), null);
         return 0;
       } else {
         throw new RuntimeException("Unexpected path: '" + req.getPath() + "'");
@@ -351,6 +402,10 @@ public class WolRestApiServer {
 
     private boolean acceptsHtml(Request req) {
       return acceptsMimetype(req, Sets.newHashSet("text/html", "html"));
+    }
+
+    private boolean acceptsJarFile(Request req) {
+      return acceptsMimetype(req, Sets.newHashSet("application/java-archive", "java-archive"));
     }
 
     private boolean acceptsMimetype(Request req, Set<String> expectedMt) {

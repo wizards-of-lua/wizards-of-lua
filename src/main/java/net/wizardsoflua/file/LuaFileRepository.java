@@ -1,5 +1,7 @@
 package net.wizardsoflua.file;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,20 +31,25 @@ public class LuaFileRepository {
     RestApiConfig getRestApiConfig();
 
     boolean isOperator(UUID playerId);
+
+    Path getTempDir();
   }
 
   private final Crypto crypto = new Crypto();
   private final Context context;
+  private final SpellPackFactory spellPackFactory;
 
   public LuaFileRepository(Context context) {
     this.context = context;
+    spellPackFactory =
+        new SpellPackFactory(context.getTempDir(), context.getSharedLibDir().toPath());
   }
 
   public List<String> getLuaFilenames(EntityPlayer player) {
     try {
       Path playerLibDir = context.getPlayerLibDir(player.getUniqueID()).toPath();
       try (Stream<Path> files = Files.walk(playerLibDir, FileVisitOption.FOLLOW_LINKS)) {
-        return files.filter(p -> !Files.isDirectory(p)).filter(p->!isHidden(p))
+        return files.filter(p -> !Files.isDirectory(p)).filter(p -> !isHidden(p))
             .map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
@@ -54,17 +61,29 @@ public class LuaFileRepository {
     try {
       Path sharedLibDir = context.getSharedLibDir().toPath();
       try (Stream<Path> files = Files.walk(sharedLibDir, FileVisitOption.FOLLOW_LINKS)) {
-        return files.filter(p -> !Files.isDirectory(p)).filter(p->!isHidden(p))
+        return files.filter(p -> !Files.isDirectory(p)).filter(p -> !isHidden(p))
             .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-  
+
+  public List<String> getToplevelSharedDirectoryNames() {
+    try {
+      Path sharedLibDir = context.getSharedLibDir().toPath();
+      try (Stream<Path> files = Files.walk(sharedLibDir, 1, FileVisitOption.FOLLOW_LINKS)) {
+        return files.filter(p -> Files.isDirectory(p)).filter(p -> !isHidden(p))
+            .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private boolean isHidden(Path path) {
-    for( Path elem:path) {
-      if ( elem.getFileName().toString().startsWith(".")) {
+    for (Path elem : path) {
+      if (elem.getFileName().toString().startsWith(".")) {
         return true;
       }
     }
@@ -103,6 +122,41 @@ public class LuaFileRepository {
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public URL getSpellPackExportURL(String filepath) {
+    if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+      throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
+    }
+    File file = new File(context.getSharedLibDir(), filepath);
+
+    if (!file.exists()) {
+      throw new IllegalArgumentException(
+          "Can't export " + filepath + "! Directory does not exist!");
+    }
+    if (!file.isDirectory()) {
+      throw new IllegalArgumentException("Can't export " + filepath + "! It's not a directory!");
+    }
+    String hostname = context.getRestApiConfig().getHostname();
+    String protocol = context.getRestApiConfig().getProtocol();
+    int port = context.getRestApiConfig().getPort();
+
+    String fileReference = getSpellPackFileReferenceFor(filepath);
+    try {
+      URL result =
+          new URL(protocol + "://" + hostname + ":" + port + "/wol/export/" + fileReference);
+      return result;
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private String getSpellPackFileReferenceFor(String filepath) {
+    if (filepath.contains(File.separator)) {
+      throw new IllegalArgumentException(
+          "Spell packs can only be generated from a top level directory inside the shared library folder!");
+    }
+    return "shared" + "/" + filepath + ".jar";
   }
 
   public void deleteFile(EntityPlayer player, String filepath) throws IllegalArgumentException {
@@ -212,6 +266,28 @@ public class LuaFileRepository {
         content = "";
       }
       return new LuaFile(getFilepathFor(fileReference), name, fileReference, content);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public SpellPack createSpellPack(String fileReference) {
+    if (!fileReference.endsWith(".jar")) {
+      throw new IllegalArgumentException(
+          "Can't create spell pack! File reference must be a jar file.");
+    }
+    try {
+      String name = fileReference.substring(0, fileReference.length() - 4);
+      File file = getFile(name);
+      if (!file.exists()) {
+        throw new IllegalArgumentException(
+            format("Can't create spell pack! File %s does not exist.", name));
+      }
+      if (!file.isDirectory()) {
+        throw new IllegalArgumentException(
+            format("Can't create spell pack! File %s is not a directory.", name));
+      }
+      return spellPackFactory.createSpellPack(fileReference, file);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

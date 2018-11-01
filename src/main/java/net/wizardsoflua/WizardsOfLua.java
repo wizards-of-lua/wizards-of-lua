@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.UUID;
@@ -41,6 +42,7 @@ import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.event.WolEventHandler;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRepository;
+import net.wizardsoflua.file.SpellPack;
 import net.wizardsoflua.filesystem.RestrictedFileSystem;
 import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.lua.ExtensionLoader;
@@ -76,6 +78,7 @@ public class WizardsOfLua {
   private final GistRepo gistRepo = new GistRepo();
 
   // TODO move these lazy instances into a new state class
+  private Path tempDir;
   private WolConfig config;
   private AboutMessage aboutMessage;
   private WolEventHandler eventHandler;
@@ -103,6 +106,7 @@ public class WizardsOfLua {
   public void preInit(FMLPreInitializationEvent event) throws Exception {
     logger = event.getModLog();
     ExtensionLoader.initialize(logger);
+    tempDir = Files.createTempDirectory("wizards-of-lua");
     config = WolConfig.create(event, CONFIG_NAME);
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 
@@ -258,6 +262,11 @@ public class WizardsOfLua {
       public boolean isOperator(UUID playerId) {
         return permissions.hasOperatorPrivileges(playerId);
       }
+
+      @Override
+      public Path getTempDir() {
+        return tempDir;
+      }
     });
 
     restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
@@ -279,6 +288,11 @@ public class WizardsOfLua {
       @Override
       public boolean isValidLoginToken(UUID playerId, String token) {
         return getFileRepository().isValidLoginToken(playerId, token);
+      }
+
+      @Override
+      public SpellPack createSpellPackByReference(String fileReference) {
+        return getFileRepository().createSpellPack(fileReference);
       }
 
     });

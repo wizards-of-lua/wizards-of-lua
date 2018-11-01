@@ -1,0 +1,46 @@
+package net.wizardsoflua.tests;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import net.wizardsoflua.testenv.WolTestBase;
+import net.wizardsoflua.testenv.event.ServerLog4jEvent;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+
+/**
+ * Testing the "/wol pack export" command
+ */
+@RunWith(MinecraftJUnitRunner.class)
+public class WolPackExportTest extends WolTestBase {
+
+  // /test net.wizardsoflua.tests.WolPackExportTest test_pack_export__Executed_by_server
+  @Test
+  public void test_pack_export__Executed_by_server() throws Exception {
+    // Given:
+    mc().createSharedModule("dummy-module.dummy", "-- some dummy module");
+
+    // When:
+    mc().executeCommand("/wol pack export dummy-module");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).startsWith("[WoL] Click here to download:");
+    assertThat(act.getMessage()).contains("dummy-module.jar");
+  }
+
+  // /test net.wizardsoflua.tests.WolPackExportTest test_pack_export__Executed_by_player
+  @Test
+  public void test_pack_export__Executed_by_player() throws Exception {
+    // Given:
+    mc().createSharedModule("dummy-module.dummy", "-- some dummy module");
+
+    // When:
+    mc().player().chat("/wol pack export dummy-module");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).startsWith("[WoL] Click here to download:");
+    assertThat(act.getMessage()).contains("dummy-module.jar");
+  }
+}

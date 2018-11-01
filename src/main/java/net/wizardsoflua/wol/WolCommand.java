@@ -30,6 +30,7 @@ import net.wizardsoflua.wol.luatickslimit.SetEventListenerLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitAction;
 import net.wizardsoflua.wol.menu.CommandAction;
 import net.wizardsoflua.wol.menu.Menu;
+import net.wizardsoflua.wol.pack.PackExportAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileDeleteAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileEditAction;
 import net.wizardsoflua.wol.sharedfile.SharedFileMoveAction;
@@ -60,12 +61,13 @@ public class WolCommand extends CommandBase {
 
   class WolMenu extends Menu {
     WolMenu() {
-      put("spell", new SpellMenu());
-      put("file", new FileMenu());
       put("browser", new BrowserMenu());
-      put("shared-file", new SharedFileMenu());
-      put("luaTicksLimit", new LuaTicksLimitMenu());
       put("eventListenerLuaTicksLimit", new EventListenerLuaTicksLimitMenu());
+      put("file", new FileMenu());
+      put("luaTicksLimit", new LuaTicksLimitMenu());
+      put("pack", new PackMenu());
+      put("shared-file", new SharedFileMenu());
+      put("spell", new SpellMenu());
       put("startup", new StartupAction(wol));
     }
   }
@@ -112,6 +114,11 @@ public class WolCommand extends CommandBase {
     BrowserMenu() {
       put("login", new LoginAction(wol));
       put("logout", new LogoutAction(wol));
+    }
+  }
+  class PackMenu extends Menu {
+    PackMenu() {
+      put("export", new PackExportAction(wol));
     }
   }
 

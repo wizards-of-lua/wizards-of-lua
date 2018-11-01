@@ -308,6 +308,20 @@ Alternatively you also could use the Gist's URL instead of its ID:
 /wol shared-file gist get https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3
 ```
 
+<br/>
+
+
+<a name="Pack" style="position:relative; top:-70px; display:block;"></a>
+## Pack
+### Export
+This command is meant to be used by users who want to create a [spell pack](/spellpacks.html) with all Lua files of a given subdirectory of the libs/shared folder so that it can be distributed to other servers.
+This command stores a spell pack using the contents of the given source directory (that must exist inside the libs/shared folder) into a JAR file and produces a http link to download it.
+
+*Example:*
+```
+/wol pack export dummy
+```
+This command compresses the contents of the "dummy" directory (that must exist inside the libs/shared folder) into a JAR file and produces a http link to download it.
 
 <br/>
 
