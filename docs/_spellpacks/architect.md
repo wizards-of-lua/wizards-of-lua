@@ -9,6 +9,8 @@ This [spell pack](/spellpacks.html) is a Wizards of Lua add-on that adds the /ar
 
 <!--more-->
 
+{% include youtube.md id="UzoM1oS2PEw" %}
+
 By executing the /architect command you can turn yourself into an architect. As an architect you are able to define what happens when you place a block into the world. For example, if you activate the BAR tool, you can build a stack of blocks with just one click.
 
 To change the active tool just type the tool's name into the chat window. Please ensure to only use upper case characters. For example, to activate the "bar" tool you have to type "BAR" (followed by the "Enter" key).
