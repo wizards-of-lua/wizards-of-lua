@@ -27,7 +27,7 @@ public class Crypto {
     return encodeBase64(bytes);
   }
 
-  public String encrypt(UUID salt, String password, String input) {
+  public String encrypt(UUID salt, String password, String input) throws BadPaddingException {
     try {
       IvParameterSpec iv = toInitializationVector(salt);
       SecretKeySpec keySpec = toKey(password);
@@ -40,12 +40,12 @@ public class Crypto {
       String result = encodeBase64(encrypted);
       return result;
     } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-        | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+        | InvalidAlgorithmParameterException | IllegalBlockSizeException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public String decrypt(UUID salt, String password, String input) {
+  public String decrypt(UUID salt, String password, String input) throws BadPaddingException {
     try {
       IvParameterSpec iv = toInitializationVector(salt);
       SecretKeySpec keySpec = toKey(password);
@@ -59,7 +59,7 @@ public class Crypto {
       String result = new String(decrypted);
       return result;
     } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-        | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+        | InvalidAlgorithmParameterException | IllegalBlockSizeException e) {
       throw new RuntimeException(e);
     }
   }

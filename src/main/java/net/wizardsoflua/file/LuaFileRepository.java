@@ -16,6 +16,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.crypto.BadPaddingException;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.config.RestApiConfig;
 
@@ -346,9 +348,14 @@ public class LuaFileRepository {
     }
     String encryptedPlayerPassword = token.substring(index + 1);
     String serverPassword = context.getRestApiConfig().getApiKey();
-    String playerPassword = crypto.decrypt(playerId, serverPassword, encryptedPlayerPassword);
-    String expectedPlayerPassword = context.getPlayerRestApiKey(playerId);
-    return expectedPlayerPassword.equals(playerPassword);
+
+    try {
+      String playerPassword = crypto.decrypt(playerId, serverPassword, encryptedPlayerPassword);
+      String expectedPlayerPassword = context.getPlayerRestApiKey(playerId);
+      return expectedPlayerPassword.equals(playerPassword);
+    } catch (BadPaddingException e) {
+      return false;
+    }
   }
 
   private String getLoginToken(EntityPlayer player) {
@@ -358,8 +365,13 @@ public class LuaFileRepository {
   private String getLoginToken(UUID playerId) {
     String playerPassword = context.getPlayerRestApiKey(playerId);
     String serverPassword = context.getRestApiConfig().getApiKey();
-    String encryptedPlayerPassword = crypto.encrypt(playerId, serverPassword, playerPassword);
-    return encryptedPlayerPassword;
+    try {
+      String encryptedPlayerPassword = crypto.encrypt(playerId, serverPassword, playerPassword);
+      return encryptedPlayerPassword;
+    } catch (BadPaddingException e) {
+      throw new IllegalStateException(
+          "Can't create login token. Perhaps the server's or the player's API key is corrupted?");
+    }
   }
 
   private File getFile(String fileReference) {
