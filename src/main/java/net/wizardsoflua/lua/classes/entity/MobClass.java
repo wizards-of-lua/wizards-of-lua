@@ -75,7 +75,6 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
       WolMobAI ai = getWolMobAI();
       ai.setDestination(target);
       ai.setSpeed(speed);
-      delegate.tasks.addTask(1, ai);
     }
 
     private WolMobAI getWolMobAI() {
@@ -84,7 +83,9 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
           return (WolMobAI) e.action;
         }
       }
-      return new WolMobAI(delegate);
+      WolMobAI result = new WolMobAI(delegate);
+      delegate.tasks.addTask(1, result);
+      return result;
     }
   }
 }

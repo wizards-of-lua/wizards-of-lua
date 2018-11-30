@@ -33,6 +33,7 @@ public class WolMobAI extends EntityAIBase {
    * <p>
    * - Called first on a new task
    */
+  @Override
   public boolean shouldExecute() {
     return destinationPos != null
         && this.entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z) > 1.0D;
@@ -43,6 +44,7 @@ public class WolMobAI extends EntityAIBase {
    * <p>
    * - Called second on a new task after {@link #shouldExecute()}.
    */
+  @Override
   public void startExecuting() {
     this.entity.getNavigator().tryMoveToXYZ(destinationPos.x, destinationPos.y, destinationPos.z,
         this.speed);
@@ -52,8 +54,9 @@ public class WolMobAI extends EntityAIBase {
   /**
    * Updates the task
    * <p>
-   * - Called 3rd on a new task, and called continuously until task "terminates.
+   * - Called 3rd on a new task, and called continuously until task "terminates".
    */
+  @Override
   public void updateTask() {
     double distanceSq =
         this.entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z);
@@ -75,7 +78,8 @@ public class WolMobAI extends EntityAIBase {
    * - Called after {@link #updateTask()} and if it returns true {@link #updateTask()} is executed
    * again.
    */
-  public boolean continueExecuting() {
+  @Override
+  public boolean shouldContinueExecuting() {
     return !isAtDestination && this.timeoutCounter <= 1200;
   }
 
@@ -84,6 +88,7 @@ public class WolMobAI extends EntityAIBase {
    * <p>
    * - Called after {@link #continueExecuting()} returns false.
    */
+  @Override
   public void resetTask() {
     destinationPos = null;
   }

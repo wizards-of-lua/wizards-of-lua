@@ -16,21 +16,20 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.sandius.rembulan.Table;
-import net.sandius.rembulan.impl.DefaultTable;
+import net.sandius.rembulan.TableFactory;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
-import net.wizardsoflua.annotation.LuaFunctionDoc;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.classes.entity.EntityClass;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.spell.SpellEntity;
 
 /**
- * The <span class="notranslate">Entities</span> module provides access to all [Entity](/module/Entity) objects currently loaded.
+ * The <span class="notranslate">Entities</span> module provides access to all
+ * [Entity](/module/Entity) objects currently loaded.
  *
  */
 @AutoService(SpellExtension.class)
@@ -42,6 +41,8 @@ public class EntitiesModule extends LuaTableExtension {
   private LuaConverters converters;
   @Resource
   private SpellEntity spellEntity;
+  @Resource
+  private TableFactory tableFactory;
   @Inject
   private NbtConverter nbtConverter;
 
@@ -66,7 +67,7 @@ public class EntitiesModule extends LuaTableExtension {
    * found = Entities.find("@a")
    * print(#found)
    * </code>
-   *  
+   * 
    * #### Example
    * 
    * Printing the position of player mickkay.
@@ -110,8 +111,8 @@ public class EntitiesModule extends LuaTableExtension {
   }
 
   /**
-   * The ‘summon’ function returns a freshly created entity of the given type,
-   * having the optionally given Nbt values.
+   * The ‘summon’ function returns a freshly created entity of the given type, having the optionally
+   * given Nbt values.
    * 
    * #### Example
    * 
@@ -121,7 +122,7 @@ public class EntitiesModule extends LuaTableExtension {
    * pig = Entities.summon("pig")
    * pig:move("up",0.5)
    * </code>
-   *  
+   * 
    * #### Example
    * 
    * Creating a creeper with no AI.
@@ -144,20 +145,16 @@ public class EntitiesModule extends LuaTableExtension {
    * 
    */
   @LuaFunction
-  @LuaFunctionDoc(returnType = EntityClass.NAME, args = {"nbt"})
   public Entity summon(String name, @Nullable Table nbt) {
     if (nbt == null) {
-      nbt = DefaultTable.factory().newTable();
+      nbt = tableFactory.newTable();
     }
     nbt.rawset("id", name);
-    NBTTagCompound xy = nbtConverter.toNbtCompound(nbt);
+    NBTTagCompound nbtObj = nbtConverter.toNbtCompound(nbt);
     World world = spellEntity.getEntityWorld();
-    Vec3d vec = spellEntity.getPositionVector();
-    double x = vec.x;
-    double y = vec.y;
-    double z = vec.z;
+    Vec3d pos = spellEntity.getPositionVector();
     boolean attemptSpawn = true;
-    Entity result = AnvilChunkLoader.readWorldEntityPos(xy, world, x, y, z, attemptSpawn);
+    Entity result = AnvilChunkLoader.readWorldEntityPos(nbtObj, world, pos.x, pos.y, pos.z, attemptSpawn);
     return result;
   }
 
