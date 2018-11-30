@@ -2,6 +2,7 @@ package net.wizardsoflua.lua.module.command;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -57,61 +58,61 @@ public class CommandsModule extends LuaTableExtension {
    * a fourth parameter.
    *
    * The Lua code will be compiled every time when the command is issued.
-   * 
+   *
    * The command stays registered until it is deregistered or the server is being restarted.
-   * 
+   *
    * #### Permission Level
-   * 
+   *
    * Set the permission level to <tt>nil</tt> if you want that all players can use the command (this
    * is the default). Set the permission level to a value between 1 and 4 if you want only operators
    * to use it. See section "op-permission-level" of the [Minecraft
    * Wiki](https://minecraft.gamepedia.com/Server.properties) for more information about the meaning
    * of the different permission levels.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Registering a command called <span class="notranslate">"home"</span> that teleports the calling
    * player to his last known spawn point, or otherwise to the world spawn.
-   * 
-   * <code> 
+   *
+   * <code>
    * Commands.register("home",[[
    *   local p = spell.owner
    *   local n = p.nbt
-   *   if n.SpawnX then 
+   *   if n.SpawnX then
    *      p.pos = Vec3(n.SpawnX, n.SpawnY, n.SpawnZ)
-   *   else 
+   *   else
    *      p.pos = p.world.spawnPoint
    *   end
    *   ]])
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Registering a command called <span class="notranslate">"health"</span> that can set the health
    * of the specified player to the specified value.
-   * 
+   *
    * <code>
    * Commands.register("health",[[
    *   local name,value = ...
    *   local p=Entities.find("@a[name="..name.."]")[1]
-   *   if p then 
+   *   if p then
    *     p.health=tonumber(value)
    *   else
    *     print("player not found")
    *   end
    * ]], "/health <player> <new health>")
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Registering a command that needs operator permission level 4.
-   * 
+   *
    * <code>
    * Commands.register("cool-command",[[
    *   print("you are very cool")
    * ]], "/cool-command", 4)
    * </code>
-   * 
+   *
    */
   @LuaFunction
   public void register(String name, String luaCode, @Nullable String usage,
@@ -130,7 +131,7 @@ public class CommandsModule extends LuaTableExtension {
     if (usage == null) {
       usage = "/" + name;
     }
-    removeCommand(ch,name);
+    removeCommand(ch, name);
     ICommand cmd = new CustomCommand(name, luaCode, usage, permissionLevel);
     ch.registerCommand(cmd);
   }
@@ -196,7 +197,8 @@ public class CommandsModule extends LuaTableExtension {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args)
         throws CommandException {
       LuaCommand luaCommand = (LuaCommand) server.getCommandManager().getCommands().get("lua");
-      luaCommand.execute(server, sender, luaCode, args);
+      Object[] objArgs = Arrays.copyOf(args, args.length, Object[].class);
+      luaCommand.execute(server, sender, luaCode, objArgs);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package net.wizardsoflua.ai;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.Vec3d;
@@ -14,10 +16,13 @@ public class WolMobAI extends EntityAIBase {
   private double speed;
   private boolean isAtDestination;
 
+  private boolean finished;
+  private @Nullable Runnable runnable;
+
   public WolMobAI(EntityLiving entity) {
     this.entity = entity;
-    this.speed = 1.0;
-    this.setMutexBits(1 + 2 + 4);
+    speed = 1.0;
+    setMutexBits(1 + 2 + 4);
   }
 
   public void setSpeed(double speed) {
@@ -25,7 +30,7 @@ public class WolMobAI extends EntityAIBase {
   }
 
   public void setDestination(Vec3d pos) {
-    this.destinationPos = pos;
+    destinationPos = pos;
   }
 
   /**
@@ -36,7 +41,7 @@ public class WolMobAI extends EntityAIBase {
   @Override
   public boolean shouldExecute() {
     return destinationPos != null
-        && this.entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z) > 1.0D;
+        && entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z) > 1.0D;
   }
 
   /**
@@ -46,9 +51,8 @@ public class WolMobAI extends EntityAIBase {
    */
   @Override
   public void startExecuting() {
-    this.entity.getNavigator().tryMoveToXYZ(destinationPos.x, destinationPos.y, destinationPos.z,
-        this.speed);
-    this.timeoutCounter = 0;
+    entity.getNavigator().tryMoveToXYZ(destinationPos.x, destinationPos.y, destinationPos.z, speed);
+    timeoutCounter = 0;
   }
 
   /**
@@ -58,19 +62,20 @@ public class WolMobAI extends EntityAIBase {
    */
   @Override
   public void updateTask() {
-    double distanceSq =
-        this.entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z);
+    double distanceSq = entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z);
     if (distanceSq > 1.0D) {
-      this.isAtDestination = false;
-      ++this.timeoutCounter;
-      if (this.timeoutCounter % 40 == 0) {
-        this.entity.getNavigator().tryMoveToXYZ(this.destinationPos.x, this.destinationPos.y,
-            this.destinationPos.z, this.speed);
+      isAtDestination = false;
+      ++timeoutCounter;
+      if (timeoutCounter % 40 == 0) {
+        entity.getNavigator().tryMoveToXYZ(destinationPos.x, destinationPos.y, destinationPos.z,
+            speed);
       }
     } else {
-      this.isAtDestination = true;
+      isAtDestination = true;
+      setFinished();
     }
   }
+
 
   /**
    * Returns whether an in-progress EntityAIBase should continue executing
@@ -80,7 +85,7 @@ public class WolMobAI extends EntityAIBase {
    */
   @Override
   public boolean shouldContinueExecuting() {
-    return !isAtDestination && this.timeoutCounter <= 1200;
+    return !isAtDestination && timeoutCounter <= 1200;
   }
 
   /**
@@ -93,8 +98,19 @@ public class WolMobAI extends EntityAIBase {
     destinationPos = null;
   }
 
-  protected boolean isAtDestination() {
-    return this.isAtDestination;
+  private void setFinished() {
+    finished = true;
+    if (runnable != null) {
+      runnable.run();
+    }
+  }
+
+  public boolean isFinished() {
+    return finished;
+  }
+
+  public void setOnFinished(Runnable runnable) {
+    this.runnable = runnable;
   }
 
 }

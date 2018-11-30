@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.annotation.Nullable;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.logging.log4j.Logger;
 
@@ -30,9 +30,6 @@ import net.sandius.rembulan.TableFactory;
 import net.sandius.rembulan.Variable;
 import net.sandius.rembulan.env.RuntimeEnvironment;
 import net.sandius.rembulan.env.RuntimeEnvironments;
-import net.sandius.rembulan.exec.CallException;
-import net.sandius.rembulan.exec.CallPausedException;
-import net.sandius.rembulan.exec.Continuation;
 import net.sandius.rembulan.impl.StateContexts;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.lib.CoroutineLib;
@@ -41,7 +38,6 @@ import net.sandius.rembulan.lib.MathLib;
 import net.sandius.rembulan.lib.ModuleLib;
 import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
-import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.extension.api.inject.Resource;
@@ -63,7 +59,6 @@ import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.extension.SpellScope;
-import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
@@ -73,8 +68,8 @@ import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
 import net.wizardsoflua.lua.module.spell.SpellModule;
 import net.wizardsoflua.lua.module.spell.SpellsModule;
 import net.wizardsoflua.lua.module.types.Types;
-import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
+import net.wizardsoflua.lua.scheduling.SpellThread;
 import net.wizardsoflua.lua.view.ViewFactory;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
@@ -82,9 +77,6 @@ import net.wizardsoflua.spell.SpellExceptionFactory;
 import net.wizardsoflua.spell.SpellRegistry;
 
 public class SpellProgram {
-  private enum State {
-    NEW, SLEEPING, PAUSED, FINISHED, TERMINATED;
-  }
   public interface Context {
     String getLuaPathElementOfPlayer(String nameOrUuid);
 
@@ -107,12 +99,12 @@ public class SpellProgram {
     InjectionScope getRootScope();
 
     FileSystem getWorldFileSystem();
-
   }
 
   public static final String ROOT_CLASS_PREFIX = "SpellByteCode";
+  private ICommandSender owner;
+  private final SpellEntity entity;
   private final String code;
-  private final ModuleDependencies dependencies;
   private final LuaScheduler scheduler;
   private final StateContext stateContext;
   private final Table env;
@@ -121,32 +113,24 @@ public class SpellProgram {
   private final SpellExceptionFactory exceptionFactory;
   private final InjectionScope injectionScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
+  private final List<SpellThread> threads = new CopyOnWriteArrayList<>();
   private final long luaTickLimit;
-  private ICommandSender owner;
-  private State state = State.NEW;
-  /**
-   * The totalWorldTime at which this program should stop sleeping.
-   */
-  private long wakeUpTime;
-
-  private Continuation continuation;
-  private SpellEntity spellEntity;
   private String defaultLuaPath;
   private final World world;
   private final Context context;
-  private final String[] arguments;
+  private Injector injector;
 
-  SpellProgram(ICommandSender owner, String code, @Nullable String[] arguments,
+  SpellProgram(ICommandSender owner, SpellEntity entity, String code, Object[] arguments,
       ModuleDependencies dependencies, String defaultLuaPath, World world, Context context,
       Logger logger) {
     this.owner = checkNotNull(owner, "owner==null!");
+    this.entity = checkNotNull(entity, "entity==null!");
     this.code = checkNotNull(code, "code==null!");
-    this.arguments = arguments;
-    this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");
     this.world = checkNotNull(world, "world == null!");
     this.context = checkNotNull(context, "context==null!");
 
+    entity.setProgram(this);
     luaTickLimit = context.getLuaTicksLimit();
     stateContext = StateContexts.newDefaultInstance();
     scheduler = new LuaScheduler(stateContext);
@@ -155,8 +139,13 @@ public class SpellProgram {
     runtimeEnv = RuntimeEnvironments.system();
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory();
-    installSystemLibraries();
     injectionScope = createInjectionScope();
+
+    installSystemLibraries();
+    loadExtensions();
+    SpellModule.installInto(env, getConverters(), entity);
+    SpellsModule.installInto(env, getConverters(), context.getSpellRegistry(), entity);
+
     PrintRedirector.installInto(env,
         message -> SpellProgram.this.owner.sendMessage(new TextComponentString(message)));
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
@@ -170,6 +159,12 @@ public class SpellProgram {
         SpellProgram.this.defaultLuaPath += ";" + pathelement;
       }
     });
+    threads.add(new SpellThread(injector, "spell", luaTickLimit, () -> {
+      dependencies.installModules(env, scheduler, luaTickLimit);
+      LuaFunction function = loader.loadTextChunk(new Variable(env), "command-line", code);
+      Conversions.toCanonicalValues(arguments);
+      scheduler.call(luaTickLimit, function, arguments);
+    }));
   }
 
   /**
@@ -179,7 +174,8 @@ public class SpellProgram {
   private InjectionScope createInjectionScope() {
     InjectionScope rootScope = context.getRootScope();
     InjectionScope scope = new SpellScope(rootScope);
-    scope.registerResource(Injector.class, new Injector() {
+    scope.registerResource(SpellEntity.class, entity);
+    injector = new Injector() {
       @Override
       public <T> T injectMembers(T instance) throws IllegalStateException {
         return scope.injectMembers(instance);
@@ -189,7 +185,13 @@ public class SpellProgram {
       public <T> T getInstance(Class<T> cls) throws IllegalStateException {
         return scope.getInstance(cls);
       }
-    });
+
+      @Override
+      public <R> R getResource(Class<R> resourceInterface) throws IllegalArgumentException {
+        return scope.getResource(resourceInterface);
+      }
+    };
+    scope.registerResource(Injector.class, injector);
     scope.registerResource(Config.class, new Config() {
       @Override
       public long getLuaTickLimit() {
@@ -228,8 +230,20 @@ public class SpellProgram {
         (contextMessage, t) -> handleException(contextMessage, t));
     scope.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
         scheduler);
-    scope.registerResource(Spell.class,
-        parallelTaskFactory -> parallelTaskFactories.add(parallelTaskFactory));
+    scope.registerResource(Spell.class, new Spell() {
+
+      @Override
+      public void addParallelTaskFactory(ParallelTaskFactory factory) {
+        parallelTaskFactories.add(factory);
+      }
+
+      @Override
+      public void addThread(String name, LuaFunction function, Object... args) {
+        Injector injector = injectionScope.getResource(Injector.class);
+        threads.add(new SpellThread(injector, name, luaTickLimit, function, args));
+      }
+
+    });
     scope.registerResource(TableFactory.class, stateContext);
     scope.registerResource(Time.class, new Time() {
       @Override
@@ -278,67 +292,36 @@ public class SpellProgram {
     return injectionScope.getInstance(ViewFactory.class);
   }
 
-  public void setSpellEntity(SpellEntity spellEntity) {
-    this.spellEntity = checkNotNull(spellEntity, "spellEntity==null!");
-    injectionScope.registerResource(SpellEntity.class, spellEntity);    
-    loadExtensions();
-  }
-
   public String getCode() {
     return code;
   }
 
   public boolean isTerminated() {
-    if (state == State.TERMINATED) {
-      return true;
-    }
-    if (state == State.FINISHED) {
-      for (ParallelTaskFactory parallelTaskFactory : parallelTaskFactories) {
-        if (!parallelTaskFactory.isFinished()) {
-          return false;
-        }
+    for (ParallelTaskFactory parallelTaskFactory : parallelTaskFactories) {
+      if (!parallelTaskFactory.isFinished()) {
+        return false;
       }
-      terminate();
-      return true;
     }
-    return false;
+    return threads.isEmpty();
   }
 
   public void terminate() {
-    state = State.TERMINATED;
+    threads.clear();
     for (ParallelTaskFactory parallelTaskFactory : parallelTaskFactories) {
       parallelTaskFactory.terminate();
     }
   }
 
-  public void resume() {
-    try {
-      switch (state) {
-        case NEW:
-          compileAndRun();
-          break;
-        case SLEEPING:
-          if (wakeUpTime > world.getTotalWorldTime()) {
-            return;
-          }
-        case PAUSED:
-          scheduler.resume(luaTickLimit, continuation);
-          break;
-        case FINISHED:
-        case TERMINATED:
-          return;
+  public void tick() {
+    for (SpellThread thread : threads) {
+      try {
+        boolean shouldContinue = thread.tick();
+        if (!shouldContinue) {
+          threads.remove(thread);
+        }
+      } catch (Exception e) {
+        handleException("Error during execution of " + thread.getName(), e);
       }
-      state = State.FINISHED;
-    } catch (CallFellAsleepException ex) {
-      int sleepDuration = ex.getSleepDuration();
-      wakeUpTime = world.getTotalWorldTime() + sleepDuration;
-      continuation = ex.getContinuation();
-      state = State.SLEEPING;
-    } catch (CallPausedException ex) {
-      continuation = ex.getContinuation();
-      state = State.PAUSED;
-    } catch (Exception ex) {
-      handleException("Error during spell execution", ex);
     }
   }
 
@@ -350,24 +333,6 @@ public class SpellProgram {
     TextComponentString txt = new TextComponentString(message);
     txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     owner.sendMessage(txt);
-  }
-
-  private void compileAndRun()
-      throws LoaderException, CallException, CallPausedException, InterruptedException {
-    SpellModule.installInto(env, getConverters(), spellEntity);
-    SpellsModule.installInto(env, getConverters(), context.getSpellRegistry(), spellEntity);
-
-    dependencies.installModules(env, scheduler, luaTickLimit);
-
-    LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
-    if (arguments != null) {
-      Object[] luaArgs = new Object[arguments.length];
-      System.arraycopy(arguments, 0, luaArgs, 0, luaArgs.length);
-      Conversions.toCanonicalValues(luaArgs);
-      scheduler.call(luaTickLimit, commandLineFunc, luaArgs);
-    } else {
-      scheduler.call(luaTickLimit, commandLineFunc);
-    }
   }
 
   private void installSystemLibraries() {

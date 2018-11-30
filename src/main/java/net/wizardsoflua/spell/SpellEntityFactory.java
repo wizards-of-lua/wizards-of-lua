@@ -3,8 +3,6 @@ package net.wizardsoflua.spell;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.ICommandSender;
@@ -16,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.SpellProgramFactory;
 
 /**
@@ -33,15 +30,12 @@ public class SpellEntityFactory {
     this.programFactory = checkNotNull(programFactory, "programFactory==null!");
   }
 
-  public SpellEntity create(World world, ICommandSender sender, String code,
-      @Nullable String[] arguments) {
+  public SpellEntity create(World world, ICommandSender sender, String code, Object... arguments) {
     checkNotNull(world, "world==null!");
     ICommandSender owner = getOwner(sender);
-    SpellProgram program = programFactory.create(world, owner, code, arguments);
     PositionAndRotation pos = getPositionAndRotation(sender);
-    nextSid++;
-    SpellEntity result = new SpellEntity(world, owner, program, pos, nextSid);
-    program.setSpellEntity(result);
+    SpellEntity result = new SpellEntity(world, owner, pos, nextSid++);
+    programFactory.create(world, owner, result, code, arguments);
     spellRegistry.add(result);
     return result;
   }
@@ -77,7 +71,7 @@ public class SpellEntityFactory {
         BlockPos blockPos = sender.getPosition();
         World world = sender.getEntityWorld();
         IBlockState state = world.getBlockState(blockPos);
-        EnumFacing facing = (EnumFacing) state.getValue(BlockCommandBlock.FACING);
+        EnumFacing facing = state.getValue(BlockCommandBlock.FACING);
         float rotationYaw;
         float rotationPitch;
         switch (facing) {

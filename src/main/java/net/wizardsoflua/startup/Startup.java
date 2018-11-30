@@ -42,8 +42,10 @@ public class Startup {
   public interface Context extends AddOnFinder.Context {
     Path getSharedLibDir();
 
+    @Override
     MinecraftServer getServer();
 
+    @Override
     Logger getLogger();
   }
 
@@ -89,7 +91,7 @@ public class Startup {
     LuaCommand luaCommand =
         (LuaCommand) context.getServer().getCommandManager().getCommands().get("lua");
     try {
-      luaCommand.execute(context.getServer(), sender, code, null);
+      luaCommand.execute(context.getServer(), sender, code);
     } catch (CommandException e) {
       sendException(format("Error while executing module %s", module), e, sender);
     }
@@ -137,7 +139,7 @@ public class Startup {
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
     commandSender.sendMessage(txt);
   }

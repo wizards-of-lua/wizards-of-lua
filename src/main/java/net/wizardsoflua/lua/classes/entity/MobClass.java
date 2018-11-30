@@ -1,5 +1,7 @@
 package net.wizardsoflua.lua.classes.entity;
 
+import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
 
 import net.minecraft.entity.EntityLiving;
@@ -13,8 +15,11 @@ import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
+import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
+import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
@@ -48,6 +53,13 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends EntityLiving> extends EntityLivingBaseClass.Instance<D> {
+    @Resource
+    private LuaScheduler luaScheduler;
+    @Resource
+    private ExceptionHandler exceptionHandler;
+    @Resource
+    private Spell spell;
+
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
     }
@@ -68,13 +80,20 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     }
 
     /**
-     * /lua pig=Entities.summon('pig'); pig:walkTo(spell.pos+Vec3(10,0,0)) 
+     * /lua pig=Entities.summon('pig'); pig:walkTo(spell.pos+Vec3(10,0,0))
      */
     @LuaFunction
-    public void walkTo(Vec3d target, float speed) {
+    public void walkTo(Vec3d target, float speed,
+        @Nullable net.sandius.rembulan.runtime.LuaFunction onFinish) {
       WolMobAI ai = getWolMobAI();
       ai.setDestination(target);
       ai.setSpeed(speed);
+
+      if (onFinish != null) {
+        ai.setOnFinished(() -> {
+          spell.addThread("onFinish", onFinish);
+        });
+      }
     }
 
     private WolMobAI getWolMobAI() {

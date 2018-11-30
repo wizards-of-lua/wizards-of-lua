@@ -5,8 +5,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Joiner;
 
 import net.minecraft.command.CommandBase;
@@ -23,7 +21,7 @@ import net.wizardsoflua.WolAnnouncementMessage;
 public class LuaCommand extends CommandBase {
   private static final String CMD_NAME = "lua";
   private final WizardsOfLua wol = WizardsOfLua.instance;
-  private final List<String> aliases = new ArrayList<String>();
+  private final List<String> aliases = new ArrayList<>();
 
   public LuaCommand() {
     aliases.add(CMD_NAME);
@@ -43,6 +41,7 @@ public class LuaCommand extends CommandBase {
   /**
    * Return the required permission level for this command.
    */
+  @Override
   public int getRequiredPermissionLevel() {
     // TODO add real permission checking somewhere
     return 2;
@@ -51,11 +50,11 @@ public class LuaCommand extends CommandBase {
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
-    execute(server, sender, concat(args), null);
+    execute(server, sender, concat(args));
   }
 
   public void execute(MinecraftServer server, ICommandSender sender, String luaCode,
-      @Nullable String[] luaArgs) throws CommandException {
+      Object... luaArgs) throws CommandException {
     try {
       World world = sender.getEntityWorld();
       wol.getSpellEntityFactory().create(world, sender, luaCode, luaArgs);
@@ -75,7 +74,7 @@ public class LuaCommand extends CommandBase {
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
     sender.sendMessage(txt);
   }

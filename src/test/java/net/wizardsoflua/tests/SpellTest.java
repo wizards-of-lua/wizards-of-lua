@@ -171,8 +171,7 @@ public class SpellTest extends WolTestBase {
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage())
-        .startsWith("Error during spell execution: attempt to modify read-only table index");
+    assertThat(act.getMessage()).contains("attempt to modify read-only table index");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_execute_command_casted_by_server

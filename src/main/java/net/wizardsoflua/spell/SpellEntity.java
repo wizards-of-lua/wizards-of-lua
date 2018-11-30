@@ -1,6 +1,9 @@
 package net.wizardsoflua.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import javax.annotation.Nullable;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,35 +20,32 @@ public class SpellEntity extends VirtualEntity {
   public static final String NAME = "Spell";
 
   private ICommandSender owner;
-  private SpellProgram program;
+  private @Nullable SpellProgram program;
   private long sid; // immutable spell id
 
   private boolean visible = false;
   private Table data = new DefaultTable();
 
-  public SpellEntity(World world, ICommandSender owner, SpellProgram program,
-      PositionAndRotation posRot, long sid) {
+  public SpellEntity(World world, ICommandSender owner, PositionAndRotation posRot, long sid) {
     super(checkNotNull(world, "world==null!"), posRot.getPos());
     this.owner = checkNotNull(owner, "owner==null!");
-    this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
     setPositionAndRotation(posRot);
     String name = SpellEntity.NAME + "-" + sid;
     setName(name);
   }
 
-  // @Override
-  // public NBTTagCompound serializeNBT() {
-  // NBTTagCompound ret = new NBTTagCompound();
-  // // ret.setString("id", this.getEntityString());
-  // return writeToNBT(ret);
-  // }
+  public @Nullable SpellProgram getProgram() {
+    return program;
+  }
+
+  public void setProgram(@Nullable SpellProgram program) {
+    this.program = program;
+  }
 
   public PositionAndRotation getPositionAndRotation() {
     return new PositionAndRotation(getPositionVector(), rotationYaw, rotationPitch);
   }
-
-
 
   private void setPositionAndRotation(PositionAndRotation posRot) {
     Vec3d pos = posRot.getPos();
@@ -53,8 +53,6 @@ public class SpellEntity extends VirtualEntity {
     float pitch = posRot.getRotationPitch();
     setPositionAndRotation(pos.x, pos.y, pos.z, yaw, pitch);
   }
-
-
 
   public ICommandSender getOwner() {
     return owner;
@@ -66,10 +64,6 @@ public class SpellEntity extends VirtualEntity {
 
   public Entity getOwnerEntity() {
     return owner.getCommandSenderEntity();
-  }
-
-  public SpellProgram getProgram() {
-    return program;
   }
 
   public boolean isVisible() {
@@ -95,7 +89,7 @@ public class SpellEntity extends VirtualEntity {
       setDead();
       return;
     }
-    program.resume();
+    program.tick();
     if (program.isTerminated()) {
       setDead();
     }
@@ -107,12 +101,14 @@ public class SpellEntity extends VirtualEntity {
 
   @Override
   public void setDead() {
-    MinecraftForge.EVENT_BUS.post(new SpellBreakEvent(this));
-    super.setDead();
-    if (program != null) {
-      program.terminate();
+    if (isAlive()) {
+      MinecraftForge.EVENT_BUS.post(new SpellBreakEvent(this));
+      super.setDead();
+      if (program != null) {
+        program.terminate();
+      }
+      MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
     }
-    MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {

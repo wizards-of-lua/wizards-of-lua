@@ -72,8 +72,7 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage())
-        .startsWith("Error during spell execution: attempt to modify read-only table index");
+    assertThat(act.getMessage()).contains("attempt to modify read-only table index");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_putNbt_setting_pos
