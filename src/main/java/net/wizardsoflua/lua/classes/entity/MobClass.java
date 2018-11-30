@@ -1,11 +1,16 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
+import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
+import net.wizardsoflua.ai.WolMobAI;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
@@ -60,6 +65,26 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     @LuaProperty
     public void setAi(boolean ai) {
       delegate.setNoAI(!ai);
+    }
+
+    /**
+     * /lua pig=Entities.summon('pig'); pig:walkTo(spell.pos+Vec3(10,0,0)) 
+     */
+    @LuaFunction
+    public void walkTo(Vec3d target, float speed) {
+      WolMobAI ai = getWolMobAI();
+      ai.setDestination(target);
+      ai.setSpeed(speed);
+      delegate.tasks.addTask(1, ai);
+    }
+
+    private WolMobAI getWolMobAI() {
+      for (EntityAITaskEntry e : delegate.tasks.taskEntries) {
+        if (e.action instanceof WolMobAI) {
+          return (WolMobAI) e.action;
+        }
+      }
+      return new WolMobAI(delegate);
     }
   }
 }
