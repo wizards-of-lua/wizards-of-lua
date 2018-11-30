@@ -35,7 +35,7 @@ import net.wizardsoflua.spell.SpellEntity;
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
-@GenerateLuaDoc(name = EntitiesModule.NAME, subtitle = "Knowing What Happened")
+@GenerateLuaDoc(name = EntitiesModule.NAME, subtitle = "Finding Entities")
 public class EntitiesModule extends LuaTableExtension {
   public static final String NAME = "Entities";
   @Resource
