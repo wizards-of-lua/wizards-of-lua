@@ -28,4 +28,32 @@ public class EntitiesTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("1   Pig");
   }
 
+  // /test net.wizardsoflua.tests.EntitiesTest test_summon_pig
+  @Test
+  public void test_summon_pig() throws Exception {
+    // Given:
+
+    // When:
+    mc().executeCommand("/lua pig=Entities.summon('pig'); print(pig.name)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("Pig");
+  }
+
+  // /test net.wizardsoflua.tests.EntitiesTest test_summon_pig_with_nbt
+  @Test
+  public void test_summon_pig_with_nbt() throws Exception {
+    // Given:
+    String expected = "some-test-pig";
+
+    // When:
+    mc().executeCommand("/lua pig=Entities.summon('pig',{CustomName='%s'}); print(pig.name)",
+        expected);
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
 }

@@ -157,7 +157,6 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
     injectionScope = createInjectionScope();
-    loadExtensions();
     PrintRedirector.installInto(env,
         message -> SpellProgram.this.owner.sendMessage(new TextComponentString(message)));
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
@@ -280,7 +279,9 @@ public class SpellProgram {
   }
 
   public void setSpellEntity(SpellEntity spellEntity) {
-    this.spellEntity = spellEntity;
+    this.spellEntity = checkNotNull(spellEntity, "spellEntity==null!");
+    injectionScope.registerResource(SpellEntity.class, spellEntity);    
+    loadExtensions();
   }
 
   public String getCode() {
@@ -353,9 +354,7 @@ public class SpellProgram {
 
   private void compileAndRun()
       throws LoaderException, CallException, CallPausedException, InterruptedException {
-
     SpellModule.installInto(env, getConverters(), spellEntity);
-    EntitiesModule.installInto(env, getConverters(), spellEntity);
     SpellsModule.installInto(env, getConverters(), context.getSpellRegistry(), spellEntity);
 
     dependencies.installModules(env, scheduler, luaTickLimit);
