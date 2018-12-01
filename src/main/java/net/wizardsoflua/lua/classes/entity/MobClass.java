@@ -9,12 +9,14 @@ import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.util.math.Vec3d;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.ai.WolMobAI;
+import net.wizardsoflua.ai.WolMobAIRegistry;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
 import net.wizardsoflua.extension.spell.api.resource.ExceptionHandler;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
@@ -59,6 +61,8 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     private ExceptionHandler exceptionHandler;
     @Resource
     private Spell spell;
+    @Resource
+    private WolMobAIRegistry mobAiRegistry;
 
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
@@ -85,26 +89,28 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     @LuaFunction
     public void walkTo(Vec3d target, float speed,
         @Nullable net.sandius.rembulan.runtime.LuaFunction onFinish) {
-      WolMobAI ai = getWolMobAI();
+      WolMobAI ai = mobAiRegistry.getWolMobAi(delegate);
+      ai.resetTask();
       ai.setDestination(target);
       ai.setSpeed(speed);
 
       if (onFinish != null) {
+        spell.addParallelTaskFactory(new ParallelTaskFactory() {
+
+          @Override
+          public void terminate() {
+            // nothing to do here
+          }
+
+          @Override
+          public boolean isFinished() {
+            return ai.isFinished();
+          }
+        });
         ai.setOnFinished(() -> {
           spell.addThread("onFinish", onFinish);
         });
       }
-    }
-
-    private WolMobAI getWolMobAI() {
-      for (EntityAITaskEntry e : delegate.tasks.taskEntries) {
-        if (e.action instanceof WolMobAI) {
-          return (WolMobAI) e.action;
-        }
-      }
-      WolMobAI result = new WolMobAI(delegate);
-      delegate.tasks.addTask(1, result);
-      return result;
     }
   }
 }

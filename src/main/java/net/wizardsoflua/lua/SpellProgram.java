@@ -40,6 +40,7 @@ import net.sandius.rembulan.lib.StringLib;
 import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.ai.WolMobAIRegistry;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
 import net.wizardsoflua.extension.spell.api.resource.Config;
@@ -240,7 +241,8 @@ public class SpellProgram {
       @Override
       public void addThread(String name, LuaFunction function, Object... args) {
         Injector injector = injectionScope.getResource(Injector.class);
-        threads.add(new SpellThread(injector, name, luaTickLimit, function, args));
+        SpellThread thread = new SpellThread(injector, name, luaTickLimit, function, args);
+        threads.add(thread);
       }
 
     });
@@ -259,6 +261,7 @@ public class SpellProgram {
     });
     scope.registerResource(MinecraftServer.class, world.getMinecraftServer());
     scope.registerResource(WizardsOfLua.class, WizardsOfLua.instance);
+    scope.registerResource(WolMobAIRegistry.class, WizardsOfLua.instance.getMobAIRegistry());
     return scope;
   }
 
@@ -315,9 +318,13 @@ public class SpellProgram {
   public void tick() {
     for (SpellThread thread : threads) {
       try {
-        boolean shouldContinue = thread.tick();
-        if (!shouldContinue) {
+        if (thread.isTerminated()) {
           threads.remove(thread);
+        } else {
+          boolean shouldContinue = thread.tick();
+          if (!shouldContinue) {
+            threads.remove(thread);
+          }
         }
       } catch (Exception e) {
         handleException("Error during execution of " + thread.getName(), e);

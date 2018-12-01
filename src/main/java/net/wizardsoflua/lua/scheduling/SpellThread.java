@@ -67,5 +67,12 @@ public class SpellThread {
     };
   }
 
+  public boolean isTerminated() {
+    return nextStep == CheckedRunnable.DO_NOTHING;
+  }
+
+  public void terminate() {
+    nextStep = CheckedRunnable.DO_NOTHING;
+  }
 
 }

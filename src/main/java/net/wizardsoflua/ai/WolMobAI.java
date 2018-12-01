@@ -7,9 +7,10 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.Vec3d;
 
 public class WolMobAI extends EntityAIBase {
+  private final WolMobAIRegistry wolMobAIRegistry;
   private final EntityLiving entity;
 
-  private int timeoutCounter;
+  private int age;
 
   /** Pos to move to */
   private Vec3d destinationPos = null;
@@ -19,7 +20,9 @@ public class WolMobAI extends EntityAIBase {
   private boolean finished;
   private @Nullable Runnable runnable;
 
-  public WolMobAI(EntityLiving entity) {
+
+  public WolMobAI(WolMobAIRegistry wolMobAIRegistry, EntityLiving entity) {
+    this.wolMobAIRegistry = wolMobAIRegistry;
     this.entity = entity;
     speed = 1.0;
     setMutexBits(1 + 2 + 4);
@@ -52,7 +55,9 @@ public class WolMobAI extends EntityAIBase {
   @Override
   public void startExecuting() {
     entity.getNavigator().tryMoveToXYZ(destinationPos.x, destinationPos.y, destinationPos.z, speed);
-    timeoutCounter = 0;
+    age = 0;
+    finished = false;
+    isAtDestination = false;
   }
 
   /**
@@ -65,8 +70,8 @@ public class WolMobAI extends EntityAIBase {
     double distanceSq = entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z);
     if (distanceSq > 1.0D) {
       isAtDestination = false;
-      ++timeoutCounter;
-      if (timeoutCounter % 40 == 0) {
+      ++age;
+      if (age % 40 == 0) {
         entity.getNavigator().tryMoveToXYZ(destinationPos.x, destinationPos.y, destinationPos.z,
             speed);
       }
@@ -85,7 +90,7 @@ public class WolMobAI extends EntityAIBase {
    */
   @Override
   public boolean shouldContinueExecuting() {
-    return !isAtDestination && timeoutCounter <= 1200;
+    return !isAtDestination;
   }
 
   /**
@@ -96,9 +101,11 @@ public class WolMobAI extends EntityAIBase {
   @Override
   public void resetTask() {
     destinationPos = null;
+    isAtDestination = false;
   }
 
   private void setFinished() {
+    wolMobAIRegistry.removeMobAi(entity);
     finished = true;
     if (runnable != null) {
       runnable.run();
@@ -111,6 +118,10 @@ public class WolMobAI extends EntityAIBase {
 
   public void setOnFinished(Runnable runnable) {
     this.runnable = runnable;
+  }
+
+  public void terminate() {
+    setFinished();
   }
 
 }

@@ -83,7 +83,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public boolean isAlive() {
-      return !delegate.isDead;
+      return delegate.isEntityAlive();
     }
 
     /**

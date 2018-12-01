@@ -73,7 +73,7 @@ public class WolRestApiServer {
 
   public WolRestApiServer(Context context) {
     this.context = checkNotNull(context, "context==null!");
-    this.logger = WizardsOfLua.instance.logger;
+    logger = WizardsOfLua.instance.logger;
   }
 
   public void start() throws IOException {
@@ -327,15 +327,8 @@ public class WolRestApiServer {
               "Missing correct login token! Please login first by executing '/wol browser login' in Minecraft.");
           return 0;
         }
-        if (true || acceptsJarFile(req)) {
-          addLoginCookie(resp, loginCookie);
-          return sendSpellPack(req, resp);
-        } else {
-          String accepts = req.getHeaders().get("Accept");
-          resp.sendError(503,
-              "Only java-archive is supported, but your requests only accepts " + accepts);
-          return 0;
-        }
+        addLoginCookie(resp, loginCookie);
+        return sendSpellPack(req, resp);
       } catch (Exception e) {
         logger.error("Error handling GET: " + req.getPath(), e);
         resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()

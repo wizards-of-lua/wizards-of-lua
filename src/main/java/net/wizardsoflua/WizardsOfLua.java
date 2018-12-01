@@ -35,6 +35,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.wizardsoflua.ai.WolMobAIRegistry;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
@@ -82,6 +83,7 @@ public class WizardsOfLua {
   private WolConfig config;
   private AboutMessage aboutMessage;
   private WolEventHandler eventHandler;
+  private WolMobAIRegistry mobAiRegistry;
   private SpellEntityFactory spellEntityFactory;
   private SpellProgramFactory spellProgramFactory;
   private Profiles profiles;
@@ -237,6 +239,7 @@ public class WizardsOfLua {
 
     });
     eventHandler = new WolEventHandler(() -> spellRegistry.getAll());
+    mobAiRegistry = new WolMobAIRegistry();
     fileRepository = new LuaFileRepository(new LuaFileRepository.Context() {
       @Override
       public File getPlayerLibDir(UUID playerId) {
@@ -321,6 +324,7 @@ public class WizardsOfLua {
     MinecraftForge.EVENT_BUS.register(getSpellRegistry());
     MinecraftForge.EVENT_BUS.register(aboutMessage);
     MinecraftForge.EVENT_BUS.register(eventHandler);
+    MinecraftForge.EVENT_BUS.register(mobAiRegistry);
   }
 
   @EventHandler
@@ -394,6 +398,10 @@ public class WizardsOfLua {
 
   public WolRestApiServer getRestServer() {
     return checkNotNull(restApiServer, "restApiServer==null!");
+  }
+
+  public WolMobAIRegistry getMobAIRegistry() {
+    return mobAiRegistry;
   }
 
   public GistRepo getGistRepo() {
