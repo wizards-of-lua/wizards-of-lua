@@ -71,7 +71,7 @@ public abstract class NbtTable<NBT extends NBTBase> extends Table {
     });
   }
 
-  protected abstract void setChild(NBT nbt, Object key, NBTBase value);
+  protected abstract void setChild(NBT parent, Object key, @Nullable NBTBase child);
 
   @Override
   public Object initialKey() {

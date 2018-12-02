@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua;
 
 import static java.util.Objects.requireNonNull;
-
 import javax.annotation.Nullable;
 
 public class BadArgumentException extends IllegalArgumentException {
@@ -37,22 +36,27 @@ public class BadArgumentException extends IllegalArgumentException {
 
   /**
    * @param detailMessage the new value for {@link #detailMessage}
+   * @return
    */
-  public void setDetailMessage(String detailMessage) {
+  public BadArgumentException setDetailMessage(String detailMessage) {
     this.detailMessage = requireNonNull(detailMessage, "detailMessage == null!");
+    return this;
   }
 
-  public void setArgumentIndex(int argumentIndex) {
+  public BadArgumentException setArgumentIndex(int argumentIndex) {
     this.argumentIndex = argumentIndex;
+    return this;
   }
 
-  public void setArgumentName(String argumentName) {
+  public BadArgumentException setArgumentName(String argumentName) {
     this.argumentName = requireNonNull(argumentName, "argumentName == null!");
+    return this;
   }
 
-  public void setFunctionOrPropertyName(String functionOrPropertyName) {
+  public BadArgumentException setFunctionOrPropertyName(String functionOrPropertyName) {
     this.functionOrPropertyName =
         requireNonNull(functionOrPropertyName, "functionOrPropertyName == null!");
+    return this;
   }
 
   @Override

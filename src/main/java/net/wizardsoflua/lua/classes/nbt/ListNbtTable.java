@@ -12,7 +12,7 @@ import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
 
-public class ListNbtTable extends NbtTable<NBTTagList> {
+public class ListNbtTable extends IndexedNbtTable<NBTTagList> {
   public ListNbtTable(NbtAccessor<NBTTagList> accessor, Table metatable, Injector injector) {
     super(accessor, metatable, injector);
   }
@@ -49,5 +49,29 @@ public class ListNbtTable extends NbtTable<NBTTagList> {
     }
     Range<Integer> closed = Range.closed(1, nbt.tagCount());
     return ContiguousSet.create(closed, DiscreteDomain.integers());
+  }
+
+  @Override
+  protected int getSize(NBTTagList parent) {
+    return parent.tagCount();
+  }
+
+  @Override
+  protected NBTBase getChild(NBTTagList parent, int javaIndex) {
+    return parent.get(javaIndex);
+  }
+
+  @Override
+  protected void setChild(NBTTagList parent, int javaIndex, @Nullable NBTBase value) {
+    if (value == null) {
+      if (isInRange(javaIndex, parent)) {
+        parent.removeTag(javaIndex);
+      }
+    } else if (javaIndex == parent.tagCount()) {
+      parent.appendTag(value);
+    } else {
+      checkJavaIndex(javaIndex, parent);
+      parent.set(javaIndex, value);
+    }
   }
 }
