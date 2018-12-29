@@ -16,8 +16,8 @@ public class EntityNbtTest extends WolTestBase {
     // Given:
     String expected = "1";
 
-    mc().executeCommand(
-        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,powered:" + expected + "}");
+    mc().executeCommand("/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoAI:1,NoGravity:1,powered:"
+        + expected + "}");
     mc().clearEvents();
 
     // When:
@@ -35,7 +35,8 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Boolean_NBT_is_writable() throws Exception {
     // Given:
     String expected = "1";
-    mc().executeCommand("/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,powered:0}");
+    mc().executeCommand(
+        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoAI:1,NoGravity:1,powered:0}");
     mc().clearEvents();
 
     // When:
@@ -55,8 +56,9 @@ public class EntityNbtTest extends WolTestBase {
     // Given:
     String expected = "5";
 
-    mc().executeCommand("/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,ExplosionRadius:"
-        + expected + "}");
+    mc().executeCommand(
+        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoAI:1,NoGravity:1,ExplosionRadius:"
+            + expected + "}");
     mc().clearEvents();
 
     // When:
@@ -75,7 +77,7 @@ public class EntityNbtTest extends WolTestBase {
     // Given:
     String expected = "5";
     mc().executeCommand(
-        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,ExplosionRadius:4}");
+        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoAI:1,NoGravity:1,ExplosionRadius:4}");
     mc().clearEvents();
 
     // When:
@@ -135,7 +137,7 @@ public class EntityNbtTest extends WolTestBase {
     String expected = "5.625";
 
     mc().executeCommand(
-        "/summon pig 4.5 5 2.3 {Tags:[testpig],NoGravity:1,Health:" + expected + "}");
+        "/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,Health:" + expected + "}");
     mc().clearEvents();
 
     // When:
@@ -153,13 +155,52 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Float_NBT_is_writable() throws Exception {
     // Given:
     String expected = "5.625";
-    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoGravity:1,Health:4.25}");
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,Health:4.25}");
     mc().clearEvents();
 
     // When:
     mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
         + "pig.nbt.Health = " + expected + "\n"//
         + "print(pig.nbt.Health)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Integer_NBT_is_readable
+  @Test
+  public void test_Integer_NBT_is_readable() throws Exception {
+    // Given:
+    String expected = "5";
+
+    mc().executeCommand(
+        "/summon slime 4.5 5 2.3 {Tags:[testslime],NoAI:1,NoGravity:1,Size:" + expected + "}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local slime = Entities.find('@e[tag=testslime]')[1]\n"//
+        + "print(slime.nbt.Size)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Integer_NBT_is_writable
+  @Test
+  public void test_Integer_NBT_is_writable() throws Exception {
+    // Given:
+    String expected = "5";
+    mc().executeCommand("/summon slime 4.5 5 2.3 {Tags:[testslime],NoAI:1,NoGravity:1,Size:4}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local slime = Entities.find('@e[tag=testslime]')[1]\n"//
+        + "slime.nbt.Size = " + expected + "\n"//
+        + "print(slime.nbt.Size)\n"//
     );
 
     // Then:
