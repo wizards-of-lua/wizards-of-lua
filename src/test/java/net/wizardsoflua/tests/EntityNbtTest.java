@@ -10,6 +10,85 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 @RunWith(MinecraftJUnitRunner.class)
 public class EntityNbtTest extends WolTestBase {
 
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Boolean_NBT_is_readable
+  @Test
+  public void test_Boolean_NBT_is_readable() throws Exception {
+    // Given:
+    String expected = "1";
+
+    mc().executeCommand(
+        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,powered:" + expected + "}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local creeper = Entities.find('@e[tag=testcreeper]')[1]\n"//
+        + "print(creeper.nbt.powered)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Boolean_NBT_is_writable
+  @Test
+  public void test_Boolean_NBT_is_writable() throws Exception {
+    // Given:
+    String expected = "1";
+    mc().executeCommand("/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,powered:0}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local creeper = Entities.find('@e[tag=testcreeper]')[1]\n"//
+        + "creeper.nbt.powered = " + expected + "\n"//
+        + "print(creeper.nbt.powered)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Byte_NBT_is_readable
+  @Test
+  public void test_Byte_NBT_is_readable() throws Exception {
+    // Given:
+    String expected = "5";
+
+    mc().executeCommand("/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,ExplosionRadius:"
+        + expected + "}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local creeper = Entities.find('@e[tag=testcreeper]')[1]\n"//
+        + "print(creeper.nbt.ExplosionRadius)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Byte_NBT_is_writable
+  @Test
+  public void test_Byte_NBT_is_writable() throws Exception {
+    // Given:
+    String expected = "5";
+    mc().executeCommand(
+        "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoGravity:1,ExplosionRadius:4}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local creeper = Entities.find('@e[tag=testcreeper]')[1]\n"//
+        + "creeper.nbt.ExplosionRadius = " + expected + "\n"//
+        + "print(creeper.nbt.ExplosionRadius)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_is_readable
   @Test
   public void test_Double_NBT_is_readable() throws Exception {
