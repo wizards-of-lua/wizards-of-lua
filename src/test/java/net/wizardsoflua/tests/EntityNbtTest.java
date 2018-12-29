@@ -283,6 +283,44 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.EntityNbtTest test_String_NBT_is_readable
+  @Test
+  public void test_String_NBT_is_readable() throws Exception {
+    // Given:
+    String expected = "bli";
+    mc().executeCommand(
+        "/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,CustomName:" + expected + "}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "print(pig.nbt.CustomName)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_String_NBT_is_writable
+  @Test
+  public void test_String_NBT_is_writable() throws Exception {
+    // Given:
+    String expected = "bli";
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,CustomName:bla}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.CustomName = " + expected + "\n"//
+        + "print(pig.nbt.CustomName)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_is_readable
   @Test
   public void test_Double_NBT_List_is_readable() throws Exception {
