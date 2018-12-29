@@ -93,7 +93,7 @@ public class EntityNbtTest extends WolTestBase {
   @Test
   public void test_Double_NBT_is_readable() throws Exception {
     // Given:
-    String expected = "5.6";
+    String expected = "5.625";
 
     mc().executeCommand(
         "/summon arrow 4.5 5 2.3 {Tags:[testarrow],NoGravity:1,damage:" + expected + "}");
@@ -113,14 +113,53 @@ public class EntityNbtTest extends WolTestBase {
   @Test
   public void test_Double_NBT_is_writable() throws Exception {
     // Given:
-    String expected = "5.6";
-    mc().executeCommand("/summon arrow 4.5 5 2.3 {Tags:[testarrow],NoGravity:1,damage:4.3}");
+    String expected = "5.625";
+    mc().executeCommand("/summon arrow 4.5 5 2.3 {Tags:[testarrow],NoGravity:1,damage:4.25}");
     mc().clearEvents();
 
     // When:
     mc().executeCommand("/lua local arrow = Entities.find('@e[tag=testarrow]')[1]\n"//
         + "arrow.nbt.damage = " + expected + "\n"//
         + "print(arrow.nbt.damage)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Float_NBT_is_readable
+  @Test
+  public void test_Float_NBT_is_readable() throws Exception {
+    // Given:
+    String expected = "5.625";
+
+    mc().executeCommand(
+        "/summon pig 4.5 5 2.3 {Tags:[testpig],NoGravity:1,Health:" + expected + "}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "print(pig.nbt.Health)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Float_NBT_is_writable
+  @Test
+  public void test_Float_NBT_is_writable() throws Exception {
+    // Given:
+    String expected = "5.625";
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoGravity:1,Health:4.25}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.Health = " + expected + "\n"//
+        + "print(pig.nbt.Health)\n"//
     );
 
     // Then:
@@ -172,7 +211,7 @@ public class EntityNbtTest extends WolTestBase {
   @Test
   public void test_Double_NBT_List_Content_is_readable() throws Exception {
     // Given:
-    String expected = "5.6";
+    String expected = "5.625";
 
     mc().executeCommand("/summon pig 4.5 " + expected + " 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
@@ -191,7 +230,7 @@ public class EntityNbtTest extends WolTestBase {
   @Test
   public void test_Double_NBT_List_Content_is_writable() throws Exception {
     // Given:
-    String expected = "5.6";
+    String expected = "5.625";
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
 
