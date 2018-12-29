@@ -15,7 +15,6 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Boolean_NBT_is_readable() throws Exception {
     // Given:
     String expected = "1";
-
     mc().executeCommand("/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoAI:1,NoGravity:1,powered:"
         + expected + "}");
     mc().clearEvents();
@@ -55,7 +54,6 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Byte_NBT_is_readable() throws Exception {
     // Given:
     String expected = "5";
-
     mc().executeCommand(
         "/summon creeper 4.5 5 2.3 {Tags:[testcreeper],NoAI:1,NoGravity:1,ExplosionRadius:"
             + expected + "}");
@@ -96,7 +94,6 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Double_NBT_is_readable() throws Exception {
     // Given:
     String expected = "5.625";
-
     mc().executeCommand(
         "/summon arrow 4.5 5 2.3 {Tags:[testarrow],NoGravity:1,damage:" + expected + "}");
     mc().clearEvents();
@@ -135,7 +132,6 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Float_NBT_is_readable() throws Exception {
     // Given:
     String expected = "5.625";
-
     mc().executeCommand(
         "/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,Health:" + expected + "}");
     mc().clearEvents();
@@ -174,7 +170,6 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Integer_NBT_is_readable() throws Exception {
     // Given:
     String expected = "5";
-
     mc().executeCommand(
         "/summon slime 4.5 5 2.3 {Tags:[testslime],NoAI:1,NoGravity:1,Size:" + expected + "}");
     mc().clearEvents();
@@ -213,10 +208,9 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Long_NBT_is_readable() throws Exception {
     // Given:
     String expected = "5";
-
     mc().executeCommand(
         "/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,DeathLootTable:\"\",DeathLootTableSeed:"
-            + expected + "L}");
+            + expected + "}");
     mc().clearEvents();
 
     // When:
@@ -235,7 +229,7 @@ public class EntityNbtTest extends WolTestBase {
     // Given:
     String expected = "5";
     mc().executeCommand(
-        "/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,DeathLootTable:\"\",DeathLootTableSeed:4L}");
+        "/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1,DeathLootTable:\"\",DeathLootTableSeed:4}");
     mc().clearEvents();
 
     // When:
@@ -249,13 +243,52 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Short_NBT_is_readable
+  @Test
+  public void test_Short_NBT_is_readable() throws Exception {
+    // Given:
+    String expected = "5";
+    mc().executeCommand(
+        "/summon zombie_pigman 4.5 5 2.3 {Tags:[testzombie_pigman],NoAI:1,NoGravity:1,Anger:"
+            + expected + "}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local zombie_pigman = Entities.find('@e[tag=testzombie_pigman]')[1]\n"//
+        + "print(zombie_pigman.nbt.Anger)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_Short_NBT_is_writable
+  @Test
+  public void test_Short_NBT_is_writable() throws Exception {
+    // Given:
+    String expected = "5";
+    mc().executeCommand(
+        "/summon zombie_pigman 4.5 5 2.3 {Tags:[testzombie_pigman],NoAI:1,NoGravity:1,Anger:4}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local zombie_pigman = Entities.find('@e[tag=testzombie_pigman]')[1]\n"//
+        + "zombie_pigman.nbt.Anger = " + expected + "\n"//
+        + "print(zombie_pigman.nbt.Anger)\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_is_readable
   @Test
   public void test_Double_NBT_List_is_readable() throws Exception {
     // Given:
     Vec3d pos = new Vec3d(4.5, 5, 2.3);
     String expected = String.format("{ %s, %s, %s }", pos.x, pos.y, pos.z);
-
     mc().executeCommand("/summon pig " + pos.x + " " + pos.y + " " + pos.z
         + " {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
@@ -294,7 +327,6 @@ public class EntityNbtTest extends WolTestBase {
   public void test_Double_NBT_List_Content_is_readable() throws Exception {
     // Given:
     String expected = "5.625";
-
     mc().executeCommand("/summon pig 4.5 " + expected + " 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
 
