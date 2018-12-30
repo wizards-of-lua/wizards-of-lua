@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
+import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
 
 public class ListNbtTable extends IndexedNbtTable<NBTTagList> {
@@ -43,10 +44,19 @@ public class ListNbtTable extends IndexedNbtTable<NBTTagList> {
       if (isInRange(javaIndex, parent.tagCount())) {
         parent.removeTag(javaIndex);
       }
-    } else if (javaIndex == parent.tagCount()) {
-      parent.appendTag(value);
     } else {
-      parent.set(javaIndex, value);
+      if (value.getId() != parent.getTagType()) {
+        String expected = nbtConverters.getLuaTypeName(parent.getTagType());
+        String actual = nbtConverters.getLuaTypeName(value.getId());
+        int luaIndex = javaIndex + 1;
+        throw new BadArgumentException(expected, actual)
+            .setFunctionOrPropertyName(getNbtPath(luaIndex));
+      }
+      if (javaIndex == parent.tagCount()) {
+        parent.appendTag(value);
+      } else {
+        parent.set(javaIndex, value);
+      }
     }
   }
 }

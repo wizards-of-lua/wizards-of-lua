@@ -108,6 +108,12 @@ public class NbtConverter {
     }
   }
 
+  public String getLuaTypeName(int id) {
+    Class<? extends NBTBase> nbtClass = getNbtClassById(id);
+    NbtFactory<NBTBase> factory = getFactory(nbtClass);
+    return factory.getLuaTypeName();
+  }
+
   private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
     if (mergers == null) {
       mergers = new HashMap<>();

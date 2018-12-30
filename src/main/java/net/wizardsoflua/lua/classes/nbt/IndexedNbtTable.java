@@ -25,7 +25,7 @@ public abstract class IndexedNbtTable<NBT extends NBTBase> extends NbtTable<NBT>
     return new NbtChildAccessor<C, NBT>(expectedChildType, accessor) {
       @Override
       public String getNbtPath() {
-        return accessor.getNbtPath() + '[' + key + ']';
+        return IndexedNbtTable.this.getNbtPath(key);
       }
 
       @Override
@@ -33,6 +33,10 @@ public abstract class IndexedNbtTable<NBT extends NBTBase> extends NbtTable<NBT>
         return getChild(parentNbt, key);
       }
     };
+  }
+
+  protected String getNbtPath(Object key) {
+    return accessor.getNbtPath() + '[' + key + ']';
   }
 
   @Override
@@ -49,8 +53,8 @@ public abstract class IndexedNbtTable<NBT extends NBTBase> extends NbtTable<NBT>
   protected void setChild(NBT parent, Object key, @Nullable NBTBase child) {
     Integer luaIndex = Converters.integerValueOf(key);
     if (luaIndex == null) {
-      throw new IllegalOperationAttemptException(
-          "bad key (" + key + ") for table " + accessor.getNbtPath() + ": key must be an integer");
+      throw new IllegalOperationAttemptException("bad key (" + key + ") for table '"
+          + accessor.getNbtPath() + "': key must be an integer");
     }
     int javaIndex = luaIndex - 1;
     setChild(parent, javaIndex, child);
@@ -79,8 +83,8 @@ public abstract class IndexedNbtTable<NBT extends NBTBase> extends NbtTable<NBT>
   protected void checkJavaIndex(int javaIndex, int range) {
     if (!isInRange(javaIndex, range)) {
       int luaIndex = javaIndex + 1;
-      throw new LuaRuntimeException("bad key (" + luaIndex + ") for table " + accessor.getNbtPath()
-          + ": index out of range [1;" + range + "]");
+      throw new LuaRuntimeException("bad key (" + luaIndex + ") for table '" + accessor.getNbtPath()
+          + "': index out of range [1;" + range + "]");
     }
   }
 }

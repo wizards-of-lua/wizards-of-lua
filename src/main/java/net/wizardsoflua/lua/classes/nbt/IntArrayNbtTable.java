@@ -34,9 +34,11 @@ public class IntArrayNbtTable extends IndexedNbtTable<NBTTagIntArray> {
     checkJavaIndex(javaIndex, getSize(parent));
 
     if (value == null)
-      throw new BadArgumentException(LuaTypes.NUMBER, LuaTypes.NIL).setArgumentName("value");
+      throw new BadArgumentException(LuaTypes.NUMBER, LuaTypes.NIL)
+          .setFunctionOrPropertyName(getNbtPath(javaIndex + 1));
     if (!(value instanceof NBTPrimitive))
-      throw new BadArgumentException(LuaTypes.NUMBER, LuaTypes.TABLE).setArgumentName("value");
+      throw new BadArgumentException(LuaTypes.NUMBER, LuaTypes.TABLE)
+          .setFunctionOrPropertyName(getNbtPath(javaIndex + 1));
 
     int intValue = ((NBTPrimitive) value).getInt();
     int[] array = parent.getIntArray();

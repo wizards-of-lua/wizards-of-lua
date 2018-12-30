@@ -20,6 +20,11 @@ public abstract class SingleTypeNbtFactory<NBT extends NBTBase, D> extends Abstr
   }
 
   @Override
+  public String getLuaTypeName() {
+    return getDataClass().getSimpleName().toLowerCase();
+  }
+
+  @Override
   public @Nullable NBT create(Object data, @Nullable NBT previousValue) {
     Class<D> dataClass = getDataClass();
     if (dataClass.isInstance(data)) {

@@ -13,4 +13,6 @@ public interface NbtFactory<NBT extends NBTBase> {
 
   @Nullable
   NBT create(Object data, @Nullable NBT previousValue);
+
+  String getLuaTypeName();
 }

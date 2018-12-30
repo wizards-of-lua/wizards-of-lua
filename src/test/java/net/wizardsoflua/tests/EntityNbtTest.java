@@ -449,7 +449,7 @@ public class EntityNbtTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).startsWith(
-        "Error during spell execution: bad argument to nbt.Pos[2]: expected number but got string");
+        "Error during spell execution: bad argument to 'nbt.Pos[2]': expected number but got string");
   }
 
   // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_adding_is_supported
@@ -486,7 +486,7 @@ public class EntityNbtTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).startsWith(
-        "Error during spell execution: bad key (my_key) for table nbt.Tags: key must be an integer");
+        "Error during spell execution: bad key (my_key) for table 'nbt.Tags': key must be an integer");
   }
 
   // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_adding_arbitrary_index_is_NOT_supported @formatter:on
@@ -505,7 +505,7 @@ public class EntityNbtTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).startsWith(
-        "Error during spell execution: bad key (3) for table nbt.Tags: index out of range [1;2]");
+        "Error during spell execution: bad key (3) for table 'nbt.Tags': index out of range [1;2]");
   }
 
   // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_removing_via_remove_is_supported
