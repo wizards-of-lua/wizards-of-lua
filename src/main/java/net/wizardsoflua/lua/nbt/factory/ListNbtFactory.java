@@ -12,12 +12,12 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 
 @AutoService(NbtFactory.class)
 @SpellScoped
-public class ListNbtFactory extends AbstractNbtFactory<NBTTagList, Table> {
+public class ListNbtFactory extends SingleTypeNbtFactory<NBTTagList, Table> {
   @Inject
   private NbtConverter nbtConverter;
 
   @Override
-  public @Nullable NBTTagList create(Table data, @Nullable NBTTagList previous) {
+  public @Nullable NBTTagList createTypesafe(Table data, @Nullable NBTTagList previous) {
     Integer length = getLengthIfSequence(data);
     if (length == null) {
       return null;
@@ -36,8 +36,8 @@ public class ListNbtFactory extends AbstractNbtFactory<NBTTagList, Table> {
     if (previous != null) {
       int previousType = previous.getTagType();
       Class<? extends NBTBase> previousClass = NbtConverter.getNbtClassById(previousType);
-      NbtFactory<NBTBase, ?> factory = nbtConverter.getFactory(previousClass);
-      NBTBase nbt = factory.tryCreate(value, null);
+      NbtFactory<NBTBase> factory = nbtConverter.getFactory(previousClass);
+      NBTBase nbt = factory.create(value, null);
       if (nbt != null) {
         return nbt;
       }

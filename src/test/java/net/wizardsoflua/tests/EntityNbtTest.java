@@ -312,7 +312,7 @@ public class EntityNbtTest extends WolTestBase {
 
     // When:
     mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
-        + "pig.nbt.CustomName = " + expected + "\n"//
+        + "pig.nbt.CustomName = '" + expected + "'\n"//
         + "print(pig.nbt.CustomName)\n"//
     );
 

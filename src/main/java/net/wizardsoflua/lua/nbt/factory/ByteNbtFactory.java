@@ -5,9 +5,15 @@ import com.google.auto.service.AutoService;
 import net.minecraft.nbt.NBTTagByte;
 
 @AutoService(NbtFactory.class)
-public class ByteNbtFactory extends AbstractNbtFactory<NBTTagByte, Number> {
+public class ByteNbtFactory extends AbstractNbtFactory<NBTTagByte> {
   @Override
-  public NBTTagByte create(Number data, @Nullable NBTTagByte previous) {
-    return new NBTTagByte(data.byteValue());
+  public @Nullable NBTTagByte create(Object data, NBTTagByte previousValue) {
+    if (data instanceof Boolean) {
+      data = (boolean) data ? 1 : 0;
+    }
+    if (data instanceof Number) {
+      return new NBTTagByte(((Number) data).byteValue());
+    }
+    return null;
   }
 }

@@ -48,26 +48,26 @@ public class NbtConverter {
   @Resource
   private Injector injector;
   private final LuaTypes types;
-  private @Nullable ImmutableMap<Class<? extends NBTBase>, NbtFactory<?, ?>> factories;
+  private @Nullable ImmutableMap<Class<? extends NBTBase>, NbtFactory<?>> factories;
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
 
   public NbtConverter(@Resource LuaTypes types) {
     this.types = requireNonNull(types, "types == null!");
   }
 
-  public ImmutableMap<Class<? extends NBTBase>, NbtFactory<?, ?>> getFactories() {
+  public ImmutableMap<Class<? extends NBTBase>, NbtFactory<?>> getFactories() {
     if (factories == null) {
-      Class<NbtFactory<?, ?>> cls = NbtFactory.getClassWithWildcards();
-      Set<Class<? extends NbtFactory<?, ?>>> load = ServiceLoader.load(logger, cls);
-      Iterable<NbtFactory<?, ?>> factories = Iterables.transform(load, injector::getInstance);
+      Class<NbtFactory<?>> cls = NbtFactory.getClassWithWildcards();
+      Set<Class<? extends NbtFactory<?>>> load = ServiceLoader.load(logger, cls);
+      Iterable<NbtFactory<?>> factories = Iterables.transform(load, injector::getInstance);
       this.factories = Maps.uniqueIndex(factories, NbtFactory::getNbtClass);
     }
     return factories;
   }
 
-  public <NBT> NbtFactory<NBTBase, ?> getFactory(Class<NBT> nbtClass) {
+  public <NBT> NbtFactory<NBTBase> getFactory(Class<NBT> nbtClass) {
     @SuppressWarnings("unchecked")
-    NbtFactory<NBTBase, ?> result = (NbtFactory<NBTBase, ?>) getFactories().get(nbtClass);
+    NbtFactory<NBTBase> result = (NbtFactory<NBTBase>) getFactories().get(nbtClass);
     checkArgument(result != null, "Unknown NBT " + nbtClass);
     return result;
   }
@@ -277,8 +277,8 @@ public class NbtConverter {
 
   public NBTBase toNbt(Object value, @Nullable NBTBase previousValue) {
     if (previousValue != null) {
-      NbtFactory<NBTBase, ?> factory = getFactory(previousValue.getClass());
-      NBTBase nbt = factory.tryCreate(value, previousValue);
+      NbtFactory<NBTBase> factory = getFactory(previousValue.getClass());
+      NBTBase nbt = factory.create(value, previousValue);
       if (nbt != null) {
         return nbt;
       }

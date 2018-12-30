@@ -5,9 +5,9 @@ import com.google.auto.service.AutoService;
 import net.minecraft.nbt.NBTTagDouble;
 
 @AutoService(NbtFactory.class)
-public class DoubleNbtFactory extends AbstractNbtFactory<NBTTagDouble, Number> {
+public class DoubleNbtFactory extends SingleTypeNbtFactory<NBTTagDouble, Number> {
   @Override
-  public NBTTagDouble create(Number data, @Nullable NBTTagDouble previous) {
+  public NBTTagDouble createTypesafe(Number data, @Nullable NBTTagDouble previous) {
     return new NBTTagDouble(data.doubleValue());
   }
 }
