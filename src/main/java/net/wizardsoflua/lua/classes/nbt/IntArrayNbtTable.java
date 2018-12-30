@@ -31,7 +31,7 @@ public class IntArrayNbtTable extends IndexedNbtTable<NBTTagIntArray> {
 
   @Override
   protected void setChild(NBTTagIntArray parent, int javaIndex, @Nullable NBTBase value) {
-    checkJavaIndex(javaIndex, parent);
+    checkJavaIndex(javaIndex, getSize(parent));
 
     if (value == null)
       throw new BadArgumentException(LuaTypes.NUMBER, LuaTypes.NIL).setArgumentName("value");

@@ -2,20 +2,17 @@ package net.wizardsoflua.lua.nbt.accessor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import net.minecraft.nbt.NBTBase;
-import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
+import net.sandius.rembulan.LuaRuntimeException;
 
-public class NbtChildAccessor<NBT extends NBTBase, P extends NBTBase> implements NbtAccessor<NBT> {
+public abstract class NbtChildAccessor<NBT extends NBTBase, P extends NBTBase>
+    implements NbtAccessor<NBT> {
   private final Class<NBT> expectedType;
   private final NbtAccessor<P> parent;
-  private final Function<? super P, ? extends NBTBase> getChild;
 
-  public NbtChildAccessor(Class<NBT> expectedType, NbtAccessor<P> parent,
-      Function<? super P, ? extends NBTBase> getChild) {
+  public NbtChildAccessor(Class<NBT> expectedType, NbtAccessor<P> parent) {
     this.expectedType = checkNotNull(expectedType, "expectedType == null!");
     this.parent = checkNotNull(parent, "parent == null!");
-    this.getChild = checkNotNull(getChild, "getChild == null!");
   }
 
   @Override
@@ -33,11 +30,14 @@ public class NbtChildAccessor<NBT extends NBTBase, P extends NBTBase> implements
   }
 
   private NBT getChild(P parentNbt) {
-    NBTBase nbt = getChild.apply(parentNbt);
+    NBTBase nbt = getChildRaw(parentNbt);
     if (expectedType.isInstance(nbt)) {
       return expectedType.cast(nbt);
     } else {
-      throw new IllegalOperationAttemptException("attempt to access invalid nbt table");
+      throw new LuaRuntimeException("the nbt table '" + getNbtPath() + "' changed its type to "
+          + NBTBase.getTagTypeName(nbt.getId()));
     }
   }
+
+  protected abstract NBTBase getChildRaw(P parentNbt);
 }

@@ -9,36 +9,11 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
-import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
 
 public class ListNbtTable extends IndexedNbtTable<NBTTagList> {
   public ListNbtTable(NbtAccessor<NBTTagList> accessor, Table metatable, Injector injector) {
     super(accessor, metatable, injector);
-  }
-
-  @Override
-  protected @Nullable NBTBase getChild(NBTTagList parent, Object key) {
-    Integer luaIndex = Converters.integerValueOf(key);
-    if (luaIndex != null && 1 <= luaIndex && luaIndex <= parent.tagCount()) {
-      return parent.get(luaIndex - 1);
-    }
-    return null;
-  }
-
-  @Override
-  protected void setChild(NBTTagList nbt, Object key, NBTBase value) {
-    int luaIndex = converters.toJava(int.class, key, "key");
-    int javaIndex = luaIndex - 1;
-    if (value == null) {
-      if (0 <= javaIndex && javaIndex < nbt.tagCount()) {
-        nbt.removeTag(javaIndex);
-      }
-    } else if (javaIndex == nbt.tagCount()) {
-      nbt.appendTag(value);
-    } else {
-      nbt.set(javaIndex, value);
-    }
   }
 
   @Override
@@ -63,14 +38,14 @@ public class ListNbtTable extends IndexedNbtTable<NBTTagList> {
 
   @Override
   protected void setChild(NBTTagList parent, int javaIndex, @Nullable NBTBase value) {
+    checkJavaIndex(javaIndex, parent.tagCount() + 1);
     if (value == null) {
-      if (isInRange(javaIndex, parent)) {
+      if (isInRange(javaIndex, parent.tagCount())) {
         parent.removeTag(javaIndex);
       }
     } else if (javaIndex == parent.tagCount()) {
       parent.appendTag(value);
     } else {
-      checkJavaIndex(javaIndex, parent);
       parent.set(javaIndex, value);
     }
   }

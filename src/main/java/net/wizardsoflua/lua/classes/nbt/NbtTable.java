@@ -27,7 +27,7 @@ public abstract class NbtTable<NBT extends NBTBase> extends Table {
   @Inject
   private ListNbtClass listNbtClass;
 
-  private NbtAccessor<NBT> accessor;
+  protected final NbtAccessor<NBT> accessor;
   private @Nullable Map<Object, Object> successors;
 
   public NbtTable(NbtAccessor<NBT> accessor, Table metatable, Injector injector) {
@@ -55,10 +55,8 @@ public abstract class NbtTable<NBT extends NBTBase> extends Table {
     }
   }
 
-  private <C extends NBTBase> NbtChildAccessor<C, NBT> getChildAccessor(Class<C> expectedChildType,
-      Object key) {
-    return new NbtChildAccessor<>(expectedChildType, accessor, p -> getChild(p, key));
-  }
+  protected abstract <C extends NBTBase> NbtChildAccessor<C, NBT> getChildAccessor(
+      Class<C> expectedChildType, Object key);
 
   protected abstract @Nullable NBTBase getChild(NBT parent, Object key);
 

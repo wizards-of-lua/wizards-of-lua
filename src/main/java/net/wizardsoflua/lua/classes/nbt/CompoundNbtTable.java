@@ -3,7 +3,6 @@ package net.wizardsoflua.lua.classes.nbt;
 import java.util.Set;
 import javax.annotation.Nullable;
 import com.google.common.collect.Iterables;
-
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.ByteString;
@@ -11,11 +10,28 @@ import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
+import net.wizardsoflua.lua.nbt.accessor.NbtChildAccessor;
 
 public class CompoundNbtTable extends NbtTable<NBTTagCompound> {
   public CompoundNbtTable(NbtAccessor<NBTTagCompound> accessor, Table metatable,
       Injector injector) {
     super(accessor, metatable, injector);
+  }
+
+  @Override
+  protected <C extends NBTBase> NbtChildAccessor<C, NBTTagCompound> getChildAccessor(
+      Class<C> expectedChildType, Object key) {
+    return new NbtChildAccessor<C, NBTTagCompound>(expectedChildType, accessor) {
+      @Override
+      public String getNbtPath() {
+        return accessor.getNbtPath() + '.' + key;
+      }
+
+      @Override
+      protected NBTBase getChildRaw(NBTTagCompound parentNbt) {
+        return getChild(parentNbt, key);
+      }
+    };
   }
 
   @Override

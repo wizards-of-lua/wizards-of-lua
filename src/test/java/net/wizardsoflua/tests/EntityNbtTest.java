@@ -321,9 +321,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_is_readable
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_is_readable
   @Test
-  public void test_Double_NBT_List_is_readable() throws Exception {
+  public void test_List_NBT_is_readable() throws Exception {
     // Given:
     Vec3d pos = new Vec3d(4.5, 5, 2.3);
     String expected = String.format("{ %s, %s, %s }", pos.x, pos.y, pos.z);
@@ -341,9 +341,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_is_writable
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_is_writable
   @Test
-  public void test_Double_NBT_List_is_writable() throws Exception {
+  public void test_List_NBT_is_writable() throws Exception {
     // Given:
     String expected = "{ 5.5, 6.0, 3.7 }";
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
@@ -360,9 +360,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.EntityNbtTest test_can_write_Integer_Table_to_Double_NBT_List
+  // /test net.wizardsoflua.tests.EntityNbtTest test_can_write_Integer_Table_to_List_NBT
   @Test
-  public void test_can_write_Integer_Table_to_Double_NBT_List() throws Exception {
+  public void test_can_write_Integer_Table_to_List_NBT() throws Exception {
     // Given:
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
@@ -378,9 +378,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("{ 5.0, 6.0, 3.0 }");
   }
 
-  // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_is_readable
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_Content_is_readable
   @Test
-  public void test_Double_NBT_List_Content_is_readable() throws Exception {
+  public void test_List_NBT_Content_is_readable() throws Exception {
     // Given:
     String expected = "5.625";
     mc().executeCommand("/summon pig 4.5 " + expected + " 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
@@ -396,9 +396,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_is_writable
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_Content_is_writable
   @Test
-  public void test_Double_NBT_List_Content_is_writable() throws Exception {
+  public void test_List_NBT_Content_is_writable() throws Exception {
     // Given:
     String expected = "5.625";
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
@@ -415,10 +415,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-
-  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_can_be_set_to_an_Integer @formatter:on
+  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_Double_List_NBT_Content_can_be_set_to_an_Integer @formatter:on
   @Test
-  public void test_Double_NBT_List_Content_can_be_set_to_an_Integer() throws Exception {
+  public void test_Double_List_NBT_Content_can_be_set_to_an_Integer() throws Exception {
     // Given:
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
@@ -434,9 +433,9 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("6.0");
   }
 
-  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_cannot_be_set_to_a_String @formatter:on
+  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_Double_List_NBT_Content_cannot_be_set_to_a_String @formatter:on
   @Test
-  public void test_Double_NBT_List_Content_cannot_be_set_to_a_String() throws Exception {
+  public void test_Double_List_NBT_Content_cannot_be_set_to_a_String() throws Exception {
     // Given:
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
@@ -450,7 +449,99 @@ public class EntityNbtTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).startsWith(
-        "Error during spell execution: attempt to write string to number nbt path 'Pos[2]'");
+        "Error during spell execution: bad argument to nbt.Pos[2]: expected number but got string");
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_adding_is_supported
+  @Test
+  public void test_List_NBT_adding_is_supported() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "table.insert(pig.nbt.Tags, 'testtag')\n"//
+        + "print(str(pig.nbt.Tags))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("{ \"testpig\", \"testtag\" }");
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_adding_arbitrary_key_is_NOT_supported
+  @Test
+  public void test_List_NBT_adding_arbitrary_key_is_NOT_supported() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.Tags.my_key = 'testtag'\n"//
+        + "print(str(pig.nbt.Tags))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).startsWith(
+        "Error during spell execution: bad key (my_key) for table nbt.Tags: key must be an integer");
+  }
+
+  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_adding_arbitrary_index_is_NOT_supported @formatter:on
+  @Test
+  public void test_List_NBT_adding_arbitrary_index_is_NOT_supported() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.Tags[3] = 'testtag'\n"//
+        + "print(str(pig.nbt.Tags))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).startsWith(
+        "Error during spell execution: bad key (3) for table nbt.Tags: index out of range [1;2]");
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_removing_via_remove_is_supported
+  @Test
+  public void test_List_NBT_removing_via_remove_is_supported() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig,t1,t2],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "table.remove(pig.nbt.Tags,2)\n"//
+        + "print(str(pig.nbt.Tags))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("{ \"testpig\", \"t2\" }");
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_List_NBT_removing_via_nil_set_is_supported
+  @Test
+  public void test_List_NBT_removing_via_nil_set_is_supported() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig,t1,t2],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "table.remove(pig.nbt.Tags,2)\n"//
+        + "print(str(pig.nbt.Tags))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("{ \"testpig\", \"t2\" }");
   }
 
   // /test net.wizardsoflua.tests.EntityNbtTest test_setting_custom_NBT_causes_Error

@@ -275,7 +275,10 @@ public class NbtConverter {
     return result;
   }
 
-  public NBTBase toNbt(Object value, @Nullable NBTBase previousValue) {
+  public @Nullable NBTBase toNbt(@Nullable Object value, @Nullable NBTBase previousValue) {
+    if (value == null) {
+      return null;
+    }
     if (previousValue != null) {
       NbtFactory<NBTBase> factory = getFactory(previousValue.getClass());
       NBTBase nbt = factory.create(value, previousValue);
