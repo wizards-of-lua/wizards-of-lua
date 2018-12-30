@@ -360,6 +360,24 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.EntityNbtTest test_can_write_Integer_Table_to_Double_NBT_List
+  @Test
+  public void test_can_write_Integer_Table_to_Double_NBT_List() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.Pos = { 5, 6, 3 }\n"//
+        + "print(str(pig.nbt.Pos))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("{ 5.0, 6.0, 3.0 }");
+  }
+
   // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_is_readable
   @Test
   public void test_Double_NBT_List_Content_is_readable() throws Exception {
@@ -397,9 +415,28 @@ public class EntityNbtTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
-  // /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_cannot_be_set_to_String
+
+  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_can_be_set_to_an_Integer @formatter:on
   @Test
-  public void test_Double_NBT_List_Content_cannot_be_set_to_String() throws Exception {
+  public void test_Double_NBT_List_Content_can_be_set_to_an_Integer() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.Pos[2] = 6\n"//
+        + "print(pig.nbt.Pos[2])\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo("6.0");
+  }
+
+  // @formatter:off /test net.wizardsoflua.tests.EntityNbtTest test_Double_NBT_List_Content_cannot_be_set_to_a_String @formatter:on
+  @Test
+  public void test_Double_NBT_List_Content_cannot_be_set_to_a_String() throws Exception {
     // Given:
     mc().executeCommand("/summon pig 4.5 5 2.3 {Tags:[testpig],NoAI:1,NoGravity:1}");
     mc().clearEvents();
