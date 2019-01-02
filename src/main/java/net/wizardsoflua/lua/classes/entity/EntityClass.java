@@ -4,15 +4,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
@@ -42,6 +38,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.nbt.CompoundNbtClass;
 import net.wizardsoflua.lua.classes.nbt.CompoundNbtTable;
 import net.wizardsoflua.lua.nbt.NbtConverter;
+import net.wizardsoflua.lua.nbt.accessor.NbtRootAccessor;
 
 /**
  * The Entity class is the base class of all entities that populate the world.
@@ -214,7 +211,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public CompoundNbtTable getNbt() {
-      return compoundNbtClass.toLuaInstance(new EntityNbtAccessor(delegate));
+      return compoundNbtClass.toLuaInstance(new NbtRootAccessor<>(delegate));
     }
 
     /**

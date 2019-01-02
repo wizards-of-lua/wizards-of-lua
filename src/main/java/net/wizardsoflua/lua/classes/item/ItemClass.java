@@ -1,9 +1,7 @@
 package net.wizardsoflua.lua.classes.item;
 
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -22,7 +20,10 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.lua.classes.nbt.CompoundNbtClass;
+import net.wizardsoflua.lua.classes.nbt.CompoundNbtTable;
 import net.wizardsoflua.lua.nbt.NbtConverter;
+import net.wizardsoflua.lua.nbt.accessor.NbtRootAccessor;
 
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = ItemClass.NAME)
@@ -52,6 +53,8 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
   public static class Instance extends LuaInstance<ItemStack> {
     @Inject
     private NbtConverter nbtConverter;
+    @Inject
+    private CompoundNbtClass compoundNbtClass;
 
     public Instance(ItemStack delegate, Injector injector) {
       super(delegate);
@@ -99,8 +102,8 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
     }
 
     @LuaProperty
-    public NBTTagCompound getNbt() {
-      return delegate.serializeNBT();
+    public CompoundNbtTable getNbt() {
+      return compoundNbtClass.toLuaInstance(new NbtRootAccessor<>(delegate));
     }
 
     @LuaProperty
