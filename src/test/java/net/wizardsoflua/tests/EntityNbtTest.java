@@ -560,7 +560,26 @@ public class EntityNbtTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage())
-        .startsWith("Error during spell execution: attempt to write to unknown nbt path 'custom'");
+        .startsWith("Error during spell execution: failed to store 'bla' to nbt.custom");
+  }
+
+  // /test net.wizardsoflua.tests.EntityNbtTest test_setting_NBT_with_incorrect_Type_causes_Error
+  @Test
+  public void test_setting_NBT_with_incorrect_Type_causes_Error() throws Exception {
+    // Given:
+    mc().executeCommand("/summon pig 0 5 0 {Tags:[testpig],NoAI:1,NoGravity:1}");
+    mc().clearEvents();
+
+    // When:
+    mc().executeCommand("/lua local pig = Entities.find('@e[tag=testpig]')[1]\n"//
+        + "pig.nbt.CustomName = 1\n"//
+        + "print(str(pig.nbt.CustomName))\n"//
+    );
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage())
+        .startsWith("Error during spell execution: failed to store 1 to nbt.CustomName");
   }
 
 }

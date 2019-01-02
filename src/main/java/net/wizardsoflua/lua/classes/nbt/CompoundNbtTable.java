@@ -1,8 +1,11 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import java.util.Set;
+
 import javax.annotation.Nullable;
+
 import com.google.common.collect.Iterables;
+
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.sandius.rembulan.ByteString;
@@ -24,7 +27,7 @@ public class CompoundNbtTable extends NbtTable<NBTTagCompound> {
     return new NbtChildAccessor<C, NBTTagCompound>(expectedChildType, accessor) {
       @Override
       public String getNbtPath() {
-        return accessor.getNbtPath() + '.' + key;
+        return CompoundNbtTable.this.getNbtPath(key);
       }
 
       @Override
@@ -32,6 +35,11 @@ public class CompoundNbtTable extends NbtTable<NBTTagCompound> {
         return getChild(parentNbt, key);
       }
     };
+  }
+
+  @Override
+  protected String getNbtPath(Object key) {
+    return accessor.getNbtPath() + '.' + key;
   }
 
   @Override

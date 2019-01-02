@@ -1,7 +1,9 @@
 package net.wizardsoflua.lua.nbt.accessor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.function.Consumer;
+
 import net.minecraft.nbt.NBTBase;
 import net.sandius.rembulan.LuaRuntimeException;
 
@@ -16,13 +18,13 @@ public abstract class NbtChildAccessor<NBT extends NBTBase, P extends NBTBase>
   }
 
   @Override
-  public NBT getNbt() {
+  public final NBT getNbt() {
     P parentNbt = parent.getNbt();
     return getChild(parentNbt);
   }
 
   @Override
-  public void modifyNbt(Consumer<? super NBT> consumer) {
+  public final void modifyNbt(Consumer<? super NBT> consumer) {
     parent.modifyNbt(parentNbt -> {
       NBT nbt = getChild(parentNbt);
       consumer.accept(nbt);

@@ -1,7 +1,9 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static java.util.Objects.requireNonNull;
+
 import java.util.function.Consumer;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;

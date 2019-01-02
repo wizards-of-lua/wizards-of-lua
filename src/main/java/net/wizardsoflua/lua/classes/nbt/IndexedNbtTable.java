@@ -1,10 +1,13 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import java.util.Collections;
+
 import javax.annotation.Nullable;
+
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
+
 import net.minecraft.nbt.NBTBase;
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
@@ -35,6 +38,7 @@ public abstract class IndexedNbtTable<NBT extends NBTBase> extends NbtTable<NBT>
     };
   }
 
+  @Override
   protected String getNbtPath(Object key) {
     return accessor.getNbtPath() + '[' + key + ']';
   }
