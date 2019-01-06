@@ -2,6 +2,7 @@ package net.wizardsoflua.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Collections2.transform;
 import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,8 +10,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.apache.logging.log4j.Logger;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
@@ -28,10 +29,11 @@ import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
+import net.sandius.rembulan.ConversionException;
 import net.sandius.rembulan.Conversions;
+import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
-import net.wizardsoflua.config.ConversionException;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.SpellScoped;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
@@ -48,26 +50,41 @@ public class NbtConverter {
   @Resource
   private Injector injector;
   private final LuaTypes types;
-  private @Nullable ImmutableMap<Class<? extends NBTBase>, NbtFactory<?>> factories;
+  private @Nullable ImmutableList<NbtFactory<?>> factories;
+  private @Nullable ImmutableMap<Class<? extends NBTBase>, NbtFactory<?>> factoriesByNbtClass;
+  private @Nullable ImmutableMap<String, NbtFactory<?>> factoriesByNbtTypeName;
   private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
 
   public NbtConverter(@Resource LuaTypes types) {
     this.types = requireNonNull(types, "types == null!");
   }
 
-  public ImmutableMap<Class<? extends NBTBase>, NbtFactory<?>> getFactories() {
+  private ImmutableList<NbtFactory<?>> getFactories() {
     if (factories == null) {
       Class<NbtFactory<?>> cls = NbtFactory.getClassWithWildcards();
-      Set<Class<? extends NbtFactory<?>>> load = ServiceLoader.load(logger, cls);
-      Iterable<NbtFactory<?>> factories = Iterables.transform(load, injector::getInstance);
-      this.factories = Maps.uniqueIndex(factories, NbtFactory::getNbtClass);
+      Set<Class<? extends NbtFactory<?>>> factoryClasses = ServiceLoader.load(logger, cls);
+      factories = ImmutableList.copyOf(transform(factoryClasses, injector::getInstance));
     }
     return factories;
   }
 
-  public <NBT> NbtFactory<NBTBase> getFactory(Class<NBT> nbtClass) {
+  private ImmutableMap<Class<? extends NBTBase>, NbtFactory<?>> getFactoriesByNbtClass() {
+    if (factoriesByNbtClass == null) {
+      factoriesByNbtClass = Maps.uniqueIndex(getFactories(), NbtFactory::getNbtClass);
+    }
+    return factoriesByNbtClass;
+  }
+
+  private ImmutableMap<String, NbtFactory<?>> getFactoriesByNbtTypeName() {
+    if (factoriesByNbtTypeName == null) {
+      factoriesByNbtTypeName = Maps.uniqueIndex(getFactories(), NbtFactory::getNbtTypeName);
+    }
+    return factoriesByNbtTypeName;
+  }
+
+  public <NBT extends NBTBase> NbtFactory<NBT> getFactory(Class<NBT> nbtClass) {
     @SuppressWarnings("unchecked")
-    NbtFactory<NBTBase> result = (NbtFactory<NBTBase>) getFactories().get(nbtClass);
+    NbtFactory<NBT> result = (NbtFactory<NBT>) getFactoriesByNbtClass().get(nbtClass);
     checkArgument(result != null, "Unknown NBT " + nbtClass);
     return result;
   }
@@ -110,7 +127,7 @@ public class NbtConverter {
 
   public String getLuaTypeName(int id) {
     Class<? extends NBTBase> nbtClass = getNbtClassById(id);
-    NbtFactory<NBTBase> factory = getFactory(nbtClass);
+    NbtFactory<? extends NBTBase> factory = getFactory(nbtClass);
     return factory.getLuaTypeName();
   }
 
@@ -281,9 +298,38 @@ public class NbtConverter {
     return result;
   }
 
+  public static String formatLuaValue(Object luaValue) {
+    return luaValue instanceof ByteString ? "'" + luaValue + "'"
+        : Conversions.toHumanReadableString(luaValue).toString();
+  }
+
   public @Nullable NBTBase toNbt(@Nullable Object value, @Nullable NBTBase previousValue) {
     if (value == null) {
       return null;
+    }
+    if (value instanceof Table) {
+      Table table = (Table) value;
+      Object nbtType = table.rawget("__nbttype");
+      if (nbtType instanceof ByteString) {
+        String nbtTypeName = ((ByteString) nbtType).toString();
+
+        value = table.rawget("value");
+        if (value == null) {
+          throw new LuaRuntimeException("missing NBT value");
+        }
+
+        ImmutableMap<String, NbtFactory<?>> factories = getFactoriesByNbtTypeName();
+        if (nbtTypeName.endsWith("_list")) {
+          NbtFactory<?> factory = factories.get("list");
+        } else {
+          NbtFactory<?> factory = factories.get(nbtTypeName);
+          if (factory == null) {
+            throw new LuaRuntimeException("Unknown nbt type '" + nbtTypeName + "'");
+          }
+          return factory.convert(value);
+        }
+
+      }
     }
     if (previousValue != null) {
       NbtFactory<NBTBase> factory = getFactory(previousValue.getClass());

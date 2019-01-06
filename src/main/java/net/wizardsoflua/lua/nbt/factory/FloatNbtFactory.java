@@ -7,6 +7,11 @@ import net.minecraft.nbt.NBTTagFloat;
 @AutoService(NbtFactory.class)
 public class FloatNbtFactory extends SingleTypeNbtFactory<NBTTagFloat, Number> {
   @Override
+  public String getNbtTypeName() {
+    return "float";
+  }
+
+  @Override
   public NBTTagFloat createTypesafe(Number data, @Nullable NBTTagFloat previous) {
     return new NBTTagFloat(data.floatValue());
   }

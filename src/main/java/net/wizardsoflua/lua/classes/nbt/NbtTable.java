@@ -1,16 +1,13 @@
 package net.wizardsoflua.lua.classes.nbt;
 
 import static java.util.Objects.requireNonNull;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +20,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.lua.nbt.accessor.NbtAccessor;
 import net.wizardsoflua.lua.nbt.accessor.NbtChildAccessor;
+import net.wizardsoflua.nbt.NbtUtils;
 
 public abstract class NbtTable<NBT extends NBTBase> extends Table {
   @Resource
@@ -81,8 +79,8 @@ public abstract class NbtTable<NBT extends NBTBase> extends Table {
     NBT nbt = getNbt();
     NBTBase actualValue = getChild(nbt, key);
     if (!nbtEquals(actualValue, ref.get())) {
-      // 8 == String NBT
-      String formattedValue = ref.get().getId() == 8 ? "'" + value + "'" : String.valueOf(value);
+      String formattedValue =
+          ref.get().getId() == NbtUtils.STRING ? "'" + value + "'" : String.valueOf(value);
       throw new LuaRuntimeException("failed to store " + formattedValue + " to " + getNbtPath(key));
     }
   }

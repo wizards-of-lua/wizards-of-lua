@@ -36,7 +36,6 @@ public class BadArgumentException extends IllegalArgumentException {
 
   /**
    * @param detailMessage the new value for {@link #detailMessage}
-   * @return
    */
   public BadArgumentException setDetailMessage(String detailMessage) {
     this.detailMessage = requireNonNull(detailMessage, "detailMessage == null!");

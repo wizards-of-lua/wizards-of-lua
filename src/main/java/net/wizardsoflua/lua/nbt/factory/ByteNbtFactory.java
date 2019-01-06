@@ -7,12 +7,17 @@ import net.minecraft.nbt.NBTTagByte;
 @AutoService(NbtFactory.class)
 public class ByteNbtFactory extends AbstractNbtFactory<NBTTagByte> {
   @Override
+  public String getNbtTypeName() {
+    return "byte";
+  }
+
+  @Override
   public String getLuaTypeName() {
     return "boolean/number";
   }
 
   @Override
-  public @Nullable NBTTagByte create(Object data, NBTTagByte previousValue) {
+  public @Nullable NBTTagByte create(Object data, @Nullable NBTTagByte previousValue) {
     if (data instanceof Boolean) {
       data = (boolean) data ? 1 : 0;
     }

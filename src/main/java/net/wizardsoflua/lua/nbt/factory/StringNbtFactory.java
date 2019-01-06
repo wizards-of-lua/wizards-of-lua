@@ -8,6 +8,11 @@ import net.sandius.rembulan.ByteString;
 @AutoService(NbtFactory.class)
 public class StringNbtFactory extends SingleTypeNbtFactory<NBTTagString, ByteString> {
   @Override
+  public String getNbtTypeName() {
+    return "string";
+  }
+
+  @Override
   public String getLuaTypeName() {
     return "string";
   }

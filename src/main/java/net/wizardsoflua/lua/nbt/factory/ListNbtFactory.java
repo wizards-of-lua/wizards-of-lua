@@ -17,6 +17,11 @@ public class ListNbtFactory extends SingleTypeNbtFactory<NBTTagList, Table> {
   private NbtConverter nbtConverter;
 
   @Override
+  public String getNbtTypeName() {
+    return "list";
+  }
+
+  @Override
   public @Nullable NBTTagList createTypesafe(Table data, @Nullable NBTTagList previous) {
     Integer length = getLengthIfSequence(data);
     if (length == null) {

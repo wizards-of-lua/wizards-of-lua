@@ -7,6 +7,11 @@ import net.minecraft.nbt.NBTTagLong;
 @AutoService(NbtFactory.class)
 public class LongNbtFactory extends SingleTypeNbtFactory<NBTTagLong, Number> {
   @Override
+  public String getNbtTypeName() {
+    return "long";
+  }
+
+  @Override
   public NBTTagLong createTypesafe(Number data, @Nullable NBTTagLong previous) {
     return new NBTTagLong(data.longValue());
   }
