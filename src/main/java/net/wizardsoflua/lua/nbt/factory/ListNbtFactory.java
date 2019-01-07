@@ -41,7 +41,7 @@ public class ListNbtFactory extends SingleTypeNbtFactory<NBTTagList, Table> {
     if (previous != null) {
       int previousType = previous.getTagType();
       Class<? extends NBTBase> previousClass = NbtConverter.getNbtClassById(previousType);
-      NbtFactory<NBTBase> factory = nbtConverter.getFactory(previousClass);
+      NbtFactory<? extends NBTBase> factory = nbtConverter.getFactory(previousClass);
       NBTBase nbt = factory.create(value, null);
       if (nbt != null) {
         return nbt;

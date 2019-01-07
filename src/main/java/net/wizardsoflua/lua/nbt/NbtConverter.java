@@ -326,19 +326,44 @@ public class NbtConverter {
           if (factory == null) {
             throw new LuaRuntimeException("Unknown nbt type '" + nbtTypeName + "'");
           }
-          return factory.convert(value);
+          return convertUsing(factory, value);
         }
 
       }
     }
     if (previousValue != null) {
-      NbtFactory<NBTBase> factory = getFactory(previousValue.getClass());
-      NBTBase nbt = factory.create(value, previousValue);
+      NBTBase nbt = create(value, previousValue);
       if (nbt != null) {
         return nbt;
       }
     }
     return toNbt(value);
+  }
+
+  private NBTBase create(Object value, NBTBase previousValue) {
+    return create(value, previousValue, previousValue.getClass());
+  }
+
+  private <NBT extends NBTBase> NBTBase create(Object value, NBTBase previousValue,
+      Class<NBT> previousType) {
+    NbtFactory<NBT> factory = getFactory(previousType);
+    return factory.create(value, previousType.cast(previousValue));
+  }
+
+  public <NBT extends NBTBase> NBT convertTo(Class<NBT> nbtClass, Object value) {
+    NbtFactory<NBT> factory = getFactory(nbtClass);
+    return convertUsing(factory, value);
+  }
+
+  private <NBT extends NBTBase> NBT convertUsing(NbtFactory<NBT> factory, Object value) {
+    NBT nbt = factory.create(value, null);
+    if (nbt != null) {
+      return nbt;
+    } else {
+      throw new ConversionException("Cannot convert " + formatLuaValue(value) + " to "
+          + factory.getNbtTypeName() + " NBT: expected " + factory.getLuaTypeName() + " but got "
+          + types.getLuaTypeNameOfLuaObject(value));
+    }
   }
 
   public NBTBase toNbt(Object data) {

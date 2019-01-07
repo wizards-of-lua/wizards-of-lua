@@ -112,7 +112,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagByte.class);
@@ -148,7 +148,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagDouble.class);
@@ -195,7 +195,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagFloat.class);
@@ -291,7 +291,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagInt.class);
@@ -345,7 +345,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagLong.class);
@@ -367,7 +367,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagShort.class);
@@ -412,7 +412,7 @@ public class ItemNbtTest extends WolTestBase {
     );
 
     // Then:
-    assertThat(mc().nextClientMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo("" + expected);
 
     NBTBase actual = mc().player().getMainHandItem().getTagCompound().getTag("abc");
     assertThat(actual).isExactlyInstanceOf(NBTTagShort.class);
