@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.Vec3d;
 
 public class WolMobAI extends EntityAIBase {
+  private static final double MAX_OFFSET = 0.3D * 0.3D;
   private final WolMobAIRegistry wolMobAIRegistry;
   private final EntityLiving entity;
 
@@ -44,7 +45,7 @@ public class WolMobAI extends EntityAIBase {
   @Override
   public boolean shouldExecute() {
     return destinationPos != null
-        && entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z) > 1.0D;
+        && entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z) > MAX_OFFSET;
   }
 
   /**
@@ -68,7 +69,7 @@ public class WolMobAI extends EntityAIBase {
   @Override
   public void updateTask() {
     double distanceSq = entity.getDistanceSq(destinationPos.x, destinationPos.y, destinationPos.z);
-    if (distanceSq > 1.0D) {
+    if (distanceSq > MAX_OFFSET) {
       isAtDestination = false;
       ++age;
       if (age % 40 == 0) {
