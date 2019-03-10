@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class SpellRegistry {
   private final List<SpellEntity> spells = new CopyOnWriteArrayList<>();

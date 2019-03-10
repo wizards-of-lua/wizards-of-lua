@@ -3,7 +3,7 @@ package net.wizardsoflua.lua.classes.event;
 import static java.util.Objects.requireNonNull;
 import javax.inject.Inject;
 import com.google.auto.service.AutoService;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;

@@ -19,12 +19,18 @@ public class GeneralConfig {
     File getWolConfigDir();
   }
 
+  public static final int MIN_EVENT_LISTENER_LUA_TICKS_LIMIT = 1000;
+  public static final int MAX_EVENT_LISTENER_LUA_TICKS_LIMIT = 10000000;
+  public static final int MIN_LUA_TICKS_LIMIT = 1000;
+  public static final int MAX_LUA_TICKS_LIMIT = 10000000;
+
   /**
    * Max. number of Lua ticks a spell can run per game tick [range: 1000 ~ 10000000, default: 50000]
    */
   private int luaTicksLimit = 50000;
   /**
-   * Max. number of Lua ticks a event listener can run per event [range: 1000 ~ 10000000, default: 50000]
+   * Max. number of Lua ticks a event listener can run per event [range: 1000 ~ 10000000, default:
+   * 50000]
    */
   private int eventListenerLuaTicksLimit = 50000;
   /**
@@ -80,7 +86,7 @@ public class GeneralConfig {
   }
 
   private int setLuaTicksLimit(int luaTicksLimit, boolean save) {
-    this.luaTicksLimit = clamp(luaTicksLimit, 1000, 10000000);
+    this.luaTicksLimit = clamp(luaTicksLimit, MIN_LUA_TICKS_LIMIT, MAX_LUA_TICKS_LIMIT);
     if (save) {
       context.save();
     }
@@ -96,7 +102,8 @@ public class GeneralConfig {
   }
 
   private int setEventListenerLuaTicksLimit(int eventListenerLuaTicksLimit, boolean save) {
-    this.eventListenerLuaTicksLimit = clamp(eventListenerLuaTicksLimit, 1000, 10000000);
+    this.eventListenerLuaTicksLimit = clamp(eventListenerLuaTicksLimit,
+        MIN_EVENT_LISTENER_LUA_TICKS_LIMIT, MAX_EVENT_LISTENER_LUA_TICKS_LIMIT);
     if (save) {
       context.save();
     }

@@ -10,7 +10,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class AboutMessage {
@@ -33,7 +33,7 @@ public class AboutMessage {
 
   @Override
   public String toString() {
-    return getTextComponent().getUnformattedText();
+    return getTextComponent().getUnformattedComponentText();
   }
 
   @SubscribeEvent
@@ -46,7 +46,7 @@ public class AboutMessage {
         if (recommendedVersion != null) {
           TextComponentString component =
               new TextComponentString("New version " + recommendedVersion + " available!");
-          component.setStyle((new Style()).setColor(TextFormatting.GREEN));
+          component.setStyle(new Style().setColor(TextFormatting.GREEN));
           event.player.sendMessage(new WolAnnouncementMessage(component));
         }
 
@@ -64,11 +64,11 @@ public class AboutMessage {
     WolAnnouncementMessage result = new WolAnnouncementMessage("Powered by the ");
 
     TextComponentString modName = new TextComponentString("Wizards of Lua");
-    modName.setStyle((new Style()).setColor(TextFormatting.GOLD));
+    modName.setStyle(new Style().setColor(TextFormatting.GOLD));
     result.appendSibling(modName);
 
     TextComponentString version = new TextComponentString(" - " + context.getVersion());
-    version.setStyle((new Style()).setColor(TextFormatting.WHITE));
+    version.setStyle(new Style().setColor(TextFormatting.WHITE));
     result.appendSibling(version);
     return result;
   }

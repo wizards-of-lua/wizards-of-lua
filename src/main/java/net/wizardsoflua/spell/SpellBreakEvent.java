@@ -1,6 +1,6 @@
 package net.wizardsoflua.spell;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 /**
  * The {@link SpellBreakEvent} is fired just before a spell is broken.

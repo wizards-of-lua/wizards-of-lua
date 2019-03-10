@@ -6,15 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -23,18 +21,21 @@ public class ItemUtil {
   public static ItemStack getItemStackFromBlock(IBlockState blockState,
       @Nullable NBTTagCompound nbt, int amount) {
     Block block = blockState.getBlock();
-    int meta = block.getMetaFromState(blockState);
-    Item item = Item.getItemFromBlock(block);
-    if (item == Items.AIR) {
-      // Work-Around since Item.BLOCK_TO_ITEM is incomplete
-      if (block == Blocks.STANDING_SIGN || block == Blocks.WALL_SIGN) {
-        item = Item.REGISTRY.getObject(new ResourceLocation("sign"));
-      }
-    }
-    if (!item.getHasSubtypes()) {
-      meta = 0;
-    }
-    ItemStack stack = new ItemStack(item, amount, meta);
+
+    // Item item = block.asItem();
+
+    // TODO is there anything of the following to do here in 1.13?
+    // if (item == Items.AIR) {
+    // // Work-Around since Item.BLOCK_TO_ITEM is incomplete
+    // if (block == Blocks.STANDING_SIGN || block == Blocks.WALL_SIGN) {
+    // item = Item.REGISTRY.getObject(new ResourceLocation("sign"));
+    // }
+    // }
+    // if (!item.getHasSubtypes()) {
+    // meta = 0;
+    // }
+    //
+    ItemStack stack = new ItemStack(block, amount);
     if (nbt == null) {
       return stack;
     } else {
@@ -44,7 +45,7 @@ public class ItemUtil {
 
   @Nullable
   public static EntityItem dropItem(World world, Vec3d pos, Item item, int amount) {
-    return dropItem(world, pos, new ItemStack(item, amount, 0));
+    return dropItem(world, pos, new ItemStack(item, amount));
   }
 
   /**
@@ -63,26 +64,23 @@ public class ItemUtil {
   }
 
   /**
-   * Originally copied from {@link Minecraft#storeTEInStack(ItemStack, TileEntity)}
-   * 
+   * Originally copied from {@link Minecraft#storeTEInStack(ItemStack, TileEntity)}. Replaced 2nd
+   * parameter {@link TileEntity} with {@link NBTTagCompound}.
    */
   private static ItemStack storeTEInStack(ItemStack stack, NBTTagCompound nbttagcompound) {
-    if (stack.getItem() == Items.SKULL && nbttagcompound.hasKey("Owner")) {
-      NBTTagCompound nbttagcompound2 = nbttagcompound.getCompoundTag("Owner");
-      NBTTagCompound nbttagcompound3 = new NBTTagCompound();
-      nbttagcompound3.setTag("SkullOwner", nbttagcompound2);
-      stack.setTagCompound(nbttagcompound3);
+    if (stack.getItem() instanceof ItemSkull && nbttagcompound.hasKey("Owner")) {
+      NBTTagCompound nbttagcompound2 = nbttagcompound.getCompound("Owner");
+      stack.getOrCreateTag().setTag("SkullOwner", nbttagcompound2);
       return stack;
     } else {
       stack.setTagInfo("BlockEntityTag", nbttagcompound);
-      if (stack.isStackable()) {
-        NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-        NBTTagList nbttaglist = new NBTTagList();
-        nbttaglist.appendTag(new NBTTagString("(+NBT)"));
-        nbttagcompound1.setTag("Lore", nbttaglist);
-        stack.setTagInfo("display", nbttagcompound1);
-      }
+      NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+      NBTTagList nbttaglist = new NBTTagList();
+      nbttaglist.add(new NBTTagString("(+NBT)"));
+      nbttagcompound1.setTag("Lore", nbttaglist);
+      stack.setTagInfo("display", nbttagcompound1);
       return stack;
     }
   }
+
 }
