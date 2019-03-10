@@ -1,6 +1,6 @@
 package net.wizardsoflua.testenv.event;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 
 public class ServerLog4jEvent extends Event {
 

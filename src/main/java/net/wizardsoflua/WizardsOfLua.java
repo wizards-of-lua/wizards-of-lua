@@ -9,27 +9,40 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.util.Optional;
 import java.util.UUID;
+
 import javax.annotation.Nullable;
+
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
+
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.common.ForgeVersion.CheckResult;
-import net.minecraftforge.common.ForgeVersion.Status;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.VersionChecker;
+import net.minecraftforge.fml.VersionChecker.CheckResult;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.versions.forge.ForgeVersion;
+import net.sandius.rembulan.exec.CallException;
+import net.sandius.rembulan.exec.CallPausedException;
+import net.sandius.rembulan.load.LoaderException;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
@@ -54,8 +67,7 @@ import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.startup.Startup;
 import net.wizardsoflua.wol.WolCommand;
 
-@Mod(modid = WizardsOfLua.MODID, version = WizardsOfLua.VERSION, acceptableRemoteVersions = "*",
-    updateJSON = "https://raw.githubusercontent.com/wizards-of-lua/wizards-of-lua/master/versions.json")
+@Mod(WizardsOfLua.MODID)
 public class WizardsOfLua {
   public static final String MODID = "wol";
   public static final String NAME = "Wizards of Lua";
@@ -63,10 +75,10 @@ public class WizardsOfLua {
   public static final String VERSION = "@MOD_VERSION@";
   public static final String URL = "http://www.wizards-of-lua.net";
 
-  @Instance(MODID)
+  // TODO do we need this anymore?
   public static WizardsOfLua instance;
 
-  public Logger logger;
+  public final Logger logger = LogManager.getLogger();
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
@@ -95,14 +107,29 @@ public class WizardsOfLua {
   private Clock clock = getDefaultClock();
   private InjectionScope rootScope = new InjectionScope();
 
-  public WizardsOfLua() {}
+  public WizardsOfLua() {
+    instance = this;
+    FMLModLoadingContext.get().getModEventBus().addListener(this::onCommonSetup);
+    FMLModLoadingContext.get().getModEventBus().addListener(this::onServerSetup);
+    MinecraftForge.EVENT_BUS.register(this);
+  }
 
-  @EventHandler
-  public void preInit(FMLPreInitializationEvent event) throws Exception {
-    logger = event.getModLog();
+  public void onServerSetup(FMLDedicatedServerSetupEvent event) {
+    logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
+    MinecraftForge.EVENT_BUS.register(getSpellRegistry());
+    MinecraftForge.EVENT_BUS.register(aboutMessage);
+    MinecraftForge.EVENT_BUS.register(eventHandler);
+  }
+
+  public void onCommonSetup(FMLCommonSetupEvent event) {
     ExtensionLoader.initialize(logger);
-    tempDir = Files.createTempDirectory("wizards-of-lua");
-    config = WolConfig.create(event, CONFIG_NAME);
+    try {
+      tempDir = Files.createTempDirectory("wizards-of-lua");
+      config = WolConfig.create(CONFIG_NAME);
+    } catch (IOException | LoaderException | CallException | CallPausedException
+        | InterruptedException e1) {
+      throw new RuntimeException(e1);
+    }
     aboutMessage = new AboutMessage(new AboutMessage.Context() {
 
       @Override
@@ -123,14 +150,12 @@ public class WizardsOfLua {
       @Override
       public @Nullable String getRecommendedVersion() {
         String result = null;
-        for (ModContainer mod : Loader.instance().getModList()) {
-          if (mod.getModId().equals(MODID)) {
-            CheckResult checkResult = ForgeVersion.getResult(mod);
-            Status status = checkResult.status;
-            if (status == Status.OUTDATED || status == Status.BETA_OUTDATED) {
-              result = checkResult.target.toString();
-            }
-          }
+        IModInfo modInfo = ModList.get().getModFileById(MODID).getMods().get(0);
+        CheckResult checkResult = VersionChecker.getResult(modInfo);
+        VersionChecker.Status status = checkResult.status;
+        if (status == VersionChecker.Status.OUTDATED
+            || status == VersionChecker.Status.BETA_OUTDATED) {
+          result = checkResult.target.toString();
         }
         return result;
       }
@@ -310,22 +335,17 @@ public class WizardsOfLua {
     });
   }
 
-  @EventHandler
-  public void init(FMLInitializationEvent event) {
-    logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
-    MinecraftForge.EVENT_BUS.register(getSpellRegistry());
-    MinecraftForge.EVENT_BUS.register(aboutMessage);
-    MinecraftForge.EVENT_BUS.register(eventHandler);
-  }
-
-  @EventHandler
-  public void serverStarting(FMLServerStartingEvent event) throws IOException {
+  @SubscribeEvent
+  public void onServerStarting(FMLServerStartingEvent event) throws IOException {
     server = event.getServer();
     worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
     gameProfiles = new GameProfiles(server);
     permissions = new Permissions(server);
-    event.registerServerCommand(new WolCommand(this, logger));
-    event.registerServerCommand(new LuaCommand());
+    CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
+
+
+    cmdDispatcher.register(new WolCommand(this, logger));
+    cmdDispatcher.register(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();
   }

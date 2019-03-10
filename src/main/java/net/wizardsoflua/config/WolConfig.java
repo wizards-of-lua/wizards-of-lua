@@ -23,7 +23,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.google.common.io.Files;
 
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.Variable;
@@ -44,10 +44,9 @@ import net.wizardsoflua.lua.table.TableUtils;
 
 public class WolConfig {
 
-  public static WolConfig create(FMLPreInitializationEvent event, String configName)
-      throws FileNotFoundException, LoaderException, CallException, CallPausedException,
-      InterruptedException, IOException {
-    File configDir = event.getModConfigurationDirectory();
+  public static WolConfig create(String configName) throws FileNotFoundException, LoaderException,
+      CallException, CallPausedException, InterruptedException, IOException {
+    File configDir = FMLPaths.CONFIGDIR.get().toFile();
     File wolConfigDir = new File(configDir, configName);
 
     File oldConfigFile = new File(wolConfigDir, configName + ".cfg");
@@ -62,7 +61,7 @@ public class WolConfig {
 
     @Override
     public void save() {
-      WolConfig.this.saveAsync();
+      saveAsync();
 
     }
 

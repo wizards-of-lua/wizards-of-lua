@@ -32,7 +32,7 @@ public class ImmutableWolBlock extends WolBlock {
     this.blockState = checkNotNull(blockState, "blockState==null!");
     if (tileEntity != null) {
       nbt = new NBTTagCompound();
-      tileEntity.writeToNBT(nbt);
+      tileEntity.write(nbt);
       nbt.removeTag("x");
       nbt.removeTag("y");
       nbt.removeTag("z");
@@ -64,10 +64,10 @@ public class ImmutableWolBlock extends WolBlock {
       TileEntity tileEntity = world.getTileEntity(pos);
       if (tileEntity != null) {
         NBTTagCompound newNbt = nbt.copy();
-        newNbt.setInteger("x", pos.getX());
-        newNbt.setInteger("y", pos.getY());
-        newNbt.setInteger("z", pos.getZ());
-        tileEntity.readFromNBT(newNbt);
+        newNbt.setInt("x", pos.getX());
+        newNbt.setInt("y", pos.getY());
+        newNbt.setInt("z", pos.getZ());
+        tileEntity.read(newNbt);
         tileEntity.markDirty();
       } else {
         throw new IllegalStateException(String.format("Missing tile entity for %s at %s %s %s",

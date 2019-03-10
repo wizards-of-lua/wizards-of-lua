@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nullable;
 
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.eventbus.api.Event;
 import net.wizardsoflua.lua.view.ViewFactory;
 
 public class CustomLuaEvent extends Event {

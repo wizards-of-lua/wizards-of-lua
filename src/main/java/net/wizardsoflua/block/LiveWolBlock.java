@@ -32,13 +32,13 @@ public class LiveWolBlock extends WolBlock {
       return null;
     }
     NBTTagCompound result = new NBTTagCompound();
-    tileEntity.writeToNBT(result);
+    tileEntity.write(result);
     return result;
   }
 
   @Override
   public void setBlock(World targetWorld, BlockPos targetPos) {
-    if ( world == targetWorld && pos.equals(targetPos)) {
+    if (world == targetWorld && pos.equals(targetPos)) {
       return;
     }
     TileEntity tileEntity = targetWorld.getTileEntity(targetPos);
@@ -53,20 +53,21 @@ public class LiveWolBlock extends WolBlock {
     if (nbt != null) {
       // TODO remove this side effect
       // however, it does not hurt
-      nbt.setInteger("x", targetPos.getX());
-      nbt.setInteger("y", targetPos.getY());
-      nbt.setInteger("z", targetPos.getZ());
+      nbt.setInt("x", targetPos.getX());
+      nbt.setInt("y", targetPos.getY());
+      nbt.setInt("z", targetPos.getZ());
 
       tileEntity = targetWorld.getTileEntity(targetPos);
       if (tileEntity != null) {
-        tileEntity.readFromNBT(nbt);
+        tileEntity.read(nbt);
         tileEntity.markDirty();
         nbt.removeTag("x");
         nbt.removeTag("y");
         nbt.removeTag("z");
       } else {
         throw new IllegalStateException(String.format("Missing tile entity for %s at %s %s %s",
-            blockState.getBlock().getRegistryName(), targetPos.getX(), targetPos.getY(), targetPos.getZ()));
+            blockState.getBlock().getRegistryName(), targetPos.getX(), targetPos.getY(),
+            targetPos.getZ()));
       }
       int flags = 3; // Do a block update (1) and send it to all clients (2)
       targetWorld.notifyBlockUpdate(targetPos, blockState, blockState, flags);
