@@ -1,13 +1,13 @@
 package net.wizardsoflua.wol;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
-import static net.wizardsoflua.config.GeneralConfig.*;
+import static net.wizardsoflua.config.GeneralConfig.MIN_EVENT_LISTENER_LUA_TICKS_LIMIT;
+import static net.wizardsoflua.config.GeneralConfig.MIN_LUA_TICKS_LIMIT;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.base.Joiner;
-import com.google.common.primitives.Ints;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
@@ -34,17 +33,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.arguments.ParticleArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -56,7 +51,6 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.world.WorldServer;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.file.Crypto;
 import net.wizardsoflua.gist.GistFile;
 import net.wizardsoflua.gist.RateLimit;
@@ -66,9 +60,9 @@ import net.wizardsoflua.wol.browser.LogoutAction;
 import net.wizardsoflua.wol.file.FileDeleteAction;
 import net.wizardsoflua.wol.file.FileEditAction;
 import net.wizardsoflua.wol.file.FileMoveAction;
+import net.wizardsoflua.wol.file.FileRef;
 import net.wizardsoflua.wol.file.FileSection;
 import net.wizardsoflua.wol.gist.GistGetAction;
-import net.wizardsoflua.wol.gist.GistGetAction.FileRef;
 import net.wizardsoflua.wol.luatickslimit.PrintEventListenerLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.PrintLuaTicksLimitAction;
 import net.wizardsoflua.wol.luatickslimit.SetEventListenerLuaTicksLimitAction;
@@ -88,6 +82,7 @@ public class WolCommand {
   private static final String CMD_NAME = "wol";
   private static final String LIMIT_ARGUMENT = "limit";
   private static final String FILE_ARGUMENT = "file";
+  private static final String NEW_FILE_ARGUMENT = "newfile"; // TODO are spaces allowed?
   private static final String URL_ARGUMENT = "url";
   private static final String DIRECTORY_ARGUMENT = "directory";
 
@@ -122,7 +117,13 @@ public class WolCommand {
         .then(literal("luaTicksLimit")//
             .executes(this::showLuaTicksLimit)//
             .then(literal("set").then(setLuaTicksLimitCommand()))//
+        )//
+        .then(literal("pack")//
+            .then(literal("export") //
+                .then(argument(DIRECTORY_ARGUMENT, string()) //
+                    .executes(this::export)))//
     )//
+     //
     );
 
 
@@ -249,40 +250,39 @@ public class WolCommand {
 
   private ArgumentBuilder<CommandSource, ?> fileGistCommand() {
     return argument(URL_ARGUMENT, string())
-        .then(argument(DIRECTORY_ARGUMENT, string()).executes(this::gistFile));
+        .then(argument(DIRECTORY_ARGUMENT, string()).executes(this::gistPersonalFile));
   }
 
-  private int gistFile(CommandContext<CommandSource> context) {
+  private int gistPersonalFile(CommandContext<CommandSource> context) {
+    return gistFile(context, FileSection.PERSONAL);
+  }
+
+  private int gistFile(CommandContext<CommandSource> context, FileSection section) {
+    // e.g. https://gist.github.com/yourgithubusername/yourgistid
     String url = StringArgumentType.getString(context, URL_ARGUMENT);
+    @Nullable // TODO make it optional
     String directory = StringArgumentType.getString(context, DIRECTORY_ARGUMENT);
 
-    EntityPlayer player = getPlayer(sender);
+    CommandSource source = context.getSource();
+    EntityPlayer player = source.asPlayer();
     if (section == FileSection.PERSONAL && player == null) {
-      throw new CommandException("Only players can use this command!");
+      // TODO I18n
+      throw newCommandException("Only players can use this command!");
     }
 
     try {
-      @Nullable
-      String url = argList.poll();
-      if (url == null) {
-        String pattern = "https://gist.github.com/yourgithubusername/yourgistid";
-        throw new CommandException("Missing Gist URL. Expected something like %s", pattern);
-      }
-      @Nullable
-      String directory = argList.poll();
-
       String accessToken = wol.getConfig().getGeneralConfig().getGitHubAccessToken();
       logger.info("Loading Gist " + url);
       List<GistFile> files = wol.getGistRepo().getGistFiles(url, accessToken);
       for (GistFile gistFile : files) {
-        FileRef fileReference = toFileReference(player, directory, gistFile);
+        FileRef fileReference = toFileReference(player, section, directory, gistFile);
         String content = gistFile.content;
         boolean existed = wol.getFileRepository().exists(fileReference.fullPath);
         wol.getFileRepository().saveLuaFile(fileReference.fullPath, content);
         String action = existed ? "updated" : "created";
         WolAnnouncementMessage message =
             new WolAnnouncementMessage(fileReference.localPath + " " + action + ".");
-        sender.sendMessage(message);
+        source.sendFeedback(message, true);
       }
       if (accessToken == null) {
         RateLimit rateLimit = wol.getGistRepo().getRateLimitRemaining(accessToken);
@@ -303,16 +303,63 @@ public class WolCommand {
         message += " Consider using a GitHub access token to increase this limit.";
       }
       logger.error(message);
-      throw new CommandException(message);
+      throw newCommandException(message);
     } catch (IOException | RuntimeException e) {
-      throw new CommandException(e.getMessage());
+      throw newCommandException(e.getMessage());
     }
     return Command.SINGLE_SUCCESS;
   }
 
+  private CommandException newCommandException(String string) {
+    return new CommandException(new TextComponentString(string));
+  }
+
+  private FileRef toFileReference(EntityPlayer owner, FileSection section,
+      @Nullable String directory, GistFile gistFile) {
+    String localPath = directory == null ? gistFile.filename : directory + "/" + gistFile.filename;
+    switch (section) {
+      case PERSONAL:
+        return new FileRef(localPath,
+            wol.getFileRepository().getFileReferenceFor(owner, localPath));
+      case SHARED:
+        return new FileRef(localPath, wol.getFileRepository().getSharedFileReferenceFor(localPath));
+      default:
+        throw new IllegalStateException("Unexpected section: " + section);
+    }
+  }
+
   private ArgumentBuilder<CommandSource, ?> fileMoveCommand() {
-    // TODO Auto-generated method stub
-    return null;
+    return argument(FILE_ARGUMENT, string()) //
+        .then(argument(NEW_FILE_ARGUMENT, string())) //
+        .executes(this::movePersonalFile);
+  }
+
+  private int movePersonalFile(CommandContext<CommandSource> context) {
+    return gistFile(context, FileSection.PERSONAL);
+  }
+
+  private int moveFile(CommandContext<CommandSource> context, FileSection section) {
+    String name = StringArgumentType.getString(context, FILE_ARGUMENT);
+    String newName = StringArgumentType.getString(context, NEW_FILE_ARGUMENT);
+
+    CommandSource source = context.getSource();
+    EntityPlayer player = source.asPlayer();
+
+    if (name != null && newName != null) {
+      try {
+        wol.getFileRepository().moveFile(player, name, newName);
+      } catch (IllegalArgumentException e) {
+        throw newCommandException(e.getMessage());
+      }
+      WolAnnouncementMessage message = new WolAnnouncementMessage(name + " moved to " + newName);
+      source.sendFeedback(message, true);
+      return Command.SINGLE_SUCCESS;
+    } else {
+      WolAnnouncementMessage message = new WolAnnouncementMessage(
+          "Error - Can't move! To move a file please specify old name and new name");
+      source.sendFeedback(message, true);
+      return 0; // no success
+    }
   }
 
   private int showLuaTicksLimit(CommandContext<CommandSource> context) {
@@ -335,6 +382,22 @@ public class WolCommand {
     WolAnnouncementMessage message =
         new WolAnnouncementMessage("luaTicksLimit has been updated to " + limit);
     context.getSource().sendFeedback(message, true);
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private int export(CommandContext<CommandSource> context) {
+    @Nullable // TODO make it optional
+    String directory = StringArgumentType.getString(context, DIRECTORY_ARGUMENT);
+    CommandSource source = context.getSource();
+    URL url;
+    try {
+      url = wol.getFileRepository().getSpellPackExportURL(directory);
+    } catch (IllegalArgumentException e) {
+      throw newCommandException(e.getMessage());
+    }
+    WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to download: ");
+    message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
+    source.sendFeedback(message, true);
     return Command.SINGLE_SUCCESS;
   }
 
