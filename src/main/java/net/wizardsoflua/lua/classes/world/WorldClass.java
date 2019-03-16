@@ -61,7 +61,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
      */
     @LuaProperty
     public int getDimension() {
-      return delegate.provider.getDimension();
+      return delegate.getDimension().getType().getId();
     }
 
     /**
