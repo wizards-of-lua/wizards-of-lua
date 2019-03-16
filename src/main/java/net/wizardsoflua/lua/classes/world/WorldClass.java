@@ -95,7 +95,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
      */
     @LuaProperty
     public long getDaytime() {
-      return delegate.getWorldTime() % 24000;
+      return delegate.getDayTime();
     }
 
     /**
