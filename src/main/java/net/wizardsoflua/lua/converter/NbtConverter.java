@@ -1,15 +1,14 @@
 package net.wizardsoflua.lua.converter;
 
 import com.google.auto.service.AutoService;
-
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 
 @AutoService(JavaToLuaConverter.class)
 @LuaConverterAttributes(name = "table")
-public class NbtConverter extends AnnotatedJavaToLuaConverter<NBTBase> {
+public class NbtConverter extends AnnotatedJavaToLuaConverter<INBTBase> {
   @Override
-  public Object getLuaInstance(NBTBase javaInstance) {
+  public Object getLuaInstance(INBTBase javaInstance) {
     return net.wizardsoflua.lua.nbt.NbtConverter.toLua(javaInstance);
   }
 }
