@@ -1,11 +1,10 @@
 package net.wizardsoflua;
 
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
@@ -39,15 +38,16 @@ public class AboutMessage {
   @SubscribeEvent
   public void onEvent(PlayerLoggedInEvent event) {
     if (context.shouldShowAboutMessage()) {
-      if (notifiedPlayers.add(event.player.getUniqueID())) {
-        event.player.sendMessage(getTextComponent());
+      EntityPlayer player = event.getPlayer();
+      if (notifiedPlayers.add(player.getUniqueID())) {
+        player.sendMessage(getTextComponent());
 
         String recommendedVersion = context.getRecommendedVersion();
         if (recommendedVersion != null) {
           TextComponentString component =
               new TextComponentString("New version " + recommendedVersion + " available!");
           component.setStyle(new Style().setColor(TextFormatting.GREEN));
-          event.player.sendMessage(new WolAnnouncementMessage(component));
+          player.sendMessage(new WolAnnouncementMessage(component));
         }
 
         WolAnnouncementMessage instructions = new WolAnnouncementMessage("See instructions at ");
@@ -55,7 +55,7 @@ public class AboutMessage {
         link.getStyle().setColor(TextFormatting.YELLOW);
         instructions.appendSibling(link);
 
-        event.player.sendMessage(instructions);
+        player.sendMessage(instructions);
       }
     }
   }
