@@ -3,14 +3,11 @@ package net.wizardsoflua.lua.nbt;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.annotation.Nullable;
-
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTPrimitive;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagByteArray;
@@ -37,13 +34,13 @@ import net.wizardsoflua.lua.table.TableIterable;
 public class NbtConverter {
   private static final String DEFAULT_PATH = "nbt";
   private final LuaTypes types;
-  private @Nullable Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> mergers;
+  private @Nullable Map<Class<? extends INBTBase>, NbtMerger<? extends INBTBase>> mergers;
 
   public NbtConverter(@Resource LuaTypes types) {
     this.types = requireNonNull(types, "types == null!");
   }
 
-  private Map<Class<? extends NBTBase>, NbtMerger<? extends NBTBase>> getMergers() {
+  private Map<Class<? extends INBTBase>, NbtMerger<? extends INBTBase>> getMergers() {
     if (mergers == null) {
       mergers = new HashMap<>();
       registerMerger(NBTTagByte.class, new NbtByteMerger(this));
@@ -60,14 +57,14 @@ public class NbtConverter {
     return mergers;
   }
 
-  private <NBT extends NBTBase> void registerMerger(Class<NBT> cls, NbtMerger<NBT> merger) {
+  private <NBT extends INBTBase> void registerMerger(Class<NBT> cls, NbtMerger<NBT> merger) {
     if (getMergers().containsKey(cls)) {
       throw new IllegalArgumentException("Duplicate merger for " + cls);
     }
     getMergers().put(cls, merger);
   }
 
-  private <NBT extends NBTBase> NbtMerger<NBT> getMerger(Class<NBT> nbtType) {
+  private <NBT extends INBTBase> NbtMerger<NBT> getMerger(Class<NBT> nbtType) {
     @SuppressWarnings("unchecked")
     NbtMerger<NBT> result = (NbtMerger<NBT>) getMergers().get(nbtType);
     checkArgument(result != null, "Unsupported NBT type", nbtType.getSimpleName());
@@ -111,8 +108,8 @@ public class NbtConverter {
       Object newLuaValue = entry.getValue();
 
       String entryPath = path + "." + key;
-      NBTBase oldNbtValue = nbt.getTag(key);
-      NBTBase newNbtValue;
+      INBTBase oldNbtValue = nbt.getTag(key);
+      INBTBase newNbtValue;
       if (oldNbtValue != null) {
         newNbtValue = merge(oldNbtValue, newLuaValue, key, entryPath);
       } else {
@@ -122,7 +119,7 @@ public class NbtConverter {
     }
   }
 
-  <NBT extends NBTBase> NBT merge(NBT nbt, Object data, String key, String path) {
+  <NBT extends INBTBase> NBT merge(NBT nbt, Object data, String key, String path) {
     checkNotNull(key, "key == null!");
     checkNotNull(nbt, "nbt == null!");
     checkNotNull(data, "data == null!");
@@ -132,30 +129,38 @@ public class NbtConverter {
     return converter.merge(nbt, data, key, path);
   }
 
-  public static Object toLua(NBTBase nbt) {
+  public static Object toLua(INBTBase nbt) {
     checkNotNull(nbt, "nbt == null!");
-    if (nbt instanceof NBTPrimitive)
+    if (nbt instanceof NBTPrimitive) {
       return toLua((NBTPrimitive) nbt);
-    if (nbt instanceof NBTTagString)
+    }
+    if (nbt instanceof NBTTagString) {
       return toLua((NBTTagString) nbt);
-    if (nbt instanceof NBTTagList)
+    }
+    if (nbt instanceof NBTTagList) {
       return toLua((NBTTagList) nbt);
-    if (nbt instanceof NBTTagCompound)
+    }
+    if (nbt instanceof NBTTagCompound) {
       return toLua((NBTTagCompound) nbt);
-    if (nbt instanceof NBTTagIntArray)
+    }
+    if (nbt instanceof NBTTagIntArray) {
       return toLua((NBTTagIntArray) nbt);
-    if (nbt instanceof NBTTagByteArray)
+    }
+    if (nbt instanceof NBTTagByteArray) {
       return toLua((NBTTagByteArray) nbt);
+    }
     throw new IllegalArgumentException(
         "Unsupported NBT type for conversion: " + nbt.getClass().getName());
   }
 
   public static Number toLua(NBTPrimitive nbt) {
     checkNotNull(nbt, "nbt == null!");
-    if (nbt instanceof NBTTagDouble)
+    if (nbt instanceof NBTTagDouble) {
       return ((NBTTagDouble) nbt).getDouble();
-    if (nbt instanceof NBTTagFloat)
+    }
+    if (nbt instanceof NBTTagFloat) {
       return ((NBTTagFloat) nbt).getDouble();
+    }
     return nbt.getLong();
   }
 
@@ -167,10 +172,10 @@ public class NbtConverter {
   public static Table toLua(NBTTagList nbt) {
     checkNotNull(nbt, "nbt == null!");
     Table result = new DefaultTable();
-    for (int i = 0; i < nbt.tagCount(); i++) {
-      NBTBase nbtValue = nbt.get(i);
+    int luaKey = 1;
+    for (INBTBase nbtValue : nbt) {
       Object luaValue = toLua(nbtValue);
-      result.rawset(i + 1, luaValue);
+      result.rawset(luaKey++, luaValue);
     }
     return result;
   }
@@ -178,8 +183,8 @@ public class NbtConverter {
   public static Table toLua(NBTTagCompound nbt) {
     checkNotNull(nbt, "nbt == null!");
     Table result = new DefaultTable();
-    for (String key : nbt.getKeySet()) {
-      NBTBase nbtValue = nbt.getTag(key);
+    for (String key : nbt.keySet()) {
+      INBTBase nbtValue = nbt.getTag(key);
       Object luaValue = toLua(nbtValue);
       result.rawset(key, luaValue);
     }
@@ -197,7 +202,7 @@ public class NbtConverter {
     }
     return result;
   }
-  
+
   public static Table toLua(NBTTagByteArray nbt) {
     checkNotNull(nbt, "nbt == null!");
     Table result = new DefaultTable();
@@ -210,33 +215,43 @@ public class NbtConverter {
     return result;
   }
 
-  public NBTBase toNbt(Object data) {
+  public INBTBase toNbt(Object data) {
     return toNbt(data, DEFAULT_PATH);
   }
 
-  private NBTBase toNbt(Object data, String path) {
+  private INBTBase toNbt(Object data, String path) {
     checkNotNull(data, "data == null!");
     data = adjustType(data, path);
-    if (data instanceof Boolean)
+    if (data instanceof Boolean) {
       return toNbt((Boolean) data);
-    if (data instanceof Byte)
+    }
+    if (data instanceof Byte) {
       return toNbt((Byte) data);
-    if (data instanceof ByteString)
+    }
+    if (data instanceof ByteString) {
       return toNbt((ByteString) data);
-    if (data instanceof Double)
+    }
+    if (data instanceof Double) {
       return toNbt((Double) data);
-    if (data instanceof Float)
+    }
+    if (data instanceof Float) {
       return toNbt((Float) data);
-    if (data instanceof Integer)
+    }
+    if (data instanceof Integer) {
       return toNbt((Integer) data);
-    if (data instanceof Long)
+    }
+    if (data instanceof Long) {
       return toNbt((Long) data);
-    if (data instanceof Short)
+    }
+    if (data instanceof Short) {
       return toNbt((Short) data);
-    if (data instanceof String)
+    }
+    if (data instanceof String) {
       return toNbt((String) data);
-    if (data instanceof Table)
+    }
+    if (data instanceof Table) {
       return toNbt((Table) data, path);
+    }
     throw new IllegalArgumentException(
         "Unsupported type for NBT conversion: " + data.getClass().getName());
   }
@@ -334,11 +349,11 @@ public class NbtConverter {
     return new NBTTagString(data);
   }
 
-  public NBTBase toNbt(Table data) {
+  public INBTBase toNbt(Table data) {
     return toNbt(data, DEFAULT_PATH);
   }
 
-  private NBTBase toNbt(Table data, String path) {
+  private INBTBase toNbt(Table data, String path) {
     Table table = data;
     if (isArray(table)) {
       return toNbtList(table, path);
@@ -378,8 +393,8 @@ public class NbtConverter {
     int i = 0;
     for (Entry<Object, Object> entry : new TableIterable(data)) {
       Object value = entry.getValue();
-      NBTBase nbtValue = toNbt(value, path + '[' + (++i) + ']');
-      result.appendTag(nbtValue);
+      INBTBase nbtValue = toNbt(value, path + '[' + (++i) + ']');
+      result.add(nbtValue);
     }
     return result;
   }
@@ -394,7 +409,7 @@ public class NbtConverter {
     for (Entry<Object, Object> entry : new TableIterable(data)) {
       String key = keyToString(entry.getKey(), ++i, path);
       Object value = entry.getValue();
-      NBTBase nbtValue = toNbt(value, path + '.' + key);
+      INBTBase nbtValue = toNbt(value, path + '.' + key);
       result.setTag(key, nbtValue);
     }
     return result;

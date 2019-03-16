@@ -1,12 +1,9 @@
 package net.wizardsoflua.lua.nbt;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Map.Entry;
-
 import javax.annotation.Nullable;
-
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.sandius.rembulan.Table;
@@ -37,11 +34,11 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
       NBTTagCompound oldValue = getCompoundByValueKey(nbt, keyValue);
       String entryPath = path + "[" + keyValue + "]";
       if (oldValue != null) {
-        NBTBase newValue = converter.merge(oldValue, luaValue, entryPath);
-        result.appendTag(newValue);
+        INBTBase newValue = converter.merge(oldValue, luaValue, entryPath);
+        result.add(newValue);
       } else {
-        NBTBase newValue = converter.toNbtCompound(luaValue, entryPath);
-        result.appendTag(newValue);
+        INBTBase newValue = converter.toNbtCompound(luaValue, entryPath);
+        result.add(newValue);
       }
     }
     return result;
@@ -49,9 +46,9 @@ public class ValueBasedNbtListMergeStrategy implements NbtListMergeStrategy {
 
   private @Nullable NBTTagCompound getCompoundByValueKey(NBTTagList compoundList, Object keyValue) {
     checkNotNull(keyValue, "keyValue == null!");
-    for (int i = 0; i < compoundList.tagCount(); ++i) {
-      NBTTagCompound compound = compoundList.getCompoundTagAt(i);
-      NBTBase nbtKeyValue = compound.getTag(key);
+    for (int i = 0; i < compoundList.size(); ++i) {
+      NBTTagCompound compound = compoundList.getCompound(i);
+      INBTBase nbtKeyValue = compound.getTag(key);
       checkNotNull(nbtKeyValue, "Expected each NBT value to contain the key: '" + key + "'");
       if (nbtKeyValue.equals(keyValue)) {
         return compound;
