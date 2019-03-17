@@ -18,13 +18,11 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 
 import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.CommandSource;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.lua.LuaCommand;
 
@@ -42,8 +40,10 @@ public class Startup {
   public interface Context extends AddOnFinder.Context {
     Path getSharedLibDir();
 
+    @Override
     MinecraftServer getServer();
 
+    @Override
     Logger getLogger();
   }
 
@@ -56,17 +56,17 @@ public class Startup {
     addOnFinder = new AddOnFinder(context);
   }
 
-  public void runStartupSequence(ICommandSender aSender) {
-    ICommandSender sender = wrap(checkNotNull(aSender, "sender==null!"));
-    sender.sendMessage(new WolAnnouncementMessage("Running startup sequence..."));
+  public void runStartupSequence(CommandSource source) {
+    checkNotNull(source, "source == null!");
+    source.sendFeedback(new WolAnnouncementMessage("Running startup sequence..."), true);
     Path sharedLibDir = context.getSharedLibDir();
     try {
       List<String> modules = merge(startupModuleFinder.findStartupModulesIn(sharedLibDir),
           addOnFinder.getStartupModules());
-      launchModules(sender, modules);
+      launchModules(source, modules);
     } catch (IOException e) {
       sendException(format("Error while searching %s for startup modules", sharedLibDir), e,
-          sender);
+          source);
     }
   }
 
@@ -77,74 +77,37 @@ public class Startup {
     return result.stream().distinct().collect(Collectors.toList());
   }
 
-  private void launchModules(ICommandSender sender, List<String> modules) {
+  private void launchModules(CommandSource source, List<String> modules) {
     for (String module : modules) {
-      launchModule(sender, module);
+      launchModule(source, module);
     }
   }
 
-  private void launchModule(ICommandSender sender, String module) {
-    sendMessage(format("Launching module '%s'", module), sender);
+  private void launchModule(CommandSource source, String module) {
+    sendMessage(format("Launching module '%s'", module), source);
     String code = format("require('%s')", module);
     LuaCommand luaCommand =
         (LuaCommand) context.getServer().getCommandManager().getCommands().get("lua");
     try {
-      luaCommand.execute(context.getServer(), sender, code, null);
+      luaCommand.execute(context.getServer(), source, code, null);
     } catch (CommandException e) {
-      sendException(format("Error while executing module %s", module), e, sender);
+      sendException(format("Error while executing module %s", module), e, source);
     }
   }
 
-  private ICommandSender wrap(final ICommandSender sender) {
-    checkNotNull(sender, "sender==null!");
-    return new ICommandSender() {
-
-      @Override
-      public void sendMessage(ITextComponent component) {
-        MinecraftServer server = context.getServer();
-        if (sender == server) {
-          sender.sendMessage(component);
-        } else {
-          server.sendMessage(component);
-          sender.sendMessage(component);
-        }
-      }
-
-      @Override
-      public MinecraftServer getServer() {
-        return context.getServer();
-      }
-
-      @Override
-      public String getName() {
-        return context.getServer().getName();
-      }
-
-      @Override
-      public World getEntityWorld() {
-        return context.getServer().getEntityWorld();
-      }
-
-      @Override
-      public boolean canUseCommand(int permLevel, String commandName) {
-        return context.getServer().canUseCommand(permLevel, commandName);
-      }
-    };
-  }
-
-  private void sendException(String message, Throwable t, ICommandSender commandSender) {
+  private void sendException(String message, Throwable t, CommandSource source) {
     context.getLogger().error(message, t);
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
-    commandSender.sendMessage(txt);
+    source.sendFeedback(txt, true); // FIXME: use sendErrorMessage
   }
 
-  private void sendMessage(String message, ICommandSender sender) {
+  private void sendMessage(String message, CommandSource source) {
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
-    sender.sendMessage(txt);
+    source.sendFeedback(txt, true);
   }
 
   private String getStackTrace(Throwable throwable) {

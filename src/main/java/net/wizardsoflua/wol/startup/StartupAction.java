@@ -1,34 +1,25 @@
 package net.wizardsoflua.wol.startup;
 
-import java.util.Collections;
-import java.util.Deque;
-import java.util.List;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import net.minecraft.command.CommandSource;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.wol.menu.CommandAction;
-import net.wizardsoflua.wol.menu.MenuEntry;
 
-public class StartupAction extends MenuEntry implements CommandAction {
-
+public class StartupAction implements Command<CommandSource> {
   private final WizardsOfLua wol;
 
   public StartupAction(WizardsOfLua wol) {
-    this.wol = wol;
+    this.wol = checkNotNull(wol, "wol == null!");
   }
 
   @Override
-  public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
-      Deque<String> argList, BlockPos targetPos) {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    wol.runStartupSequence(sender);
+  public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    wol.runStartupSequence(context.getSource());
+    return Command.SINGLE_SUCCESS;
   }
 
 }

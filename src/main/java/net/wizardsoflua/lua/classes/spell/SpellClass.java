@@ -9,7 +9,10 @@ import javax.inject.Inject;
 
 import com.google.auto.service.AutoService;
 
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
@@ -144,8 +147,11 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
     }
 
     public int execute(String command) {
-      World world = delegate.getEntityWorld();
-      return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
+      World world = delegate.getWorld();
+      MinecraftServer server = world.getServer();
+      Commands commandManager = server.getCommandManager();
+      CommandSource commandSource = delegate.getCommandSource();
+      return commandManager.handleCommand(commandSource, command);
     }
   }
 }

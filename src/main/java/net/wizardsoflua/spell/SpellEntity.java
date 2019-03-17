@@ -1,7 +1,10 @@
 package net.wizardsoflua.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import net.minecraft.command.ICommandSender;
+
+import javax.annotation.Nullable;
+
+import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,14 +19,14 @@ import net.wizardsoflua.lua.view.ViewFactory;
 public class SpellEntity extends VirtualEntity {
   public static final String NAME = "Spell";
 
-  private ICommandSender owner;
+  private ICommandSource owner;
   private SpellProgram program;
   private long sid; // immutable spell id
 
   private boolean visible = false;
   private Table data = new DefaultTable();
 
-  public SpellEntity(World world, ICommandSender owner, SpellProgram program,
+  public SpellEntity(World world, ICommandSource owner, SpellProgram program,
       PositionAndRotation posRot, long sid) {
     super(checkNotNull(world, "world==null!"), posRot.getPos());
     this.owner = checkNotNull(owner, "owner==null!");
@@ -45,8 +48,6 @@ public class SpellEntity extends VirtualEntity {
     return new PositionAndRotation(getPositionVector(), rotationYaw, rotationPitch);
   }
 
-
-
   private void setPositionAndRotation(PositionAndRotation posRot) {
     Vec3d pos = posRot.getPos();
     float yaw = posRot.getRotationYaw();
@@ -54,9 +55,7 @@ public class SpellEntity extends VirtualEntity {
     setPositionAndRotation(pos.x, pos.y, pos.z, yaw, pitch);
   }
 
-
-
-  public ICommandSender getOwner() {
+  public ICommandSource getOwner() {
     return owner;
   }
 
@@ -64,8 +63,11 @@ public class SpellEntity extends VirtualEntity {
     return sid;
   }
 
-  public Entity getOwnerEntity() {
-    return owner.getCommandSenderEntity();
+  public @Nullable Entity getOwnerEntity() {
+    if (owner instanceof Entity) {
+      return (Entity) owner;
+    }
+    return null;
   }
 
   public SpellProgram getProgram() {
@@ -78,6 +80,11 @@ public class SpellEntity extends VirtualEntity {
 
   public void setVisible(boolean visible) {
     this.visible = visible;
+  }
+
+  @Override
+  public int getPermissionLevel() {
+    return 4;
   }
 
   public Table getData(ViewFactory viewer) {
@@ -116,7 +123,7 @@ public class SpellEntity extends VirtualEntity {
   }
 
   public void replacePlayerInstance(EntityPlayerMP player) {
-    Entity commandSender = owner.getCommandSenderEntity();
+    Entity commandSender = getOwnerEntity();
     if (commandSender instanceof EntityPlayer) {
       if (commandSender.getUniqueID().equals(player.getUniqueID())) {
         owner = player;

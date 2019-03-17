@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.cache.Cache;
 
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -63,10 +62,10 @@ import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.extension.SpellScope;
-import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
+import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.lua.module.searcher.ClasspathResourceSearcher;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.lua.module.searcher.PatchedChunkLoadPathSearcher;
@@ -122,7 +121,7 @@ public class SpellProgram {
   private final InjectionScope injectionScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
-  private ICommandSender owner;
+  private Entity owner;
   private State state = State.NEW;
   /**
    * The totalWorldTime at which this program should stop sleeping.
@@ -136,9 +135,9 @@ public class SpellProgram {
   private final Context context;
   private final String[] arguments;
 
-  SpellProgram(ICommandSender owner, String code, @Nullable String[] arguments,
-      ModuleDependencies dependencies, String defaultLuaPath, World world, Context context,
-      Logger logger) {
+  SpellProgram(Entity owner, String code, @Nullable String[] arguments,
+      ModuleDependencies dependencies, String defaultLuaPath, World world,
+      PrintReceiver spellLogger, Context context, Logger logger) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.arguments = arguments;
@@ -157,8 +156,7 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
     injectionScope = createInjectionScope();
-    PrintRedirector.installInto(env,
-        message -> SpellProgram.this.owner.sendMessage(new TextComponentString(message)));
+    PrintRedirector.installInto(env, spellLogger);
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {
@@ -233,8 +231,8 @@ public class SpellProgram {
     scope.registerResource(TableFactory.class, stateContext);
     scope.registerResource(Time.class, new Time() {
       @Override
-      public long getTotalWorldTime() {
-        return world.getTotalWorldTime();
+      public long getGameTime() {
+        return world.getGameTime();
       }
 
       @Override
@@ -243,7 +241,7 @@ public class SpellProgram {
       }
 
     });
-    scope.registerResource(MinecraftServer.class, world.getMinecraftServer());
+    scope.registerResource(MinecraftServer.class, world.getServer());
     scope.registerResource(WizardsOfLua.class, WizardsOfLua.instance);
     return scope;
   }
@@ -280,7 +278,7 @@ public class SpellProgram {
 
   public void setSpellEntity(SpellEntity spellEntity) {
     this.spellEntity = checkNotNull(spellEntity, "spellEntity==null!");
-    injectionScope.registerResource(SpellEntity.class, spellEntity);    
+    injectionScope.registerResource(SpellEntity.class, spellEntity);
     loadExtensions();
   }
 
@@ -318,7 +316,7 @@ public class SpellProgram {
           compileAndRun();
           break;
         case SLEEPING:
-          if (wakeUpTime > world.getTotalWorldTime()) {
+          if (wakeUpTime > world.getGameTime()) {
             return;
           }
         case PAUSED:
@@ -331,7 +329,7 @@ public class SpellProgram {
       state = State.FINISHED;
     } catch (CallFellAsleepException ex) {
       int sleepDuration = ex.getSleepDuration();
-      wakeUpTime = world.getTotalWorldTime() + sleepDuration;
+      wakeUpTime = world.getGameTime() + sleepDuration;
       continuation = ex.getContinuation();
       state = State.SLEEPING;
     } catch (CallPausedException ex) {
@@ -398,9 +396,8 @@ public class SpellProgram {
   }
 
   public void replacePlayerInstance(EntityPlayerMP newPlayer) {
-    Entity commandSender = owner.getCommandSenderEntity();
-    if (commandSender instanceof EntityPlayer) {
-      if (commandSender.getUniqueID().equals(newPlayer.getUniqueID())) {
+    if (owner instanceof EntityPlayer) {
+      if (owner.getUniqueID().equals(newPlayer.getUniqueID())) {
         owner = newPlayer;
       }
     }
