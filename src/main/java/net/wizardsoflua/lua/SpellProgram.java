@@ -137,7 +137,7 @@ public class SpellProgram {
 
   SpellProgram(Entity owner, String code, @Nullable String[] arguments,
       ModuleDependencies dependencies, String defaultLuaPath, World world,
-      PrintReceiver spellLogger, Context context, Logger logger) {
+      PrintReceiver printReceiver, Context context, Logger logger) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.arguments = arguments;
@@ -156,7 +156,7 @@ public class SpellProgram {
     exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
     injectionScope = createInjectionScope();
-    PrintRedirector.installInto(env, spellLogger);
+    PrintRedirector.installInto(env, printReceiver);
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
       @Override
       public String getLuaPathElementOfPlayer(String nameOrUuid) {

@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Iterators;
 
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.ICommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
@@ -96,19 +96,19 @@ public class AddOnFinder {
     return value != null && Boolean.parseBoolean(value);
   }
 
-  private void sendException(String message, Throwable t, ICommandSender commandSender) {
+  private void sendException(String message, Throwable t, ICommandSource source) {
     context.getLogger().error(message, t);
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
-    commandSender.sendMessage(txt);
+    source.sendMessage(txt);
   }
 
-  private void sendMessage(String message, ICommandSender sender) {
+  private void sendMessage(String message, ICommandSource source) {
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
-    sender.sendMessage(txt);
+    source.sendMessage(txt);
   }
 
   private String getStackTrace(Throwable throwable) {

@@ -17,14 +17,16 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.lua.LuaCommand;
+import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
+import net.wizardsoflua.spell.SpellEntityFactory;
 
 public class Startup {
 
@@ -45,6 +47,8 @@ public class Startup {
 
     @Override
     Logger getLogger();
+
+    SpellEntityFactory getSpellEntityFactory();
   }
 
   private final Context context;
@@ -86,13 +90,20 @@ public class Startup {
   private void launchModule(CommandSource source, String module) {
     sendMessage(format("Launching module '%s'", module), source);
     String code = format("require('%s')", module);
-    LuaCommand luaCommand =
-        (LuaCommand) context.getServer().getCommandManager().getCommands().get("lua");
-    try {
-      luaCommand.execute(context.getServer(), source, code, null);
-    } catch (CommandException e) {
-      sendException(format("Error while executing module %s", module), e, source);
-    }
+
+    SpellEntityFactory factory = context.getSpellEntityFactory();
+    PrintReceiver printReceiver = new PrintReceiver() {
+      @Override
+      public void send(String message) {
+        TextComponentString txt = new TextComponentString(message);
+        Entity entity = source.getEntity();
+        if (entity instanceof EntityPlayer) {
+          context.getServer().sendMessage(txt);
+        }
+        source.sendFeedback(txt, true);
+      }
+    };
+    factory.create(source, printReceiver, code);
   }
 
   private void sendException(String message, Throwable t, CommandSource source) {
