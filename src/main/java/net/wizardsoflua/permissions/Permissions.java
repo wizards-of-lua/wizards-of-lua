@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListOps;
 import net.minecraft.server.management.UserListOpsEntry;
+import net.minecraft.world.dimension.DimensionType;
 
 public class Permissions {
 
@@ -16,7 +17,8 @@ public class Permissions {
   }
 
   public boolean hasOperatorPrivileges(UUID playerId) {
-    if (server.isSinglePlayer() && server.worlds[0].getWorldInfo().areCommandsAllowed()) {
+    if (server.isSinglePlayer()
+        && server.getWorld(DimensionType.OVERWORLD).getWorldInfo().areCommandsAllowed()) {
       return true;
     }
     EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(playerId);
@@ -24,7 +26,7 @@ public class Permissions {
       return false;
     }
     UserListOps oppedPlayers = server.getPlayerList().getOppedPlayers();
-    UserListOpsEntry entry = (UserListOpsEntry) oppedPlayers.getEntry(player.getGameProfile());
+    UserListOpsEntry entry = oppedPlayers.getEntry(player.getGameProfile());
     return entry != null;
   }
 }

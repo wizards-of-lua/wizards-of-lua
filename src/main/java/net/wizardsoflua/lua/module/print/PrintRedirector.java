@@ -14,14 +14,14 @@ public class PrintRedirector {
     void send(String message);
   }
 
-  public static PrintRedirector installInto(Table env, PrintReceiver context) {
-    return new PrintRedirector(env, context);
+  public static PrintRedirector installInto(Table env, PrintReceiver printReceiver) {
+    return new PrintRedirector(env, printReceiver);
   }
 
   private final PrintReceiver context;
 
-  public PrintRedirector(Table env, PrintReceiver context) {
-    this.context = context;
+  public PrintRedirector(Table env, PrintReceiver printReceiver) {
+    this.context = printReceiver;
     OutputStream out = new ChatOutputStream();
     LuaFunction printFunc = BasicLib.print(out, env);
     env.rawset("print", printFunc);

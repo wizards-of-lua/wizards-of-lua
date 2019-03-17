@@ -29,13 +29,17 @@ public class SpellEntityFactory {
     this.programFactory = checkNotNull(programFactory, "programFactory==null!");
   }
 
-  public SpellEntity create(World world, CommandSource source, PrintReceiver spellLogger,
-      String code, @Nullable String[] arguments) {
-    checkNotNull(world, "world==null!");
+  public SpellEntity create(CommandSource source, PrintReceiver printReceiver, String code,
+      @Nullable String... arguments) {
     Entity owner = getOwner(source);
-    SpellProgram program =
-        programFactory.create(world, source, owner, spellLogger, code, arguments);
+    World world = source.getWorld();
     PositionAndRotation pos = getPositionAndRotation(source);
+    return create(owner, printReceiver, world, pos, code, arguments);
+  }
+
+  public SpellEntity create(@Nullable Entity owner, PrintReceiver printReceiver, World world,
+      PositionAndRotation pos, String code, String... arguments) {
+    SpellProgram program = programFactory.create(world, owner, printReceiver, code, arguments);
     nextSid++;
     SpellEntity result = new SpellEntity(world, owner, program, pos, nextSid);
     program.setSpellEntity(result);
