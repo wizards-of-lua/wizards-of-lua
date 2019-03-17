@@ -74,7 +74,7 @@ public class EventsModule extends LuaTableExtension {
 
     @Override
     public long getCurrentTime() {
-      return time.getTotalWorldTime();
+      return time.getGameTime();
     }
   };
   /**
@@ -348,7 +348,7 @@ public class EventsModule extends LuaTableExtension {
       // no queues -> nothing to wait for, so keep running
       return false;
     }
-    long now = time.getTotalWorldTime();
+    long now = time.getGameTime();
 
     for (EventQueue queue : queues.values()) {
       long waitUntil = queue.getWaitUntil();

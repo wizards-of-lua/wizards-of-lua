@@ -7,7 +7,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -15,13 +16,16 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.block.ItemUtil;
 
-public class VirtualEntity implements ICommandSender {
+public class VirtualEntity implements ICommandSource {
 
   private final World world;
   private final MinecraftServer server;
@@ -44,9 +48,9 @@ public class VirtualEntity implements ICommandSender {
   private int age;
   private final Set<String> tags = new HashSet<>();
 
-  public VirtualEntity(World aWorld, Vec3d position) {
-    world = aWorld;
-    server = aWorld.getMinecraftServer();
+  public VirtualEntity(World world, Vec3d position) {
+    this.world = world;
+    server = world.getServer();
     posX = position.x;
     posY = position.y;
     posZ = position.z;
@@ -72,13 +76,16 @@ public class VirtualEntity implements ICommandSender {
     return uuid;
   }
 
-  @Override
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public ITextComponent getDisplayName() {
+    return new TextComponentString(getName());
   }
 
   public int getAge() {
@@ -95,12 +102,11 @@ public class VirtualEntity implements ICommandSender {
   }
 
   public int getDimension() {
-    return world.provider.getDimension();
+    return world.getDimension().getType().getId();
   }
 
   public EnumFacing getFacing() {
-    return EnumFacing
-        .getHorizontal(MathHelper.floor((double) (this.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3);
+    return EnumFacing.byHorizontalIndex(MathHelper.floor(rotationYaw * 4.0F / 360.0F + 0.5D) & 3);
   }
 
   public Vec3d getMotion() {
@@ -126,12 +132,19 @@ public class VirtualEntity implements ICommandSender {
   }
 
   public void setRotationYaw(float rotationYaw) {
-    this.rotationYaw = MathHelper.wrapDegrees(rotationYaw);;
+    this.rotationYaw = MathHelper.wrapDegrees(rotationYaw);
   }
 
   public void setRotationYawAndPitch(float yaw, float pitch) {
     setRotationYaw(yaw);
     setRotationPitch(pitch);
+  }
+
+  /**
+   * returns the Entity's pitch and yaw as a Vec2f
+   */
+  public Vec2f getPitchYaw() {
+    return new Vec2f(rotationPitch, rotationYaw);
   }
 
   public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
@@ -151,7 +164,7 @@ public class VirtualEntity implements ICommandSender {
   }
 
   public Vec3d getLookVec() {
-    return this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
+    return getVectorForRotation(rotationPitch, rotationYaw);
   }
 
   /**
@@ -162,15 +175,15 @@ public class VirtualEntity implements ICommandSender {
     float f1 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
     float f2 = -MathHelper.cos(-pitch * 0.017453292F);
     float f3 = MathHelper.sin(-pitch * 0.017453292F);
-    return new Vec3d((double) (f1 * f2), (double) f3, (double) (f * f2));
+    return new Vec3d(f1 * f2, f3, f * f2);
   }
 
   public double getDistanceSq(VirtualEntity entity) {
-    return this.getPositionVector().squareDistanceTo(entity.getPositionVector());
+    return getPositionVector().squareDistanceTo(entity.getPositionVector());
   }
 
   public double getDistanceSq(Entity entity) {
-    return this.getPositionVector().squareDistanceTo(entity.getPositionVector());
+    return getPositionVector().squareDistanceTo(entity.getPositionVector());
   }
 
   public Set<String> getTags() {
@@ -195,31 +208,27 @@ public class VirtualEntity implements ICommandSender {
     return ItemUtil.dropItem(world, pos, item);
   }
 
-  @Override
   public Vec3d getPositionVector() {
     return new Vec3d(posX, posY, posZ);
   }
 
-  @Override
   public BlockPos getPosition() {
     return new BlockPos(posX, posY, posZ);
   }
 
-  @Override
-  public World getEntityWorld() {
+  public World getWorld() {
     return world;
   }
 
-  @Override
-  public boolean canUseCommand(int permLevel, String commandName) {
-    return true;
+  public int getPermissionLevel() {
+    return 0;
   }
 
-  @Override
   public MinecraftServer getServer() {
     return server;
   }
 
+  @Override
   public void sendMessage(ITextComponent component) {
     // TODO check if we need to do something here
   }
@@ -230,6 +239,35 @@ public class VirtualEntity implements ICommandSender {
     posX += motionX;
     posY += motionY;
     posZ += motionZ;
+  }
+
+  @Override
+  public boolean shouldReceiveFeedback() {
+    return true;
+  }
+
+  @Override
+  public boolean shouldReceiveErrors() {
+    return true;
+  }
+
+  @Override
+  public boolean allowLogging() {
+    return true;
+  }
+
+  public CommandSource getCommandSource() {
+    ICommandSource source = this;
+    Vec3d pos = getPositionVector();
+    Vec2f pitchYaw = getPitchYaw();
+    WorldServer world = this.world instanceof WorldServer ? (WorldServer) this.world : null;
+    int permissionLevel = getPermissionLevel();
+    String name = getName();
+    ITextComponent displayName = getDisplayName();
+    MinecraftServer server = getServer();
+    Entity entity = null;
+    return new WolCommandSource(source, pos, pitchYaw, world, permissionLevel, name, displayName,
+        server, entity);
   }
 
 }

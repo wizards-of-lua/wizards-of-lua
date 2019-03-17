@@ -6,6 +6,8 @@ import com.google.auto.service.AutoService;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.IRegistry;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
@@ -61,7 +63,7 @@ public class ItemsModule extends LuaTableExtension {
   @LuaFunction
   public ItemStack get(String name, @Nullable Integer amount) {
     amount = amount != null ? amount : 1;
-    Item item = Item.getByNameOrId(name);
+    Item item = IRegistry.field_212630_s.get(new ResourceLocation(name));
     return new ItemStack(item, amount);
   }
 }

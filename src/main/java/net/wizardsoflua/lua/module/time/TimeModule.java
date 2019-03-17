@@ -93,7 +93,7 @@ public class TimeModule extends LuaTableExtension {
    */
   @LuaProperty
   public long getGametime() {
-    return time.getTotalWorldTime();
+    return time.getGameTime();
   }
 
   /**

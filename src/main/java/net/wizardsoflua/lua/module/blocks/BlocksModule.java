@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.IRegistry;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -83,9 +84,8 @@ public class BlocksModule extends LuaTableExtension {
     if (blockState.getBlock().hasTileEntity(blockState)) {
       World world = null; // This is safe in vanilla MC 1.11.2 as the world value is not used.
       // TODO alternatively pass the 'default' world
-      TileEntity tileEntity = blockState.getBlock().createTileEntity(world, blockState);
-      nbt = new NBTTagCompound();
-      tileEntity.writeToNBT(nbt);
+      TileEntity tileEntity = blockState.getBlock().createTileEntity(blockState, world);
+      nbt = tileEntity.serializeNBT();
       patch(tileEntity, nbt);
     }
     return new ImmutableWolBlock(blockState, nbt);
@@ -93,11 +93,11 @@ public class BlocksModule extends LuaTableExtension {
 
   private Block getBlockByName(String blockName) {
     ResourceLocation resourceLocation = new ResourceLocation(blockName);
-    if (!Block.REGISTRY.containsKey(resourceLocation)) {
+    if (!IRegistry.field_212618_g.func_212607_c(resourceLocation)) {
       throw new IllegalArgumentException(
           String.format("Can't find block with name '%s'", blockName));
     }
-    Block block = Block.REGISTRY.getObject(resourceLocation);
+    Block block = IRegistry.field_212618_g.get(resourceLocation);
     return block;
   }
 
