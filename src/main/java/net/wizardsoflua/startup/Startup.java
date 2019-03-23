@@ -72,6 +72,7 @@ public class Startup {
       sendException(format("Error while searching %s for startup modules", sharedLibDir), e,
           source);
     }
+    // FIXME also catch oher exception in order to show them to the caller?
   }
 
   private List<String> merge(List<String> modules1, List<String> modules2) {
