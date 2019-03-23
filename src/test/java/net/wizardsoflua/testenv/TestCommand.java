@@ -1,93 +1,121 @@
 package net.wizardsoflua.testenv;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static net.minecraft.command.Commands.argument;
+import static net.minecraft.command.Commands.literal;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
 
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.testenv.junit.TestResults;
 
-public class TestCommand extends CommandBase {
-  private static final String CMD_NAME = "test";
+public class TestCommand implements Command<CommandSource> {
+
+  public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    new TestCommand()._register(dispatcher);
+  }
+
   private static final String TRIANGLE = "\u25B6";
   private static final String NO_BREAK_SPACE = "\u00A0";
 
-  private final List<String> aliases = new ArrayList<String>();
+  public TestCommand() {}
 
-
-
-  public TestCommand() {
-    aliases.add(CMD_NAME);
+  private void _register(CommandDispatcher<CommandSource> dispatcher) {
+    dispatcher.register(//
+        literal("test")//
+            .executes(this)//
+            .then(argument("testclass", string())//
+                .executes(this::runClass)//
+                .then(argument("method", string())//
+                    .executes(this::runMethod))));
   }
 
   @Override
-  public String getName() {
-    return CMD_NAME;
+  public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    CommandSource source = context.getSource();
+    return run(source, null, null);
   }
 
-  @Override
-  public String getUsage(ICommandSender sender) {
-    return "";
+  public int runClass(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    CommandSource source = context.getSource();
+    String testclassName = StringArgumentType.getString(context, "testclass");
+    return run(source, testclassName, null);
   }
 
-  @Override
-  public void execute(MinecraftServer server, ICommandSender sender, String[] args)
-      throws CommandException {
+  public int runMethod(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    CommandSource source = context.getSource();
+    String testclassName = StringArgumentType.getString(context, "testclass");
+    String methodName = StringArgumentType.getString(context, "method");
+    return run(source, testclassName, methodName);
+  }
+
+  private int run(CommandSource source, @Nullable String testclassName,
+      @Nullable String methodName) {
     // TODO reuse threads
     Thread t = new Thread(new Runnable() {
       @Override
       public void run() {
         try {
-          if (hasArgs(args)) {
-            Class<?> testClass = parseTestClass(args);
-            String methodName = parseMethodName(args);
+          if (testclassName != null) {
+            Class<?> testClass = loadTestClass(testclassName);
             if (methodName != null) {
-              sender.sendMessage(new TestEnvMessage("Running test"));
+              sendFeedback(source, new TestEnvMessage("Running test"));
               TestResults result = WolTestEnvironment.instance.runTestMethod(testClass, methodName);
-              sendResult(server, sender.getName(), toTestEnvMessage(result));
+              sendFeedback(source, toTestEnvMessage(result));
             } else {
-              sender.sendMessage(new TestEnvMessage("Running tests"));
+              sendFeedback(source, new TestEnvMessage("Running tests"));
               TestResults result = WolTestEnvironment.instance.runTests(testClass);
-              sendResult(server, sender.getName(), toTestEnvMessage(result));
+              sendFeedback(source, toTestEnvMessage(result));
             }
           } else {
-            sender.sendMessage(new TestEnvMessage("Running all tests"));
+            sendFeedback(source, new TestEnvMessage("Running all test"));
             Iterable<TestResults> result = WolTestEnvironment.instance.runAllTests();
-            sendResult(server, sender.getName(), toTestEnvMessage(result));
+            sendFeedback(source, toTestEnvMessage(result));
           }
         } catch (InitializationError | ClassNotFoundException e) {
-          sendResult(server, sender.getName(), new TextComponentString(e.getMessage()));
+          sendFeedback(source, new TextComponentString(e.getMessage()));
         }
       }
-
     }, "test-command-thread");
     t.start();
+    return Command.SINGLE_SUCCESS;
   }
 
-  // Send a message to the player with the given name.
-  // This ensures that the player gets the message even when he or she has logged out during the
-  // test execution
-  private void sendResult(MinecraftServer server, String name, ITextComponent message) {
-    EntityPlayerMP player = getPlayerByName(server, name);
-    if (player != null) {
-      player.sendMessage(message);
+  private Class<?> loadTestClass(String name) throws ClassNotFoundException {
+    return Thread.currentThread().getContextClassLoader().loadClass(name);
+  }
+
+  private void sendFeedback(CommandSource source, ITextComponent message) {
+    if (source.getEntity() instanceof EntityPlayerMP) {
+      // Send the message to the player with the given name.
+      // This ensures that the player gets the message even when he or she has logged out during the
+      // test execution
+      String playerName = ((EntityPlayerMP) source.getEntity()).getGameProfile().getName();
+      EntityPlayerMP player = source.getServer().getPlayerList().getPlayerByUsername(playerName);
+      if (player != null) {
+        player.sendMessage(message);
+      }
+    } else {
+      source.getServer().sendMessage(message);
     }
-  }
-
-  private EntityPlayerMP getPlayerByName(MinecraftServer server, String name) {
-    EntityPlayerMP player = server.getPlayerList().getPlayerByUsername(name);
-    return player;
   }
 
   private ITextComponent toTestEnvMessage(TestResults result) {
@@ -137,24 +165,6 @@ public class TestCommand extends CommandBase {
       result.appendSibling(status);
     }
     return result;
-  }
-
-  private boolean hasArgs(String[] args) {
-    return args != null && args.length > 0;
-  }
-
-  private String parseMethodName(String[] args) {
-    if (args == null || args.length < 2) {
-      return null;
-    }
-    return args[1];
-  }
-
-  private Class<?> parseTestClass(String[] args) throws ClassNotFoundException {
-    if (args == null || args.length < 1) {
-      return null;
-    }
-    return Thread.currentThread().getContextClassLoader().loadClass(args[0]);
   }
 
 }
