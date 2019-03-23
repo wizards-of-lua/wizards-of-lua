@@ -4,10 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,17 +16,14 @@ import net.wizardsoflua.lua.view.ViewFactory;
 public class SpellEntity extends VirtualEntity {
   public static final String NAME = "Spell";
 
-  private ICommandSource owner;
   private SpellProgram program;
   private long sid; // immutable spell id
 
   private boolean visible = false;
   private Table data = new DefaultTable();
 
-  public SpellEntity(World world, ICommandSource owner, SpellProgram program,
-      PositionAndRotation posRot, long sid) {
+  public SpellEntity(World world, SpellProgram program, PositionAndRotation posRot, long sid) {
     super(checkNotNull(world, "world==null!"), posRot.getPos());
-    this.owner = checkNotNull(owner, "owner==null!");
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
     setPositionAndRotation(posRot);
@@ -55,19 +49,12 @@ public class SpellEntity extends VirtualEntity {
     setPositionAndRotation(pos.x, pos.y, pos.z, yaw, pitch);
   }
 
-  public ICommandSource getOwner() {
-    return owner;
-  }
-
   public long getSid() {
     return sid;
   }
 
-  public @Nullable Entity getOwnerEntity() {
-    if (owner instanceof Entity) {
-      return (Entity) owner;
-    }
-    return null;
+  public @Nullable Entity getOwner() {
+    return program.getOwner();
   }
 
   public SpellProgram getProgram() {
@@ -121,15 +108,4 @@ public class SpellEntity extends VirtualEntity {
     }
     MinecraftForge.EVENT_BUS.post(new SpellTerminatedEvent(this));
   }
-
-  public void replacePlayerInstance(EntityPlayerMP player) {
-    Entity commandSender = getOwnerEntity();
-    if (commandSender instanceof EntityPlayer) {
-      if (commandSender.getUniqueID().equals(player.getUniqueID())) {
-        owner = player;
-      }
-    }
-    getProgram().replacePlayerInstance(player);
-  }
-
 }

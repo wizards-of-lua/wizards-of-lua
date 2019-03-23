@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.sandius.rembulan.Table;
@@ -20,7 +21,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerChangedDimensionEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerChangedDimensionEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerChangedDimensionEventClass extends BasicLuaClass<PlayerChangedDimensionEvent, PlayerChangedDimensionEventClass.Instance<PlayerChangedDimensionEvent>> {
+public final class PlayerChangedDimensionEventClass extends
+    BasicLuaClass<PlayerChangedDimensionEvent, PlayerChangedDimensionEventClass.Instance<PlayerChangedDimensionEvent>> {
   public static final String NAME = "PlayerChangedDimensionEvent";
   @Resource
   private LuaConverters converters;
@@ -48,17 +50,17 @@ public final class PlayerChangedDimensionEventClass extends BasicLuaClass<Player
 
     @LuaProperty
     public EntityPlayer getPlayer() {
-      return delegate.player;
+      return delegate.getPlayer();
     }
 
     @LuaProperty
     public int getFrom() {
-      return delegate.fromDim;
+      return delegate.getFrom().getId();
     }
 
     @LuaProperty
     public int getTo() {
-      return delegate.toDim;
+      return delegate.getTo().getId();
     }
   }
 }

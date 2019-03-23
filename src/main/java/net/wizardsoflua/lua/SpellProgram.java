@@ -121,7 +121,7 @@ public class SpellProgram {
   private final InjectionScope injectionScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
-  private Entity owner;
+  private @Nullable Entity owner;
   private State state = State.NEW;
   /**
    * The totalWorldTime at which this program should stop sleeping.
@@ -135,10 +135,10 @@ public class SpellProgram {
   private final Context context;
   private final String[] arguments;
 
-  SpellProgram(Entity owner, String code, @Nullable String[] arguments,
+  SpellProgram(@Nullable Entity owner, String code, @Nullable String[] arguments,
       ModuleDependencies dependencies, String defaultLuaPath, World world,
       PrintReceiver printReceiver, Context context, Logger logger) {
-    this.owner = checkNotNull(owner, "owner==null!");
+    this.owner = owner;
     this.code = checkNotNull(code, "code==null!");
     this.arguments = arguments;
     this.dependencies = checkNotNull(dependencies, "dependencies==null!");
@@ -286,6 +286,10 @@ public class SpellProgram {
     return code;
   }
 
+  public @Nullable Entity getOwner() {
+    return owner;
+  }
+
   public boolean isTerminated() {
     if (state == State.TERMINATED) {
       return true;
@@ -413,4 +417,6 @@ public class SpellProgram {
       }
     }
   }
+
+
 }

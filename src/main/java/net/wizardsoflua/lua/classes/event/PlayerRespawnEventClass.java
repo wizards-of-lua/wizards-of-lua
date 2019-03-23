@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
@@ -20,7 +21,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerRespawnEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerRespawnEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerRespawnEventClass extends BasicLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Instance<PlayerEvent.PlayerRespawnEvent>> {
+public final class PlayerRespawnEventClass extends
+    BasicLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Instance<PlayerEvent.PlayerRespawnEvent>> {
   public static final String NAME = "PlayerRespawnEvent";
   @Resource
   private LuaConverters converters;
@@ -48,7 +50,7 @@ public final class PlayerRespawnEventClass extends BasicLuaClass<PlayerEvent.Pla
 
     @LuaProperty
     public EntityPlayer getPlayer() {
-      return delegate.player;
+      return delegate.getPlayer();
     }
 
     @LuaProperty

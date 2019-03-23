@@ -12,6 +12,8 @@ import com.google.auto.service.AutoService;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.LuaRuntimeException;
@@ -48,16 +50,16 @@ public final class PlayerClass
 
   @Override
   protected Delegator<Instance<EntityPlayerMP>> toLuaInstance(EntityPlayer javaInstance) {
-    return new PlayerClassInstanceTable<>(new Instance<>((EntityPlayerMP) javaInstance, injector), getTable(),
-        converters);
+    return new PlayerClassInstanceTable<>(new Instance<>((EntityPlayerMP) javaInstance, injector),
+        getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends EntityPlayerMP> extends EntityLivingBaseClass.Instance<D> {
-    
+
     @Resource
     private WizardsOfLua wol;
-    
+
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
     }
@@ -66,14 +68,14 @@ public final class PlayerClass
     public String getEntityType() {
       return "player";
     }
-    
+
     @Override
     public void putNbt(Table nbt) {
       throw new LuaRuntimeException(format("%s not supported for class %s", "putNbt", NAME));
     }
 
     @LuaProperty
-    public GameType getGamemode() {         
+    public GameType getGamemode() {
       return delegate.interactionManager.getGameType();
     }
 
@@ -84,9 +86,11 @@ public final class PlayerClass
 
     @LuaProperty
     public boolean isOperator() {
-      return wol.getPermissions().hasOperatorPrivileges(delegate.getPersistentID());
+      return wol.getPermissions().hasOperatorPrivileges(delegate.getUniqueID());
     }
-    
+
+    // TODO: isn't team supported for entities?
+
     @LuaProperty
     public @Nullable String getTeam() {
       Team team = delegate.getTeam();
@@ -98,14 +102,17 @@ public final class PlayerClass
 
     @LuaProperty
     public void setTeam(@Nullable String team) {
+      Scoreboard scoreboard = delegate.getWorldScoreboard();
+      String name = delegate.getScoreboardName();
       if (team == null) {
-        delegate.getWorldScoreboard().removePlayerFromTeams(delegate.getName());
+        scoreboard.removePlayerFromTeams(name);
       } else {
-        boolean success = delegate.getWorldScoreboard().addPlayerToTeam(delegate.getName(), team);
-        if (!success) {
-          throw new IllegalArgumentException(String
-              .format("Couldn't add player %s to unknown team %s!", delegate.getName(), team));
+        ScorePlayerTeam teamObj = scoreboard.getTeam(team);
+        if (teamObj == null) {
+          throw new IllegalArgumentException(
+              String.format("Couldn't add player %s to unknown team %s!", name, team));
         }
+        scoreboard.addPlayerToTeam(name, teamObj);
       }
     }
 

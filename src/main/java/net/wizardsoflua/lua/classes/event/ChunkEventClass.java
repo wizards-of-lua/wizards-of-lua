@@ -20,7 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 /**
  * The <span class="notranslate">ChunkEvent</span> is the common base class of
  * [ChunkLoadEvent](/modules/ChunkLoadEvent) and [ChunkUnloadEvent](/modules/ChunkUnloadEvent).
- * 
+ *
  * Please note that instances of this event could occur asynchronously to the game loop. Hence, if
  * you use an event interceptor to handle them, make sure that your code is thread safe.
  */
@@ -58,7 +58,10 @@ public final class ChunkEventClass
      */
     @LuaProperty
     public World getWorld() {
-      return delegate.getWorld();
+      // TODO support IWorld interface
+      // we can as of MC 1.13 savely downcast to World since a ChunkEvent always has a World
+      // instance
+      return (World) delegate.getWorld();
     }
 
     /**
@@ -66,7 +69,7 @@ public final class ChunkEventClass
      */
     @LuaProperty
     public int getChunkX() {
-      return delegate.getChunk().x;
+      return delegate.getChunk().getPos().x;
     }
 
     /**
@@ -74,7 +77,7 @@ public final class ChunkEventClass
      */
     @LuaProperty
     public int getChunkZ() {
-      return delegate.getChunk().z;
+      return delegate.getChunk().getPos().z;
     }
 
     // @LuaProperty

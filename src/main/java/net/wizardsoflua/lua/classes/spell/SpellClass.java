@@ -73,13 +73,13 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
     @LuaProperty
     public WolBlock getBlock() {
       BlockPos pos = new BlockPos(delegate.getPositionVector());
-      World world = delegate.getEntityWorld();
+      World world = delegate.getWorld();
       return new LiveWolBlock(pos, world);
     }
 
     @LuaProperty
     public void setBlock(WolBlock block) {
-      World world = delegate.getEntityWorld();
+      World world = delegate.getWorld();
       BlockPos pos = new BlockPos(delegate.getPositionVector());
       block.setBlock(world, pos);
     }
@@ -91,7 +91,7 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
 
     @LuaProperty
     public @Nullable Entity getOwner() {
-      return delegate.getOwnerEntity();
+      return delegate.getOwner();
     }
 
     @LuaProperty

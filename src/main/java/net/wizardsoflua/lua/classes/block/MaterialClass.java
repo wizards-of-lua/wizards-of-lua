@@ -2,8 +2,11 @@ package net.wizardsoflua.lua.classes.block;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
@@ -90,23 +93,18 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
     }
 
     @LuaProperty
-    public boolean getBlocksLight() {
-      return delegate.blocksLight();
-    }
-
-    @LuaProperty
     public boolean getBlocksMovement() {
       return delegate.blocksMovement();
     }
 
     @LuaProperty
     public boolean getCanBurn() {
-      return delegate.getCanBurn();
+      return delegate.isFlammable();
     }
 
     @LuaProperty
     public EnumPushReaction getMobility() {
-      return delegate.getMobilityFlag();
+      return delegate.getPushReaction();
     }
 
     @LuaProperty
@@ -138,5 +136,7 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
     public boolean isSolid() {
       return delegate.isSolid();
     }
+
+    // TODO: Add color
   }
 }

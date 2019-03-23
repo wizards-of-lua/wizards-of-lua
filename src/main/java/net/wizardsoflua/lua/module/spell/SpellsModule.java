@@ -95,7 +95,7 @@ public class SpellsModule {
   private Predicate<SpellEntity> byOwner(String owner) {
     checkNotNull(owner, "owner==null!");
     return (SpellEntity spell) -> spell.getOwner() != null
-        && owner.equals(spell.getOwner().getName());
+        && owner.equals(spell.getOwner().getName().getUnformattedComponentText());
   }
 
   private Predicate<SpellEntity> byTag(String tag) {

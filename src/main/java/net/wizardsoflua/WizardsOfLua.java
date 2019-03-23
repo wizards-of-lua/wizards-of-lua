@@ -313,7 +313,6 @@ public class WizardsOfLua {
 
     });
     startup = new Startup(new Startup.Context() {
-
       @Override
       public Path getSharedLibDir() {
         return getConfig().getSharedLibDir().toPath();
@@ -327,6 +326,11 @@ public class WizardsOfLua {
       @Override
       public Logger getLogger() {
         return logger;
+      }
+
+      @Override
+      public SpellEntityFactory getSpellEntityFactory() {
+        return spellEntityFactory;
       }
     });
   }
@@ -352,15 +356,15 @@ public class WizardsOfLua {
     return new RestrictedFileSystem(FileSystems.getDefault(), worldDirectory);
   }
 
-  @EventHandler
+  @SubscribeEvent
   public void serverStopping(FMLServerStoppingEvent event) {
     restApiServer.stop();
   }
 
-  @EventHandler
+  @SubscribeEvent
   public void serverStarted(FMLServerStartedEvent event) {
     logger.info(aboutMessage);
-    runStartupSequence(server);
+    runStartupSequence(server.getCommandSource());
   }
 
   public void runStartupSequence(CommandSource source) {

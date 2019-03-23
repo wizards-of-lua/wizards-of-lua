@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
@@ -20,7 +21,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @LuaClassAttributes(name = PlayerLoggedOutEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerLoggedOutEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerLoggedOutEventClass extends BasicLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Instance<PlayerEvent.PlayerLoggedOutEvent>> {
+public final class PlayerLoggedOutEventClass extends
+    BasicLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Instance<PlayerEvent.PlayerLoggedOutEvent>> {
   public static final String NAME = "PlayerLoggedOutEvent";
   @Resource
   private LuaConverters converters;
@@ -48,7 +50,7 @@ public final class PlayerLoggedOutEventClass extends BasicLuaClass<PlayerEvent.P
 
     @LuaProperty
     public EntityPlayer getPlayer() {
-      return delegate.player;
+      return delegate.getPlayer();
     }
   }
 }

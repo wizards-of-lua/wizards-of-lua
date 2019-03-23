@@ -41,7 +41,7 @@ public class SpellEntityFactory {
       PositionAndRotation pos, String code, String... arguments) {
     SpellProgram program = programFactory.create(world, owner, printReceiver, code, arguments);
     nextSid++;
-    SpellEntity result = new SpellEntity(world, owner, program, pos, nextSid);
+    SpellEntity result = new SpellEntity(world, program, pos, nextSid);
     program.setSpellEntity(result);
     spellRegistry.add(result);
     return result;
@@ -53,7 +53,7 @@ public class SpellEntityFactory {
       ICommandSource source2 = wolSource.getSource();
       if (source2 instanceof SpellEntity) {
         SpellEntity spell = (SpellEntity) source2;
-        return spell.getOwnerEntity();
+        return spell.getOwner();
       }
     }
     return source.getEntity();

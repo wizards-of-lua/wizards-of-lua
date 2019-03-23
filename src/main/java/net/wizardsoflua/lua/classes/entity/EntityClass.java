@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +22,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -83,7 +84,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public boolean isAlive() {
-      return !delegate.isDead;
+      return delegate.isAlive();
     }
 
     /**
@@ -92,7 +93,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public int getDimension() {
-      return delegate.dimension;
+      return delegate.dimension.getId();
     }
 
     /**
@@ -101,10 +102,11 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public @Nullable String getEntityType() {
-      ResourceLocation key = EntityList.getKey(delegate.getClass());
+      @SuppressWarnings("deprecation")
+      ResourceLocation key = IRegistry.field_212629_r.getKey(delegate.getType());
       if (key != null) {
-        if ("minecraft".equals(key.getResourceDomain())) {
-          return key.getResourcePath();
+        if ("minecraft".equals(key.getNamespace())) {
+          return key.getPath();
         }
         return key.toString();
       }
@@ -193,12 +195,12 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public String getName() {
-      return delegate.getName();
+      return delegate.getName().getUnformattedComponentText();
     }
 
     @LuaProperty
     public void setName(String name) {
-      delegate.setCustomNameTag(name);
+      delegate.setCustomName(new TextComponentString(name));
     }
 
     /**
@@ -210,9 +212,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public NBTTagCompound getNbt() {
-      NBTTagCompound nbt = new NBTTagCompound();
-      delegate.writeToNBT(nbt);
-      return nbt;
+      return delegate.serializeNBT();
     }
 
     /**
@@ -387,7 +387,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     public void putNbt(Table nbt) {
       NBTTagCompound oldNbt = delegate.serializeNBT();
       NBTTagCompound newNbt = nbtConverters.merge(oldNbt, nbt);
-      delegate.readFromNBT(newNbt);
+      delegate.deserializeNBT(newNbt);
     }
 
     /**
@@ -407,9 +407,9 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaFunction
     public RayTraceResult scanView(float distance) {
-      Vec3d start = delegate.getPositionEyes(0);
+      Vec3d start = delegate.getEyePosition(0);
       Vec3d end = start.add(delegate.getLookVec().scale(distance));
-      return delegate.getEntityWorld().rayTraceBlocks(start, end, false);
+      return delegate.getEntityWorld().rayTraceBlocks(start, end);
     }
   }
 }

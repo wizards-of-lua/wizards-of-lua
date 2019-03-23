@@ -1,20 +1,21 @@
 package net.wizardsoflua.lua.module.entities;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import com.google.auto.service.AutoService;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.command.CommandException;
-import net.minecraft.command.EntitySelector;
+import net.minecraft.command.arguments.EntitySelectorParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -30,7 +31,8 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.spell.SpellEntity;
 
 /**
- * The <span class="notranslate">Entities</span> module provides access to all [Entity](/module/Entity) objects currently loaded.
+ * The <span class="notranslate">Entities</span> module provides access to all
+ * [Entity](/module/Entity) objects currently loaded.
  *
  */
 @AutoService(SpellExtension.class)
@@ -57,83 +59,83 @@ public class EntitiesModule extends LuaTableExtension {
 
   /**
    * The ‘find’ function returns a table of Entity objects that match the given selector.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the number of all players currently logged in.
-   * 
+   *
    * <code>
    * found = Entities.find("@a")
    * print(#found)
    * </code>
-   *  
+   *
    * #### Example
-   * 
+   *
    * Printing the position of player mickkay.
-   * 
+   *
    * <code>
    * found = Entities.find("@a[name=mickkay]")[1]
    * print(found.pos)
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the positions of all cows in the (loaded part of the) world.
-   * 
+   *
    * <code>
    * found = Entities.find("@e[type=cow]")
    * for _,cow in pairs(found) do
    *   print(cow.pos)
    * end
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the names of all dropped items in the (loaded part of the) world.
-   * 
+   *
    * <code>
    * found = Entities.find("@e[type=item]")
    * for _,e in pairs(found) do
    *   print(e.name)
    * end
    * </code>
-   * 
+   *
    */
   @LuaFunction
-  public List<Entity> find(String selector) {
+  public List<? extends Entity> find(String selector) {
     try {
-      List<Entity> list = EntitySelector.<Entity>matchEntities(spellEntity, selector, Entity.class);
-      return list;
-    } catch (CommandException e) {
-      throw new UndeclaredThrowableException(e);
+      EntitySelectorParser parser = new EntitySelectorParser(new StringReader(selector));
+      return parser.parse().select(spellEntity.getCommandSource());
+    } catch (CommandSyntaxException e) {
+      throw new LuaRuntimeException(e);
     }
   }
 
   /**
-   * The ‘summon’ function returns a freshly created entity of the given type,
-   * having the optionally given Nbt values.
-   * 
+   * The ‘summon’ function returns a freshly created entity of the given type, having the optionally
+   * given Nbt values.
+   *
    * #### Example
-   * 
+   *
    * Creating a pig and moving it half a meter upwards.
-   * 
+   *
    * <code>
    * pig = Entities.summon("pig")
    * pig:move("up",0.5)
    * </code>
-   *  
+   *
    * #### Example
-   * 
+   *
    * Creating a creeper with no AI.
-   * 
+   *
    * <code>
-   * Entities.summon("creeper", {NoAI=1}) 
+   * Entities.summon("creeper", {NoAI=1})
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Creating a zombie with no AI that is spinning around.
-   * 
+   *
    * <code>
    * z = Entities.summon("zombie", {NoAI=1})
    * while true do
@@ -141,7 +143,7 @@ public class EntitiesModule extends LuaTableExtension {
    *   sleep(1)
    * end
    * </code>
-   * 
+   *
    */
   @LuaFunction
   @LuaFunctionDoc(returnType = EntityClass.NAME, args = {"nbt"})
@@ -151,7 +153,7 @@ public class EntitiesModule extends LuaTableExtension {
     }
     nbt.rawset("id", name);
     NBTTagCompound xy = nbtConverter.toNbtCompound(nbt);
-    World world = spellEntity.getEntityWorld();
+    World world = spellEntity.getWorld();
     Vec3d vec = spellEntity.getPositionVector();
     double x = vec.x;
     double y = vec.y;

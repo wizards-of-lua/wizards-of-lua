@@ -8,13 +8,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetworkManager;
-import net.minecraftforge.fml.SidedProvider;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.lua.Converters;
@@ -38,8 +38,7 @@ public class WolEventHandler {
 
   @SubscribeEvent
   public void onEvent(Event event) {
-
-    if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
+    if (EffectiveSide.get() != LogicalSide.SERVER) {
       return;
     }
     if (event instanceof ServerTickEvent) {
@@ -78,27 +77,27 @@ public class WolEventHandler {
 
   @SubscribeEvent
   public void onPlayerRespawnEvent(PlayerRespawnEvent evt) {
-    if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
+    if (EffectiveSide.get() != LogicalSide.SERVER) {
       return;
     }
-    EntityPlayerMP player = (EntityPlayerMP) evt.player;
+    EntityPlayerMP player = (EntityPlayerMP) evt.getPlayer();
     addWolPacketHandler(player);
     replacePlayerInstance(player);
   }
 
   @SubscribeEvent
   public void onPlayerLoggedIn(PlayerLoggedInEvent evt) {
-    if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
+    if (EffectiveSide.get() != LogicalSide.SERVER) {
       return;
     }
-    EntityPlayerMP player = (EntityPlayerMP) evt.player;
+    EntityPlayerMP player = (EntityPlayerMP) evt.getPlayer();
     addWolPacketHandler(player);
     replacePlayerInstance(player);
   }
 
   private void replacePlayerInstance(EntityPlayerMP player) {
     for (SpellEntity spellEntity : context.getSpells()) {
-      spellEntity.replacePlayerInstance(player);
+      spellEntity.getProgram().replacePlayerInstance(player);
     }
   }
 
