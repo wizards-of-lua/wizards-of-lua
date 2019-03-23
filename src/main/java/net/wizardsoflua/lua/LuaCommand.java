@@ -1,83 +1,79 @@
 package net.wizardsoflua.lua;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.Commands.argument;
+import static net.minecraft.command.Commands.literal;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.annotation.Nullable;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import com.google.common.base.Joiner;
-
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 
-public class LuaCommand extends CommandBase {
-  private static final String CMD_NAME = "lua";
-  private final WizardsOfLua wol = WizardsOfLua.instance;
-  private final List<String> aliases = new ArrayList<String>();
+public class LuaCommand implements Command<CommandSource> {
 
-  public LuaCommand() {
-    aliases.add(CMD_NAME);
+  public static void register(CommandDispatcher<CommandSource> dispatcher, WizardsOfLua wol) {
+    new LuaCommand(wol).register(dispatcher);
+  }
+
+  private final WizardsOfLua wol;
+
+  public LuaCommand(WizardsOfLua wol) {
+    this.wol = checkNotNull(wol, "wol == null!");
+  }
+
+  private void register(CommandDispatcher<CommandSource> dispatcher) {
+    dispatcher.register(//
+        literal("lua")//
+            .then(argument("code", greedyString())//
+                .executes(this)));
+
   }
 
   @Override
-  public String getName() {
-    return CMD_NAME;
-  }
-
-  @Override
-  public String getUsage(ICommandSender sender) {
-    // TODO return usage
-    return "";
-  }
-
-  /**
-   * Return the required permission level for this command.
-   */
-  public int getRequiredPermissionLevel() {
-    // TODO add real permission checking somewhere
-    return 2;
-  }
-
-  @Override
-  public void execute(MinecraftServer server, ICommandSender sender, String[] args)
-      throws CommandException {
-    execute(server, sender, concat(args), null);
-  }
-
-  public void execute(MinecraftServer server, ICommandSender sender, String luaCode,
-      @Nullable String[] luaArgs) throws CommandException {
+  public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+    CommandSource source = context.getSource();
     try {
-      World world = sender.getEntityWorld();
-      wol.getSpellEntityFactory().create(world, sender, luaCode, luaArgs);
+      String luaCode = StringArgumentType.getString(context, "code");
+      PrintReceiver printReceiver = new PrintReceiver() {
+        @Override
+        public void send(String message) {
+          TextComponentString txt = new TextComponentString(message);
+          source.sendFeedback(txt, true);
+        }
+      };
+      wol.getSpellEntityFactory().create(source, printReceiver, luaCode);
+      return Command.SINGLE_SUCCESS;
     } catch (Throwable t) {
-      handleException(t, sender);
+      // FIXME check if we need to check for exceptions here or at some other place
+      handleException(t, source);
+      return 0;
     }
   }
 
-  private String concat(String[] args) {
-    return Joiner.on(" ").join(args);
-  }
 
-  private void handleException(Throwable t, ICommandSender sender) {
+  private void handleException(Throwable t, CommandSource source) {
     String message = String.format("An unexpected error occured during lua command execution: %s",
         t.getMessage());
     wol.logger.error(message, t);
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);
-    txt.setStyle((new Style()).setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
-    sender.sendMessage(txt);
+    source.sendFeedback(txt, true);
   }
 
   private String getStackTrace(Throwable throwable) {
