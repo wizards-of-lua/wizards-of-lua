@@ -23,16 +23,19 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import com.mojang.brigadier.CommandDispatcher;
 
+import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
@@ -78,8 +81,8 @@ public class WolTestEnvironment {
   }
 
   public void setTestPlayer(EntityPlayerMP player) {
-    if ( player != null) {
-      logger.info("Setting testPlayer to Player: "+player.getName());
+    if (player != null) {
+      logger.info("Setting testPlayer to Player: " + player.getName());
     } else {
       logger.info("Setting testPlayer to null");
     }
@@ -100,10 +103,11 @@ public class WolTestEnvironment {
     proxy.onInit(event);
   }
 
-  @EventHandler
+  @SubscribeEvent
   public void serverLoad(FMLServerStartingEvent event) {
     server = checkNotNull(event.getServer());
-    event.registerServerCommand(new TestCommand());
+    CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
+    TestCommand.register(cmdDispatcher);
   }
 
   @EventHandler
@@ -126,7 +130,7 @@ public class WolTestEnvironment {
       Class<?> testClass = cl.loadClass(classname);
 
       final CountDownLatch testFinished = new CountDownLatch(1);
-      final AtomicReference<TestResults> resultRef = new AtomicReference<TestResults>();
+      final AtomicReference<TestResults> resultRef = new AtomicReference<>();
       instance.getServer().addScheduledTask(new Runnable() {
 
         @Override
@@ -225,7 +229,7 @@ public class WolTestEnvironment {
   public void runAndWait(Task task) {
     MinecraftServer server = getServer();
     final CountDownLatch taskFinished = new CountDownLatch(1);
-    final AtomicReference<Throwable> exceptionRef = new AtomicReference<Throwable>();
+    final AtomicReference<Throwable> exceptionRef = new AtomicReference<>();
     server.addScheduledTask(new Runnable() {
       @Override
       public void run() {
