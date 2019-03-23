@@ -336,11 +336,11 @@ public class WizardsOfLua {
     worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
     gameProfiles = new GameProfiles(server);
     permissions = new Permissions(server);
+
     CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
+    WolCommand.register(cmdDispatcher, this);
+    LuaCommand.register(cmdDispatcher, this);
 
-
-    cmdDispatcher.register(new WolCommand(this, logger));
-    cmdDispatcher.register(new LuaCommand());
     ChunkLoaderTicketSupport.enableTicketSupport(instance);
     restApiServer.start();
   }
