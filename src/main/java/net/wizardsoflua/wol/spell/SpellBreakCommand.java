@@ -9,12 +9,14 @@ import static net.wizardsoflua.brigadier.argument.SidArgumentType.sid;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
@@ -60,8 +62,13 @@ public class SpellBreakCommand implements Command<CommandSource> {
   @Override
   public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    // TODO I18n
-    return breakSpells(source, spell -> source.equals(spell.getOwner()));
+    Entity entity = source.getEntity();
+    if (entity == null) {
+      // TODO I18n
+      throw new CommandSyntaxException(null, new LiteralMessage(
+          "Without further arguments this command can only be executed by an entity"));
+    }
+    return breakSpells(source, spell -> entity.equals(spell.getOwner()));
   }
 
   public int breakAll(CommandContext<CommandSource> context) throws CommandSyntaxException {

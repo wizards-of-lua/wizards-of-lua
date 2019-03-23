@@ -1,18 +1,18 @@
 package net.wizardsoflua.lua.module.entities;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import com.google.auto.service.AutoService;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.arguments.EntitySelectorParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -99,13 +99,12 @@ public class EntitiesModule extends LuaTableExtension {
    *
    */
   @LuaFunction
-  public List<Entity> find(String selector) {
+  public List<? extends Entity> find(String selector) {
     try {
-      MinecraftServer server = spellEntity.getServer();
-      List<Entity> list = CommandBase.getEntityList(server, spellEntity, selector);
-      return list;
-    } catch (CommandException e) {
-      throw new UndeclaredThrowableException(e);
+      EntitySelectorParser parser = new EntitySelectorParser(new StringReader(selector));
+      return parser.parse().select(spellEntity.getCommandSource());
+    } catch (CommandSyntaxException e) {
+      throw new LuaRuntimeException(e);
     }
   }
 
@@ -151,7 +150,7 @@ public class EntitiesModule extends LuaTableExtension {
     }
     nbt.rawset("id", name);
     NBTTagCompound xy = nbtConverter.toNbtCompound(nbt);
-    World world = spellEntity.getEntityWorld();
+    World world = spellEntity.getWorld();
     Vec3d vec = spellEntity.getPositionVector();
     double x = vec.x;
     double y = vec.y;

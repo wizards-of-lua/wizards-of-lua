@@ -7,6 +7,7 @@ import com.google.auto.service.AutoService;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -84,12 +85,12 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
      */
     @LuaProperty
     public int getDamage() {
-      return delegate.getItemDamage();
+      return delegate.getDamage();
     }
 
     @LuaProperty
     public void setDamage(int meta) {
-      delegate.setItemDamage(meta);
+      delegate.setDamage(meta);
     }
 
     /**
@@ -97,12 +98,12 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
      */
     @LuaProperty
     public String getDisplayName() {
-      return delegate.getDisplayName();
+      return delegate.getDisplayName().getUnformattedComponentText();
     }
 
     @LuaProperty
     public void setDisplayName(String displayName) {
-      delegate.setStackDisplayName(displayName);
+      delegate.setDisplayName(new TextComponentString(displayName));
     }
 
     /**
@@ -111,8 +112,8 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
     @LuaProperty
     public String getId() {
       ResourceLocation name = delegate.getItem().getRegistryName();
-      if ("minecraft".equals(name.getResourceDomain())) {
-        return name.getResourcePath();
+      if ("minecraft".equals(name.getNamespace())) {
+        return name.getPath();
       } else {
         return name.toString();
       }

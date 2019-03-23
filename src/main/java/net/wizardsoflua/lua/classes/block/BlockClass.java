@@ -8,10 +8,10 @@ import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.state.IProperty;
 import net.minecraft.util.ResourceLocation;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -113,8 +113,8 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
     @LuaProperty
     public String getName() {
       ResourceLocation name = delegate.getBlockState().getBlock().getRegistryName();
-      if ("minecraft".equals(name.getResourceDomain())) {
-        return name.getResourcePath();
+      if ("minecraft".equals(name.getNamespace())) {
+        return name.getPath();
       } else {
         return name.toString();
       }
@@ -166,7 +166,7 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
     public WolBlock withData(Table data) {
       WolBlock self = delegate;
       IBlockState state = self.getBlockState();
-      for (IProperty<?> key : state.getPropertyKeys()) {
+      for (IProperty<?> key : state.getProperties()) {
         Object luaValue = data.rawget(key.getName());
         if (luaValue != null) {
           state = withProperty(state, key, luaValue);
@@ -180,7 +180,7 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
     private <T extends Comparable<T>> IBlockState withProperty(IBlockState state, IProperty<T> key,
         Object luaValue) {
       T javaValue = BlockPropertyConverter.toJava(key.getValueClass(), luaValue);
-      return state.withProperty(key, javaValue);
+      return state.with(key, javaValue);
     }
 
     /**
@@ -238,7 +238,7 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
         newNbt = nbtConverters.merge(oldNbt, nbt);
       } else {
         throw new IllegalArgumentException(String.format("Can't set nbt for block '%s'",
-            delegate.getBlockState().getBlock().getRegistryName().getResourcePath()));
+            delegate.getBlockState().getBlock().getRegistryName().getPath()));
       }
 
       ImmutableWolBlock newWolBlock = new ImmutableWolBlock(delegate.getBlockState(), newNbt);

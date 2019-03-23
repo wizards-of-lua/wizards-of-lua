@@ -231,7 +231,7 @@ public class WorldTest extends WolTestBase {
 
     // When:
     mc().player().chat(
-        "/lua v=spell.pos+Vec3(9999999,0,9999999); w=spell.world; b=w:isLoadedAt(v); print(b)");
+        "/lua v=spell.pos+Vec3(9999999,0,9999999); w=spell.world; b=w:isGeneratedAt(v); print(b)");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);

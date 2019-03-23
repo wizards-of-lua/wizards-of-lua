@@ -58,7 +58,7 @@ public final class PlayerItemPickupEventClass extends
      */
     @LuaProperty
     public EntityPlayer getPlayer() {
-      return delegate.player;
+      return delegate.getPlayer();
     }
 
     /**

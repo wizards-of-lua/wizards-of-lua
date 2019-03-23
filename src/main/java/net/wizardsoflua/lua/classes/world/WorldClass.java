@@ -8,7 +8,6 @@ import com.google.auto.service.AutoService;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Village;
 import net.minecraft.world.EnumDifficulty;
@@ -128,18 +127,16 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     }
 
     /**
-     * The 'time' is the number of game ticks that have passed since the world has been created. But
-     * in contrast to [Time.gametime](/modules/Time#gametime) this value can be modified by
-     * operators using the <tt>/time</tt> command.
+     * The 'time' is the number of game ticks that have passed since the world has been created.
      */
     @LuaProperty
     public long getTime() {
-      return delegate.getWorldTime();
+      return delegate.getGameTime();
     }
 
     @LuaProperty
     public void setTime(long time) {
-      delegate.setWorldTime(time);
+      delegate.setTotalWorldTime(time);
     }
 
     /**
@@ -173,18 +170,6 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     @LuaFunction
     public boolean isLoadedAt(Vec3d pos) {
       return delegate.isBlockLoaded(new BlockPos(pos));
-    }
-
-    /**
-     * The 'isGeneratedAt' function returns true if the world chunk that contains the given world
-     * coordinates has already been generated. Please note that this doesn't imply that this chunk
-     * also is currently loaded.
-     */
-    @LuaFunction
-    public boolean isGeneratedAt(Vec3d pos) {
-      int chunkX = MathHelper.floor(pos.x) >> 4;
-      int chunkZ = MathHelper.floor(pos.z) >> 4;
-      return delegate.getChunkProvider().isChunkGeneratedAt(chunkX, chunkZ);
     }
 
   }

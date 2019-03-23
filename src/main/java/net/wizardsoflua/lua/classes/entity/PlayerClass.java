@@ -13,6 +13,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.LuaRuntimeException;
@@ -104,9 +106,10 @@ public final class PlayerClass
      */
     @LuaProperty
     public boolean isOperator() {
-      return wol.getPermissions().hasOperatorPrivileges(delegate.getPersistentID());
+      return wol.getPermissions().hasOperatorPrivileges(delegate.getUniqueID());
     }
 
+    // TODO: isn't team supported for entities?
     /**
      * The 'team' is the name of the team this player belongs to, or
      * <span class="notranslate">nil</span> if he is not a member of any team.
@@ -144,14 +147,17 @@ public final class PlayerClass
 
     @LuaProperty
     public void setTeam(@Nullable String team) {
+      Scoreboard scoreboard = delegate.getWorldScoreboard();
+      String name = delegate.getScoreboardName();
       if (team == null) {
-        delegate.getWorldScoreboard().removePlayerFromTeams(delegate.getName());
+        scoreboard.removePlayerFromTeams(name);
       } else {
-        boolean success = delegate.getWorldScoreboard().addPlayerToTeam(delegate.getName(), team);
-        if (!success) {
-          throw new IllegalArgumentException(String
-              .format("Couldn't add player %s to unknown team %s!", delegate.getName(), team));
+        ScorePlayerTeam teamObj = scoreboard.getTeam(team);
+        if (teamObj == null) {
+          throw new IllegalArgumentException(
+              String.format("Couldn't add player %s to unknown team %s!", name, team));
         }
+        scoreboard.addPlayerToTeam(name, teamObj);
       }
     }
 

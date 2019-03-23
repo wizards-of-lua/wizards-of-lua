@@ -97,15 +97,6 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
     }
 
     /**
-     * This is The <span class="notranslate">true</span> if light can not pass this material. If so
-     * it will prevent grass from growing on dirt underneath and kill any grass below it.
-     */
-    @LuaProperty
-    public boolean getBlocksLight() {
-      return delegate.blocksLight();
-    }
-
-    /**
      * This is <span class="notranslate">true</span> if entites can not pass this material.
      */
     @LuaProperty
@@ -118,7 +109,7 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
      */
     @LuaProperty
     public boolean getCanBurn() {
-      return delegate.getCanBurn();
+      return delegate.isFlammable();
     }
 
     /**
@@ -127,7 +118,7 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
      */
     @LuaProperty
     public EnumPushReaction getMobility() {
-      return delegate.getMobilityFlag();
+      return delegate.getPushReaction();
     }
 
     /**
@@ -187,5 +178,7 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
     public boolean isSolid() {
       return delegate.isSolid();
     }
+
+    // TODO: Add color
   }
 }
