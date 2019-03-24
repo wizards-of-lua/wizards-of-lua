@@ -21,7 +21,7 @@ task wrapper(type: Wrapper) { gradleVersion = '4.9' }
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
-version = "1.13.2-2.11.0"
+version = "1.13.2-3.0.0-SNAPSHOT"
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
