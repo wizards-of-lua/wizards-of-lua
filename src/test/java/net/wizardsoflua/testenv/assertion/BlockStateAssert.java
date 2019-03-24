@@ -4,8 +4,8 @@ import org.assertj.core.api.AbstractComparableAssert;
 import org.assertj.core.api.Assertions;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.state.IProperty;
 
 public class BlockStateAssert extends WolAbstractObjectAssert<BlockStateAssert, IBlockState> {
 
@@ -21,8 +21,7 @@ public class BlockStateAssert extends WolAbstractObjectAssert<BlockStateAssert, 
 
   public <C extends Comparable<C>> AbstractComparableAssert<?, C> property(IProperty<C> property) {
     isNotNull();
-    return Assertions.assertThat(actual.getValue(property))
-        .as(description("[%s]", property.getName()));
+    return Assertions.assertThat(actual.get(property)).as(description("[%s]", property.getName()));
   }
 
 
