@@ -8,6 +8,12 @@ import java.util.Map;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
+/**
+ * Intermediate adaptor for vanilla's chunk force loading system until Forge comes up with
+ * something.
+ *
+ * @see https://github.com/MinecraftForge/MinecraftForge/issues/5487
+ */
 public class ChunkForceManager {
 
   private class WorldManager {
