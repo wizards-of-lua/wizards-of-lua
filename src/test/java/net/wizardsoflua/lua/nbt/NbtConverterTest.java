@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.nbt;
 
 import org.junit.Test;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
@@ -44,7 +45,7 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.merge(nbt, data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(key);
+    assertThat(actual.keySet()).containsOnly(key);
     assertThat(actual.getTag(key)).isEqualTo(new NBTTagShort((short) newValue));
   }
 
@@ -62,7 +63,7 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.merge(nbt, data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(key);
+    assertThat(actual.keySet()).containsOnly(key);
     assertThat(actual.getTag(key)).isEqualTo(new NBTTagLong(value));
   }
 
@@ -78,7 +79,7 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.toNbtCompound(data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(key);
+    assertThat(actual.keySet()).containsOnly(key);
     assertThat(actual.getTag(key)).isEqualTo(new NBTTagString(value));
   }
 
@@ -97,7 +98,7 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.toNbtCompound(data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(key1, key2);
+    assertThat(actual.keySet()).containsOnly(key1, key2);
     assertThat(actual.getTag(key1)).isEqualTo(new NBTTagString(value1));
     assertThat(actual.getTag(key2)).isEqualTo(new NBTTagString(value2));
   }
@@ -115,7 +116,7 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.toNbtCompound(data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(keyString);
+    assertThat(actual.keySet()).containsOnly(keyString);
     assertThat(actual.getTag(keyString)).isEqualTo(new NBTTagString(value));
   }
 
@@ -132,7 +133,7 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.toNbtCompound(data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(keyString);
+    assertThat(actual.keySet()).containsOnly(keyString);
     assertThat(actual.getTag(keyString)).isEqualTo(new NBTTagLong(value));
   }
 
@@ -154,9 +155,9 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.toNbtCompound(data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(key);
+    assertThat(actual.keySet()).containsOnly(key);
     assertThat(actual.getTag(key)).isExactlyInstanceOf(NBTTagList.class);
-    NBTTagList actualValue = actual.getTagList(key, NBT_STRING_TYPE);
+    NBTTagList actualValue = actual.getList(key, NBT_STRING_TYPE);
     assertThat(actualValue).containsExactly(new NBTTagString(value2), new NBTTagString(value3));
   }
 
@@ -175,10 +176,10 @@ public class NbtConverterTest extends AssertionsFactory {
     NBTTagCompound actual = underTest.toNbtCompound(data);
 
     // Then:
-    assertThat(actual.getKeySet()).containsOnly(key);
+    assertThat(actual.keySet()).containsOnly(key);
     assertThat(actual.getTag(key)).isExactlyInstanceOf(NBTTagCompound.class);
-    NBTTagCompound actualValue = actual.getCompoundTag(key);
-    assertThat(actualValue.getKeySet()).containsOnly(key2);
+    NBTTagCompound actualValue = actual.getCompound(key);
+    assertThat(actualValue.keySet()).containsOnly(key2);
     assertThat(actualValue.getTag(key2)).isEqualTo(new NBTTagLong(value2));
   }
 
