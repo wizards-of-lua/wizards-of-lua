@@ -1,16 +1,20 @@
 package net.wizardsoflua.spell;
 
-import net.minecraft.util.EnumParticleTypes;
+import java.util.Collection;
+
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Particles;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.world.WorldServer;
 
 public class SpellAuraFX {
   private static class State {
-    final EnumParticleTypes type;
-    final double speed;
+    final IParticleData type;
+    final float speed;
     final double offset;
     final boolean longDistance;
 
-    public State(EnumParticleTypes type, double speed, double offset, boolean longDistance) {
+    public State(IParticleData type, float speed, double offset, boolean longDistance) {
       this.type = type;
       this.speed = speed;
       this.offset = offset;
@@ -18,11 +22,9 @@ public class SpellAuraFX {
     }
   }
 
-  private static final State[] STATES = {new State(EnumParticleTypes.CLOUD, 0, 0.1, true),
-      new State(EnumParticleTypes.REDSTONE, 0, 0.4, false),
-      new State(EnumParticleTypes.SPELL_MOB, 1, 0, false),
-      new State(EnumParticleTypes.TOWN_AURA, 0, 0.12, false)};
-  private static final int[] PARTICLE_ARGS = new int[0];
+  private static final State[] STATES = {new State(Particles.CLOUD, 0, 0.1, true),
+      new State(net.minecraft.particles.RedstoneParticleData.REDSTONE_DUST, 0, 0.4, false),
+      new State(Particles.WITCH, 1, 0, false), new State(Particles.MYCELIUM, 0, 0.12, false)};
 
   public static void spawnParticle(SpellEntity spell) {
     int time = spell.getAge();
@@ -30,7 +32,7 @@ public class SpellAuraFX {
       return;
     }
     time = time / 2;
-    
+
     double x = spell.posX;
     double y = spell.posY;
     double z = spell.posZ;
@@ -39,18 +41,18 @@ public class SpellAuraFX {
   }
 
   private static void spawnParticle(SpellEntity spell, double x, double y, double z, int time) {
-    WorldServer worldserver = (WorldServer) spell.getEntityWorld();
+    WorldServer world = (WorldServer) spell.getWorld();
     State state = STATES[time % STATES.length];
-    EnumParticleTypes particleType = state.type;
-    boolean longDistance = state.longDistance;
-    int numberOfParticles = 2;
+    IParticleData particleData = state.type;
     double offset = state.offset;
-    double xOffset = offset;
-    double yOffset = offset;
-    double zOffset = offset;
-    double particleSpeed = state.speed;
-
-    SpellUtil.spawnParticle(worldserver, particleType, longDistance, x, y, z, numberOfParticles,
-        xOffset, yOffset, zOffset, particleSpeed, PARTICLE_ARGS);
+    double offsetX = offset;
+    double offsetY = offset;
+    double offsetZ = offset;
+    float particleSpeed = state.speed;
+    int numberOfParticles = 2;
+    boolean force = state.longDistance;
+    Collection<EntityPlayerMP> viewers = world.getServer().getPlayerList().getPlayers();
+    SpellUtil.spawnParticle(world, particleData, x, y, z, offsetX, offsetY, offsetZ, particleSpeed,
+        numberOfParticles, force, viewers);
   }
 }

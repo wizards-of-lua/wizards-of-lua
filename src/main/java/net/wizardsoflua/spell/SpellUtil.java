@@ -2,12 +2,15 @@ package net.wizardsoflua.spell;
 
 import static net.minecraftforge.common.ForgeHooks.rayTraceEyes;
 
+import java.util.Collection;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -125,12 +128,33 @@ public class SpellUtil {
     return null;
   }
 
-  public static void spawnParticle(WorldServer world, EnumParticleTypes particleType,
-      boolean longDistance, double x, double y, double z, int numberOfParticles, double xOffset,
-      double yOffset, double zOffset, double particleSpeed, int... particleArguments) {
+  /**
+   * Spawns particles at the given location.
+   *
+   * @param world
+   * @param particleData
+   * @param x
+   * @param y
+   * @param z
+   * @param offsetX
+   * @param offsetY
+   * @param offsetZ
+   * @param particleSpeed
+   * @param numberOfParticles
+   * @param force
+   * @param viewers
+   *
+   * @see net.minecraft.command.impl.ParticleCommand.spawnParticle
+   */
+  public static void spawnParticle(WorldServer world, IParticleData particleData, double x,
+      double y, double z, double offsetX, double offsetY, double offsetZ, float particleSpeed,
+      int numberOfParticles, boolean force, Collection<EntityPlayerMP> viewers) {
 
-    world.spawnParticle(particleType, longDistance, x, y, z, numberOfParticles, xOffset, yOffset,
-        zOffset, particleSpeed, particleArguments);
+    for (EntityPlayerMP entityplayermp : viewers) {
+      if (world.spawnParticle(entityplayermp, particleData, force, x, y, z, numberOfParticles,
+          offsetX, offsetY, offsetZ, (double) particleSpeed)) {
+      }
+    }
   }
 
 }
