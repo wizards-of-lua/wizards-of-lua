@@ -21,7 +21,7 @@ task wrapper(type: Wrapper) { gradleVersion = '4.9' }
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
-version = "1.13.2-2.13.2"
+version = "1.13.2-3.0.0-SNAPSHOT"
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -118,7 +118,7 @@ dependencies {
   embed libs.jlhttp
   embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
   embed libs.rembulan_stdlib
-  
+
   embed group: 'org.ow2.asm', name: 'asm', version:'5.0.4'
   embed group: 'org.ow2.asm', name: 'asm-analysis', version:'5.0.4'
   embed group: 'org.ow2.asm', name: 'asm-util', version:'5.0.4'
