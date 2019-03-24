@@ -34,6 +34,7 @@ import net.minecraftforge.forgespi.language.IModInfo;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.load.LoaderException;
+import net.wizardsoflua.chunk.ChunkForceManager;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
@@ -52,7 +53,6 @@ import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.rest.WolRestApiServer;
-import net.wizardsoflua.spell.ChunkLoaderTicketSupport;
 import net.wizardsoflua.spell.SpellEntityFactory;
 import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.startup.Startup;
@@ -91,6 +91,7 @@ public class WizardsOfLua {
   private Startup startup;
   private Permissions permissions;
   private FileSystem worldFileSystem;
+  private ChunkForceManager chunkForceManager;
 
   /**
    * Clock used for RuntimeModule
@@ -350,6 +351,7 @@ public class WizardsOfLua {
     public void onFmlServerStarting(FMLServerStartingEvent event) throws IOException {
       server = event.getServer();
       worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
+      chunkForceManager = new ChunkForceManager();
       gameProfiles = new GameProfiles(server);
       permissions = new Permissions(server);
 
@@ -357,7 +359,6 @@ public class WizardsOfLua {
       WolCommand.register(cmdDispatcher, WizardsOfLua.this);
       LuaCommand.register(cmdDispatcher, WizardsOfLua.this);
 
-      ChunkLoaderTicketSupport.enableTicketSupport(instance);
       restApiServer.start();
     }
 
@@ -436,6 +437,10 @@ public class WizardsOfLua {
 
   public Permissions getPermissions() {
     return checkNotNull(permissions, "permissions==null!");
+  }
+
+  public ChunkForceManager getChunkForceManager() {
+    return checkNotNull(chunkForceManager, "chunkForceManager == null!");
   }
 
 }
