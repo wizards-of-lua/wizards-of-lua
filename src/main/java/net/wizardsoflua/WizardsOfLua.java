@@ -34,7 +34,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
-import net.minecraftforge.fml.javafmlmod.FMLModLoadingContext;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
@@ -105,250 +105,280 @@ public class WizardsOfLua {
 
   public WizardsOfLua() {
     instance = this;
-    FMLModLoadingContext.get().getModEventBus().addListener(this::onCommonSetup);
-    FMLModLoadingContext.get().getModEventBus().addListener(this::onServerSetup);
-    MinecraftForge.EVENT_BUS.register(this);
+    registerEventHandlers();
+
   }
 
-  public void onServerSetup(FMLDedicatedServerSetupEvent event) {
-    logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
-    MinecraftForge.EVENT_BUS.register(getSpellRegistry());
-    MinecraftForge.EVENT_BUS.register(aboutMessage);
-    MinecraftForge.EVENT_BUS.register(eventHandler);
+  /**
+   * This registers this mod to both event bus instances.
+   *
+   * @see net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD
+   * @see net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE
+   */
+  private void registerEventHandlers() {
+    FMLJavaModLoadingContext.get().getModEventBus().register(new ModSpecificEventBusHandling());
+    MinecraftForge.EVENT_BUS.register(new MainForgeEventBusListener());
   }
 
-  public void onCommonSetup(FMLCommonSetupEvent event) {
-    ExtensionLoader.initialize(logger);
-    try {
-      tempDir = Files.createTempDirectory("wizards-of-lua");
-      config = WolConfig.create(CONFIG_NAME);
-    } catch (IOException | LoaderException | CallException | CallPausedException
-        | InterruptedException e1) {
-      throw new RuntimeException(e1);
-    }
-    aboutMessage = new AboutMessage(new AboutMessage.Context() {
+  private class ModSpecificEventBusHandling {
 
-      @Override
-      public boolean shouldShowAboutMessage() {
-        return getConfig().getGeneralConfig().isShowAboutMessage();
+    @SubscribeEvent
+    public void onFmlCommonSetup(FMLCommonSetupEvent event) {
+      ExtensionLoader.initialize(logger);
+      try {
+        tempDir = Files.createTempDirectory("wizards-of-lua");
+        config = WolConfig.create(CONFIG_NAME);
+      } catch (IOException | LoaderException | CallException | CallPausedException
+          | InterruptedException e1) {
+        throw new RuntimeException(e1);
       }
+      aboutMessage = new AboutMessage(new AboutMessage.Context() {
 
-      @Override
-      public String getVersion() {
-        return VERSION;
-      }
-
-      @Override
-      public String getUrl() {
-        return URL;
-      }
-
-      @Override
-      public @Nullable String getRecommendedVersion() {
-        String result = null;
-        IModInfo modInfo = ModList.get().getModFileById(MODID).getMods().get(0);
-        CheckResult checkResult = VersionChecker.getResult(modInfo);
-        VersionChecker.Status status = checkResult.status;
-        if (status == VersionChecker.Status.OUTDATED
-            || status == VersionChecker.Status.BETA_OUTDATED) {
-          result = checkResult.target.toString();
+        @Override
+        public boolean shouldShowAboutMessage() {
+          return getConfig().getGeneralConfig().isShowAboutMessage();
         }
-        return result;
-      }
-    });
-    spellProgramFactory = new SpellProgramFactory(logger, new SpellProgramFactory.Context() {
-      @Override
-      public Clock getClock() {
-        return clock;
-      }
 
-      @Override
-      public int getLuaTicksLimit() {
-        return getConfig().getGeneralConfig().getLuaTicksLimit();
-      }
+        @Override
+        public String getVersion() {
+          return VERSION;
+        }
 
-      @Override
-      public int getEventListenerLuaTicksLimit() {
-        return config.getGeneralConfig().getEventListenerLuaTicksLimit();
-      }
+        @Override
+        public String getUrl() {
+          return URL;
+        }
 
-      @Override
-      public @Nullable String getLuaPathElementOfPlayer(String nameOrUuid) {
-        UUID uuid = getUUID(nameOrUuid);
-        return getConfig().getOrCreateWizardConfig(uuid).getLibDirPathElement();
-      }
+        @Override
+        public @Nullable String getRecommendedVersion() {
+          String result = null;
+          IModInfo modInfo = ModList.get().getModFileById(MODID).getMods().get(0);
+          CheckResult checkResult = VersionChecker.getResult(modInfo);
+          VersionChecker.Status status = checkResult.status;
+          if (status == VersionChecker.Status.OUTDATED
+              || status == VersionChecker.Status.BETA_OUTDATED) {
+            result = checkResult.target.toString();
+          }
+          return result;
+        }
+      });
+      spellProgramFactory = new SpellProgramFactory(logger, new SpellProgramFactory.Context() {
+        @Override
+        public Clock getClock() {
+          return clock;
+        }
 
-      private UUID getUUID(String nameOrUuid) {
-        try {
-          return UUID.fromString(nameOrUuid);
-        } catch (IllegalArgumentException e) {
-          GameProfile profile = gameProfiles.getGameProfileByName(nameOrUuid);
-          if (profile != null) {
-            return profile.getId();
-          } else {
-            throw new IllegalArgumentException(
-                format("Player not found with name '%s'", nameOrUuid));
+        @Override
+        public int getLuaTicksLimit() {
+          return getConfig().getGeneralConfig().getLuaTicksLimit();
+        }
+
+        @Override
+        public int getEventListenerLuaTicksLimit() {
+          return config.getGeneralConfig().getEventListenerLuaTicksLimit();
+        }
+
+        @Override
+        public @Nullable String getLuaPathElementOfPlayer(String nameOrUuid) {
+          UUID uuid = getUUID(nameOrUuid);
+          return getConfig().getOrCreateWizardConfig(uuid).getLibDirPathElement();
+        }
+
+        private UUID getUUID(String nameOrUuid) {
+          try {
+            return UUID.fromString(nameOrUuid);
+          } catch (IllegalArgumentException e) {
+            GameProfile profile = gameProfiles.getGameProfileByName(nameOrUuid);
+            if (profile != null) {
+              return profile.getId();
+            } else {
+              throw new IllegalArgumentException(
+                  format("Player not found with name '%s'", nameOrUuid));
+            }
           }
         }
-      }
 
-      @Override
-      public String getSharedLuaPath() {
-        return getConfig().getSharedLuaPath();
-      }
+        @Override
+        public String getSharedLuaPath() {
+          return getConfig().getSharedLuaPath();
+        }
 
-      @Override
-      public Profiles getProfiles() {
-        return profiles;
-      }
+        @Override
+        public Profiles getProfiles() {
+          return profiles;
+        }
 
-      @Override
-      public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
-        return luaFunctionCache;
-      }
+        @Override
+        public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
+          return luaFunctionCache;
+        }
 
-      @Override
-      public boolean isScriptGatewayEnabled() {
-        return getConfig().getScriptGatewayConfig().isEnabled();
-      }
+        @Override
+        public boolean isScriptGatewayEnabled() {
+          return getConfig().getScriptGatewayConfig().isEnabled();
+        }
 
-      @Override
-      public Path getScriptDir() {
-        return getConfig().getScriptGatewayConfig().getDir();
-      }
+        @Override
+        public Path getScriptDir() {
+          return getConfig().getScriptGatewayConfig().getDir();
+        }
 
-      @Override
-      public long getScriptTimeoutMillis() {
-        return getConfig().getScriptGatewayConfig().getTimeoutMillis();
-      }
+        @Override
+        public long getScriptTimeoutMillis() {
+          return getConfig().getScriptGatewayConfig().getTimeoutMillis();
+        }
 
-      @Override
-      public SpellRegistry getSpellRegistry() {
-        return WizardsOfLua.this.getSpellRegistry();
-      }
+        @Override
+        public SpellRegistry getSpellRegistry() {
+          return WizardsOfLua.this.getSpellRegistry();
+        }
 
-      @Override
-      public InjectionScope getRootScope() {
-        return rootScope;
-      }
+        @Override
+        public InjectionScope getRootScope() {
+          return rootScope;
+        }
 
-      @Override
-      public FileSystem getWorldFileSystem() {
-        return WizardsOfLua.this.getWorldFileSystem();
-      }
+        @Override
+        public FileSystem getWorldFileSystem() {
+          return WizardsOfLua.this.getWorldFileSystem();
+        }
 
-    });
-    spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
-    profiles = new Profiles(new Profiles.Context() {
+      });
+      spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
+      profiles = new Profiles(new Profiles.Context() {
 
-      @Override
-      public GeneralConfig getGeneralConfig() {
-        return getConfig().getGeneralConfig();
-      }
+        @Override
+        public GeneralConfig getGeneralConfig() {
+          return getConfig().getGeneralConfig();
+        }
 
-      @Override
-      public WizardConfig getWizardConfig(EntityPlayer player) {
-        return getConfig().getOrCreateWizardConfig(player.getUniqueID());
-      }
+        @Override
+        public WizardConfig getWizardConfig(EntityPlayer player) {
+          return getConfig().getOrCreateWizardConfig(player.getUniqueID());
+        }
 
-    });
-    eventHandler = new WolEventHandler(() -> spellRegistry.getAll());
-    fileRepository = new LuaFileRepository(new LuaFileRepository.Context() {
-      @Override
-      public File getPlayerLibDir(UUID playerId) {
-        return getConfig().getOrCreateWizardConfig(playerId).getLibDir();
-      }
+      });
+      eventHandler = new WolEventHandler(() -> spellRegistry.getAll());
+      fileRepository = new LuaFileRepository(new LuaFileRepository.Context() {
+        @Override
+        public File getPlayerLibDir(UUID playerId) {
+          return getConfig().getOrCreateWizardConfig(playerId).getLibDir();
+        }
 
-      @Override
-      public RestApiConfig getRestApiConfig() {
-        return getConfig().getRestApiConfig();
-      }
+        @Override
+        public RestApiConfig getRestApiConfig() {
+          return getConfig().getRestApiConfig();
+        }
 
-      @Override
-      public File getSharedLibDir() {
-        return getConfig().getSharedLibDir();
-      }
+        @Override
+        public File getSharedLibDir() {
+          return getConfig().getSharedLibDir();
+        }
 
-      @Override
-      public String getPlayerRestApiKey(UUID playerId) {
-        return getConfig().getOrCreateWizardConfig(playerId).getRestApiKey();
-      }
+        @Override
+        public String getPlayerRestApiKey(UUID playerId) {
+          return getConfig().getOrCreateWizardConfig(playerId).getRestApiKey();
+        }
 
-      @Override
-      public boolean isOperator(UUID playerId) {
-        return permissions.hasOperatorPrivileges(playerId);
-      }
+        @Override
+        public boolean isOperator(UUID playerId) {
+          return permissions.hasOperatorPrivileges(playerId);
+        }
 
-      @Override
-      public Path getTempDir() {
-        return tempDir;
-      }
-    });
+        @Override
+        public Path getTempDir() {
+          return tempDir;
+        }
+      });
 
-    restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
-      @Override
-      public LuaFile getLuaFileByReference(String fileReference) {
-        return getFileRepository().loadLuaFile(fileReference);
-      }
+      restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
+        @Override
+        public LuaFile getLuaFileByReference(String fileReference) {
+          return getFileRepository().loadLuaFile(fileReference);
+        }
 
-      @Override
-      public RestApiConfig getRestApiConfig() {
-        return getConfig().getRestApiConfig();
-      }
+        @Override
+        public RestApiConfig getRestApiConfig() {
+          return getConfig().getRestApiConfig();
+        }
 
-      @Override
-      public void saveLuaFileByReference(String fileReference, String content) {
-        getFileRepository().saveLuaFile(fileReference, content);
-      }
+        @Override
+        public void saveLuaFileByReference(String fileReference, String content) {
+          getFileRepository().saveLuaFile(fileReference, content);
+        }
 
-      @Override
-      public boolean isValidLoginToken(UUID playerId, String token) {
-        return getFileRepository().isValidLoginToken(playerId, token);
-      }
+        @Override
+        public boolean isValidLoginToken(UUID playerId, String token) {
+          return getFileRepository().isValidLoginToken(playerId, token);
+        }
 
-      @Override
-      public SpellPack createSpellPackByReference(String fileReference) {
-        return getFileRepository().createSpellPack(fileReference);
-      }
+        @Override
+        public SpellPack createSpellPackByReference(String fileReference) {
+          return getFileRepository().createSpellPack(fileReference);
+        }
 
-    });
-    startup = new Startup(new Startup.Context() {
-      @Override
-      public Path getSharedLibDir() {
-        return getConfig().getSharedLibDir().toPath();
-      }
+      });
+      startup = new Startup(new Startup.Context() {
+        @Override
+        public Path getSharedLibDir() {
+          return getConfig().getSharedLibDir().toPath();
+        }
 
-      @Override
-      public MinecraftServer getServer() {
-        return server;
-      }
+        @Override
+        public MinecraftServer getServer() {
+          return server;
+        }
 
-      @Override
-      public Logger getLogger() {
-        return logger;
-      }
+        @Override
+        public Logger getLogger() {
+          return logger;
+        }
 
-      @Override
-      public SpellEntityFactory getSpellEntityFactory() {
-        return spellEntityFactory;
-      }
-    });
+        @Override
+        public SpellEntityFactory getSpellEntityFactory() {
+          return spellEntityFactory;
+        }
+      });
+    }
+
+    @SubscribeEvent
+    public void onFmlDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
+      logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
+      MinecraftForge.EVENT_BUS.register(getSpellRegistry());
+      MinecraftForge.EVENT_BUS.register(aboutMessage);
+      MinecraftForge.EVENT_BUS.register(eventHandler);
+    }
   }
 
-  @SubscribeEvent
-  public void onServerStarting(FMLServerStartingEvent event) throws IOException {
-    server = event.getServer();
-    worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
-    gameProfiles = new GameProfiles(server);
-    permissions = new Permissions(server);
+  private class MainForgeEventBusListener {
+    @SubscribeEvent
+    public void onFmlServerStarting(FMLServerStartingEvent event) throws IOException {
+      server = event.getServer();
+      worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
+      gameProfiles = new GameProfiles(server);
+      permissions = new Permissions(server);
 
-    CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
-    WolCommand.register(cmdDispatcher, this);
-    LuaCommand.register(cmdDispatcher, this);
+      CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
+      WolCommand.register(cmdDispatcher, WizardsOfLua.this);
+      LuaCommand.register(cmdDispatcher, WizardsOfLua.this);
 
-    ChunkLoaderTicketSupport.enableTicketSupport(instance);
-    restApiServer.start();
+      ChunkLoaderTicketSupport.enableTicketSupport(instance);
+      restApiServer.start();
+    }
+
+    @SubscribeEvent
+    public void onFmlServerStarted(FMLServerStartedEvent event) {
+      logger.info(aboutMessage);
+      runStartupSequence(server.getCommandSource());
+    }
+
+    @SubscribeEvent
+    public void onFmlServerStopping(FMLServerStoppingEvent event) {
+      restApiServer.stop();
+    }
+
   }
+
 
   private FileSystem createWorldFileSystem(File serverDir, String worldFolderName) {
     Path worldDirectory =
@@ -356,16 +386,6 @@ public class WizardsOfLua {
     return new RestrictedFileSystem(FileSystems.getDefault(), worldDirectory);
   }
 
-  @SubscribeEvent
-  public void serverStopping(FMLServerStoppingEvent event) {
-    restApiServer.stop();
-  }
-
-  @SubscribeEvent
-  public void serverStarted(FMLServerStartedEvent event) {
-    logger.info(aboutMessage);
-    runStartupSequence(server.getCommandSource());
-  }
 
   public void runStartupSequence(CommandSource source) {
     startup.runStartupSequence(source);
