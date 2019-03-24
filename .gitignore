@@ -11,6 +11,7 @@ Paulscode IBXM Library License.txt
 Paulscode SoundSystem CodecIBXM License.txt
 **/build
 run
+run.bak
 *.launch
 CREDITS-fml.txt
 LICENSE-new.txt

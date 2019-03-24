@@ -118,6 +118,10 @@ dependencies {
   embed libs.jlhttp
   embed libs.rembulan_compiler, { exclude group: 'org.ow2.asm' } // asm is provided by Minecraft
   embed libs.rembulan_stdlib
+  
+  embed group: 'org.ow2.asm', name: 'asm', version:'5.0.4'
+  embed group: 'org.ow2.asm', name: 'asm-analysis', version:'5.0.4'
+  embed group: 'org.ow2.asm', name: 'asm-util', version:'5.0.4'
 
   testCompile libs.assertj_core
   testCompile libs.eclipse_compiler

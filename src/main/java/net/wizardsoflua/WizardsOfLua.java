@@ -40,6 +40,7 @@ import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.load.LoaderException;
 import net.wizardsoflua.chunk.ChunkForceManager;
+import net.wizardsoflua.command.CustomCommandRegistry;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WizardConfig;
@@ -90,6 +91,7 @@ public class WizardsOfLua {
   private Profiles profiles;
   private LuaFileRepository fileRepository;
   private WolRestApiServer restApiServer;
+  private CustomCommandRegistry customCommandRegistry;
 
   private MinecraftServer server;
   private GameProfiles gameProfiles;
@@ -359,6 +361,7 @@ public class WizardsOfLua {
       chunkForceManager = new ChunkForceManager();
       gameProfiles = new GameProfiles(server);
       permissions = new Permissions(server);
+      customCommandRegistry = new CustomCommandRegistry(server, spellEntityFactory);
 
       CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
       WolCommand.register(cmdDispatcher, WizardsOfLua.this);
@@ -446,6 +449,10 @@ public class WizardsOfLua {
 
   public ChunkForceManager getChunkForceManager() {
     return checkNotNull(chunkForceManager, "chunkForceManager == null!");
+  }
+
+  public CustomCommandRegistry getCustomCommandRegistry() {
+    return checkNotNull(customCommandRegistry, "customCommandRegistry == null!");
   }
 
 }
