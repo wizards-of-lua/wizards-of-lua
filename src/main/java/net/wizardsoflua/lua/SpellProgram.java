@@ -39,6 +39,7 @@ import net.sandius.rembulan.lib.TableLib;
 import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.command.CustomCommandRegistry;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.ParallelTaskFactory;
 import net.wizardsoflua.extension.spell.api.resource.Config;
@@ -237,6 +238,9 @@ public class SpellProgram {
     });
     scope.registerResource(MinecraftServer.class, world.getServer());
     scope.registerResource(WizardsOfLua.class, WizardsOfLua.instance);
+    scope.registerResource(CustomCommandRegistry.class,
+        WizardsOfLua.instance.getCustomCommandRegistry());
+
     return scope;
   }
 
