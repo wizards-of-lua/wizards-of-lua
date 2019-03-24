@@ -1,42 +1,26 @@
 package net.wizardsoflua.spell;
 
-import java.util.List;
-
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import net.wizardsoflua.chunk.ChunkForceManager;
 import net.wizardsoflua.chunk.ChunkUtil;
+import net.wizardsoflua.chunk.Ticket;
 
 /**
- * The {@link VirtualEntityChunkLoaderSupport} ensures that the chunk at the {@link VirtualEntity}'s
+ * The {@link VirtualEntityChunkForceSupport} ensures that the chunk at the {@link VirtualEntity}'s
  * position will stay loaded continuously.
  */
-public class VirtualEntityChunkLoaderSupport {
+public class VirtualEntityChunkForceSupport {
 
-  public static void enableTicketSupport(Object mod) {
-    ForgeChunkManager.setForcedChunkLoadingCallback(mod,
-        new net.minecraftforge.common.ForgeChunkManager.LoadingCallback() {
-          @Override
-          public void ticketsLoaded(List<Ticket> tickets, World world) {
-            // This is called when the server is restarted and if there are tickets that we
-            // have registered before.
-            // Since we do not support to restore interrupted Lua programs, we do not need
-            // to do here anything.
-          }
-        });
-  }
-
-  private final Object mod;
+  private final ChunkForceManager support;
   private final VirtualEntity entity;
   private Ticket chunkLoaderTicket;
   private ChunkPos chunkPos;
 
-  public VirtualEntityChunkLoaderSupport(Object mod, VirtualEntity entity) {
-    this.mod = mod;
+  public VirtualEntityChunkForceSupport(ChunkForceManager support, VirtualEntity entity) {
+    this.support = support;
     this.entity = entity;
-    this.chunkPos = new ChunkPos(entity.getPosition());
+    chunkPos = new ChunkPos(entity.getPosition());
     loadChunk(chunkPos);
     loadChunkProximity(chunkPos);
   }
@@ -46,13 +30,12 @@ public class VirtualEntityChunkLoaderSupport {
       releaseTicket();
     }
     chunkPos = new ChunkPos(entity.getPosition());
-    chunkLoaderTicket = ForgeChunkManager.requestTicket(mod, entity.getEntityWorld(),
-        ForgeChunkManager.Type.NORMAL);
+    chunkLoaderTicket = new Ticket(entity.getWorld());
     if (chunkLoaderTicket == null) {
       throw new IllegalStateException("Could not get a ChunkLoading ticket for Wizards of Lua!");
     }
     loadChunkProximity(chunkPos);
-    ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
+    support.forceChunk(chunkLoaderTicket, chunkPos);
   }
 
   public boolean hasTicket() {
@@ -61,11 +44,7 @@ public class VirtualEntityChunkLoaderSupport {
 
   public void releaseTicket() {
     if (hasTicket()) {
-      try {
-        ForgeChunkManager.releaseTicket(chunkLoaderTicket);
-      } catch (Throwable e) {
-        // ignored
-      }
+      chunkLoaderTicket.release();
       chunkLoaderTicket = null;
     }
   }
@@ -74,10 +53,10 @@ public class VirtualEntityChunkLoaderSupport {
     BlockPos pos = entity.getPosition();
     if (!ChunkUtil.contains(chunkPos, pos)) {
       if (chunkLoaderTicket != null) {
-        ForgeChunkManager.unforceChunk(chunkLoaderTicket, chunkPos);
+        support.unforceChunk(chunkLoaderTicket, chunkPos);
         chunkPos = new ChunkPos(pos);
         loadChunkProximity(chunkPos);
-        ForgeChunkManager.forceChunk(chunkLoaderTicket, chunkPos);
+        support.forceChunk(chunkLoaderTicket, chunkPos);
       } else {
         chunkPos = new ChunkPos(pos);
         loadChunk(chunkPos);
@@ -87,7 +66,7 @@ public class VirtualEntityChunkLoaderSupport {
   }
 
   private void loadChunk(ChunkPos chunkPos) {
-    entity.getEntityWorld().getChunkFromChunkCoords(chunkPos.x, chunkPos.z);
+    entity.getWorld().getChunk(chunkPos.x, chunkPos.z);
   }
 
   /**
@@ -101,7 +80,7 @@ public class VirtualEntityChunkLoaderSupport {
     for (int x = -1; x <= 1; ++x) {
       for (int z = -1; z <= 1; ++z) {
         if (!(x == 0 && z == 0)) {
-          entity.getEntityWorld().getChunkFromChunkCoords(center.x + x, center.z + z);
+          entity.getWorld().getChunk(center.x + x, center.z + z);
         }
       }
     }

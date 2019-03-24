@@ -29,7 +29,7 @@ public class VirtualEntity implements ICommandSource {
 
   private final World world;
   private final MinecraftServer server;
-  private final VirtualEntityChunkLoaderSupport chunkLoaderSupport;
+  private final VirtualEntityChunkForceSupport chunkForceSupport;
 
   private UUID uuid;
   private boolean alive;
@@ -54,7 +54,8 @@ public class VirtualEntity implements ICommandSource {
     posX = position.x;
     posY = position.y;
     posZ = position.z;
-    chunkLoaderSupport = new VirtualEntityChunkLoaderSupport(WizardsOfLua.instance, this);
+    chunkForceSupport =
+        new VirtualEntityChunkForceSupport(WizardsOfLua.instance.getChunkForceManager(), this);
     uuid = UUID.randomUUID();
     alive = true;
     setForceChunk(true);
@@ -62,14 +63,14 @@ public class VirtualEntity implements ICommandSource {
 
   public void setForceChunk(boolean value) {
     if (value) {
-      chunkLoaderSupport.requestNewTicket();
+      chunkForceSupport.requestNewTicket();
     } else {
-      chunkLoaderSupport.releaseTicket();
+      chunkForceSupport.releaseTicket();
     }
   }
 
   public boolean isForceChunk() {
-    return chunkLoaderSupport.hasTicket();
+    return chunkForceSupport.hasTicket();
   }
 
   public UUID getUniqueID() {
@@ -94,7 +95,7 @@ public class VirtualEntity implements ICommandSource {
 
   public void setDead() {
     alive = false;
-    chunkLoaderSupport.releaseTicket();
+    chunkForceSupport.releaseTicket();
   }
 
   public boolean isAlive() {
@@ -156,7 +157,7 @@ public class VirtualEntity implements ICommandSource {
     posX = x;
     posY = y;
     posZ = z;
-    chunkLoaderSupport.updatePosition();
+    chunkForceSupport.updatePosition();
   }
 
   public void setPosition(Vec3d pos) {
