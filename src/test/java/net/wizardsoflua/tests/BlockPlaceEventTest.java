@@ -1,13 +1,11 @@
 package net.wizardsoflua.tests;
 
 import static net.minecraft.util.EnumFacing.UP;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import net.minecraft.block.BlockSand;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -34,7 +32,7 @@ public class BlockPlaceEventTest extends WolTestBase {
   @Test
   public void test__BlockPlaceEvent_MAIN_HAND() {
     // Given:
-    BlockSand sand = Blocks.SAND;
+    Block sand = Blocks.SAND;
     mc().player().setMainHandItem(new ItemStack(sand));
     mc().player().setPosition(playerPos);
     mc().executeCommand("lua q=Events.collect('BlockPlaceEvent')\n"//
@@ -50,7 +48,7 @@ public class BlockPlaceEventTest extends WolTestBase {
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
-    assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getResourcePath());
+    assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getPath());
     assertThat(mc().nextServerMessage()).isEqualTo(EnumHand.MAIN_HAND.toString());
     assertThat(mc().nextServerMessage()).isEqualTo("stone");
   }
@@ -59,7 +57,7 @@ public class BlockPlaceEventTest extends WolTestBase {
   @Test
   public void test__BlockPlaceEvent_OFF_HAND() {
     // Given:
-    BlockSand sand = Blocks.SAND;
+    Block sand = Blocks.SAND;
     mc().player().setOffHandItem(new ItemStack(sand));
     mc().player().setPosition(playerPos);
     mc().executeCommand("lua q=Events.collect('BlockPlaceEvent')\n"//
@@ -75,7 +73,7 @@ public class BlockPlaceEventTest extends WolTestBase {
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
-    assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getResourcePath());
+    assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getPath());
     assertThat(mc().nextServerMessage()).isEqualTo(EnumHand.OFF_HAND.toString());
     assertThat(mc().nextServerMessage()).isEqualTo("stone");
   }

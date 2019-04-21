@@ -1,15 +1,13 @@
 package net.wizardsoflua.testenv.net;
 
-import java.io.IOException;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 @RequiresMainThread
-public abstract class AbstractMessage implements IMessage {
-  protected abstract void read(PacketBuffer buffer) throws IOException;
+public abstract class AbstractMessage {
+  protected abstract void read(PacketBuffer buffer);
 
-  protected abstract void write(PacketBuffer buffer) throws IOException;
+  protected abstract void write(PacketBuffer buffer);
 
   protected void writeString(ByteBuf buffer, String string) {
     if (string == null) {
@@ -31,22 +29,11 @@ public abstract class AbstractMessage implements IMessage {
     }
   }
 
-  @Override
   public void fromBytes(ByteBuf buffer) {
-    try {
-      read(new PacketBuffer(buffer));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    read(new PacketBuffer(buffer));
   }
 
-  @Override
   public void toBytes(ByteBuf buffer) {
-    try {
-      write(new PacketBuffer(buffer));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    write(new PacketBuffer(buffer));
   }
-
 }

@@ -3,10 +3,10 @@ package net.wizardsoflua.tests;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
@@ -111,10 +111,10 @@ public class Spell_block_Test extends WolTestBase {
 
     IBlockState actLower = mc().getBlock(lowerDoorPos);
     assertThat(actLower).isA(Blocks.OAK_DOOR).property(BlockDoor.HALF)
-        .isEqualTo(BlockDoor.EnumDoorHalf.LOWER);
+        .isEqualTo(DoubleBlockHalf.LOWER);
     IBlockState actUpper = mc().getBlock(upperDoorPos);
     assertThat(actUpper).isA(Blocks.OAK_DOOR).property(BlockDoor.HALF)
-        .isEqualTo(BlockDoor.EnumDoorHalf.UPPER);
+        .isEqualTo(DoubleBlockHalf.UPPER);
   }
 
   // /test net.wizardsoflua.tests.Spell_block_Test test_block_withNbt

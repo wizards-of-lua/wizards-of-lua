@@ -2,10 +2,8 @@ package net.wizardsoflua.tests;
 
 import java.util.List;
 import java.util.Set;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.init.Blocks;
@@ -113,7 +111,7 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     EnumFacing expectedFacing = actEntities.get(0).getHorizontalFacing();
     assertThat(act.getMessage()).isEqualTo(expectedFacing.getName());
@@ -138,7 +136,7 @@ public class EntityTest extends WolTestBase {
     ServerLog4jEvent actX = mc().waitFor(ServerLog4jEvent.class);
     ServerLog4jEvent actY = mc().waitFor(ServerLog4jEvent.class);
     ServerLog4jEvent actZ = mc().waitFor(ServerLog4jEvent.class);
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedX = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().x);
     String expectedY = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().y);
@@ -185,7 +183,7 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedRotationYaw =
         String.format("%.5f", ((EntityPig) actEntities.get(0)).renderYawOffset);
@@ -210,7 +208,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     float actualRotationYaw = ((EntityPig) actEntities.get(0)).rotationYaw;
     assertThat(actualRotationYaw).isEqualTo(expectedRotationYaw);
@@ -232,7 +230,7 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedRotationPitch =
         String.format("%.5f", ((EntityPig) actEntities.get(0)).rotationPitch);
@@ -257,7 +255,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     float actualRotationPitch = ((EntityPig) actEntities.get(0)).rotationPitch;
     assertThat(actualRotationPitch).isEqualTo(expectedRotationPitch);
@@ -279,7 +277,7 @@ public class EntityTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedEyeHeight =
         String.format("%.5f", ((EntityPig) actEntities.get(0)).getEyeHeight());
@@ -321,7 +319,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     double actualMotion = ((EntityPig) actEntities.get(0)).motionY;
     assertThat(actualMotion).isGreaterThan(0);
@@ -367,7 +365,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).containsOnly(newTag1, newTag2);
@@ -393,7 +391,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).containsOnly(initialTag, newTag);
@@ -418,7 +416,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).isEmpty();
@@ -444,7 +442,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
     assertThat(actPos).isEqualTo(expectedPos);
@@ -469,7 +467,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
     assertThat(actPos).isEqualTo(expectedPos);
@@ -494,7 +492,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
     assertThat(actPos).isEqualTo(expectedPos);
@@ -520,7 +518,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
     assertThat(actPos).isEqualTo(expectedPos);
@@ -630,7 +628,7 @@ public class EntityTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("ok");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(0);
   }
 

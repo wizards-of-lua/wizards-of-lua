@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.arguments.EntitySelector;
+import net.minecraft.command.arguments.EntitySelectorParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -35,8 +37,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.Village;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -45,37 +50,41 @@ import net.wizardsoflua.testenv.player.PlayerBackdoor;
 public class MinecraftBackdoor {
 
   private final WolTestEnvironment testEnv;
-  private final EventBus eventBus;
+  private final IEventBus eventBus;
   private final PlayerBackdoor player;
 
-  public MinecraftBackdoor(WolTestEnvironment testEnv, EventBus eventBus) {
+  public MinecraftBackdoor(WolTestEnvironment testEnv, IEventBus eventBus) {
     this.testEnv = testEnv;
     this.eventBus = eventBus;
     player = new PlayerBackdoor(this);
   }
 
-  public String getName() {
-    return testEnv.getServer().getName();
+  public String getWorldName() {
+    return getWorldInfo().getWorldName();
   }
 
   public String getWorldFolderName() {
     return testEnv.getServer().getFolderName();
   }
 
-  public String getWorldName() {
-    return testEnv.getServer().getEntityWorld().getWorldInfo().getWorldName();
+  private WorldInfo getWorldInfo() {
+    return getOverworld().getWorldInfo();
+  }
+
+  private WorldServer getOverworld() {
+    return testEnv.getServer().getWorld(DimensionType.OVERWORLD);
   }
 
   public int getWorldDimension() {
-    return testEnv.getServer().getEntityWorld().provider.getDimension();
+    return DimensionType.OVERWORLD.getId();
   }
 
   public EnumDifficulty getDifficulty() {
-    return testEnv.getServer().getEntityWorld().getWorldInfo().getDifficulty();
+    return getWorldInfo().getDifficulty();
   }
 
   public void setDifficulty(EnumDifficulty newDifficulty) {
-    testEnv.getServer().getEntityWorld().getWorldInfo().setDifficulty(newDifficulty);
+    getWorldInfo().setDifficulty(newDifficulty);
   }
 
   public void post(Event event) {
@@ -109,9 +118,9 @@ public class MinecraftBackdoor {
     } else {
       command = format;
     }
-    ICommandSender sender = testEnv.getServer();
     MinecraftServer server = testEnv.getServer();
-    testEnv.runAndWait(() -> server.getCommandManager().executeCommand(sender, command));
+    CommandSource source = server.getCommandSource();
+    testEnv.runAndWait(() -> server.getCommandManager().handleCommand(source, command));
   }
 
   public void freezeClock(long millis) {
@@ -168,16 +177,15 @@ public class MinecraftBackdoor {
   }
 
   public BlockPos getWorldSpawnPoint() {
-    return testEnv.getServer().getEntityWorld().getSpawnPoint();
+    return getOverworld().getSpawnPoint();
   }
 
   public void setWorldSpawnPoint(BlockPos pos) {
-    testEnv.getServer().getEntityWorld().setSpawnPoint(pos);
+    getOverworld().setSpawnPoint(pos);
   }
 
   public BlockPos getNearestVillageCenter(BlockPos pos, int radius) {
-    Village v =
-        testEnv.getServer().getEntityWorld().getVillageCollection().getNearestVillage(pos, radius);
+    Village v = getOverworld().getVillageCollection().getNearestVillage(pos, radius);
     if (v == null) {
       return null;
     }
@@ -202,12 +210,13 @@ public class MinecraftBackdoor {
         .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }
 
-  public @Nullable List<Entity> findEntities(String target) {
+  public @Nullable List<? extends Entity> findEntities(String target) {
     try {
-      ICommandSender sender = testEnv.getServer();
-      List<Entity> result = EntitySelector.<Entity>matchEntities(sender, target, Entity.class);
-      return result;
-    } catch (CommandException e) {
+      CommandSource source = testEnv.getServer().getCommandSource();
+      EntitySelectorParser parser = new EntitySelectorParser(new StringReader(target));
+      EntitySelector selector = parser.parse();
+      return selector.select(source);
+    } catch (CommandSyntaxException e) {
       throw new UndeclaredThrowableException(e);
     }
   }
@@ -323,20 +332,20 @@ public class MinecraftBackdoor {
   }
 
   public void setDoDaylightCycle(boolean value) {
-    testEnv.getServer().getWorld(0).getGameRules().setOrCreateGameRule("doDaylightCycle",
-        Boolean.valueOf(value).toString());
+    getOverworld().getGameRules().setOrCreateGameRule("doDaylightCycle",
+        Boolean.valueOf(value).toString(), testEnv.getServer());
   }
 
   public boolean isDoDaylighCycle() {
-    return testEnv.getServer().getWorld(0).getGameRules().getBoolean("doDaylightCycle");
+    return getOverworld().getGameRules().getBoolean("doDaylightCycle");
   }
 
   public void setWorldTime(long value) {
-    testEnv.getServer().getEntityWorld().setWorldTime(value);
+    getOverworld().getWorldInfo().setWorldTotalTime(value);
   }
 
   public long getWorldtime() {
-    return testEnv.getServer().getEntityWorld().getWorldTime();
+    return getOverworld().getGameTime();
   }
 
 }

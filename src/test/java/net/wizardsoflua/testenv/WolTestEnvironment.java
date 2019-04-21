@@ -1,7 +1,6 @@
 package net.wizardsoflua.testenv;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -11,20 +10,16 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.mojang.brigadier.CommandDispatcher;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -43,8 +38,7 @@ import net.wizardsoflua.testenv.junit.TestResults;
 import net.wizardsoflua.testenv.net.AbstractMessage;
 import net.wizardsoflua.testenv.net.PacketDispatcher;
 
-@Mod(modid = WolTestEnvironment.MODID, version = WolTestEnvironment.VERSION,
-    acceptableRemoteVersions = "*")
+@Mod(WolTestEnvironment.MODID)
 public class WolTestEnvironment {
   public static final String MODID = "wol-testenv";
   public static final String VERSION = WizardsOfLua.VERSION;
@@ -110,7 +104,7 @@ public class WolTestEnvironment {
     TestCommand.register(cmdDispatcher);
   }
 
-  @EventHandler
+  @SubscribeEvent
   public void serverStarted(FMLServerStartedEvent event) throws Throwable {
     // Make sure to inform the "right" MinecraftJUnitRunner, that has been loaded
     // by the system classloader.

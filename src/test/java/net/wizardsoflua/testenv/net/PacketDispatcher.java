@@ -1,14 +1,17 @@
 package net.wizardsoflua.testenv.net;
 
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class PacketDispatcher {
 
@@ -17,13 +20,18 @@ public class PacketDispatcher {
    * adding wrapper methods, this field is private, but you should make it public if you plan on
    * using it directly.
    */
-  private final SimpleNetworkWrapper dispatcher;
+  private final SimpleChannel dispatcher;
   private final PacketDispatcherContext packetDispatcherContext;
   private byte packetIdCount = 0;
 
   public PacketDispatcher(String channelName, PacketDispatcherContext packetDispatcherContext) {
     this.packetDispatcherContext = packetDispatcherContext;
-    dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel(channelName);
+    ResourceLocation name = new ResourceLocation(channelName);
+    Supplier<String> networkProtocolVersion = () -> "";
+    Predicate<String> clientAcceptedVersions = it -> true;
+    Predicate<String> serverAcceptedVersions = it -> true;
+    dispatcher = NetworkRegistry.newSimpleChannel(name, networkProtocolVersion,
+        clientAcceptedVersions, serverAcceptedVersions);
   }
 
   /**
@@ -32,51 +40,49 @@ public class PacketDispatcher {
   public final <T extends AbstractMessage> void registerMessage(Class<T> clazz) {
     int packetId = packetIdCount++;
     boolean requiresMainThread = requiresMainThread(clazz);
+    BiConsumer<T, PacketBuffer> encoder = AbstractMessage::write;
+    Function<PacketBuffer, T> decoder = buffer -> {
+      try {
+        T message = clazz.newInstance();
+        message.read(buffer);
+        return message;
+      } catch (InstantiationException | IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    };
     if (ClientHandledMessage.class.isAssignableFrom(clazz)) {
-      IMessageHandler<AbstractMessage, AbstractMessage> handler =
-          new IMessageHandler<AbstractMessage, AbstractMessage>() {
-            @Override
-            public AbstractMessage onMessage(AbstractMessage message, MessageContext ctx) {
-              PacketDispatcher.this.onMessage((ClientHandledMessage) message, ctx,
-                  requiresMainThread);
-              return null;
-            }
-          };
-      dispatcher.registerMessage(handler, clazz, packetId, Side.CLIENT);
+      BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer = (message,
+          ctx) -> onMessage((ClientHandledMessage) message, ctx.get(), requiresMainThread);
+      dispatcher.registerMessage(packetId, clazz, encoder, decoder, messageConsumer);
     }
     if (ServerHandledMessage.class.isAssignableFrom(clazz)) {
-      IMessageHandler<AbstractMessage, AbstractMessage> handler =
-          new IMessageHandler<AbstractMessage, AbstractMessage>() {
-            @Override
-            public AbstractMessage onMessage(AbstractMessage message, MessageContext ctx) {
-              PacketDispatcher.this.onMessage((ServerHandledMessage) message, ctx,
-                  requiresMainThread);
-              return null;
-            }
-          };
-      dispatcher.registerMessage(handler, clazz, packetId, Side.SERVER);
+      BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer = (message,
+          ctx) -> onMessage((ServerHandledMessage) message, ctx.get(), requiresMainThread);
+      dispatcher.registerMessage(packetId, clazz, encoder, decoder, messageConsumer);
     }
   }
 
-  private void onMessage(ClientHandledMessage message, MessageContext ctx,
+  private void onMessage(ClientHandledMessage message, NetworkEvent.Context ctx,
       boolean requiresMainThread) {
     execute(requiresMainThread, ctx, new Runnable() {
+      @Override
       public void run() {
         message.handleClientSide(packetDispatcherContext.getPlayerEntity(ctx));
       }
     });
   }
 
-  private void onMessage(ServerHandledMessage message, MessageContext ctx,
+  private void onMessage(ServerHandledMessage message, NetworkEvent.Context ctx,
       boolean requiresMainThread) {
     execute(requiresMainThread, ctx, new Runnable() {
+      @Override
       public void run() {
         message.handleServerSide(packetDispatcherContext.getPlayerEntity(ctx));
       }
     });
   }
 
-  private void execute(boolean runInMainThread, MessageContext ctx, Runnable r) {
+  private void execute(boolean runInMainThread, NetworkEvent.Context ctx, Runnable r) {
     if (runInMainThread) {
       IThreadListener thread = packetDispatcherContext.getThreadFromContext(ctx);
       thread.addScheduledTask(r);
@@ -97,8 +103,8 @@ public class PacketDispatcher {
     return false;
   }
 
-  public void sendTo(IMessage message, EntityPlayerMP player) {
-    dispatcher.sendTo(message, player);
+  public void sendTo(AbstractMessage message, EntityPlayerMP player) {
+    dispatcher.send(player, message);
   }
 
   /**

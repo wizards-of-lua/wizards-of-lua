@@ -177,7 +177,7 @@ public class PlayerTest extends WolTestBase {
     // Given:
     ItemStack item = new ItemStack(Items.DIAMOND_AXE);
     mc().player().setMainHandItem(item);
-    String expected = item.getDisplayName();
+    String expected = item.getDisplayName().getString();
 
     // When:
     mc().player().chat("/lua p=spell.owner; print(p.mainhand.displayName)");
@@ -208,7 +208,7 @@ public class PlayerTest extends WolTestBase {
     // Given:
     ItemStack item = new ItemStack(Items.DIAMOND_AXE);
     mc().player().setOffHandItem(item);
-    String expected = item.getDisplayName();
+    String expected = item.getDisplayName().getString();
 
     // When:
     mc().player().chat("/lua p=spell.owner; print(p.offhand.displayName)");

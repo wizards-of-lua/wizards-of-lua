@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -32,7 +31,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_block_name() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
 
     // When:
     mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
@@ -47,7 +46,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_block_classname() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
 
     // When:
     mc().player().chat(
@@ -63,7 +62,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_block_has_material() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
 
     // When:
     mc().player().chat(
@@ -79,7 +78,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_block_has_data() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
 
     // When:
     mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(p~=nil)",
@@ -94,7 +93,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_block_data_of_planks() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
     String expected = "{\n" + "  variant = \"oak\"\n" + "}";
     // When:
     mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))",

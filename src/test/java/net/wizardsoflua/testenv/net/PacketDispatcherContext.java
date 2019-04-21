@@ -2,10 +2,10 @@ package net.wizardsoflua.testenv.net;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 public interface PacketDispatcherContext {
-  public EntityPlayer getPlayerEntity(MessageContext ctx);
+  EntityPlayer getPlayerEntity(NetworkEvent.Context ctx);
 
-  public IThreadListener getThreadFromContext(MessageContext ctx);
+  IThreadListener getThreadFromContext(NetworkEvent.Context ctx);
 }
