@@ -1,10 +1,8 @@
 package net.wizardsoflua.tests;
 
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.BlockPos;
@@ -85,7 +83,7 @@ public class MobTest extends WolTestBase {
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
-    List<Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
     assertThat(actEntities).hasSize(1);
     assertThat(((EntityLiving) actEntities.get(0)).isAIDisabled()).as("isAIDisabled()").isFalse();
   }

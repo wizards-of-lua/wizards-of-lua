@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -151,7 +150,7 @@ public class SpellTest extends WolTestBase {
   @Test
   public void test_spell_owner_name_is_current_player_name() throws Exception {
     // Given:
-    String expected = mc().player().getDelegate().getName();
+    String expected = mc().player().getDelegate().getName().getString();
 
     // When:
     mc().player().chat("/lua print(spell.owner.name)");

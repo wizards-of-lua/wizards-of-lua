@@ -4,11 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -22,8 +22,8 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
   @Before
   public void before() {
     sleep(1000);
-    if (mc().player().getDelegate().dimension != 0) {
-      mc().player().changeDimension(0);
+    if (mc().player().getDelegate().dimension != DimensionType.OVERWORLD) {
+      mc().player().changeDimension(DimensionType.OVERWORLD);
     }
     mc().player().setPosition(playerPos);
     sleep(1000);
@@ -33,7 +33,7 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
   @After
   public void after() {
     sleep(1000);
-    mc().player().changeDimension(0);
+    mc().player().changeDimension(DimensionType.OVERWORLD);
     mc().player().setPosition(playerPos);
     sleep(1000);
     deletePortal(portalPos);
@@ -44,7 +44,7 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
   public void test() {
     // Given:
     String expected = mc().player().getName();
-    String sometimesExpected = mc().player().getName()+" moved too quickly!";
+    String sometimesExpected = mc().player().getName() + " moved too quickly!";
     createPortal(portalPos);
     mc().executeCommand(
         "/lua q=Events.collect('PlayerChangedDimensionEvent'); e=q:next(); print(e.player.name)");
@@ -54,7 +54,7 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    if ( act.getMessage().startsWith(sometimesExpected)) {
+    if (act.getMessage().startsWith(sometimesExpected)) {
       act = mc().waitFor(ServerLog4jEvent.class);
     }
     assertThat(act.getMessage()).isEqualTo(expected);

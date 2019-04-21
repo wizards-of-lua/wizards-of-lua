@@ -1,12 +1,11 @@
 package net.wizardsoflua.testenv.server;
 
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
@@ -33,15 +32,15 @@ public class ServerProxy extends CommonProxy {
 
   @SubscribeEvent
   public void onEvent(PlayerLoggedInEvent evt) {
-    //if (WolTestEnvironment.instance.getTestPlayer() == null) {
-      EntityPlayerMP player = (EntityPlayerMP) evt.player;
-      WolTestEnvironment.instance.setTestPlayer(player);
-      makeOperator(player);
-      ConfigMessage message = new ConfigMessage(WolTestEnvironment.VERSION);
-      WolTestEnvironment.instance.getPacketDispatcher().sendTo(message, player);
-    //}
+    // if (WolTestEnvironment.instance.getTestPlayer() == null) {
+    EntityPlayerMP player = (EntityPlayerMP) evt.player;
+    WolTestEnvironment.instance.setTestPlayer(player);
+    makeOperator(player);
+    ConfigMessage message = new ConfigMessage(WolTestEnvironment.VERSION);
+    WolTestEnvironment.instance.getPacketDispatcher().sendTo(message, player);
+    // }
   }
-  
+
   @SubscribeEvent
   public void onEvent(PlayerRespawnEvent evt) {
     EntityPlayerMP player = (EntityPlayerMP) evt.player;

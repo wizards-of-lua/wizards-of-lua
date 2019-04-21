@@ -4,11 +4,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +28,7 @@ public class MaterialTest extends WolTestBase {
   @Test
   public void test_material_classname() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
 
     // When:
     mc().player().chat(
@@ -46,7 +44,7 @@ public class MaterialTest extends WolTestBase {
   @Test
   public void test_material_of_planks() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.PLANKS);
+    mc().setBlock(posP, Blocks.OAK_PLANKS);
     String expected = "{\n" //
         + "  blocksLight = true,\n" //
         + "  blocksMovement = true,\n" //

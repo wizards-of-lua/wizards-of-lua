@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -149,7 +148,7 @@ public class TestEnvironmentTest extends WolTestBase {
     // Given:
     mc().player().setPosition(playerPos);
     mc().player().setRotationYaw(0);
-    ItemStack item = new ItemStack(Blocks.PLANKS);
+    ItemStack item = new ItemStack(Blocks.OAK_PLANKS);
     mc().player().setMainHandItem(item);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
 

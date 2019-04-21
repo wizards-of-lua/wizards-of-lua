@@ -13,10 +13,13 @@ import javax.annotation.Nullable;
 import com.google.common.io.Files;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionType;
 import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.MinecraftBackdoor;
 import net.wizardsoflua.testenv.WolTestEnvironment;
@@ -33,7 +36,7 @@ public class PlayerBackdoor {
 
   public PlayerBackdoor(MinecraftBackdoor minecraftBackdoor) {
     this.minecraftBackdoor = minecraftBackdoor;
-    this.testEnv = minecraftBackdoor.getTestEnv();
+    testEnv = minecraftBackdoor.getTestEnv();
   }
 
   public void setOperator(boolean value) {
@@ -45,7 +48,7 @@ public class PlayerBackdoor {
   }
 
   public boolean isOperator() {
-    return testEnv.getWol().getPermissions().hasOperatorPrivileges(getDelegate().getPersistentID());
+    return testEnv.getWol().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
   }
 
   public EntityPlayerMP getDelegate() {
@@ -102,8 +105,10 @@ public class PlayerBackdoor {
     return new BlockPos(SpellUtil.getPositionLookingAt(getDelegate()));
   }
 
-  public void setTeam(String team) {
-    getDelegate().getWorldScoreboard().addPlayerToTeam(getDelegate().getName(), team);
+  public void setTeam(String teamName) {
+    Scoreboard worldScoreboard = getDelegate().getWorldScoreboard();
+    ScorePlayerTeam team = worldScoreboard.getTeam(teamName);
+    worldScoreboard.addPlayerToTeam(getDelegate().getScoreboardName(), team);
   }
 
   public @Nullable String getTeam() {
@@ -154,7 +159,7 @@ public class PlayerBackdoor {
   }
 
   public String getName() {
-    return getDelegate().getName();
+    return getDelegate().getName().toString();
   }
 
   public void setMainHandItem(ItemStack item) {
@@ -179,9 +184,9 @@ public class PlayerBackdoor {
     return getDelegate().getHeldItemOffhand();
   }
 
-  public void changeDimension(int dim) {
+  public void changeDimension(DimensionType dim) {
     testEnv.runAndWait(() -> {
-      getDelegate().getEntityWorld().getMinecraftServer().getPlayerList()
+      getDelegate().getEntityWorld().getServer().getPlayerList()
           .changePlayerDimension(getDelegate(), dim);
     });
   }
