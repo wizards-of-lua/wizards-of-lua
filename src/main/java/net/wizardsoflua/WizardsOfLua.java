@@ -122,7 +122,7 @@ public class WizardsOfLua {
 
     @SubscribeEvent
     public void onFmlCommonSetup(FMLCommonSetupEvent event) {
-      ExtensionLoader.initialize(logger);
+      ExtensionLoader.initialize();
       try {
         tempDir = Files.createTempDirectory("wizards-of-lua");
         config = WolConfig.create(CONFIG_NAME);

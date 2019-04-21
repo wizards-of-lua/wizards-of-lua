@@ -1,58 +1,57 @@
 package net.wizardsoflua.testenv.net;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.UUID;
-
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class LeftClickEntityAction extends ClientAction {
-
+@AutoService(NetworkMessage.class)
+public class LeftClickEntityMessage implements NetworkMessage {
   private UUID entityId;
 
-  public LeftClickEntityAction() {}
-
-  public LeftClickEntityAction(Entity entity) {
+  public LeftClickEntityMessage(Entity entity) {
     entityId = entity.getUniqueID();
   }
 
+  public LeftClickEntityMessage() {}
+
   @Override
-  protected void read(PacketBuffer buffer) throws IOException {
+  public void decode(PacketBuffer buffer) {
     entityId = UUID.fromString(buffer.readString(36));
   }
 
   @Override
-  protected void write(PacketBuffer buffer) throws IOException {
+  public void encode(PacketBuffer buffer) {
     buffer.writeString(entityId.toString());
   }
 
   @Override
-  public void handleClientSide(EntityPlayer player) {
-    System.out.println("left-click at entity: " + entityId);
-    Entity entity = findEnityById(player.world);
+  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+    Minecraft minecraft = Minecraft.getInstance();
+    Entity entity = findEnityById(minecraft.world);
     if (entity != null) {
-      Minecraft.getMinecraft().objectMouseOver = new RayTraceResult(entity);
+      minecraft.objectMouseOver = new RayTraceResult(entity);
       try {
         Method m = Minecraft.class.getDeclaredMethod("clickMouse");
         m.setAccessible(true);
-        m.invoke(Minecraft.getMinecraft());
-      } catch (NoSuchMethodException | SecurityException | IllegalAccessException
-          | IllegalArgumentException | InvocationTargetException e) {
-        throw new UndeclaredThrowableException(e);
+        m.invoke(minecraft);
+      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException(e);
       }
     } else {
       throw new RuntimeException("Can't find entity with id = " + entityId);
     }
   }
 
-  private Entity findEnityById(World world) {
+  private @Nullable Entity findEnityById(World world) {
     for (Entity e : world.loadedEntityList) {
       if (e.getUniqueID().equals(entityId)) {
         return e;
@@ -60,5 +59,4 @@ public class LeftClickEntityAction extends ClientAction {
     }
     return null;
   }
-
 }

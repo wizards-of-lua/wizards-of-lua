@@ -1,6 +1,5 @@
 package net.wizardsoflua.tests;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -19,7 +18,7 @@ import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.server.ServerProxy;
+import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
 
 @RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
@@ -183,7 +182,7 @@ public class TestEnvironmentTest extends WolTestBase {
   @Test
   public void test_can_receive_log4j_event() {
     // Given:
-    Logger logger = LogManager.getLogger(ServerProxy.NET_MINECRAFT_LOGGER);
+    Logger logger = LogManager.getLogger(Log4j2ForgeEventBridge.NET_MINECRAFT_LOGGER);
     String message = "hello";
 
     // When:

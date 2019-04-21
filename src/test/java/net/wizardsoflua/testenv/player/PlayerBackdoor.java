@@ -6,15 +6,11 @@ import static java.util.Optional.ofNullable;
 import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
 import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
 import static net.minecraft.item.ItemStack.EMPTY;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import javax.annotation.Nullable;
-
 import com.google.common.io.Files;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -29,13 +25,13 @@ import net.minecraft.world.dimension.DimensionType;
 import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.MinecraftBackdoor;
 import net.wizardsoflua.testenv.WolTestEnvironment;
-import net.wizardsoflua.testenv.net.ChatAction;
-import net.wizardsoflua.testenv.net.ClientAction;
-import net.wizardsoflua.testenv.net.LeftClickAction;
-import net.wizardsoflua.testenv.net.LeftClickEntityAction;
-import net.wizardsoflua.testenv.net.ReconnectAction;
-import net.wizardsoflua.testenv.net.RespawnAction;
-import net.wizardsoflua.testenv.net.RightClickAction;
+import net.wizardsoflua.testenv.net.ChatMessage;
+import net.wizardsoflua.testenv.net.LeftClickEntityMessage;
+import net.wizardsoflua.testenv.net.LeftClickMessage;
+import net.wizardsoflua.testenv.net.NetworkMessage;
+import net.wizardsoflua.testenv.net.ReconnectMessage;
+import net.wizardsoflua.testenv.net.RespawnMessage;
+import net.wizardsoflua.testenv.net.RightClickMessage;
 
 public class PlayerBackdoor {
   private WolTestEnvironment testEnv;
@@ -65,27 +61,23 @@ public class PlayerBackdoor {
   }
 
   public void leftclick(BlockPos pos, EnumFacing face) {
-    perform(new LeftClickAction(pos, face));
+    perform(new LeftClickMessage(pos, face));
   }
 
   public void leftClick(Entity entity) {
-    perform(new LeftClickEntityAction(entity));
+    perform(new LeftClickEntityMessage(entity));
   }
 
   public void rightclick(BlockPos pos, EnumFacing face) {
-    rightclick(pos, face, new Vec3d(pos));
-  }
-
-  public void rightclick(BlockPos pos, EnumFacing face, Vec3d vec) {
-    perform(new RightClickAction(pos, face, vec));
+    perform(new RightClickMessage(pos, face));
   }
 
   public void chat(String format, Object... args) {
-    perform(new ChatAction(format, args));
+    perform(new ChatMessage(String.format(format, args)));
   }
 
-  public void perform(ClientAction action) {
-    testEnv.runAndWait(() -> testEnv.getPacketDispatcher().sendTo(action, getDelegate()));
+  public void perform(NetworkMessage message) {
+    testEnv.runAndWait(() -> testEnv.getPacketChannel().sendTo(getDelegate(), message));
   }
 
   public void setPosition(BlockPos pos) {
@@ -217,11 +209,11 @@ public class PlayerBackdoor {
   }
 
   public void reconnect() {
-    perform(new ReconnectAction());
+    perform(new ReconnectMessage());
   }
 
   public void respawn() {
-    perform(new RespawnAction());
+    perform(new RespawnMessage());
   }
 
   public void waitForPlayer(long duration) {

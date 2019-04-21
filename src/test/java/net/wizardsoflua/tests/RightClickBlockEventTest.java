@@ -4,12 +4,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -40,13 +38,12 @@ public class RightClickBlockEventTest extends WolTestBase {
     BlockPos clickPos = new BlockPos(0, 3, 0);
     mc().setBlock(clickPos, Blocks.OBSIDIAN);
     EnumFacing facing = EnumFacing.WEST;
-    Vec3d hitvec = new Vec3d(clickPos);
     String expected = format(clickPos);
 
     mc().executeCommand("/lua q=Events.collect('RightClickBlockEvent'); e=q:next(); print(e.pos)");
 
     // When:
-    mc().player().rightclick(clickPos, facing, hitvec);
+    mc().player().rightclick(clickPos, facing);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);

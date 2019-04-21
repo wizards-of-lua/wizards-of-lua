@@ -7,7 +7,6 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.message.Message;
-
 import net.minecraftforge.common.MinecraftForge;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
@@ -16,6 +15,7 @@ import net.wizardsoflua.testenv.event.ServerLog4jEvent;
  * {@link ServerLog4jEvent}s.
  */
 public class Log4j2ForgeEventBridge {
+  public static final String NET_MINECRAFT_LOGGER = "net.minecraft";
   private final String loggerName;
   private final Appender appender = new AbstractAppender(
       Log4j2ForgeEventBridge.class.getSimpleName(), null, PatternLayout.createDefaultLayout()) {
