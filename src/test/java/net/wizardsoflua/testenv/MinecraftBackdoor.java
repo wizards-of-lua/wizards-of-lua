@@ -1,6 +1,7 @@
 package net.wizardsoflua.testenv;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -54,7 +55,7 @@ public class MinecraftBackdoor {
   private final PlayerBackdoor player;
 
   public MinecraftBackdoor(WolTestEnvironment testEnv, IEventBus eventBus) {
-    this.testEnv = testEnv;
+    this.testEnv = requireNonNull(testEnv, "testEnv");
     this.eventBus = eventBus;
     player = new PlayerBackdoor(this);
   }

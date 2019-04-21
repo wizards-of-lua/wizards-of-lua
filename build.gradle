@@ -44,7 +44,14 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-			source sourceSets.main
+            mods {
+                wol {
+                    source sourceSets.main
+                }
+                'wol-testenv' {
+                    source sourceSets.test
+                }
+            }
         }
 
         server {
@@ -56,7 +63,14 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            source sourceSets.main
+            mods {
+                wol {
+                    source sourceSets.main
+                }
+                'wol-testenv' {
+                    source sourceSets.test
+                }
+            }
         }
     }
 }
@@ -107,7 +121,7 @@ configurations {
 eclipseApt.dependsOn ':apt:jar'
 
 dependencies {
-  minecraft 'net.minecraftforge:forge:1.13.2-25.0.85'
+  minecraft 'net.minecraftforge:forge:1.13.2-25.0.149'
 
   annotationProcessor project(':apt')
   annotationProcessor libs.auto_service

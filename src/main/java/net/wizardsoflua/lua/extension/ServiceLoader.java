@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.extension;
 
 import static java.util.Objects.requireNonNull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,24 +10,25 @@ import java.util.HashSet;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.base.Charsets;
 
 public class ServiceLoader {
   private static final String PREFIX = "META-INF/services/";
+  private static final Logger LOGGER = LogManager.getLogger();
 
-  public static <S> Set<Class<? extends S>> load(Logger logger, Class<S> service) {
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    return load(logger, service, cl);
+  public static <S> Set<Class<? extends S>> load(Class<S> service) {
+    // The context class loader seems to not be set correctly by forge in eclipse
+    // ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    ClassLoader cl = ServiceLoader.class.getClassLoader();
+    return load(service, cl);
   }
 
-  public static <S> Set<Class<? extends S>> load(Logger logger, Class<S> service,
-      ClassLoader classLoader) {
+  public static <S> Set<Class<? extends S>> load(Class<S> service, ClassLoader classLoader) {
     requireNonNull(service, "service == null!");
     requireNonNull(classLoader, "classLoader == null!");
-    logger
+    LOGGER
         .debug("Searching for services implementing the " + service.getSimpleName() + " interface");
     Set<Class<? extends S>> result = new HashSet<>();
     String name = PREFIX + service.getName();
@@ -41,7 +41,7 @@ public class ServiceLoader {
     } catch (IOException ex) {
       throw fail(service, "Error reading configuration file", ex);
     }
-    logger.debug("Found " + result.size() + " services: "
+    LOGGER.debug("Found " + result.size() + " services: "
         + result.stream().map(s -> s.getName()).collect(Collectors.joining(", ")));
     return result;
   }
@@ -54,8 +54,9 @@ public class ServiceLoader {
       String line;
       while ((line = reader.readLine()) != null) {
         int ci = line.indexOf('#');
-        if (ci >= 0)
+        if (ci >= 0) {
           line = line.substring(0, ci);
+        }
         String providerName = line.trim();
         if (!providerName.isEmpty()) {
           Class<?> cls;

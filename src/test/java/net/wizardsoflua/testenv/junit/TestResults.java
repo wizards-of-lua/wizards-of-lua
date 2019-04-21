@@ -1,17 +1,14 @@
 package net.wizardsoflua.testenv.junit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.logging.log4j.Logger;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runner.notification.StoppedByUserException;
-
-import net.minecraft.command.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketTitle;
 import net.minecraft.server.MinecraftServer;
@@ -42,9 +39,9 @@ public class TestResults extends RunNotifier {
       EntityPlayerMP player = server.getPlayerList().getPlayerByUsername(playerName);
       ITextComponent itextcomponent = new TextComponentString(message);
       SPacketTitle packet = new SPacketTitle(SPacketTitle.Type.ACTIONBAR,
-          TextComponentUtils.processComponent(player, itextcomponent, player));
+          TextComponentUtils.updateForEntity(player.getCommandSource(), itextcomponent, player));
       player.connection.sendPacket(packet);
-    } catch (CommandException e) {
+    } catch (CommandSyntaxException e) {
       throw new RuntimeException(e);
     }
   }
@@ -52,7 +49,7 @@ public class TestResults extends RunNotifier {
   @Override
   public void fireTestFailure(Failure failure) {
     super.fireTestFailure(failure);
-    this.failures.add(failure);
+    failures.add(failure);
     logger.info("Failed " + failure.getTestHeader());
     logger.error(failure.getTrace());
   }

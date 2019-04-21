@@ -1,22 +1,15 @@
 package net.wizardsoflua.testenv;
 
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
-
 import com.google.common.collect.Iterables;
-
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.wizardsoflua.testenv.event.TestPlayerPreparedForTestEvent;
-import net.wizardsoflua.testenv.net.PrepareForTestAction;
 
 public class WolTestBase extends TestDataFactory {
-  private static int testIdCount = 0;
   private WolTestEnvironment testEnv = WolTestEnvironment.instance;
   private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
   private boolean wasOperator;
@@ -24,15 +17,11 @@ public class WolTestBase extends TestDataFactory {
   private long oldDayTime;
 
   @Before
-  public void beforeTest() throws IOException {
+  public void beforeTest() throws Exception {
     testEnv.runAndWait(() -> testEnv.getEventRecorder().setEnabled(true));
 
     mc().resetClock();
     mc().breakAllSpells();
-    int testId = testIdCount++;
-    mc().player().perform(new PrepareForTestAction(testId));
-    TestPlayerPreparedForTestEvent evt = mc().waitFor(TestPlayerPreparedForTestEvent.class);
-    assertThat(evt.getId()).isEqualTo(testId);
 
     mc().clearWizardConfigs();
     mc().executeCommand("/gamerule logAdminCommands false");
@@ -50,14 +39,14 @@ public class WolTestBase extends TestDataFactory {
   }
 
   @After
-  public void afterTest() {
+  public void afterTest() throws Exception {
     testEnv.runAndWait(() -> testEnv.getEventRecorder().setEnabled(false));
     mc().player().setOperator(wasOperator);
     mc().clearEvents();
     mc().breakAllSpells();
     mc().setDoDaylightCycle(oldDoDaylighCycle);
     mc().setWorldTime(oldDayTime);
-    
+
     mc().resetClock();
   }
 

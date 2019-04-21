@@ -2,13 +2,8 @@ package net.wizardsoflua.lua;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.ImmutableSet;
-
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
@@ -20,20 +15,21 @@ public class ExtensionLoader {
   private static @Nullable ImmutableSet<Class<? extends JavaToLuaConverter<?>>> JAVA_TO_LUA_CONVERTERS;
   private static @Nullable ImmutableSet<Class<? extends SpellExtension>> SPELL_EXTENSION;
 
-  public static void initialize(Logger logger) {
+  // FIXME Adrodoc 21.04.2019: Revert back to lazy getters
+  public static void initialize() {
     Set<Class<? extends LuaConverter<?, ?>>> converters =
-        ServiceLoader.load(logger, LuaConverter.getClassWithWildcards());
+        ServiceLoader.load(LuaConverter.getClassWithWildcards());
 
     Set<Class<? extends LuaToJavaConverter<?, ?>>> luaToJava = new HashSet<>(converters);
-    luaToJava.addAll(ServiceLoader.load(logger, LuaToJavaConverter.getClassWithWildcards()));
+    luaToJava.addAll(ServiceLoader.load(LuaToJavaConverter.getClassWithWildcards()));
     LUA_TO_JAVA_CONVERTERS = ImmutableSet.copyOf(luaToJava);
 
     Set<Class<? extends JavaToLuaConverter<?>>> javaToLua = new HashSet<>(converters);
-    javaToLua.addAll(ServiceLoader.load(logger, JavaToLuaConverter.getClassWithWildcards()));
+    javaToLua.addAll(ServiceLoader.load(JavaToLuaConverter.getClassWithWildcards()));
     JAVA_TO_LUA_CONVERTERS = ImmutableSet.copyOf(javaToLua);
 
     Set<Class<? extends SpellExtension>> spellExtensions =
-        new HashSet<>(ServiceLoader.load(logger, SpellExtension.class));
+        new HashSet<>(ServiceLoader.load(SpellExtension.class));
     spellExtensions.addAll(LUA_TO_JAVA_CONVERTERS);
     spellExtensions.addAll(JAVA_TO_LUA_CONVERTERS);
     SPELL_EXTENSION = ImmutableSet.copyOf(spellExtensions);
