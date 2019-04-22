@@ -25,7 +25,6 @@ import net.minecraftforge.fml.VersionChecker;
 import net.minecraftforge.fml.VersionChecker.CheckResult;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
@@ -104,7 +103,6 @@ public class WizardsOfLua {
   public WizardsOfLua() {
     instance = this;
     registerEventHandlers();
-
   }
 
   /**
@@ -122,6 +120,7 @@ public class WizardsOfLua {
 
     @SubscribeEvent
     public void onFmlCommonSetup(FMLCommonSetupEvent event) {
+      logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
       ExtensionLoader.initialize();
       try {
         tempDir = Files.createTempDirectory("wizards-of-lua");
@@ -337,11 +336,6 @@ public class WizardsOfLua {
           return spellEntityFactory;
         }
       });
-    }
-
-    @SubscribeEvent
-    public void onFmlDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
-      logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
       MinecraftForge.EVENT_BUS.register(getSpellRegistry());
       MinecraftForge.EVENT_BUS.register(aboutMessage);
       MinecraftForge.EVENT_BUS.register(eventHandler);
