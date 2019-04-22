@@ -133,7 +133,7 @@ public class WolTestEnvironment {
 
   public void setTestPlayer(EntityPlayerMP player) {
     if (player != null) {
-      logger.info("Setting testPlayer to Player: " + player.getName());
+      logger.info("Setting testPlayer to Player: " + player.getName().getString());
     } else {
       logger.info("Setting testPlayer to null");
     }
