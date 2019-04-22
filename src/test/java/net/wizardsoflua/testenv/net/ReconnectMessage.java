@@ -22,22 +22,22 @@ public class ReconnectMessage implements NetworkMessage {
 
   @Override
   public void handle(NetworkEvent.Context context) {
-    DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientProxy::reconnect);
+    DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.reconnect(context));
   }
 
   @OnlyIn(Dist.CLIENT)
   private static class ClientProxy {
-    private static void reconnect() {
-      Minecraft minecraft = Minecraft.getInstance();
-      NetworkManager networkManager = minecraft.player.connection.getNetworkManager();
-      InetSocketAddress remoteAddress = (InetSocketAddress) networkManager.getRemoteAddress();
-      minecraft.addScheduledTask(() -> {
-        networkManager.closeChannel(null);
+    private static void reconnect(NetworkEvent.Context context) {
+      context.enqueueWork(() -> {
+        Minecraft minecraft = Minecraft.getInstance();
+        NetworkManager networkManager = minecraft.player.connection.getNetworkManager();
+        networkManager.closeChannel(null); // disconnect
+
+        InetSocketAddress remoteAddress = (InetSocketAddress) networkManager.getRemoteAddress();
         GuiScreen parent = minecraft.currentScreen;
-        Minecraft mcIn = minecraft;
         String hostName = remoteAddress.getHostName();
         int port = remoteAddress.getPort();
-        minecraft.displayGuiScreen(new GuiConnecting(parent, mcIn, hostName, port));
+        minecraft.displayGuiScreen(new GuiConnecting(parent, minecraft, hostName, port)); // reconnect
       });
     }
   }
