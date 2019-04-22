@@ -1,19 +1,16 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 /**
  * Testing the "/wol luaTicksLimit" command
  */
-@RunWith(MinecraftJUnitRunner.class)
 public class WolLuaTicksLimitTest extends WolTestBase {
 
-  @After
+  @AfterEach
   public void resetTicksLimit() {
     mc().setLuaTicksLimit(10000);
   }

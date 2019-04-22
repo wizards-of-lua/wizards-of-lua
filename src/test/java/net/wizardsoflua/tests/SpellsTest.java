@@ -1,15 +1,11 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.spell.SpellEntity;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class SpellsTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.SpellsTest test_find_self_without_criteria

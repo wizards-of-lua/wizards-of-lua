@@ -1,9 +1,6 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -11,7 +8,6 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 /**
  * Testing the "/wol spell list" command
  */
-@RunWith(MinecraftJUnitRunner.class)
 public class WolSpellListTest extends WolTestBase {
   private static final int MAX_LENGTH = 40;
 

@@ -1,6 +1,6 @@
 package net.wizardsoflua.lua.nbt;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;

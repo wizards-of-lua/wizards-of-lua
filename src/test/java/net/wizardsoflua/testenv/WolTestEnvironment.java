@@ -1,11 +1,7 @@
 package net.wizardsoflua.testenv;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
-import java.util.List;
+import static java.util.Optional.ofNullable;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -14,11 +10,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.runners.model.InitializationError;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.CommandSource;
@@ -36,9 +27,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.testenv.junit.TestClassExecutor;
-import net.wizardsoflua.testenv.junit.TestMethodExecutor;
-import net.wizardsoflua.testenv.junit.TestResults;
 import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
 import net.wizardsoflua.testenv.net.ClientChatReceivedMessage;
 import net.wizardsoflua.testenv.net.WolTestPacketChannel;
@@ -79,14 +67,14 @@ public class WolTestEnvironment {
     @SubscribeEvent
     public void onFmlServerStarting(FMLServerStartingEvent event) {
       server = checkNotNull(event.getServer());
-      CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
-      TestCommand.register(cmdDispatcher);
+      CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
+      new TestCommand().register(dispatcher);
     }
 
     @SubscribeEvent
     public void onEvent(ClientChatReceivedEvent evt) {
       ITextComponent message = evt.getMessage();
-      String txt = message.getString();
+      String txt = ofNullable(message).map(it -> it.getString()).orElse(null);
       getPacketChannel().sendToServer(new ClientChatReceivedMessage(txt));
     }
 
@@ -142,100 +130,6 @@ public class WolTestEnvironment {
 
   public EventRecorder getEventRecorder() {
     return eventRecorder;
-  }
-
-  // @SubscribeEvent
-  // public void serverStarted(FMLServerStartedEvent event) throws Throwable {
-  // // Make sure to inform the "right" MinecraftJUnitRunner, that has been loaded
-  // // by the system classloader.
-  // Class<?> cls =
-  // ClassLoader.getSystemClassLoader().loadClass(MinecraftJUnitRunner.class.getName());
-  // Method m = cls.getMethod("onGameStarted");
-  // m.invoke(null);
-  // }
-  //
-  // @CalledByReflection("Called by MinecraftJUnitRunner")
-  // public static Throwable runTest(String classname, String methodName) {
-  // MinecraftServer server = null;
-  // String playerName = null;
-  // final TestMethodExecutor executor = new TestMethodExecutor(logger, server, playerName);
-  // try {
-  // ClassLoader cl = WolTestEnvironment.class.getClassLoader();
-  // Class<?> testClass = cl.loadClass(classname);
-  //
-  // final CountDownLatch testFinished = new CountDownLatch(1);
-  // final AtomicReference<TestResults> resultRef = new AtomicReference<>();
-  // instance.getServer().addScheduledTask(new Runnable() {
-  //
-  // @Override
-  // public void run() {
-  // try {
-  // TestResults testResult = executor.runTest(testClass, methodName);
-  // resultRef.set(testResult);
-  // } catch (InitializationError e) {
-  // throw new UndeclaredThrowableException(e);
-  // }
-  // testFinished.countDown();
-  // }
-  // });
-  // testFinished.await(30, TimeUnit.SECONDS);
-  // TestResults testResult = resultRef.get();
-  // if (!testResult.isOK()) {
-  // Failure failure = testResult.getFailures().iterator().next();
-  // return failure.getException();
-  // }
-  // return null;
-  // } catch (InterruptedException | ClassNotFoundException e) {
-  // throw new UndeclaredThrowableException(e);
-  // }
-  // }
-
-  public TestResults runTestMethod(Class<?> testClass, String methodName)
-      throws InitializationError {
-    String playerName = getTestPlayer().getName().getString();
-    TestMethodExecutor executor = new TestMethodExecutor(logger, server, playerName);
-    TestResults result = executor.runTest(testClass, methodName);
-    return result;
-  }
-
-  public Iterable<TestResults> runAllTests() throws InitializationError {
-    List<TestResults> result = new ArrayList<>();
-    Iterable<Class<?>> testClasses = findTestClasses();
-    String playerName = getTestPlayer().getName().getString();
-    TestClassExecutor executor = new TestClassExecutor(logger, server, playerName);
-    for (Class<?> testClass : testClasses) {
-      result.add(executor.runTests(testClass));
-    }
-    return result;
-  }
-
-  public TestResults runTests(Class<?> testClass) throws InitializationError {
-    String playerName = getTestPlayer().getName().getString();
-    TestClassExecutor executor = new TestClassExecutor(logger, server, playerName);
-    return executor.runTests(testClass);
-  }
-
-  private Iterable<Class<?>> findTestClasses() {
-    try {
-      ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-      ClassPath classpath = ClassPath.from(classloader);
-      ImmutableSet<ClassInfo> xx = classpath.getTopLevelClassesRecursive("net.wizardsoflua.tests");
-      Iterable<ClassInfo> yy = Iterables.filter(xx, input -> hasTestMethod(input));
-      return Iterables.transform(yy, ClassInfo::load);
-    } catch (IOException e) {
-      throw new UndeclaredThrowableException(e);
-    }
-  }
-
-  private boolean hasTestMethod(ClassInfo input) {
-    Class<?> cls = input.load();
-    Method[] mm = cls.getDeclaredMethods();
-    for (Method method : mm) {
-      if (method.getAnnotation(org.junit.Test.class) != null) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public void runAndWait(Runnable runnable) {

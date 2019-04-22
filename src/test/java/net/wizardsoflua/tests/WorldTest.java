@@ -1,29 +1,26 @@
 package net.wizardsoflua.tests;
 
 import static java.lang.String.valueOf;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class WorldTest extends WolTestBase {
 
   EnumDifficulty oldDifficulty;
 
-  @Before
+  @BeforeEach
   public void before() {
     oldDifficulty = mc().getDifficulty();
   }
 
-  @After
+  @AfterEach
   public void after() {
     mc().setDifficulty(oldDifficulty);
     // clear door

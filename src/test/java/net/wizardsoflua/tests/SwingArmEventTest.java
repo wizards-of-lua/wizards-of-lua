@@ -1,28 +1,24 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class SwingArmEventTest extends WolTestBase {
   BlockPos playerPos = new BlockPos(0, 4, 0);
   BlockPos clickPos = new BlockPos(2, 5, 0);
   BlockPos blockPos = new BlockPos(1, 5, 0);
 
-  @After
-  @Before
+  @AfterEach
+  @BeforeEach
   public void clearBlocks() {
     mc().setBlock(playerPos, Blocks.AIR);
     mc().setBlock(clickPos, Blocks.AIR);

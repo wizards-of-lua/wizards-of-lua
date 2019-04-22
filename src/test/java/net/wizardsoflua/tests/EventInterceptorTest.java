@@ -1,16 +1,13 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class EventInterceptorTest extends WolTestBase {
 
-  // /test net.wizardsoflua.tests.EventInterceptorTest test_stop__After_stopping_the_EventHandler_is_no_longer_called
+  // /test net.wizardsoflua.tests.EventInterceptorTest
+  // test_stop__After_stopping_the_EventHandler_is_no_longer_called
   @Test
   public void test_stop__After_stopping_the_EventHandler_is_no_longer_called() {
     // When:
@@ -30,7 +27,8 @@ public class EventInterceptorTest extends WolTestBase {
     assertThat(act2.getMessage()).isEqualTo("3");
   }
 
-  // /test net.wizardsoflua.tests.EventInterceptorTest test_stop__After_last_stopping_the_Spell_can_terminate
+  // /test net.wizardsoflua.tests.EventInterceptorTest
+  // test_stop__After_last_stopping_the_Spell_can_terminate
   @Test
   public void test_stop__After_last_stopping_the_Spell_can_terminate() {
     // When:

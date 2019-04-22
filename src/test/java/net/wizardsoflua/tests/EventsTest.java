@@ -1,16 +1,12 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class EventsTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.EventsTest test_connect_LeftClickBlockEvent

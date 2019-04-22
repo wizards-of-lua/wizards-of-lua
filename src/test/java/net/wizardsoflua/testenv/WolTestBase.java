@@ -1,7 +1,7 @@
 package net.wizardsoflua.testenv;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import com.google.common.collect.Iterables;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -15,7 +15,7 @@ public class WolTestBase extends TestDataFactory {
   private boolean wasOperator;
   private long oldDayTime;
 
-  @Before
+  @BeforeEach
   public void beforeTest() throws Exception {
     testEnv.runAndWait(() -> testEnv.getEventRecorder().setEnabled(true));
 
@@ -39,7 +39,7 @@ public class WolTestBase extends TestDataFactory {
     oldDayTime = mc().getWorldtime();
   }
 
-  @After
+  @AfterEach
   public void afterTest() throws Exception {
     testEnv.runAndWait(() -> testEnv.getEventRecorder().setEnabled(false));
     mc().player().setOperator(wasOperator);

@@ -2,16 +2,11 @@ package net.wizardsoflua.tests;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class TimeTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.TimeTest test_getDate_executed_by_player

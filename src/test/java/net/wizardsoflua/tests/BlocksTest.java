@@ -1,20 +1,16 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class BlocksTest extends WolTestBase {
   private BlockPos posP = new BlockPos(1, 4, 1);
 
-  @After
+  @AfterEach
   public void clearBlock() {
     mc().setBlock(posP, Blocks.AIR);
   }

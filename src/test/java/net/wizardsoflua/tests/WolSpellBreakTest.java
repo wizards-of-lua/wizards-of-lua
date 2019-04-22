@@ -1,10 +1,7 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.spell.SpellEntity;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -12,7 +9,6 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 /**
  * Testing the "/wol spell break" command
  */
-@RunWith(MinecraftJUnitRunner.class)
 public class WolSpellBreakTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.WolSpellBreakTest test_spell_break__Executed_by_Server

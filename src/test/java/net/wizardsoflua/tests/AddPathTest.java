@@ -1,19 +1,15 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class AddPathTest extends WolTestBase {
 
   private static final String DEMOMODULE = "my.demomodule";
 
-  @After
+  @AfterEach
   public void after() {
     mc().player().deleteModule(DEMOMODULE);
   }
