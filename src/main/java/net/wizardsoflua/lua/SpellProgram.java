@@ -346,10 +346,12 @@ public class SpellProgram {
     terminate();
     SpellException s = exceptionFactory.create(t);
     s.printStackTrace();
-    String message = String.format("%s: %s", contextMessage, s.getMessage());
-    TextComponentString txt = new TextComponentString(message);
-    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-    owner.sendMessage(txt);
+    if (owner != null) {
+      String message = String.format("%s: %s", contextMessage, s.getMessage());
+      TextComponentString txt = new TextComponentString(message);
+      txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+      owner.sendMessage(txt);
+    }
   }
 
   private void compileAndRun()
