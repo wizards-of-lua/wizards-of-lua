@@ -32,7 +32,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.testenv.junit.TestClassExecutor;
 import net.wizardsoflua.testenv.junit.TestMethodExecutor;
@@ -51,7 +53,7 @@ public class WolTestEnvironment {
 
   private static final Logger logger = LogManager.getLogger();
   private final EventRecorder eventRecorder = new EventRecorder();
-  private final WolTestPacketChannel packetChannel = new WolTestPacketChannel();
+  private volatile WolTestPacketChannel packetChannel;
   private AtomicReference<EntityPlayerMP> testPlayer = new AtomicReference<>();
 
   private MinecraftServer server;
@@ -61,11 +63,18 @@ public class WolTestEnvironment {
 
   public WolTestEnvironment() {
     instance = this;
+    FMLJavaModLoadingContext.get().getModEventBus().register(new ModSpecificEventBusHandling());
     MinecraftForge.EVENT_BUS.register(new MainForgeEventBusListener());
     MinecraftForge.EVENT_BUS.register(WolTestEnvironment.instance.getEventRecorder());
     log4jEventBridge.activate();
   }
 
+  private class ModSpecificEventBusHandling {
+    @SubscribeEvent
+    public void onFmlCommonSetup(FMLCommonSetupEvent event) {
+      packetChannel = new WolTestPacketChannel();
+    }
+  }
   private class MainForgeEventBusListener {
     @SubscribeEvent
     public void onFmlServerStarting(FMLServerStartingEvent event) {

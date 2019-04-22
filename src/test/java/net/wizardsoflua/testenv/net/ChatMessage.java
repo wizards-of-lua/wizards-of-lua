@@ -1,7 +1,6 @@
 package net.wizardsoflua.testenv.net;
 
 import static java.util.Objects.requireNonNull;
-import java.util.function.Supplier;
 import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -28,7 +27,7 @@ public class ChatMessage implements NetworkMessage {
   }
 
   @Override
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+  public void handle(NetworkEvent.Context context) {
     Minecraft.getInstance().player.sendChatMessage(text);
   }
 }

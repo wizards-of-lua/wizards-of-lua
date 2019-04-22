@@ -1,6 +1,5 @@
 package net.wizardsoflua.testenv.net;
 
-import java.util.function.Supplier;
 import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -15,7 +14,7 @@ public class RespawnMessage implements NetworkMessage {
   public void encode(PacketBuffer buffer) {}
 
   @Override
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+  public void handle(NetworkEvent.Context context) {
     Minecraft.getInstance().player.respawnPlayer();
   }
 }

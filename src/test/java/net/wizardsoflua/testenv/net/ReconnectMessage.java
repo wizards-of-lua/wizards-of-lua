@@ -1,7 +1,6 @@
 package net.wizardsoflua.testenv.net;
 
 import java.net.InetSocketAddress;
-import java.util.function.Supplier;
 import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiConnecting;
@@ -22,7 +21,7 @@ public class ReconnectMessage implements NetworkMessage {
   public void encode(PacketBuffer buffer) {}
 
   @Override
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+  public void handle(NetworkEvent.Context context) {
     DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientProxy::reconnect);
   }
 
