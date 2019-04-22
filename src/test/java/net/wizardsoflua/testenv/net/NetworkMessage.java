@@ -3,6 +3,7 @@ package net.wizardsoflua.testenv.net;
 import java.util.function.Supplier;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public interface NetworkMessage {
   int MAX_STRING_LENGTH = Short.MAX_VALUE;
@@ -17,5 +18,13 @@ public interface NetworkMessage {
 
   void encode(PacketBuffer buffer);
 
-  void handle(Supplier<NetworkEvent.Context> contextSupplier);
+  default void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+    Context context = contextSupplier.get();
+    if (!context.getPacketHandled()) {
+      handle(context);
+      context.setPacketHandled(true);
+    }
+  }
+
+  void handle(NetworkEvent.Context context);
 }

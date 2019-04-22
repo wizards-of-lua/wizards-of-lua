@@ -3,7 +3,6 @@ package net.wizardsoflua.testenv.net;
 import static java.util.Objects.requireNonNull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.function.Supplier;
 import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -44,7 +43,7 @@ public class LeftClickMessage implements NetworkMessage {
   }
 
   @Override
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+  public void handle(NetworkEvent.Context context) {
     Vec3d vec = new Vec3d(pos);
 
     Minecraft.getInstance().objectMouseOver = new RayTraceResult(vec, face, pos);

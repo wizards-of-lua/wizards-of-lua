@@ -1,12 +1,10 @@
 package net.wizardsoflua.testenv.net;
 
-import java.util.function.Supplier;
 import com.google.auto.service.AutoService;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 @AutoService(NetworkMessage.class)
@@ -30,8 +28,7 @@ public class ClientChatReceivedMessage implements NetworkMessage {
   }
 
   @Override
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-    Context context = contextSupplier.get();
+  public void handle(NetworkEvent.Context context) {
     EntityPlayerMP player = context.getSender();
     MinecraftForge.EVENT_BUS.post(new TestPlayerReceivedChatEvent(player, text));
   }
