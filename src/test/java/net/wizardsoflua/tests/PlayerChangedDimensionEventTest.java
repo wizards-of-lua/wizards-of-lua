@@ -1,25 +1,22 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class PlayerChangedDimensionEventTest extends WolTestBase {
 
   BlockPos portalPos = new BlockPos(-29, 3, 6);
   BlockPos playerPos = portalPos.up().north().east(2);
 
-  @Before
+  @BeforeEach
   public void before() {
     sleep(1000);
     if (mc().player().getDelegate().dimension != DimensionType.OVERWORLD) {
@@ -30,7 +27,7 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
     mc().clearEvents();
   }
 
-  @After
+  @AfterEach
   public void after() {
     sleep(1000);
     mc().player().changeDimension(DimensionType.OVERWORLD);

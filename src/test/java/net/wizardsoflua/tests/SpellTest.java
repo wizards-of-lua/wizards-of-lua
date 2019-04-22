@@ -1,29 +1,25 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class SpellTest extends WolTestBase {
   private BlockPos playerPos = new BlockPos(0, 4, 0);
   private BlockPos posP1 = new BlockPos(1, 4, 1);
   private BlockPos posP2 = new BlockPos(1, 5, 1);
 
-  @After
+  @AfterEach
   public void clearBlock() {
     mc().setBlock(posP1, Blocks.AIR);
     mc().setBlock(posP2, Blocks.AIR);
   }
-
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_is_not_nil
   @Test

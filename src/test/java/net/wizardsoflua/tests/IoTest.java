@@ -1,8 +1,7 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
@@ -11,7 +10,7 @@ public class IoTest extends WolTestBase {
   private static final String SOME_TEST_TXT = "some-test.txt";
   private static final String SOME_DIR = "some-dir";
 
-  @Before
+  @BeforeEach
   public void cleanUp() {
     mc().deleteWorldFile(SOME_TEST_TXT);
     mc().deleteWorldFile(SOME_DIR);
@@ -23,7 +22,7 @@ public class IoTest extends WolTestBase {
     // Given:
     String filename = SOME_TEST_TXT;
     String content = "some content";
-    this.mc().writeWorldFile(filename, content);
+    mc().writeWorldFile(filename, content);
 
     // When:
     mc().executeCommand("/lua f,err=io.open('%s','r'); print(f~=nil); f:close()", filename);
@@ -39,7 +38,7 @@ public class IoTest extends WolTestBase {
     // Given:
     String filename = SOME_TEST_TXT;
     String content = "some line\nanother line";
-    this.mc().writeWorldFile(filename, content);
+    mc().writeWorldFile(filename, content);
 
     // When:
     mc().executeCommand("/lua f,err=io.open('%s','r'); v=f:read('*a'); print(v); f:close()",

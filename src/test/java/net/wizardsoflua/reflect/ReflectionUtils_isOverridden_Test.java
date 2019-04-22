@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ReflectionUtils_isOverridden_Test extends Assertions {
   private static @Nullable Method getMethodM(Class<?> cls) throws NoSuchMethodException {

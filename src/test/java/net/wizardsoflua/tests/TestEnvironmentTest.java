@@ -2,10 +2,9 @@ package net.wizardsoflua.tests;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -14,21 +13,19 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class TestEnvironmentTest extends WolTestBase {
 
   BlockPos playerPos = new BlockPos(0, 4, 0);
   BlockPos clickPos = new BlockPos(2, 5, 0);
   BlockPos blockPos = new BlockPos(1, 5, 0);
 
-  @After
-  @Before
+  @AfterEach
+  @BeforeEach
   public void clearBlocks() {
     mc().setBlock(playerPos, Blocks.AIR);
     mc().setBlock(clickPos, Blocks.AIR);
@@ -207,7 +204,7 @@ public class TestEnvironmentTest extends WolTestBase {
     assertThat(mc().getBlock(pos)).isA(Blocks.DIAMOND_BLOCK);
   }
 
-  @After
+  @AfterEach
   public void clearBlock() {
     BlockPos pos = new BlockPos(1, 4, 1);
     mc().setBlock(pos, Blocks.AIR);

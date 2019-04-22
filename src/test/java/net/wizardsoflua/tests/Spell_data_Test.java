@@ -1,12 +1,8 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class Spell_data_Test extends WolTestBase {
 
   // @formatter:off

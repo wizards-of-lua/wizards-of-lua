@@ -1,8 +1,7 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
@@ -12,7 +11,7 @@ public class SystemTest extends WolTestBase {
   private static final String SOME_OTHER_TEST_FILE = "some-other-test.txt";
   private static final String SOME_DIR = "some-dir";
 
-  @Before
+  @BeforeEach
   public void cleanUp() {
     mc().deleteWorldFile(SOME_TEST_FILE);
     mc().deleteWorldFile(SOME_OTHER_TEST_FILE);
@@ -25,7 +24,7 @@ public class SystemTest extends WolTestBase {
     // Given:
     String filename = SOME_TEST_FILE;
     String content = "some content";
-    this.mc().writeWorldFile(filename, content);
+    mc().writeWorldFile(filename, content);
 
     // When:
     mc().executeCommand("/lua System.delete('%s'); print('ok')", filename);
@@ -57,7 +56,7 @@ public class SystemTest extends WolTestBase {
     // Given:
     String filename = SOME_TEST_FILE;
     String content = "some content";
-    this.mc().writeWorldFile(filename, content);
+    mc().writeWorldFile(filename, content);
 
     // When:
     mc().executeCommand("/lua v=System.isFile('%s'); print(v)", filename);
@@ -88,8 +87,8 @@ public class SystemTest extends WolTestBase {
     // Given:
     String filename1 = SOME_DIR + "/1.txt";
     String filename2 = SOME_DIR + "/2.txt";
-    this.mc().writeWorldFile(filename1, "1");
-    this.mc().writeWorldFile(filename2, "2");
+    mc().writeWorldFile(filename1, "1");
+    mc().writeWorldFile(filename2, "2");
 
     // When:
     mc().executeCommand("/lua v=System.listFiles('%s'); for _,f in pairs(v) do print(f); end",
@@ -108,7 +107,7 @@ public class SystemTest extends WolTestBase {
     // Given:
     String filename1 = SOME_TEST_FILE;
     String content = "some special content";
-    this.mc().writeWorldFile(filename1, content);
+    mc().writeWorldFile(filename1, content);
     String filename2 = SOME_OTHER_TEST_FILE;
 
     // When:

@@ -1,17 +1,13 @@
 package net.wizardsoflua.tests;
 
 import org.assertj.core.data.Offset;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 /**
  * Testing the Vec3 Lua module
  */
-@RunWith(MinecraftJUnitRunner.class)
 public class Vec3Test extends WolTestBase {
 
   // /test net.wizardsoflua.tests.Vec3Test test_check_with_Vec3
@@ -224,8 +220,8 @@ public class Vec3Test extends WolTestBase {
     String expected = "true";
 
     // When:
-    mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:normalize()==v*(1/v:magnitude()))", x, y,
-        z);
+    mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:normalize()==v*(1/v:magnitude()))", x,
+        y, z);
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);

@@ -1,13 +1,9 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class GlobalsTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.GlobalsTest test_str
@@ -29,8 +25,7 @@ public class GlobalsTest extends WolTestBase {
     // Given:
     long sleepTime = 10;
     // When:
-    mc().executeCommand(
-        "/lua print(Time.gametime); sleep(%s); print(Time.gametime)", sleepTime);
+    mc().executeCommand("/lua print(Time.gametime); sleep(%s); print(Time.gametime)", sleepTime);
 
     // Then:
     ServerLog4jEvent message1 = mc().waitFor(ServerLog4jEvent.class);

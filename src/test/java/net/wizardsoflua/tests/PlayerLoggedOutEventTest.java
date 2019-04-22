@@ -1,19 +1,15 @@
 package net.wizardsoflua.tests;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class PlayerLoggedOutEventTest extends WolTestBase {
   BlockPos playerPos = new BlockPos(0, 4, 0);
 
-  @After
+  @AfterEach
   public void resetPlayerPosition() {
     mc().player().waitForPlayer(30000);
     mc().player().setPosition(playerPos);

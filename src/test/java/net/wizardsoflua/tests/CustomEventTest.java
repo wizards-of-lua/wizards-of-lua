@@ -1,14 +1,10 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class CustomEventTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.CustomEventTest test_with_primitive_data
@@ -103,7 +99,8 @@ public class CustomEventTest extends WolTestBase {
         "/lua q=Events.collect('%s'); e=q:next(); e.data.key=2345; Events.fire('%s', e)",
         eventName1, eventName2);
 
-    mc().executeCommand("/lua q=Events.collect('%s'); e=q:next(); print(e.data.data.key)", eventName2);
+    mc().executeCommand("/lua q=Events.collect('%s'); e=q:next(); print(e.data.data.key)",
+        eventName2);
 
     // When:
     mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName1);

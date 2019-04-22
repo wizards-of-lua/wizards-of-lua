@@ -1,20 +1,17 @@
 package net.wizardsoflua.tests;
 
 import java.io.IOException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class PlayerTest extends WolTestBase {
   private static final String DEMOMODULE = "my.demomodule";
   private static final String SHAREDMODULE = "somewhere.sharedmodule";
@@ -24,12 +21,12 @@ public class PlayerTest extends WolTestBase {
 
   BlockPos playerPos = new BlockPos(0, 4, 0);
 
-  @Before
+  @BeforeEach
   public void before() {
     mc().player().setPosition(playerPos);
   }
 
-  @After
+  @AfterEach
   public void after() throws IOException {
     mc().deleteTeams();
     mc().player().deleteModule(DEMOMODULE);

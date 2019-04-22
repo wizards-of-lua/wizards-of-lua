@@ -1,22 +1,17 @@
 package net.wizardsoflua.tests;
 
 import java.io.IOException;
-
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class LuaCommandTest extends WolTestBase {
 
   private static final String SHARED_PROFILE = "shared-profile";
 
-  @After
+  @AfterEach
   public void after() throws IOException {
     mc().deleteSharedModule(SHARED_PROFILE);
   }

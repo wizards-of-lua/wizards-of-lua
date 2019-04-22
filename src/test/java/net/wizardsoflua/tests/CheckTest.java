@@ -1,16 +1,12 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
+import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 /**
  * Testing the Check Lua module
  */
-@RunWith(MinecraftJUnitRunner.class)
 public class CheckTest extends WolTestBase {
 
   // /test net.wizardsoflua.tests.CheckTest test_check_number_with_number
