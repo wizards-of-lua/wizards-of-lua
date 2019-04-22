@@ -4,10 +4,12 @@ eclipse.jdt.file.withProperties { properties ->
 
 eclipse.classpath.file.beforeMerged { cp ->
   def apt_generated = new org.gradle.plugins.ide.eclipse.model.SourceFolder('.apt_generated', 'bin/main')
+  mkdir(apt_generated.path)
   apt_generated.entryAttributes << [ignore_optional_problems: true]
   cp.entries.add(apt_generated)
 
   def apt_generated_tests = new org.gradle.plugins.ide.eclipse.model.SourceFolder('.apt_generated_tests', 'bin/test')
+  mkdir(apt_generated_tests.path)
   apt_generated_tests.entryAttributes << [ignore_optional_problems: true]
   cp.entries.add(apt_generated_tests)
 }
