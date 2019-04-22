@@ -32,7 +32,7 @@ public class AboutMessage {
 
   @Override
   public String toString() {
-    return getTextComponent().getUnformattedComponentText();
+    return getTextComponent().getString();
   }
 
   @SubscribeEvent

@@ -5,7 +5,6 @@ import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
 import static net.wizardsoflua.brigadier.argument.SidArgumentType.sid;
-
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -13,7 +12,6 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
@@ -105,7 +103,7 @@ public class SpellListCommand implements Command<CommandSource> {
     EntityPlayerMP owner = EntityArgument.getOnePlayer(context, OWNER_ARGUMENT);
     CommandSource source = context.getSource();
     // TODO I18n
-    String message = "Active spells of " + owner.getName().getUnformattedComponentText();
+    String message = "Active spells of " + owner.getName().getString();
     return listSpells(source, message, spell -> owner.equals(spell.getOwner()));
   }
 

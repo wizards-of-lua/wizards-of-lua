@@ -1,14 +1,10 @@
 package net.wizardsoflua.lua.module.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
 import com.google.common.base.Predicate;
-
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
 import net.sandius.rembulan.runtime.ExecutionContext;
@@ -95,7 +91,7 @@ public class SpellsModule {
   private Predicate<SpellEntity> byOwner(String owner) {
     checkNotNull(owner, "owner==null!");
     return (SpellEntity spell) -> spell.getOwner() != null
-        && owner.equals(spell.getOwner().getName().getUnformattedComponentText());
+        && owner.equals(spell.getOwner().getName().getString());
   }
 
   private Predicate<SpellEntity> byTag(String tag) {
