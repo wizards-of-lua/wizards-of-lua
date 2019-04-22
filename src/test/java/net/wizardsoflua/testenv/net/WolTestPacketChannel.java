@@ -2,6 +2,7 @@ package net.wizardsoflua.testenv.net;
 
 import java.util.ServiceConfigurationError;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,16 +27,18 @@ public class WolTestPacketChannel {
   }
 
   private boolean clientAcceptsServerVersion(String serverVersion) {
-    return true;
+    return getNetworkProtocolVersion().equals(serverVersion);
   }
 
-  private boolean serverAcceptsClientVersion(String serverVersion) {
-    return true;
+  private boolean serverAcceptsClientVersion(String clientVersion) {
+    return getNetworkProtocolVersion().equals(clientVersion);
   }
 
   public WolTestPacketChannel() {
     int index = 0;
-    Set<Class<? extends NetworkMessage>> messageTypes = ServiceLoader.load(NetworkMessage.class);
+    Set<Class<? extends NetworkMessage>> messageTypes =
+        new TreeSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
+    messageTypes.addAll(ServiceLoader.load(NetworkMessage.class));
     for (Class<? extends NetworkMessage> messageType : messageTypes) {
       registerNetworkMessage(index++, messageType);
     }
