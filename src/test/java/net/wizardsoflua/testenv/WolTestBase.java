@@ -13,7 +13,6 @@ public class WolTestBase extends TestDataFactory {
   private WolTestEnvironment testEnv = WolTestEnvironment.instance;
   private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
   private boolean wasOperator;
-  private boolean oldDoDaylighCycle;
   private long oldDayTime;
 
   @Before
@@ -24,9 +23,12 @@ public class WolTestBase extends TestDataFactory {
     mc().breakAllSpells();
 
     mc().clearWizardConfigs();
-    mc().executeCommand("/gamerule logAdminCommands false");
-    mc().executeCommand("/gamerule sendCommandFeedback false");
-    mc().executeCommand("/gamerule doMobSpawning false");
+
+    mc().gameRules().saveState();
+    mc().gameRules().setDoMobSpawning(false);
+    mc().gameRules().setLogAdminCommands(false);
+    mc().gameRules().setSendCommandFeedback(true);
+
     mc().executeCommand("/kill @e[type=!Player]");
     mc().executeCommand("/wol spell break all");
     mc().clearEvents();
@@ -34,7 +36,6 @@ public class WolTestBase extends TestDataFactory {
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
     mc().player().clearInventory();
-    oldDoDaylighCycle = mc().isDoDaylighCycle();
     wasOperator = mc().player().isOperator();
     oldDayTime = mc().getWorldtime();
   }
@@ -45,7 +46,8 @@ public class WolTestBase extends TestDataFactory {
     mc().player().setOperator(wasOperator);
     mc().clearEvents();
     mc().breakAllSpells();
-    mc().setDoDaylightCycle(oldDoDaylighCycle);
+
+    mc().gameRules().restoreState();
     mc().setWorldTime(oldDayTime);
 
     mc().resetClock();

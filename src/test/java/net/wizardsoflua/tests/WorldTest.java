@@ -1,12 +1,10 @@
 package net.wizardsoflua.tests;
 
 import static java.lang.String.valueOf;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
@@ -242,7 +240,7 @@ public class WorldTest extends WolTestBase {
   @Test
   public void test_time_is_readable() throws Exception {
     // Given:
-    mc().setDoDaylightCycle(false);
+    mc().gameRules().setDoDaylightCycle(false);
     long expected = 1999;
     mc().setWorldTime(expected);
 
@@ -258,7 +256,7 @@ public class WorldTest extends WolTestBase {
   @Test
   public void test_time_is_writable() throws Exception {
     // Given:
-    mc().setDoDaylightCycle(false);
+    mc().gameRules().setDoDaylightCycle(false);
     long expected = 2929;
 
     // When:
@@ -275,7 +273,7 @@ public class WorldTest extends WolTestBase {
   @Test
   public void test_daytime_is_readable() throws Exception {
     // Given:
-    mc().setDoDaylightCycle(false);
+    mc().gameRules().setDoDaylightCycle(false);
     long expected = 3939;
     mc().setWorldTime(24000 + expected);
 

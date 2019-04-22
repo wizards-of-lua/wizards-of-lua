@@ -332,15 +332,6 @@ public class MinecraftBackdoor {
     return testEnv;
   }
 
-  public void setDoDaylightCycle(boolean value) {
-    getOverworld().getGameRules().setOrCreateGameRule("doDaylightCycle",
-        Boolean.valueOf(value).toString(), testEnv.getServer());
-  }
-
-  public boolean isDoDaylighCycle() {
-    return getOverworld().getGameRules().getBoolean("doDaylightCycle");
-  }
-
   public void setWorldTime(long value) {
     getOverworld().getWorldInfo().setWorldTotalTime(value);
   }
@@ -349,4 +340,12 @@ public class MinecraftBackdoor {
     return getOverworld().getGameTime();
   }
 
+  private @Nullable GameRuleDsl gameRules;
+
+  public GameRuleDsl gameRules() {
+    if (gameRules == null) {
+      gameRules = new GameRuleDsl(testEnv.getServer());
+    }
+    return gameRules;
+  }
 }
