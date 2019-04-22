@@ -1,19 +1,14 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.cache.Cache;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -352,10 +347,12 @@ public class SpellProgram {
     terminate();
     SpellException s = exceptionFactory.create(t);
     s.printStackTrace();
-    String message = String.format("%s: %s", contextMessage, s.getMessage());
-    TextComponentString txt = new TextComponentString(message);
-    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-    owner.sendMessage(txt);
+    if (owner != null) {
+      String message = String.format("%s: %s", contextMessage, s.getMessage());
+      TextComponentString txt = new TextComponentString(message);
+      txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
+      owner.sendMessage(txt);
+    }
   }
 
   private void compileAndRun()
