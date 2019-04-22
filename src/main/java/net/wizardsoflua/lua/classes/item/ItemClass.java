@@ -1,9 +1,7 @@
 package net.wizardsoflua.lua.classes.item;
 
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -98,7 +96,7 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
      */
     @LuaProperty
     public String getDisplayName() {
-      return delegate.getDisplayName().getUnformattedComponentText();
+      return delegate.getDisplayName().getString();
     }
 
     @LuaProperty

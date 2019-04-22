@@ -86,7 +86,7 @@ public class WolTestEnvironment {
     @SubscribeEvent
     public void onEvent(ClientChatReceivedEvent evt) {
       ITextComponent message = evt.getMessage();
-      String txt = message.getUnformattedComponentText();
+      String txt = message.getString();
       getPacketChannel().sendToServer(new ClientChatReceivedMessage(txt));
     }
 

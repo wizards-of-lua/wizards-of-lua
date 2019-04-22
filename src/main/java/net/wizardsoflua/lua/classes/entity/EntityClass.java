@@ -4,15 +4,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
-
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -246,7 +242,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      */
     @LuaProperty
     public String getName() {
-      return delegate.getName().getUnformattedComponentText();
+      return delegate.getName().getString();
     }
 
     @LuaProperty

@@ -162,7 +162,7 @@ public class PlayerBackdoor {
   }
 
   public String getName() {
-    return getDelegate().getName().toString();
+    return getDelegate().getName().getString();
   }
 
   public void setMainHandItem(ItemStack item) {
