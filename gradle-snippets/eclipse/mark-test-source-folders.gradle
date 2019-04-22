@@ -1,0 +1,8 @@
+eclipse.classpath.file.whenMerged { cp ->
+  def paths = sourceSets.test.allSource.srcDirs
+  cp.entries.findAll { it.kind == 'src' && file(it.path) in paths }.each {
+    it.entryAttributes << [test: true]
+  }
+  def apt_generated_tests = entries.find { it.kind == 'src' && it.path == '.apt_generated_tests' }
+  apt_generated_tests.entryAttributes << [test: true]
+}

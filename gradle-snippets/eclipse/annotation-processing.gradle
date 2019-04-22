@@ -2,11 +2,14 @@ eclipse.jdt.file.withProperties { properties ->
   properties << ['org.eclipse.jdt.core.compiler.processAnnotations': 'enabled']
 }
 
-eclipse.classpath.file.whenMerged { cp ->
-  def folder = cp.entries.find { it.path == '.apt_generated' }
-  if (folder != null) {
-    folder.entryAttributes << ['ignore_optional_problems': true]
-  }
+eclipse.classpath.file.beforeMerged { cp ->
+  def apt_generated = new org.gradle.plugins.ide.eclipse.model.SourceFolder('.apt_generated', 'bin/main')
+  apt_generated.entryAttributes << [ignore_optional_problems: true]
+  cp.entries.add(apt_generated)
+
+  def apt_generated_tests = new org.gradle.plugins.ide.eclipse.model.SourceFolder('.apt_generated_tests', 'bin/test')
+  apt_generated_tests.entryAttributes << [ignore_optional_problems: true]
+  cp.entries.add(apt_generated_tests)
 }
 
 task eclipseFactorypath doLast {

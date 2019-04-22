@@ -1,6 +1,7 @@
 package net.wizardsoflua.testenv.net;
 
 import java.util.ServiceConfigurationError;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.lua.extension.ServiceLoader;
 
 public class WolTestPacketChannel {
   private final ResourceLocation name = new ResourceLocation(WizardsOfLua.MODID, "channel/test");
@@ -33,20 +35,10 @@ public class WolTestPacketChannel {
 
   public WolTestPacketChannel() {
     int index = 0;
-    registerNetworkMessage(index++, ChatMessage.class, ChatMessage::new);
-    registerNetworkMessage(index++, ClientChatReceivedMessage.class,
-        ClientChatReceivedMessage::new);
-    registerNetworkMessage(index++, LeftClickMessage.class, LeftClickMessage::new);
-    registerNetworkMessage(index++, ReconnectMessage.class, ReconnectMessage::new);
-    registerNetworkMessage(index++, RespawnMessage.class, RespawnMessage::new);
-    registerNetworkMessage(index++, RightClickMessage.class, RightClickMessage::new);
-
-    // FIXME Adrodoc 22.04.2019: Fix SPI for NetworkMessage
-    // Set<Class<? extends NetworkMessage>> messageTypes =
-    // ServiceLoader.load(NetworkMessage.class, NetworkMessage.class.getClassLoader());
-    // for (Class<? extends NetworkMessage> messageType : messageTypes) {
-    // registerNetworkMessage(index++, messageType);
-    // }
+    Set<Class<? extends NetworkMessage>> messageTypes = ServiceLoader.load(NetworkMessage.class);
+    for (Class<? extends NetworkMessage> messageType : messageTypes) {
+      registerNetworkMessage(index++, messageType);
+    }
   }
 
   private <M extends NetworkMessage> void registerNetworkMessage(int index, Class<M> messageType) {
