@@ -94,6 +94,7 @@ allprojects {
 apply from: file('gradle-snippets/eclipse/annotation-processing.gradle')
 allprojects {
   plugins.withId('eclipse') {
+    project.apply from: rootProject.file('gradle-snippets/eclipse/mark-test-source-folders.gradle')
     project.apply from: rootProject.file('gradle-snippets/eclipse/rename-subproject.gradle')
   }
 }

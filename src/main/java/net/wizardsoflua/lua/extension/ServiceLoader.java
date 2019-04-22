@@ -19,9 +19,7 @@ public class ServiceLoader {
   private static final Logger LOGGER = LogManager.getLogger();
 
   public static <S> Set<Class<? extends S>> load(Class<S> service) {
-    // The context class loader seems to not be set correctly by forge in eclipse
-    // ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    ClassLoader cl = ServiceLoader.class.getClassLoader();
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
     return load(service, cl);
   }
 
