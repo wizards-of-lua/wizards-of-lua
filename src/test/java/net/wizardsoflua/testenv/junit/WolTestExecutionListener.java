@@ -154,29 +154,27 @@ public class WolTestExecutionListener implements TestExecutionListener {
     progressBar.setValue(testsFinished);
     progressBar.setMax(testsFound.get());
 
-
+    int testsCanceled = testsAborted.get() + testsSkipped.get();
     ITextComponent name =
-        new TextComponentString("Finished " + testsFinished + " / " + testsFound + " tests (");
-    ITextComponent successful = new TextComponentString("" + testsSuccessful).applyTextStyle(GREEN);
-    ITextComponent skipped = new TextComponentString("" + (testsAborted.get() + testsSkipped.get()))
-        .applyTextStyle(YELLOW);
-    ITextComponent failed = new TextComponentString("" + testsFailed).applyTextStyle(RED);
-    name.appendSibling(successful).appendText(", ").appendSibling(skipped).appendText(", ")
-        .appendSibling(failed).appendText(")");
+        new TextComponentString("Finished " + testsFinished + " / " + testsFound + " tests")
+            .appendText(" (")
+            .appendSibling(new TextComponentString("" + testsSuccessful).applyTextStyle(GREEN))
+            .appendText(", ")
+            .appendSibling(new TextComponentString("" + testsCanceled).applyTextStyle(YELLOW))
+            .appendText(", ")
+            .appendSibling(new TextComponentString("" + testsFailed).applyTextStyle(RED))
+            .appendText(")");
+    progressBar.setName(name);
 
     Color color;
     if (testsFailed.get() > 0) {
       color = Color.RED;
-      // name.applyTextStyle(TextFormatting.RED);
-    } else if (testsAborted.get() + testsSkipped.get() > 0) {
+    } else if (testsCanceled > 0) {
       color = Color.YELLOW;
-      // name.applyTextStyle(TextFormatting.YELLOW);
     } else {
       color = Color.GREEN;
-      // name.applyTextStyle(TextFormatting.GREEN);
     }
     progressBar.setColor(color);
-    progressBar.setName(name);
   }
 
   private CustomBossEvent provideProgressBar() {
