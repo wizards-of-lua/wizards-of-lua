@@ -52,8 +52,8 @@ public class TestCommand implements Command<CommandSource> {
   }
 
   public int runClass(CommandContext<CommandSource> context) throws CommandSyntaxException {
-    String testclassName = StringArgumentType.getString(context, CLASS_ARGUMENT);
-    return run(context, request().selectors(selectClass(testclassName)).build());
+    String className = StringArgumentType.getString(context, CLASS_ARGUMENT);
+    return run(context, request().selectors(selectClass(className)).build());
   }
 
   public int runMethod(CommandContext<CommandSource> context) throws CommandSyntaxException {
