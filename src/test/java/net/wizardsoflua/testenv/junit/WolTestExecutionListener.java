@@ -8,26 +8,35 @@ import static net.wizardsoflua.WolAnnouncementMessage.createAnnouncement;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.CustomBossEvent;
+import net.minecraft.server.CustomBossEvents;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.BossInfo.Color;
+import net.wizardsoflua.testenv.WolTestEnvironment;
 
 public class WolTestExecutionListener implements TestExecutionListener {
+  private static final ResourceLocation BOSSBAR_ID =
+      new ResourceLocation(WolTestEnvironment.MODID, "test-progress");
   private final CommandSource source;
-  private LocalDateTime start;
 
-  private final AtomicLong testsTotal = new AtomicLong();
-  private final AtomicLong testsSuccessful = new AtomicLong();
-  private final AtomicLong testsAborted = new AtomicLong();
-  private final AtomicLong testsSkipped = new AtomicLong();
-  private final AtomicLong testsFailed = new AtomicLong();
+  private final AtomicInteger testsFound = new AtomicInteger();
+  private final AtomicInteger testsSuccessful = new AtomicInteger();
+  private final AtomicInteger testsAborted = new AtomicInteger();
+  private final AtomicInteger testsSkipped = new AtomicInteger();
+  private final AtomicInteger testsFailed = new AtomicInteger();
+  private LocalDateTime start;
   private TestPlan testPlan;
 
   public WolTestExecutionListener(CommandSource source) {
@@ -36,18 +45,21 @@ public class WolTestExecutionListener implements TestExecutionListener {
 
   @Override
   public void testPlanExecutionStarted(TestPlan testPlan) {
+    start = LocalDateTime.now();
     this.testPlan = testPlan;
-    long testCount = testPlan.countTestIdentifiers(it -> it.isTest());
+    int testCount = (int) testPlan.countTestIdentifiers(it -> it.isTest());
+    testsFound.addAndGet(testCount);
+    updateProgressBar();
+
     ITextComponent announcement = createAnnouncement("Found " + testCount + " tests...");
     source.sendFeedback(announcement, false);
-    start = LocalDateTime.now();
   }
 
   @Override
   public void testPlanExecutionFinished(TestPlan testPlan) {
     Duration duration = Duration.between(start, LocalDateTime.now());
     ITextComponent message = new TextComponentString(
-        "Finished " + testsTotal + " tests in " + duration.getSeconds() + " seconds:\n");
+        "Finished " + testsFound + " tests in " + duration.getSeconds() + " seconds:\n");
     if (testPlan.containsTests()) {
       if (testsSuccessful.get() != 0) {
         appendSibling(message, " [" + testsSuccessful + "] tests successful", GREEN);
@@ -66,6 +78,8 @@ public class WolTestExecutionListener implements TestExecutionListener {
     }
     ITextComponent announcement = createAnnouncement(message);
     source.sendFeedback(announcement, false);
+
+    removeProgressBar();
   }
 
   private ITextComponent appendSibling(ITextComponent message, String sibling,
@@ -74,13 +88,21 @@ public class WolTestExecutionListener implements TestExecutionListener {
   }
 
   @Override
+  public void dynamicTestRegistered(TestIdentifier testIdentifier) {
+    if (testIdentifier.isTest()) {
+      testsFound.incrementAndGet();
+      updateProgressBar();
+    }
+  }
+
+  @Override
   public void executionSkipped(TestIdentifier testIdentifier, String reason) {
     Set<TestIdentifier> descendants = testPlan.getDescendants(testIdentifier);
-    long testsSkipped = Stream.concat(Stream.of(testIdentifier), descendants.stream()) //
+    int testsSkipped = (int) Stream.concat(Stream.of(testIdentifier), descendants.stream()) //
         .filter(it -> it.isTest()) //
         .count();
     this.testsSkipped.addAndGet(testsSkipped);
-    testsTotal.addAndGet(testsSkipped);
+    updateProgressBar();
 
     String displayName = testIdentifier.getDisplayName();
     ITextComponent announcement = createAnnouncement("Skipped " + displayName + ":\n" + reason);
@@ -91,8 +113,6 @@ public class WolTestExecutionListener implements TestExecutionListener {
   @Override
   public void executionStarted(TestIdentifier testIdentifier) {
     if (testIdentifier.isTest()) {
-      testsTotal.incrementAndGet();
-
       String displayName = testIdentifier.getDisplayName();
       ITextComponent announcement = createAnnouncement("Started " + displayName);
       source.sendFeedback(announcement, false);
@@ -120,6 +140,78 @@ public class WolTestExecutionListener implements TestExecutionListener {
           });
           break;
       }
+      updateProgressBar();
+    }
+  }
+
+  private int getTestsFinished() {
+    return testsSuccessful.get() + testsAborted.get() + testsSkipped.get() + testsFailed.get();
+  }
+
+  private void updateProgressBar() {
+    CustomBossEvent progressBar = provideProgressBar();
+    int testsFinished = getTestsFinished();
+    progressBar.setValue(testsFinished);
+    progressBar.setMax(testsFound.get());
+
+
+    ITextComponent name =
+        new TextComponentString("Finished " + testsFinished + " / " + testsFound + " tests (");
+    ITextComponent successful = new TextComponentString("" + testsSuccessful).applyTextStyle(GREEN);
+    ITextComponent skipped = new TextComponentString("" + (testsAborted.get() + testsSkipped.get()))
+        .applyTextStyle(YELLOW);
+    ITextComponent failed = new TextComponentString("" + testsFailed).applyTextStyle(RED);
+    name.appendSibling(successful).appendText(", ").appendSibling(skipped).appendText(", ")
+        .appendSibling(failed).appendText(")");
+
+    Color color;
+    if (testsFailed.get() > 0) {
+      color = Color.RED;
+      // name.applyTextStyle(TextFormatting.RED);
+    } else if (testsAborted.get() + testsSkipped.get() > 0) {
+      color = Color.YELLOW;
+      // name.applyTextStyle(TextFormatting.YELLOW);
+    } else {
+      color = Color.GREEN;
+      // name.applyTextStyle(TextFormatting.GREEN);
+    }
+    progressBar.setColor(color);
+    progressBar.setName(name);
+  }
+
+  private CustomBossEvent provideProgressBar() {
+    CustomBossEvent progressBar = getProgressBar();
+    if (progressBar == null) {
+      progressBar = createProgressBar();
+    }
+    return progressBar;
+  }
+
+  private CustomBossEvent getProgressBar() {
+    CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
+    CustomBossEvent progressBar = customBossEvents.get(BOSSBAR_ID);
+    return progressBar;
+  }
+
+  private CustomBossEvent createProgressBar() {
+    CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
+    ITextComponent name = new TextComponentString("Test Progress");
+    CustomBossEvent progressBar = customBossEvents.add(BOSSBAR_ID, name);
+    progressBar.setColor(Color.GREEN);
+
+    Entity entity = source.getEntity();
+    if (entity instanceof EntityPlayerMP) {
+      EntityPlayerMP player = (EntityPlayerMP) entity;
+      progressBar.addPlayer(player);
+    }
+    return progressBar;
+  }
+
+  private void removeProgressBar() {
+    CustomBossEvent progressBar = getProgressBar();
+    if (progressBar != null) {
+      progressBar.removeAllPlayers();
+      source.getServer().getCustomBossEvents().remove(progressBar);
     }
   }
 }
