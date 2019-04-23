@@ -24,11 +24,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.BossInfo.Color;
-import net.wizardsoflua.testenv.WolTestEnvironment;
+import net.wizardsoflua.testenv.WolTestenv;
 
 public class WolTestExecutionListener implements TestExecutionListener {
   private static final ResourceLocation BOSSBAR_ID =
-      new ResourceLocation(WolTestEnvironment.MODID, "test-progress");
+      new ResourceLocation(WolTestenv.MODID, "test-progress");
   private final CommandSource source;
 
   private final AtomicInteger testsFound = new AtomicInteger();

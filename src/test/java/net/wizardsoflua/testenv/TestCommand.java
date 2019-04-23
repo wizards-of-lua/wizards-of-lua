@@ -1,6 +1,7 @@
 package net.wizardsoflua.testenv;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
@@ -20,21 +21,26 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.wizardsoflua.testenv.junit.WolTestExecutionListener;
 
 public class TestCommand implements Command<CommandSource> {
   private static final String CLASS_ARGUMENT = "class";
   private static final String METHOD_ARGUMENT = "method";
 
-  private static final ExecutorService EXECUTOR =
-      Executors.newSingleThreadExecutor(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-          Thread newThread = Executors.defaultThreadFactory().newThread(r);
-          newThread.setDaemon(true);
-          return newThread;
-        }
-      });
+  private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+    @Override
+    public Thread newThread(Runnable r) {
+      Thread newThread = Executors.defaultThreadFactory().newThread(r);
+      newThread.setDaemon(true);
+      return newThread;
+    }
+  });
+  private final WolServerTestenv serverTestenv;
+
+  public TestCommand(WolServerTestenv serverTestenv) {
+    this.serverTestenv = requireNonNull(serverTestenv, "serverTestenv");
+  }
 
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
@@ -62,15 +68,25 @@ public class TestCommand implements Command<CommandSource> {
     return run(context, request().selectors(selectMethod(className, methodName)).build());
   }
 
-  private int run(CommandContext<CommandSource> context, LauncherDiscoveryRequest request) {
+  private int run(CommandContext<CommandSource> context, LauncherDiscoveryRequest request)
+      throws CommandSyntaxException {
+    CommandSource source = context.getSource();
+    EntityPlayerMP player = source.asPlayer();
+
     Launcher launcher = LauncherFactory.create();
     TestPlan plan = launcher.discover(request);
     long result = plan.countTestIdentifiers(it -> it.isTest());
 
-    EXECUTOR.submit(() -> {
-      CommandSource source = context.getSource();
-      WolTestExecutionListener listener = new WolTestExecutionListener(source);
-      launcher.execute(plan, listener);
+    executor.submit(() -> {
+      serverTestenv.associateWithCurrentThread();
+      try {
+        serverTestenv.setTestPlayer(player);
+        WolTestExecutionListener listener = new WolTestExecutionListener(source);
+        launcher.execute(plan, listener);
+        serverTestenv.setTestPlayer(null);
+      } finally {
+        WolServerTestenv.disassociateWithCurrentThread();
+      }
     });
     return Math.toIntExact(result);
   }

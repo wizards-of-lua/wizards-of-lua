@@ -2,6 +2,7 @@ package net.wizardsoflua.testenv.player;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
 import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
@@ -24,7 +25,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.MinecraftBackdoor;
-import net.wizardsoflua.testenv.WolTestEnvironment;
+import net.wizardsoflua.testenv.WolServerTestenv;
+import net.wizardsoflua.testenv.WolTestenv;
 import net.wizardsoflua.testenv.net.ChatMessage;
 import net.wizardsoflua.testenv.net.LeftClickEntityMessage;
 import net.wizardsoflua.testenv.net.LeftClickMessage;
@@ -34,12 +36,18 @@ import net.wizardsoflua.testenv.net.RespawnMessage;
 import net.wizardsoflua.testenv.net.RightClickMessage;
 
 public class PlayerBackdoor {
-  private WolTestEnvironment testEnv;
-  private MinecraftBackdoor minecraftBackdoor;
+  private final MinecraftBackdoor minecraftBackdoor;
 
   public PlayerBackdoor(MinecraftBackdoor minecraftBackdoor) {
-    this.minecraftBackdoor = minecraftBackdoor;
-    testEnv = minecraftBackdoor.getTestEnv();
+    this.minecraftBackdoor = requireNonNull(minecraftBackdoor, "minecraftBackdoor");
+  }
+
+  private WolTestenv getTestenv() {
+    return minecraftBackdoor.getTestenv();
+  }
+
+  private WolServerTestenv getServerTestenv() {
+    return minecraftBackdoor.getServerTestenv();
   }
 
   public void setOperator(boolean value) {
@@ -51,11 +59,12 @@ public class PlayerBackdoor {
   }
 
   public boolean isOperator() {
-    return testEnv.getWol().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
+    return getTestenv().getWol().getPermissions()
+        .hasOperatorPrivileges(getDelegate().getUniqueID());
   }
 
   public EntityPlayerMP getDelegate() {
-    EntityPlayerMP testPlayer = testEnv.getTestPlayer();
+    EntityPlayerMP testPlayer = getServerTestenv().getTestPlayer();
     checkNotNull(testPlayer, "testPlayer==null!");
     return testPlayer;
   }
@@ -77,16 +86,17 @@ public class PlayerBackdoor {
   }
 
   public void perform(NetworkMessage message) {
-    testEnv.runAndWait(() -> testEnv.getPacketChannel().sendTo(getDelegate(), message));
+    getServerTestenv().runOnMainThreadAndWait(
+        () -> getTestenv().getPacketChannel().sendTo(getDelegate(), message));
   }
 
   public void setPosition(BlockPos pos) {
-    testEnv
-        .runAndWait(() -> getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ()));
+    getServerTestenv().runOnMainThreadAndWait(
+        () -> getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ()));
   }
 
   public void setRotationYaw(float yaw) {
-    testEnv.runAndWait(() -> {
+    getServerTestenv().runOnMainThreadAndWait(() -> {
       EntityPlayerMP delegate = getDelegate();
       delegate.setRotationYawHead(yaw);
       delegate.setRenderYawOffset(yaw);
@@ -157,7 +167,7 @@ public class PlayerBackdoor {
 
   private File getModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
-    return new File(testEnv.getWol().getConfig()
+    return new File(getTestenv().getWol().getConfig()
         .getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(), path);
   }
 
@@ -166,7 +176,7 @@ public class PlayerBackdoor {
   }
 
   public void setMainHandItem(ItemStack item) {
-    testEnv.runAndWait(() -> {
+    getServerTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
@@ -177,7 +187,7 @@ public class PlayerBackdoor {
   }
 
   public void setOffHandItem(ItemStack item) {
-    testEnv.runAndWait(() -> {
+    getServerTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY));
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
@@ -202,7 +212,7 @@ public class PlayerBackdoor {
   }
 
   public void changeDimension(DimensionType dim) {
-    testEnv.runAndWait(() -> {
+    getServerTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().getEntityWorld().getServer().getPlayerList()
           .changePlayerDimension(getDelegate(), dim);
     });
@@ -218,7 +228,7 @@ public class PlayerBackdoor {
 
   public void waitForPlayer(long duration) {
     long started = System.currentTimeMillis();
-    while (testEnv.getTestPlayer() == null) {
+    while (getServerTestenv().getTestPlayer() == null) {
       if (started + duration > System.currentTimeMillis()) {
         sleep(100);
       } else {

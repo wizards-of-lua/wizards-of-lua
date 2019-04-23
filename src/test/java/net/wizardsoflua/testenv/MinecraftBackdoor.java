@@ -27,6 +27,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.command.arguments.EntitySelectorParser;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -41,8 +42,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -50,30 +52,48 @@ import net.wizardsoflua.testenv.player.PlayerBackdoor;
 
 public class MinecraftBackdoor {
 
-  private final WolTestEnvironment testEnv;
-  private final IEventBus eventBus;
+  private final WolServerTestenv serverTestenv;
   private final PlayerBackdoor player;
 
-  public MinecraftBackdoor(WolTestEnvironment testEnv, IEventBus eventBus) {
-    this.testEnv = requireNonNull(testEnv, "testEnv");
-    this.eventBus = eventBus;
+  public MinecraftBackdoor(WolServerTestenv serverTestenv) {
+    this.serverTestenv = requireNonNull(serverTestenv, "serverTestenv");
     player = new PlayerBackdoor(this);
   }
 
-  public String getWorldName() {
-    return getWorldInfo().getWorldName();
+  public WolServerTestenv getServerTestenv() {
+    return serverTestenv;
+  }
+
+  public WolTestenv getTestenv() {
+    return serverTestenv.getTestenv();
+  }
+
+  private WizardsOfLua getWol() {
+    return getTestenv().getWol();
+  }
+
+  private EntityPlayerMP getTestPlayer() {
+    return serverTestenv.getTestPlayer();
+  }
+
+  private MinecraftServer getServer() {
+    return serverTestenv.getServer();
+  }
+
+  private WorldServer getOverworld() {
+    return getServer().getWorld(DimensionType.OVERWORLD);
   }
 
   public String getWorldFolderName() {
-    return testEnv.getServer().getFolderName();
+    return getServer().getFolderName();
   }
 
   private WorldInfo getWorldInfo() {
     return getOverworld().getWorldInfo();
   }
 
-  private WorldServer getOverworld() {
-    return testEnv.getServer().getWorld(DimensionType.OVERWORLD);
+  public String getWorldName() {
+    return getWorldInfo().getWorldName();
   }
 
   public int getWorldDimension() {
@@ -89,16 +109,20 @@ public class MinecraftBackdoor {
   }
 
   public void post(Event event) {
-    eventBus.post(event);
+    MinecraftForge.EVENT_BUS.post(event);
   }
 
   public PlayerBackdoor player() {
     return player;
   }
 
+  public void clearEvents() {
+    getTestenv().getEventRecorder().clear();
+  }
+
   public <E extends Event> E waitFor(Class<E> eventType) {
     try {
-      return testEnv.getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
+      return getTestenv().getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }
@@ -119,35 +143,32 @@ public class MinecraftBackdoor {
     } else {
       command = format;
     }
-    MinecraftServer server = testEnv.getServer();
+    MinecraftServer server = getServer();
     CommandSource source = server.getCommandSource();
-    testEnv.runAndWait(() -> server.getCommandManager().handleCommand(source, command));
+    serverTestenv
+        .runOnMainThreadAndWait(() -> server.getCommandManager().handleCommand(source, command));
   }
 
   public void freezeClock(long millis) {
     ZoneId zoneId = ZoneId.systemDefault();
     Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), zoneId);
-    testEnv.getWol().setClock(clock);
+    getWol().setClock(clock);
   }
 
   public void freezeClock(LocalDateTime date) {
     ZoneId zoneId = ZoneId.systemDefault();
     Clock clock = Clock.fixed(date.atZone(zoneId).toInstant(), zoneId);
-    testEnv.getWol().setClock(clock);
+    getWol().setClock(clock);
   }
 
   public void resetClock() {
-    Clock clock = testEnv.getWol().getDefaultClock();
-    testEnv.getWol().setClock(clock);
-  }
-
-  public void clearEvents() {
-    testEnv.runAndWait(() -> testEnv.getEventRecorder().clear());
+    Clock clock = getWol().getDefaultClock();
+    getWol().setClock(clock);
   }
 
   public void breakAllSpells() {
-    testEnv.runAndWait(() -> {
-      Collection<SpellEntity> spells = testEnv.getWol().getSpellRegistry().getAll();
+    serverTestenv.runOnMainThreadAndWait(() -> {
+      Collection<SpellEntity> spells = getWol().getSpellRegistry().getAll();
       for (SpellEntity spell : spells) {
         spell.setDead();
       }
@@ -155,22 +176,25 @@ public class MinecraftBackdoor {
   }
 
   public Iterable<SpellEntity> spells() {
-    return testEnv.getWol().getSpellRegistry().getAll();
+    return getWol().getSpellRegistry().getAll();
   }
 
   public void setBlock(BlockPos pos, Block blockType) {
-    World world = testEnv.getTestPlayer().getEntityWorld();
-    testEnv.runAndWait(() -> world.setBlockState(pos, blockType.getDefaultState()));
+    World world = getTestPlayer().getEntityWorld();
+    serverTestenv
+        .runOnMainThreadAndWait(() -> world.setBlockState(pos, blockType.getDefaultState()));
+    // FIXME Adrodoc 24.04.2019: Auf ServerTickEvent(Phase.END) warten um sicherzustellen, dass die
+    // Änderung auch an den Client übertragen wurde.
   }
 
   public IBlockState getBlock(BlockPos pos) {
-    World world = testEnv.getTestPlayer().getEntityWorld();
+    World world = getTestPlayer().getEntityWorld();
     return world.getBlockState(pos);
   }
 
   public void setChest(BlockPos pos, ItemStack itemStack) {
-    World world = testEnv.getTestPlayer().getEntityWorld();
-    testEnv.runAndWait(() -> {
+    World world = getTestPlayer().getEntityWorld();
+    serverTestenv.runOnMainThreadAndWait(() -> {
       world.setBlockState(pos, Blocks.CHEST.getDefaultState());
       TileEntityChest chest = (TileEntityChest) world.getTileEntity(pos);
       chest.setInventorySlotContents(0, itemStack);
@@ -194,26 +218,26 @@ public class MinecraftBackdoor {
   }
 
   public long getLuaTicksLimit() {
-    return testEnv.getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
+    return getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
   }
 
   public void setLuaTicksLimit(long luaTicksLimit) {
-    testEnv.runAndWait(
-        () -> testEnv.getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
+    serverTestenv.runOnMainThreadAndWait(
+        () -> getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
   public long getEventListenerLuaTicksLimit() {
-    return testEnv.getWol().getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
+    return getWol().getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
   }
 
   public void setEventListenerLuaTicksLimit(long eventListenerluaTicksLimit) {
-    testEnv.runAndWait(() -> testEnv.getWol().getConfig().getGeneralConfig()
+    serverTestenv.runOnMainThreadAndWait(() -> getWol().getConfig().getGeneralConfig()
         .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }
 
   public @Nullable List<? extends Entity> findEntities(String target) {
     try {
-      CommandSource source = testEnv.getServer().getCommandSource();
+      CommandSource source = getServer().getCommandSource();
       EntitySelectorParser parser = new EntitySelectorParser(new StringReader(target));
       EntitySelector selector = parser.parse();
       return selector.select(source);
@@ -223,18 +247,18 @@ public class MinecraftBackdoor {
   }
 
   public void createTeam(String team) {
-    testEnv.getTestPlayer().getWorldScoreboard().createTeam(team);
+    getServer().getWorldScoreboard().createTeam(team);
   }
 
   public void deleteTeams() {
-    Scoreboard scoreBoard = testEnv.getTestPlayer().getWorldScoreboard();
-    for (ScorePlayerTeam team : new ArrayList<>(scoreBoard.getTeams())) {
-      scoreBoard.removeTeam(team);
+    Scoreboard scoreboard = getServer().getWorldScoreboard();
+    for (ScorePlayerTeam team : new ArrayList<>(scoreboard.getTeams())) {
+      scoreboard.removeTeam(team);
     }
   }
 
   public void clearWizardConfigs() throws IOException {
-    testEnv.getWol().getConfig().clearWizardConfigs();
+    getWol().getConfig().clearWizardConfigs();
   }
 
   public void createSharedModule(String moduleName, String content) {
@@ -259,7 +283,7 @@ public class MinecraftBackdoor {
 
   private File getSharedModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
-    return new File(testEnv.getWol().getConfig().getSharedLibDir(), path);
+    return new File(getWol().getConfig().getSharedLibDir(), path);
   }
 
   public void deleteSharedModule(String moduleName) {
@@ -268,7 +292,7 @@ public class MinecraftBackdoor {
   }
 
   public void writeWorldFile(String path, String content) {
-    FileSystem fs = testEnv.getWol().getWorldFileSystem();
+    FileSystem fs = getWol().getWorldFileSystem();
     Path p = fs.getPath(path);
     try {
       Files.createParentDirs(p.toFile());
@@ -279,7 +303,7 @@ public class MinecraftBackdoor {
   }
 
   public String readWorldFile(String path) {
-    FileSystem fs = testEnv.getWol().getWorldFileSystem();
+    FileSystem fs = getWol().getWorldFileSystem();
     Path p = fs.getPath(path);
     try {
       if (java.nio.file.Files.exists(p)) {
@@ -294,7 +318,7 @@ public class MinecraftBackdoor {
 
   public void deleteWorldFile(String path) {
     try {
-      FileSystem fs = testEnv.getWol().getWorldFileSystem();
+      FileSystem fs = getWol().getWorldFileSystem();
       delete(fs.getPath(path));
     } catch (IOException e) {
       throw new UndeclaredThrowableException(e);
@@ -311,13 +335,13 @@ public class MinecraftBackdoor {
   }
 
   public boolean existsWorldFile(String path) {
-    FileSystem fs = testEnv.getWol().getWorldFileSystem();
+    FileSystem fs = getWol().getWorldFileSystem();
     Path p = fs.getPath(path);
     return java.nio.file.Files.exists(p);
   }
 
   public void clearLuaFunctionCache() {
-    testEnv.getWol().clearLuaFunctionCache();
+    getWol().clearLuaFunctionCache();
   }
 
   public void bar(BlockPos startPos, EnumFacing direction, int meter, Block blockType) {
@@ -326,10 +350,6 @@ public class MinecraftBackdoor {
       BlockPos pos = startPos.offset(direction, i);
       setBlock(pos, blockType);
     }
-  }
-
-  public WolTestEnvironment getTestEnv() {
-    return testEnv;
   }
 
   public void setWorldTime(long value) {
@@ -344,7 +364,7 @@ public class MinecraftBackdoor {
 
   public GameRuleDsl gameRules() {
     if (gameRules == null) {
-      gameRules = new GameRuleDsl(testEnv.getServer());
+      gameRules = new GameRuleDsl(getServer());
     }
     return gameRules;
   }
