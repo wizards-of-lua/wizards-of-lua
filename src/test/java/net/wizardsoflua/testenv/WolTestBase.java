@@ -2,13 +2,16 @@ package net.wizardsoflua.testenv;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import com.google.common.collect.Iterables;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.wizardsoflua.testenv.junit.DisabledOnDistCondition;
 
+@ExtendWith(DisabledOnDistCondition.class)
 public class WolTestBase extends TestDataFactory {
   private WolTestEnvironment testEnv = WolTestEnvironment.instance;
   private MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testEnv, MinecraftForge.EVENT_BUS);
