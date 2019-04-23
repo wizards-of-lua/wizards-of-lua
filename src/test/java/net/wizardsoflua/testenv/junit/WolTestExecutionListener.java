@@ -1,4 +1,4 @@
-package net.wizardsoflua.testenv;
+package net.wizardsoflua.testenv.junit;
 
 import static java.util.Objects.requireNonNull;
 import static net.minecraft.util.text.TextFormatting.GREEN;

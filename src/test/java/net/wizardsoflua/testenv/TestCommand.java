@@ -20,6 +20,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
+import net.wizardsoflua.testenv.junit.WolTestExecutionListener;
 
 public class TestCommand implements Command<CommandSource> {
   private static final String CLASS_ARGUMENT = "class";

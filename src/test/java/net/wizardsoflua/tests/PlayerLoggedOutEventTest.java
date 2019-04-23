@@ -1,11 +1,14 @@
 package net.wizardsoflua.tests;
 
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
+import net.wizardsoflua.testenv.junit.DisabledOnDist;
 
+@DisabledOnDist(CLIENT)
 public class PlayerLoggedOutEventTest extends WolTestBase {
   BlockPos playerPos = new BlockPos(0, 4, 0);
 
