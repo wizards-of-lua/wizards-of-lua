@@ -28,7 +28,7 @@ public class BlockTest extends WolTestBase {
   @Test
   public void test_block_name() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.OAK_PLANKS);
+    mc().setBlock(posP, Blocks.STONE);
 
     // When:
     mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); b=spell.block; print(b.name)",
@@ -36,7 +36,7 @@ public class BlockTest extends WolTestBase {
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("planks");
+    assertThat(act.getMessage()).isEqualTo("stone");
   }
 
   // /test net.wizardsoflua.tests.BlockTest test_block_classname
@@ -86,19 +86,19 @@ public class BlockTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("true");
   }
 
-  // /test net.wizardsoflua.tests.BlockTest test_block_data_of_planks
+  // /test net.wizardsoflua.tests.BlockTest test_block_data_of_oak_log
   @Test
-  public void test_block_data_of_planks() throws Exception {
+  public void test_block_data_of_oak_log() throws Exception {
     // Given:
-    mc().setBlock(posP, Blocks.OAK_PLANKS);
-    String expected = "{\n" + "  variant = \"oak\"\n" + "}";
+    mc().setBlock(posP, Blocks.OAK_LOG);
+
     // When:
     mc().player().chat("/lua spell.pos = Vec3.from(%s,%s,%s); p=spell.block.data; print(str(p))",
         posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(act.getMessage()).isEqualTo("{\n" + "  axis = \"y\"\n" + "}");
   }
 
   // /test net.wizardsoflua.tests.BlockTest test_withData_furnace_facing_east
@@ -133,31 +133,15 @@ public class BlockTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("minecraft:planks");
   }
 
-  // /test net.wizardsoflua.tests.BlockTest test_withData_log_variant_oak
+  // /test net.wizardsoflua.tests.BlockTest test_withData_oak_log_axis_z
   @Test
-  public void test_withData_log_variant_oak() throws Exception {
+  public void test_withData_oak_log_axis_z() throws Exception {
     // Given:
     mc().setBlock(posP, Blocks.AIR);
 
     // When:
     mc().player().chat(
-        "/lua b=Blocks.get('log'):withData({variant='oak'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.variant)",
-        posP.getX(), posP.getY(), posP.getZ());
-
-    // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("oak");
-  }
-
-  // /test net.wizardsoflua.tests.BlockTest test_withData_log_axis_z
-  @Test
-  public void test_withData_log_axis_z() throws Exception {
-    // Given:
-    mc().setBlock(posP, Blocks.AIR);
-
-    // When:
-    mc().player().chat(
-        "/lua b=Blocks.get('log'):withData({axis='z'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.axis)",
+        "/lua b=Blocks.get('oak_log'):withData({axis='z'}); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.data.axis)",
         posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
