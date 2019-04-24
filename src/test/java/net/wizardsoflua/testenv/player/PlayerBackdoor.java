@@ -79,8 +79,8 @@ public class PlayerBackdoor {
   }
 
   public void perform(NetworkMessage message) {
-    getServerTestenv().runOnMainThreadAndWait(
-        () -> getTestenv().getPacketChannel().sendTo(getDelegate(), message));
+    EntityPlayerMP player = getDelegate();
+    getServerTestenv().sendTo(player, message);
   }
 
   public void setPosition(BlockPos pos) {

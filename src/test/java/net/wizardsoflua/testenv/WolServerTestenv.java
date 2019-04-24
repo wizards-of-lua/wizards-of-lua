@@ -5,14 +5,20 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.wizardsoflua.testenv.net.NetworkMessage;
+import net.wizardsoflua.testenv.net.WolTestPacketChannel;
 
 /**
  * The {@link WolServerTestenv} is the server specific test environment. It is instantiated once per
@@ -67,19 +73,113 @@ public class WolServerTestenv {
     return server;
   }
 
-  public void runOnMainThreadAndWait(Runnable runnable) {
-    ListenableFuture<Object> future = server.addScheduledTask(runnable);
+  private static final int SYNCED = -1;
+  /**
+   * The amount of changes to be run on the server thread. A value of {@value #SYNCED} indicates,
+   * that not only are there no pending changes, but all finished changes were synced to the client.
+   */
+  private final AtomicInteger pendingChangeCount = new AtomicInteger();
+  private final Object lock = new Object();
+
+  @SubscribeEvent
+  public void onTick(ServerTickEvent event) {
+    if (event.phase == Phase.END) {
+      synchronized (lock) {
+        if (pendingChangeCount.compareAndSet(0, SYNCED)) {
+          lock.notifyAll();
+        }
+      }
+    }
+  }
+
+  /**
+   * Waits until previous changes made to the world via {@link #runChangeOnMainThread(Runnable)}
+   * were synced to the client first.
+   * <p>
+   * Tasks registered via {@link #runChangeOnMainThread(Runnable)} will run in the beginning of a
+   * server tick, before stuff like the {@link PlayerChunkMap} is ticked which causes changes to be
+   * send to the client. So this method blocks until there are no more pending tasks and the server
+   * tick has ended.
+   */
+  public void waitForSyncedClient() {
+    synchronized (lock) {
+      while (pendingChangeCount.get() != SYNCED) {
+        try {
+          lock.wait();
+        } catch (InterruptedException ignore) {
+        }
+      }
+    }
+  }
+
+  /**
+   * Sends the specified {@link NetworkMessage} to the specified {@link EntityPlayerMP}, blocking
+   * until previous changes made to the world via {@link #runChangeOnMainThread(Runnable)} were
+   * synced to the client first.
+   *
+   * @param player
+   * @param message
+   * @see #waitForSyncedClient()
+   */
+  public void sendTo(EntityPlayerMP player, NetworkMessage message) {
+    waitForSyncedClient();
+    WolTestPacketChannel channel = testenv.getPacketChannel();
+    channel.sendTo(player, message);
+  }
+
+  /**
+   * Runs the specified {@link Runnable} on the main server thread and causes future calls to
+   * {@link #sendTo(EntityPlayerMP, NetworkMessage)} to block until the changes made by the
+   * specified {@link Runnable} were synced to the client.
+   *
+   * @param task the {@link Runnable} to run on the main server thread
+   * @return a future representing pending completion of the task
+   */
+  public ListenableFuture<Object> runChangeOnMainThread(Runnable task) {
+    MinecraftServer server = getServer();
+    pendingChangeCount.updateAndGet(it -> it == SYNCED ? 1 : it + 1);
+    return server.addScheduledTask(() -> {
+      try {
+        task.run();
+      } finally {
+        pendingChangeCount.decrementAndGet();
+      }
+    });
+  }
+
+  /**
+   * Runs the specified {@link Runnable} on the main server thread. If you intend to make changes to
+   * the world consider using {@link #runChangeOnMainThread(Runnable)}.
+   *
+   * @param task the {@link Runnable} to run on the main server thread
+   * @return a future representing pending completion of the task
+   */
+  public ListenableFuture<Object> runOnMainThread(Runnable runnable) {
+    return server.addScheduledTask(runnable);
+  }
+
+  public <V> V callOnMainThread(Callable<V> callable) {
+    ListenableFuture<V> future = server.callFromMainThread(callable);
     try {
-      future.get(30, TimeUnit.SECONDS);
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+      return future.get();
+    } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public <V> V callOnMainThreadAndWait(Callable<V> callable) {
-    ListenableFuture<V> future = server.callFromMainThread(callable);
+  /**
+   * @deprecated There is no good reason to wait for the execution of the {@link Runnable} unless
+   *             you need a result, in which case you should use
+   *             {@link #callOnMainThread(Callable)}. In other cases use
+   *             {@link #runChangeOnMainThread(Runnable)} or {@link #runOnMainThread(Runnable)}.
+   *
+   * @param runnable
+   */
+  @Deprecated
+  public void runOnMainThreadAndWait(Runnable runnable) {
+    ListenableFuture<Object> future = server.addScheduledTask(runnable);
     try {
-      return future.get(30, TimeUnit.SECONDS);
+      future.get(30, TimeUnit.SECONDS);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       throw new RuntimeException(e);
     }
