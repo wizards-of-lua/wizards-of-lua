@@ -84,8 +84,8 @@ public class WolServerTestenv {
   @SubscribeEvent
   public void onTick(ServerTickEvent event) {
     if (event.phase == Phase.END) {
-      synchronized (lock) {
-        if (pendingChangeCount.compareAndSet(0, SYNCED)) {
+      if (pendingChangeCount.compareAndSet(0, SYNCED)) {
+        synchronized (lock) {
           lock.notifyAll();
         }
       }
