@@ -182,14 +182,11 @@ public class MinecraftBackdoor {
   public void setBlock(BlockPos pos, Block blockType) {
     World world = getTestPlayer().getEntityWorld();
     serverTestenv
-        .runOnMainThreadAndWait(() -> world.setBlockState(pos, blockType.getDefaultState()));
-    // FIXME Adrodoc 24.04.2019: Auf ServerTickEvent(Phase.END) warten um sicherzustellen, dass die
-    // Änderung auch an den Client übertragen wurde.
+        .runChangeOnMainThread(() -> world.setBlockState(pos, blockType.getDefaultState()));
   }
 
   public IBlockState getBlock(BlockPos pos) {
-    World world = getTestPlayer().getEntityWorld();
-    return world.getBlockState(pos);
+    return serverTestenv.callOnMainThread(() -> getOverworld().getBlockState(pos));
   }
 
   public void setChest(BlockPos pos, ItemStack itemStack) {
