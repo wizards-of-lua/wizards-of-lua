@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagLongArray;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.sandius.rembulan.ByteString;
@@ -143,6 +144,9 @@ public class NbtConverter {
     if (nbt instanceof NBTTagCompound) {
       return toLua((NBTTagCompound) nbt);
     }
+    if (nbt instanceof NBTTagLongArray) {
+      return toLua((NBTTagLongArray) nbt);
+    }
     if (nbt instanceof NBTTagIntArray) {
       return toLua((NBTTagIntArray) nbt);
     }
@@ -187,6 +191,18 @@ public class NbtConverter {
       INBTBase nbtValue = nbt.getTag(key);
       Object luaValue = toLua(nbtValue);
       result.rawset(key, luaValue);
+    }
+    return result;
+  }
+
+  public static Table toLua(NBTTagLongArray nbt) {
+    checkNotNull(nbt, "nbt == null!");
+    Table result = new DefaultTable();
+    long[] arr = nbt.getAsLongArray();
+    for (int i = 0; i < arr.length; ++i) {
+      long key = i + 1;
+      Object value = arr[i];
+      result.rawset(key, value);
     }
     return result;
   }
