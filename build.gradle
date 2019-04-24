@@ -123,7 +123,7 @@ configurations {
 eclipseApt.dependsOn ':apt:jar'
 
 dependencies {
-  minecraft 'net.minecraftforge:forge:1.13.2-25.0.149'
+  minecraft 'net.minecraftforge:forge:1.13.2-25.0.154'
 
   annotationProcessor project(':apt')
   annotationProcessor libs.auto_service
