@@ -117,7 +117,7 @@ public class MinecraftBackdoor {
   }
 
   public void clearEvents() {
-    getTestenv().getEventRecorder().clear();
+    serverTestenv.runOnMainThread(() -> getTestenv().getEventRecorder().clear());
   }
 
   public <E extends Event> E waitFor(Class<E> eventType) {
