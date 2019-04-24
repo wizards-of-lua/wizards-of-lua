@@ -21,8 +21,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
  * @author Adrodoc
  */
 public class WolServerTestenv {
-  private static final InheritableThreadLocal<WolServerTestenv> INSTANCE =
-      new InheritableThreadLocal<>();
+  private static final ThreadLocal<WolServerTestenv> INSTANCE = new ThreadLocal<>();
 
   /**
    * Returns the {@link WolServerTestenv} instance previously {@link #associateWithCurrentThread()
