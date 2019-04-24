@@ -32,7 +32,7 @@ public class WolTestBase extends TestDataFactory {
     mc().gameRules().setLogAdminCommands(false);
     mc().gameRules().setSendCommandFeedback(true);
 
-    mc().executeCommand("/kill @e[type=!Player]");
+    mc().executeCommand("/kill @e[type=!player]");
     mc().executeCommand("/wol spell break all");
     mc().clearEvents();
     mc().clearLuaFunctionCache();
