@@ -1,9 +1,7 @@
 package net.wizardsoflua.event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import javax.annotation.Nullable;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -67,6 +65,8 @@ public class WolEventHandler {
     return null;
   }
 
+  // FIXME Adrodoc 24.04.2019: ServerTickEvent happens twice per tick,
+  // once with Phase.START and once with Phase.END
   private void onServerTickEvent(ServerTickEvent event) {
     for (SpellEntity spellEntity : context.getSpells()) {
       if (spellEntity.isAlive()) {
