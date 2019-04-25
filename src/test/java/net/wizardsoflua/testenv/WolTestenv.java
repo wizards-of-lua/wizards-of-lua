@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.concurrent.ThreadSafe;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -41,6 +42,7 @@ import net.wizardsoflua.testenv.net.WolTestPacketChannel;
  *
  * @author Adrodoc
  */
+@ThreadSafe
 public final class WolTestenv implements AutoCloseable {
   private static final ThreadLocal<WolTestenv> INSTANCE = new ThreadLocal<>();
 
