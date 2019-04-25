@@ -22,13 +22,12 @@ import net.minecraft.server.CustomBossEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.BossInfo.Color;
-import net.wizardsoflua.testenv.WolTestenv;
+import net.wizardsoflua.testenv.WolTestMod;
 
 public class WolTestExecutionListener implements TestExecutionListener {
   private static final ResourceLocation BOSSBAR_ID =
-      new ResourceLocation(WolTestenv.MODID, "test-progress");
+      new ResourceLocation(WolTestMod.MODID, "test-progress");
   private final CommandSource source;
 
   private final AtomicInteger testsFound = new AtomicInteger();
@@ -41,6 +40,24 @@ public class WolTestExecutionListener implements TestExecutionListener {
 
   public WolTestExecutionListener(CommandSource source) {
     this.source = requireNonNull(source, "source");
+  }
+
+  private int getTestsFinished() {
+    return testsSuccessful.get() + getTestsCanceled() + testsFailed.get();
+  }
+
+  private int getTestsCanceled() {
+    return testsAborted.get() + testsSkipped.get();
+  }
+
+  private ITextComponent appendDetailedTestCount(ITextComponent parent) {
+    return parent.appendText("(")
+        .appendSibling(new TextComponentString("" + testsSuccessful).applyTextStyle(GREEN))
+        .appendText(", ")
+        .appendSibling(new TextComponentString("" + getTestsCanceled()).applyTextStyle(YELLOW))
+        .appendText(", ")
+        .appendSibling(new TextComponentString("" + testsFailed).applyTextStyle(RED))
+        .appendText(")");
   }
 
   @Override
@@ -58,33 +75,13 @@ public class WolTestExecutionListener implements TestExecutionListener {
   @Override
   public void testPlanExecutionFinished(TestPlan testPlan) {
     Duration duration = Duration.between(start, LocalDateTime.now());
-    ITextComponent message = new TextComponentString(
-        "Finished " + testsFound + " tests in " + duration.getSeconds() + " seconds:\n");
-    if (testPlan.containsTests()) {
-      if (testsSuccessful.get() != 0) {
-        appendSibling(message, " [" + testsSuccessful + "] tests successful", GREEN);
-      }
-      if (testsAborted.get() != 0) {
-        appendSibling(message, " [" + testsAborted + "] tests aborted", YELLOW);
-      }
-      if (testsSkipped.get() != 0) {
-        appendSibling(message, " [" + testsSkipped + "] tests skipped", YELLOW);
-      }
-      if (testsFailed.get() != 0) {
-        appendSibling(message, " [" + testsFailed + "] tests failed", RED);
-      }
-    } else {
-      appendSibling(message, " No tests found", YELLOW);
-    }
+    ITextComponent message = new TextComponentString("Finished " + testsFound + " ");
+    appendDetailedTestCount(message);
+    message.appendText(" tests in " + duration.getSeconds() + " seconds");
     ITextComponent announcement = createAnnouncement(message);
     source.sendFeedback(announcement, false);
 
     removeProgressBar();
-  }
-
-  private ITextComponent appendSibling(ITextComponent message, String sibling,
-      TextFormatting style) {
-    return message.appendSibling(new TextComponentString(sibling).applyTextStyle(style));
   }
 
   @Override
@@ -95,19 +92,35 @@ public class WolTestExecutionListener implements TestExecutionListener {
     }
   }
 
+  private volatile boolean abort;
+
+  public void onAbort() {
+    ITextComponent announcement = createAnnouncement("Aborting test run...");
+    announcement.applyTextStyle(YELLOW);
+    source.sendFeedback(announcement, false);
+
+    abort = true;
+  }
+
   @Override
   public void executionSkipped(TestIdentifier testIdentifier, String reason) {
     Set<TestIdentifier> descendants = testPlan.getDescendants(testIdentifier);
-    int testsSkipped = (int) Stream.concat(Stream.of(testIdentifier), descendants.stream()) //
+    int tests = (int) Stream.concat(Stream.of(testIdentifier), descendants.stream()) //
         .filter(it -> it.isTest()) //
         .count();
-    this.testsSkipped.addAndGet(testsSkipped);
-    updateProgressBar();
 
-    String displayName = testIdentifier.getDisplayName();
-    ITextComponent announcement = createAnnouncement("Skipped " + displayName + ":\n" + reason);
-    announcement.applyTextStyle(YELLOW);
-    source.sendFeedback(announcement, false);
+    if (abort) {
+      testsAborted.addAndGet(tests);
+    } else {
+      testsSkipped.addAndGet(tests);
+      updateProgressBar();
+
+      String displayName = testIdentifier.getDisplayName();
+      ITextComponent announcement =
+          createAnnouncement("Skipped " + displayName + " because:\n" + reason);
+      announcement.applyTextStyle(YELLOW);
+      source.sendFeedback(announcement, false);
+    }
   }
 
   @Override
@@ -144,32 +157,21 @@ public class WolTestExecutionListener implements TestExecutionListener {
     }
   }
 
-  private int getTestsFinished() {
-    return testsSuccessful.get() + testsAborted.get() + testsSkipped.get() + testsFailed.get();
-  }
-
   private void updateProgressBar() {
     CustomBossEvent progressBar = provideProgressBar();
     int testsFinished = getTestsFinished();
     progressBar.setValue(testsFinished);
     progressBar.setMax(testsFound.get());
 
-    int testsCanceled = testsAborted.get() + testsSkipped.get();
-    ITextComponent name =
-        new TextComponentString("Finished " + testsFinished + " / " + testsFound + " tests")
-            .appendText(" (")
-            .appendSibling(new TextComponentString("" + testsSuccessful).applyTextStyle(GREEN))
-            .appendText(", ")
-            .appendSibling(new TextComponentString("" + testsCanceled).applyTextStyle(YELLOW))
-            .appendText(", ")
-            .appendSibling(new TextComponentString("" + testsFailed).applyTextStyle(RED))
-            .appendText(")");
+    String msg = "Finished " + testsFinished + " / " + testsFound + " tests ";
+    ITextComponent name = new TextComponentString(msg);
+    appendDetailedTestCount(name);
     progressBar.setName(name);
 
     Color color;
     if (testsFailed.get() > 0) {
       color = Color.RED;
-    } else if (testsCanceled > 0) {
+    } else if (getTestsCanceled() > 0) {
       color = Color.YELLOW;
     } else {
       color = Color.GREEN;

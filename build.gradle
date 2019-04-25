@@ -48,7 +48,7 @@ minecraft {
                 wol {
                     source sourceSets.main
                 }
-                'wol-testenv' {
+                'wol-test' {
                     source sourceSets.test
                 }
             }
@@ -67,7 +67,7 @@ minecraft {
                 wol {
                     source sourceSets.main
                 }
-                'wol-testenv' {
+                'wol-test' {
                     source sourceSets.test
                 }
             }

@@ -1,20 +1,20 @@
 modLoader="javafml"
 loaderVersion="[25,)"
 [[mods]]
-modId="wol-testenv"
+modId="wol-test"
 version="${file.jarVersion}"
-displayName="Wizards of Lua Testenvironment"
+displayName="Wizards of Lua Tests"
 description='''
-Wizards of Lua Testenvironment
+Wizards of Lua Tests
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.woltestenv]] #optional
+[[dependencies.woltest]] #optional
     modId="forge"
     mandatory=true
     versionRange="[25,)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.woltestenv]]
+[[dependencies.woltest]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.13.2]"

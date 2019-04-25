@@ -21,9 +21,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
+import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.MinecraftBackdoor;
-import net.wizardsoflua.testenv.WolServerTestenv;
 import net.wizardsoflua.testenv.WolTestenv;
 import net.wizardsoflua.testenv.net.ChatMessage;
 import net.wizardsoflua.testenv.net.LeftClickMessage;
@@ -43,8 +43,8 @@ public class PlayerBackdoor {
     return minecraftBackdoor.getTestenv();
   }
 
-  private WolServerTestenv getServerTestenv() {
-    return minecraftBackdoor.getServerTestenv();
+  private WizardsOfLua getWol() {
+    return getTestenv().getWol();
   }
 
   public void setOperator(boolean value) {
@@ -56,12 +56,11 @@ public class PlayerBackdoor {
   }
 
   public boolean isOperator() {
-    return getTestenv().getWol().getPermissions()
-        .hasOperatorPrivileges(getDelegate().getUniqueID());
+    return getWol().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
   }
 
   public EntityPlayerMP getDelegate() {
-    EntityPlayerMP testPlayer = getServerTestenv().getTestPlayer();
+    EntityPlayerMP testPlayer = getTestenv().getTestPlayer();
     checkNotNull(testPlayer, "testPlayer==null!");
     return testPlayer;
   }
@@ -80,16 +79,16 @@ public class PlayerBackdoor {
 
   public void perform(NetworkMessage message) {
     EntityPlayerMP player = getDelegate();
-    getServerTestenv().sendTo(player, message);
+    getTestenv().sendTo(player, message);
   }
 
   public void setPosition(BlockPos pos) {
-    getServerTestenv().runOnMainThreadAndWait(
+    getTestenv().runOnMainThreadAndWait(
         () -> getDelegate().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ()));
   }
 
   public void setRotationYaw(float yaw) {
-    getServerTestenv().runOnMainThreadAndWait(() -> {
+    getTestenv().runOnMainThreadAndWait(() -> {
       EntityPlayerMP delegate = getDelegate();
       delegate.setRotationYawHead(yaw);
       delegate.setRenderYawOffset(yaw);
@@ -160,8 +159,9 @@ public class PlayerBackdoor {
 
   private File getModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
-    return new File(getTestenv().getWol().getConfig()
-        .getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(), path);
+    return new File(
+        getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(),
+        path);
   }
 
   public String getName() {
@@ -169,7 +169,7 @@ public class PlayerBackdoor {
   }
 
   public void setMainHandItem(ItemStack item) {
-    getServerTestenv().runOnMainThreadAndWait(() -> {
+    getTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
@@ -180,7 +180,7 @@ public class PlayerBackdoor {
   }
 
   public void setOffHandItem(ItemStack item) {
-    getServerTestenv().runOnMainThreadAndWait(() -> {
+    getTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY));
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
@@ -191,7 +191,7 @@ public class PlayerBackdoor {
   }
 
   public void changeDimension(DimensionType dim) {
-    getServerTestenv().runOnMainThreadAndWait(() -> {
+    getTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().getEntityWorld().getServer().getPlayerList()
           .changePlayerDimension(getDelegate(), dim);
     });
@@ -207,7 +207,7 @@ public class PlayerBackdoor {
 
   public void waitForPlayer(long duration) {
     long started = System.currentTimeMillis();
-    while (getServerTestenv().getTestPlayer() == null) {
+    while (getTestenv().getTestPlayer() == null) {
       if (started + duration > System.currentTimeMillis()) {
         sleep(100);
       } else {
