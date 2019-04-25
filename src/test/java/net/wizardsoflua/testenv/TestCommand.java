@@ -8,6 +8,9 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -22,6 +25,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.wizardsoflua.testenv.junit.WolTestExecutionListener;
 
 public class TestCommand implements Command<CommandSource> {
@@ -36,16 +40,21 @@ public class TestCommand implements Command<CommandSource> {
       return newThread;
     }
   });
-  private final WolServerTestenv serverTestenv;
+  private final Set<Runnable> aborters = Collections.newSetFromMap(new WeakHashMap<>());
+  private final WolTestMod mod;
+  private final MinecraftServer server;
 
-  public TestCommand(WolServerTestenv serverTestenv) {
-    this.serverTestenv = requireNonNull(serverTestenv, "serverTestenv");
+  public TestCommand(WolTestMod mod, MinecraftServer server) {
+    this.mod = requireNonNull(mod, "mod");
+    this.server = requireNonNull(server, "server");
   }
 
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("test")//
             .executes(this)//
+            .then(literal("abort")//
+                .executes(this::abort))//
             .then(argument(CLASS_ARGUMENT, string())//
                 .executes(this::runClass)//
                 .then(argument(METHOD_ARGUMENT, string())//
@@ -75,19 +84,36 @@ public class TestCommand implements Command<CommandSource> {
 
     Launcher launcher = LauncherFactory.create();
     TestPlan plan = launcher.discover(request);
-    long result = plan.countTestIdentifiers(it -> it.isTest());
+    int result = (int) plan.countTestIdentifiers(it -> it.isTest());
 
     executor.submit(() -> {
-      serverTestenv.associateWithCurrentThread();
-      try {
-        serverTestenv.setTestPlayer(player);
+      try (WolTestenv testenv = new WolTestenv(mod, server, player)) {
         WolTestExecutionListener listener = new WolTestExecutionListener(source);
-        launcher.execute(plan, listener);
-        serverTestenv.setTestPlayer(null);
-      } finally {
-        WolServerTestenv.disassociateWithCurrentThread();
+        Runnable aborter = () -> {
+          listener.onAbort();
+          testenv.getAbortExtension().abortTestRun();
+        };
+        aborters.add(aborter);
+        try {
+          launcher.execute(plan, listener);
+        } finally {
+          deregisterAborter(aborter);
+        }
       }
     });
-    return Math.toIntExact(result);
+    return result;
+  }
+
+  private void deregisterAborter(Runnable aborter) {
+    aborters.remove(aborter);
+  }
+
+  private int abort(CommandContext<CommandSource> context) {
+    int result = 0;
+    for (Runnable aborter : aborters) {
+      aborter.run();
+      result++;
+    }
+    return result;
   }
 }

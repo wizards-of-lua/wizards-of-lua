@@ -3,24 +3,28 @@ package net.wizardsoflua.testenv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import com.google.common.collect.Iterables;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.wizardsoflua.testenv.junit.AbortExtension;
 import net.wizardsoflua.testenv.junit.DisabledOnDistCondition;
 
 @ExtendWith(DisabledOnDistCondition.class)
 public class WolTestBase extends TestDataFactory {
-  private final WolServerTestenv serverTestenv = WolServerTestenv.getInstanceForCurrentThread();
-  private final WolTestenv testenv = serverTestenv.getTestenv();
-  private final MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(serverTestenv);
+  private final WolTestenv testenv = WolTestenv.getInstanceForCurrentThread();
+  private final EventRecorder eventRecorder = testenv.getEventRecorder();
+  private final MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testenv);
   private boolean wasOperator;
   private long oldDayTime;
+  @RegisterExtension
+  AbortExtension abortExtension = testenv.getAbortExtension();
 
   @BeforeEach
   public void beforeTest() throws Exception {
-    testenv.getEventRecorder().setEnabled(true);
+    eventRecorder.setEnabled(true);
 
     mc().resetClock();
     mc().breakAllSpells();
@@ -45,7 +49,7 @@ public class WolTestBase extends TestDataFactory {
 
   @AfterEach
   public void afterTest() throws Exception {
-    testenv.getEventRecorder().setEnabled(false);
+    eventRecorder.setEnabled(false);
     mc().player().setOperator(wasOperator);
     mc().clearEvents();
     mc().breakAllSpells();

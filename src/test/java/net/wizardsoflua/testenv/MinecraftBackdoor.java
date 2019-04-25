@@ -52,32 +52,32 @@ import net.wizardsoflua.testenv.player.PlayerBackdoor;
 
 public class MinecraftBackdoor {
 
-  private final WolServerTestenv serverTestenv;
+  private final WolTestenv testenv;
   private final PlayerBackdoor player;
 
-  public MinecraftBackdoor(WolServerTestenv serverTestenv) {
-    this.serverTestenv = requireNonNull(serverTestenv, "serverTestenv");
+  public MinecraftBackdoor(WolTestenv testenv) {
+    this.testenv = requireNonNull(testenv, "testenv");
     player = new PlayerBackdoor(this);
   }
 
-  public WolServerTestenv getServerTestenv() {
-    return serverTestenv;
-  }
-
   public WolTestenv getTestenv() {
-    return serverTestenv.getTestenv();
+    return testenv;
   }
 
   private WizardsOfLua getWol() {
-    return getTestenv().getWol();
+    return testenv.getWol();
+  }
+
+  private EventRecorder getEventRecorder() {
+    return testenv.getEventRecorder();
   }
 
   private EntityPlayerMP getTestPlayer() {
-    return serverTestenv.getTestPlayer();
+    return testenv.getTestPlayer();
   }
 
   private MinecraftServer getServer() {
-    return serverTestenv.getServer();
+    return testenv.getServer();
   }
 
   private WorldServer getOverworld() {
@@ -117,12 +117,12 @@ public class MinecraftBackdoor {
   }
 
   public void clearEvents() {
-    serverTestenv.runOnMainThread(() -> getTestenv().getEventRecorder().clear());
+    testenv.runOnMainThread(() -> getEventRecorder().clear());
   }
 
   public <E extends Event> E waitFor(Class<E> eventType) {
     try {
-      return getTestenv().getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
+      return getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }
@@ -145,8 +145,7 @@ public class MinecraftBackdoor {
     }
     MinecraftServer server = getServer();
     CommandSource source = server.getCommandSource();
-    serverTestenv
-        .runOnMainThreadAndWait(() -> server.getCommandManager().handleCommand(source, command));
+    testenv.runOnMainThreadAndWait(() -> server.getCommandManager().handleCommand(source, command));
   }
 
   public void freezeClock(long millis) {
@@ -167,7 +166,7 @@ public class MinecraftBackdoor {
   }
 
   public void breakAllSpells() {
-    serverTestenv.runOnMainThreadAndWait(() -> {
+    testenv.runOnMainThreadAndWait(() -> {
       Collection<SpellEntity> spells = getWol().getSpellRegistry().getAll();
       for (SpellEntity spell : spells) {
         spell.setDead();
@@ -181,17 +180,16 @@ public class MinecraftBackdoor {
 
   public void setBlock(BlockPos pos, Block blockType) {
     World world = getTestPlayer().getEntityWorld();
-    serverTestenv
-        .runChangeOnMainThread(() -> world.setBlockState(pos, blockType.getDefaultState()));
+    testenv.runChangeOnMainThread(() -> world.setBlockState(pos, blockType.getDefaultState()));
   }
 
   public IBlockState getBlock(BlockPos pos) {
-    return serverTestenv.callOnMainThread(() -> getOverworld().getBlockState(pos));
+    return testenv.callOnMainThread(() -> getOverworld().getBlockState(pos));
   }
 
   public void setChest(BlockPos pos, ItemStack itemStack) {
     World world = getTestPlayer().getEntityWorld();
-    serverTestenv.runOnMainThreadAndWait(() -> {
+    testenv.runOnMainThreadAndWait(() -> {
       world.setBlockState(pos, Blocks.CHEST.getDefaultState());
       TileEntityChest chest = (TileEntityChest) world.getTileEntity(pos);
       chest.setInventorySlotContents(0, itemStack);
@@ -219,7 +217,7 @@ public class MinecraftBackdoor {
   }
 
   public void setLuaTicksLimit(long luaTicksLimit) {
-    serverTestenv.runOnMainThreadAndWait(
+    testenv.runOnMainThreadAndWait(
         () -> getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
@@ -228,7 +226,7 @@ public class MinecraftBackdoor {
   }
 
   public void setEventListenerLuaTicksLimit(long eventListenerluaTicksLimit) {
-    serverTestenv.runOnMainThreadAndWait(() -> getWol().getConfig().getGeneralConfig()
+    testenv.runOnMainThreadAndWait(() -> getWol().getConfig().getGeneralConfig()
         .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }
 
