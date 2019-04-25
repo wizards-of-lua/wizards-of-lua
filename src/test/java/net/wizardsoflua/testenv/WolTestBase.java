@@ -24,7 +24,7 @@ public class WolTestBase extends TestDataFactory {
 
   @BeforeEach
   public void beforeTest() throws Exception {
-    eventRecorder.setEnabled(true);
+    testenv.runOnMainThread(() -> eventRecorder.setEnabled(true));
 
     mc().resetClock();
     mc().breakAllSpells();
@@ -49,7 +49,7 @@ public class WolTestBase extends TestDataFactory {
 
   @AfterEach
   public void afterTest() throws Exception {
-    eventRecorder.setEnabled(false);
+    testenv.runOnMainThread(() -> eventRecorder.setEnabled(false));
     mc().player().setOperator(wasOperator);
     mc().clearEvents();
     mc().breakAllSpells();
