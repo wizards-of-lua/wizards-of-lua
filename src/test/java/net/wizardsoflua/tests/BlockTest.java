@@ -122,15 +122,17 @@ public class BlockTest extends WolTestBase {
   public void test_withNbt_furnace_having_planks_in_slot_1() throws Exception {
     // Given:
     mc().setBlock(posP, Blocks.AIR);
+    String blockId = "minecraft:oak_planks";
 
     // When:
     mc().player().chat(
-        "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
+        "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='" + blockId
+            + "' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
         posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("minecraft:planks");
+    assertThat(act.getMessage()).isEqualTo(blockId);
   }
 
   // /test net.wizardsoflua.tests.BlockTest test_withData_oak_log_axis_z
