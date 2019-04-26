@@ -111,7 +111,7 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
-  private final InjectionScope injectionScope;
+  private final InjectionScope spellScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
   private @Nullable Entity owner;
@@ -146,7 +146,7 @@ public class SpellProgram {
     loader = PatchedCompilerChunkLoader.of(ROOT_CLASS_PREFIX);
     exceptionFactory = new SpellExceptionFactory();
     installSystemLibraries();
-    injectionScope = createInjectionScope();
+    spellScope = createSpellScope();
     PrintRedirector.installInto(env, printReceiver);
     AddPathFunction.installInto(env, getConverters(), new AddPathFunction.Context() {
       @Override
@@ -165,21 +165,21 @@ public class SpellProgram {
    * Create the {@link InjectionScope} for this spell with all {@link Resource resources} for later
    * injection.
    */
-  private InjectionScope createInjectionScope() {
+  private InjectionScope createSpellScope() {
     InjectionScope rootScope = context.getRootScope();
-    InjectionScope scope = new SpellScope(rootScope);
-    scope.registerResource(Injector.class, new Injector() {
+    InjectionScope spellScope = new SpellScope(rootScope);
+    spellScope.registerResource(Injector.class, new Injector() {
       @Override
       public <T> T injectMembers(T instance) throws IllegalStateException {
-        return scope.injectMembers(instance);
+        return spellScope.injectMembers(instance);
       }
 
       @Override
       public <T> T getInstance(Class<T> cls) throws IllegalStateException {
-        return scope.getInstance(cls);
+        return spellScope.getInstance(cls);
       }
     });
-    scope.registerResource(Config.class, new Config() {
+    spellScope.registerResource(Config.class, new Config() {
       @Override
       public long getLuaTickLimit() {
         return luaTickLimit;
@@ -210,17 +210,17 @@ public class SpellProgram {
         };
       }
     });
-    scope.registerResource(LuaConverters.class, scope.getInstance(Converters.class));
-    scope.registerResource(LuaTypes.class, scope.getInstance(Types.class));
-    scope.registerResource(Table.class, env);
-    scope.registerResource(ExceptionHandler.class,
+    spellScope.registerResource(LuaConverters.class, spellScope.getInstance(Converters.class));
+    spellScope.registerResource(LuaTypes.class, spellScope.getInstance(Types.class));
+    spellScope.registerResource(Table.class, env);
+    spellScope.registerResource(ExceptionHandler.class,
         (contextMessage, t) -> handleException(contextMessage, t));
-    scope.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
+    spellScope.registerResource(net.wizardsoflua.extension.spell.api.resource.LuaScheduler.class,
         scheduler);
-    scope.registerResource(Spell.class,
+    spellScope.registerResource(Spell.class,
         parallelTaskFactory -> parallelTaskFactories.add(parallelTaskFactory));
-    scope.registerResource(TableFactory.class, stateContext);
-    scope.registerResource(Time.class, new Time() {
+    spellScope.registerResource(TableFactory.class, stateContext);
+    spellScope.registerResource(Time.class, new Time() {
       @Override
       public long getGameTime() {
         return world.getGameTime();
@@ -231,42 +231,42 @@ public class SpellProgram {
         return context.getClock();
       }
     });
-    return scope;
+    return spellScope;
   }
 
   private void loadExtensions() {
     ExtensionLoader.getLuaToJavaConverters().forEach(this::registerLuaToJavaConverter);
     ExtensionLoader.getJavaToLuaConverters().forEach(this::registerJavaToLuaConverter);
-    ExtensionLoader.getSpellExtension().forEach(injectionScope::getInstance);
+    ExtensionLoader.getSpellExtension().forEach(spellScope::getInstance);
   }
 
   private <C extends LuaToJavaConverter<?, ?>> void registerLuaToJavaConverter(
       Class<C> converterClass) {
-    C converter = injectionScope.getInstance(converterClass);
+    C converter = spellScope.getInstance(converterClass);
     getConverters().registerLuaToJavaConverter(converter);
   }
 
   private <C extends JavaToLuaConverter<?>> void registerJavaToLuaConverter(
       Class<C> converterClass) {
-    C converter = injectionScope.getInstance(converterClass);
+    C converter = spellScope.getInstance(converterClass);
     getConverters().registerJavaToLuaConverter(converter);
   }
 
   public Converters getConverters() {
-    return injectionScope.getInstance(Converters.class);
+    return spellScope.getInstance(Converters.class);
   }
 
   public EventsModule getEvents() {
-    return injectionScope.getInstance(EventsModule.class);
+    return spellScope.getInstance(EventsModule.class);
   }
 
   public ViewFactory getViewFactory() {
-    return injectionScope.getInstance(ViewFactory.class);
+    return spellScope.getInstance(ViewFactory.class);
   }
 
   public void setSpellEntity(SpellEntity spellEntity) {
     this.spellEntity = checkNotNull(spellEntity, "spellEntity==null!");
-    injectionScope.registerResource(SpellEntity.class, spellEntity);
+    spellScope.registerResource(SpellEntity.class, spellEntity);
     loadExtensions();
   }
 
@@ -428,7 +428,7 @@ public class SpellProgram {
         owner = newPlayer;
       }
     }
-    PlayerClass playerClass = injectionScope.getInstance(PlayerClass.class);
+    PlayerClass playerClass = spellScope.getInstance(PlayerClass.class);
     Cache<EntityPlayer, Delegator<? extends Instance<EntityPlayerMP>>> cache =
         playerClass.getCache();
     for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
