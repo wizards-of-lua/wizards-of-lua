@@ -2,13 +2,11 @@ package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
-
 import java.io.File;
 import java.util.UUID;
-
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.file.Crypto;
 
 public class RestApiConfig {
@@ -46,8 +44,7 @@ public class RestApiConfig {
     keyPassword = getAsOptional(String.class, table, "keyPassword").orElse(keyPassword);
     webDir = getAsOptional(String.class, table, "webDir").orElse(webDir);
     webDirFile = tryToCreateDir(new File(context.getWolConfigDir(), webDir));
-    uuid = UUID
-        .fromString(getAsOptional(String.class, table, "uuid").orElse(uuid.toString()));
+    uuid = UUID.fromString(getAsOptional(String.class, table, "uuid").orElse(uuid.toString()));
     apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
   }
 
@@ -83,9 +80,8 @@ public class RestApiConfig {
   private File tryToCreateDir(File dir) {
     if (!dir.exists()) {
       if (!dir.mkdirs()) {
-        WizardsOfLua.instance.logger
-            .warn(format("Couldn't create directory at %s because of an unknown reason!",
-                dir.getAbsolutePath()));
+        LOGGER.warn(format("Couldn't create directory at %s because of an unknown reason!",
+            dir.getAbsolutePath()));
       }
     }
     return dir;

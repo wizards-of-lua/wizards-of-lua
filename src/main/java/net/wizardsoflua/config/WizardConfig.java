@@ -2,14 +2,12 @@ package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import static net.wizardsoflua.lua.table.TableUtils.getAs;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
-
 import java.io.File;
 import java.util.UUID;
-
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.file.Crypto;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 
@@ -28,15 +26,15 @@ public class WizardConfig {
 
   public WizardConfig(Table table, Context context) {
     this.context = checkNotNull(context, "context==null!");
-    this.id = UUID.fromString(getAs(String.class, table, "id"));
-    this.libDir = getAsOptional(String.class, table, "libDir").orElse(id.toString());
-    this.apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
+    id = UUID.fromString(getAs(String.class, table, "id"));
+    libDir = getAsOptional(String.class, table, "libDir").orElse(id.toString());
+    apiKey = getAsOptional(String.class, table, "apiKey").orElse(apiKey);
   }
 
   public WizardConfig(UUID id, Context context) {
     this.id = id;
     this.context = checkNotNull(context, "context==null!");
-    this.libDir = id.toString();
+    libDir = id.toString();
 
     File dir = getLibDir();
     if (dir.exists() && !dir.isDirectory()) {
@@ -45,8 +43,8 @@ public class WizardConfig {
     }
     if (!dir.exists()) {
       if (!dir.mkdirs()) {
-        WizardsOfLua.instance.logger.warn(format(
-            "Couldn't create libDir at %s because of an unknown reason!", dir.getAbsolutePath()));
+        LOGGER.warn(format("Couldn't create libDir at %s because of an unknown reason!",
+            dir.getAbsolutePath()));
       }
     }
   }

@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import com.mojang.brigadier.Command;
@@ -63,7 +64,7 @@ public class LuaCommand implements Command<CommandSource> {
   private void handleException(Throwable t, CommandSource source) {
     String message = String.format("An unexpected error occured during lua command execution: %s",
         t.getMessage());
-    wol.logger.error(message, t);
+    LOGGER.error(message, t);
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);

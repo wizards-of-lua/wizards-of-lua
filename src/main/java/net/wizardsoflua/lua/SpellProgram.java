@@ -7,7 +7,6 @@ import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.annotation.Nullable;
-import org.apache.logging.log4j.Logger;
 import com.google.common.cache.Cache;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -133,7 +132,7 @@ public class SpellProgram {
 
   SpellProgram(@Nullable Entity owner, String code, @Nullable String[] arguments,
       ModuleDependencies dependencies, String defaultLuaPath, World world,
-      PrintReceiver printReceiver, Context context, Logger logger) {
+      PrintReceiver printReceiver, Context context) {
     this.owner = owner;
     this.code = checkNotNull(code, "code==null!");
     this.arguments = arguments;

@@ -2,7 +2,7 @@ package net.wizardsoflua.startup;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -18,11 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.Iterators;
-
 import net.minecraft.command.ICommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.Style;
@@ -39,8 +35,6 @@ public class AddOnFinder {
   private List<String> startupModules;
 
   public interface Context {
-    Logger getLogger();
-
     MinecraftServer getServer();
   }
 
@@ -97,7 +91,7 @@ public class AddOnFinder {
   }
 
   private void sendException(String message, Throwable t, ICommandSource source) {
-    context.getLogger().error(message, t);
+    LOGGER.error(message, t);
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);

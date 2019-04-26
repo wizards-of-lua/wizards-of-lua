@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.extension;
 
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,13 +11,10 @@ import java.util.HashSet;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import com.google.common.base.Charsets;
 
 public class ServiceLoader {
   private static final String PREFIX = "META-INF/services/";
-  private static final Logger LOGGER = LogManager.getLogger();
 
   public static <S> Set<Class<? extends S>> load(Class<S> service) {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();

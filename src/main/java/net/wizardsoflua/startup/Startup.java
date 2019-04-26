@@ -2,7 +2,7 @@ package net.wizardsoflua.startup;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,12 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,9 +40,6 @@ public class Startup {
 
     @Override
     MinecraftServer getServer();
-
-    @Override
-    Logger getLogger();
 
     SpellEntityFactory getSpellEntityFactory();
   }
@@ -108,7 +101,7 @@ public class Startup {
   }
 
   private void sendException(String message, Throwable t, CommandSource source) {
-    context.getLogger().error(message, t);
+    LOGGER.error(message, t);
     String stackTrace = getStackTrace(t);
     WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
     TextComponentString details = new TextComponentString(stackTrace);

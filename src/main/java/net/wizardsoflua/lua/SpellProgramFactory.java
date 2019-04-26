@@ -1,11 +1,7 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import javax.annotation.Nullable;
-
-import org.apache.logging.log4j.Logger;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -22,11 +18,9 @@ public class SpellProgramFactory {
     String getSharedLuaPath();
   }
 
-  private final Logger logger;
   private final Context context;
 
-  public SpellProgramFactory(Logger logger, Context context) {
-    this.logger = checkNotNull(logger, "logger==null!");
+  public SpellProgramFactory(Context context) {
     this.context = checkNotNull(context, "context==null!");
   }
 
@@ -35,7 +29,7 @@ public class SpellProgramFactory {
     ModuleDependencies dependencies = createDependencies(owner);
     String defaultLuaPath = getDefaultLuaPath(owner);
     return new SpellProgram(owner, code, arguments, dependencies, defaultLuaPath, world,
-        printReceiver, context, logger);
+        printReceiver, context);
   }
 
   private String getDefaultLuaPath(Entity owner) {

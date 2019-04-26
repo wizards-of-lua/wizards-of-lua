@@ -2,13 +2,11 @@ package net.wizardsoflua.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
-
 import java.io.File;
 import java.nio.file.Path;
-
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.WizardsOfLua;
 
 public class ScriptGatewayConfig {
 
@@ -65,9 +63,8 @@ public class ScriptGatewayConfig {
   private File tryToCreateDir(File dir) {
     if (!dir.exists()) {
       if (!dir.mkdirs()) {
-        WizardsOfLua.instance.logger
-            .warn(format("Couldn't create directory at %s because of an unknown reason!",
-                dir.getAbsolutePath()));
+        LOGGER.warn(format("Couldn't create directory at %s because of an unknown reason!",
+            dir.getAbsolutePath()));
       }
     }
     return dir;

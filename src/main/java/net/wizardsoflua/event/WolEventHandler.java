@@ -1,6 +1,7 @@
 package net.wizardsoflua.event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import javax.annotation.Nullable;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
@@ -111,7 +112,7 @@ public class WolEventHandler {
         handler = new WolChannelInboundHandlerAdapter(player);
         pipeline.addBefore(VANILLA_PACKET_HANDLER_NAME, WOL_PACKET_HANDLER_NAME, handler);
       } else {
-        WizardsOfLua.instance.logger.error("Can't add WolPacketHandler: vanilla packet handler '"
+        LOGGER.error("Can't add WolPacketHandler: vanilla packet handler '"
             + VANILLA_PACKET_HANDLER_NAME + "' not found!");
         throw new RuntimeException("Can't add WolPacketHandler!");
       }
