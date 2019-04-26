@@ -5,7 +5,6 @@ import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
 import static net.wizardsoflua.brigadier.argument.SidArgumentType.sid;
-
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -13,7 +12,6 @@ import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
@@ -39,7 +37,7 @@ public class SpellBreakCommand implements Command<CommandSource> {
     dispatcher.register(//
         literal("wol")//
             .then(literal("spell")//
-                .then(literal("list")//
+                .then(literal("break")//
                     .executes(this)//
                     .then(literal("all")//
                         .executes(this::breakAll)//
