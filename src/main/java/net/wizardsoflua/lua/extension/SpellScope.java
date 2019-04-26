@@ -13,12 +13,10 @@ public class SpellScope extends InjectionScope {
   @Override
   protected @Nullable Class<? extends Annotation> getScopeType(Class<?> cls) {
     Class<? extends Annotation> scopeType = super.getScopeType(cls);
-    if (scopeType != null) {
-      return scopeType;
-    } else if (SpellExtension.class.isAssignableFrom(cls)) {
+    if (scopeType == null && SpellExtension.class.isAssignableFrom(cls)) {
       return SpellScoped.class;
     } else {
-      return null;
+      return scopeType;
     }
   }
 }
