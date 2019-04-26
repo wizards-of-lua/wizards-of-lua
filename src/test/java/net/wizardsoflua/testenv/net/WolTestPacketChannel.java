@@ -27,11 +27,11 @@ public class WolTestPacketChannel {
   }
 
   private boolean clientAcceptsServerVersion(String serverVersion) {
-    return getNetworkProtocolVersion().equals(serverVersion);
+    return true;
   }
 
   private boolean serverAcceptsClientVersion(String clientVersion) {
-    return getNetworkProtocolVersion().equals(clientVersion);
+    return true;
   }
 
   public WolTestPacketChannel() {
