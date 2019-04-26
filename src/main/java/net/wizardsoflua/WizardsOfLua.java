@@ -337,7 +337,6 @@ public class WizardsOfLua {
     @SubscribeEvent
     public void onFmlServerStarting(FMLServerStartingEvent event) throws IOException {
       server = event.getServer();
-      rootScope.registerResource(MinecraftServer.class, server);
       worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
       chunkForceManager = new ChunkForceManager();
       spellEntityFactory =
