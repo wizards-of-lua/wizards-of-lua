@@ -48,7 +48,6 @@ import net.wizardsoflua.filesystem.RestrictedFileSystem;
 import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.imc.TypedImc;
 import net.wizardsoflua.imc.WizardsOfLuaConsumer;
-import net.wizardsoflua.lua.ExtensionLoader;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.extension.InjectionScope;
@@ -119,7 +118,6 @@ public class WizardsOfLua {
     @SubscribeEvent
     public void onFmlCommonSetup(FMLCommonSetupEvent event) {
       LOGGER.info("Initializing Wizards-of-Lua, Version " + VERSION);
-      ExtensionLoader.initialize();
       try {
         tempDir = Files.createTempDirectory("wizards-of-lua");
         config = WolConfig.create(CONFIG_NAME);

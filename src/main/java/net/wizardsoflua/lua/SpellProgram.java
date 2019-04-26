@@ -110,7 +110,7 @@ public class SpellProgram {
   private final PatchedCompilerChunkLoader loader;
   private final RuntimeEnvironment runtimeEnv;
   private final SpellExceptionFactory exceptionFactory;
-  private final InjectionScope spellScope;
+  private final SpellScope spellScope;
   private final Collection<ParallelTaskFactory> parallelTaskFactories = new ArrayList<>();
   private final long luaTickLimit;
   private @Nullable Entity owner;
@@ -166,9 +166,8 @@ public class SpellProgram {
    * Create the {@link InjectionScope} for this spell with all {@link Resource resources} for later
    * injection.
    */
-  private InjectionScope createSpellScope() {
-    InjectionScope rootScope = context.getRootScope();
-    InjectionScope spellScope = new SpellScope(rootScope);
+  private SpellScope createSpellScope() {
+    SpellScope spellScope = new SpellScope(context.getRootScope());
     spellScope.registerResource(Injector.class, new Injector() {
       @Override
       public <T> T injectMembers(T instance) throws IllegalStateException {
@@ -238,7 +237,7 @@ public class SpellProgram {
   private void loadExtensions() {
     ExtensionLoader.getLuaToJavaConverters().forEach(this::registerLuaToJavaConverter);
     ExtensionLoader.getJavaToLuaConverters().forEach(this::registerJavaToLuaConverter);
-    ExtensionLoader.getSpellExtension().forEach(spellScope::getInstance);
+    ExtensionLoader.getSpellExtensions().forEach(spellScope::getInstance);
   }
 
   private <C extends LuaToJavaConverter<?, ?>> void registerLuaToJavaConverter(
