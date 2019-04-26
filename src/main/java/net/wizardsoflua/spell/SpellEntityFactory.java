@@ -1,9 +1,7 @@
 package net.wizardsoflua.spell;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import static java.util.Objects.requireNonNull;
 import javax.annotation.Nullable;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
@@ -11,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.wizardsoflua.chunk.ChunkForceManager;
 import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.SpellProgramFactory;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
@@ -21,12 +20,15 @@ import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 public class SpellEntityFactory {
   private final SpellRegistry spellRegistry;
   private final SpellProgramFactory programFactory;
+  private final ChunkForceManager chunkForceManager;
 
   private long nextSid = 1;
 
-  public SpellEntityFactory(SpellRegistry spellRegistry, SpellProgramFactory programFactory) {
-    this.spellRegistry = checkNotNull(spellRegistry, "spellRegistry==null!");
-    this.programFactory = checkNotNull(programFactory, "programFactory==null!");
+  public SpellEntityFactory(SpellRegistry spellRegistry, SpellProgramFactory programFactory,
+      ChunkForceManager chunkForceManager) {
+    this.spellRegistry = requireNonNull(spellRegistry, "spellRegistry");
+    this.programFactory = requireNonNull(programFactory, "programFactory");
+    this.chunkForceManager = requireNonNull(chunkForceManager, "chunkForceManager");
   }
 
   public SpellEntity create(CommandSource source, PrintReceiver printReceiver, String code,
@@ -41,7 +43,7 @@ public class SpellEntityFactory {
       PositionAndRotation pos, String code, String... arguments) {
     SpellProgram program = programFactory.create(world, owner, printReceiver, code, arguments);
     nextSid++;
-    SpellEntity result = new SpellEntity(world, program, pos, nextSid);
+    SpellEntity result = new SpellEntity(world, program, pos, nextSid, chunkForceManager);
     program.setSpellEntity(result);
     spellRegistry.add(result);
     return result;
