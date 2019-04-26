@@ -1,14 +1,16 @@
 package net.wizardsoflua.wol.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
-import static net.wizardsoflua.brigadier.argument.SidArgumentType.sid;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -22,8 +24,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.brigadier.argument.LongArgumentType;
-import net.wizardsoflua.brigadier.argument.SpellNameArgumentType;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellListCommand implements Command<CommandSource> {
@@ -47,11 +47,11 @@ public class SpellListCommand implements Command<CommandSource> {
                         .executes(this::listAll)//
                     )//
                     .then(literal("bySid")//
-                        .then(argument(SID_ARGUMENT, sid())//
+                        .then(argument(SID_ARGUMENT, integer(0))//
                             .executes(this::listBySid)//
                         ))//
                     .then(literal("byName")//
-                        .then(argument(NAME_ARGUMENT, SpellNameArgumentType.spellName())//
+                        .then(argument(NAME_ARGUMENT, string())//
                             .executes(this::listByName)//
                         ))//
                     .then(literal("byOwner")//
@@ -84,7 +84,7 @@ public class SpellListCommand implements Command<CommandSource> {
   }
 
   public int listBySid(CommandContext<CommandSource> context) throws CommandSyntaxException {
-    long sid = LongArgumentType.getLong(context, SID_ARGUMENT);
+    int sid = IntegerArgumentType.getInteger(context, SID_ARGUMENT);
     CommandSource source = context.getSource();
     // TODO I18n
     String message = "Active spells with sid " + sid;

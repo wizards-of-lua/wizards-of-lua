@@ -1,14 +1,16 @@
 package net.wizardsoflua.wol.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
-import static net.wizardsoflua.brigadier.argument.SidArgumentType.sid;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -18,8 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.brigadier.argument.LongArgumentType;
-import net.wizardsoflua.brigadier.argument.SpellNameArgumentType;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellBreakCommand implements Command<CommandSource> {
@@ -43,11 +43,11 @@ public class SpellBreakCommand implements Command<CommandSource> {
                         .executes(this::breakAll)//
                     )//
                     .then(literal("bySid")//
-                        .then(argument(SID_ARGUMENT, sid())//
+                        .then(argument(SID_ARGUMENT, integer(0))//
                             .executes(this::breakBySid)//
                         ))//
                     .then(literal("byName")//
-                        .then(argument(NAME_ARGUMENT, SpellNameArgumentType.spellName())//
+                        .then(argument(NAME_ARGUMENT, string())//
                             .executes(this::breakByName)//
                         ))//
                     .then(literal("byOwner")//
@@ -76,7 +76,7 @@ public class SpellBreakCommand implements Command<CommandSource> {
   }
 
   public int breakBySid(CommandContext<CommandSource> context) throws CommandSyntaxException {
-    long sid = LongArgumentType.getLong(context, SID_ARGUMENT);
+    int sid = IntegerArgumentType.getInteger(context, SID_ARGUMENT);
     CommandSource source = context.getSource();
     return breakSpells(source, spell -> sid == spell.getSid());
   }
