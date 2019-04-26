@@ -1,15 +1,14 @@
 package net.wizardsoflua.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import javax.annotation.Nullable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.impl.DefaultTable;
+import net.wizardsoflua.chunk.ChunkForceManager;
 import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.view.ViewFactory;
 
@@ -22,8 +21,9 @@ public class SpellEntity extends VirtualEntity {
   private boolean visible = false;
   private Table data = new DefaultTable();
 
-  public SpellEntity(World world, SpellProgram program, PositionAndRotation posRot, long sid) {
-    super(checkNotNull(world, "world==null!"), posRot.getPos());
+  public SpellEntity(World world, SpellProgram program, PositionAndRotation posRot, long sid,
+      ChunkForceManager chunkForceManager) {
+    super(checkNotNull(world, "world==null!"), posRot.getPos(), chunkForceManager);
     this.program = checkNotNull(program, "program==null!");
     this.sid = sid;
     setPositionAndRotation(posRot);

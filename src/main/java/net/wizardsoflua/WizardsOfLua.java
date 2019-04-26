@@ -118,7 +118,6 @@ public class WizardsOfLua {
   }
 
   private class ModSpecificEventBusHandling {
-
     @SubscribeEvent
     public void onFmlCommonSetup(FMLCommonSetupEvent event) {
       LOGGER.info("Initializing Wizards-of-Lua, Version " + VERSION);
@@ -131,7 +130,6 @@ public class WizardsOfLua {
         throw new RuntimeException(e1);
       }
       aboutMessage = new AboutMessage(new AboutMessage.Context() {
-
         @Override
         public boolean shouldShowAboutMessage() {
           return getConfig().getGeneralConfig().isShowAboutMessage();
@@ -240,11 +238,8 @@ public class WizardsOfLua {
         public FileSystem getWorldFileSystem() {
           return WizardsOfLua.this.getWorldFileSystem();
         }
-
       });
-      spellEntityFactory = new SpellEntityFactory(spellRegistry, spellProgramFactory);
       profiles = new Profiles(new Profiles.Context() {
-
         @Override
         public GeneralConfig getGeneralConfig() {
           return getConfig().getGeneralConfig();
@@ -254,7 +249,6 @@ public class WizardsOfLua {
         public WizardConfig getWizardConfig(EntityPlayer player) {
           return getConfig().getOrCreateWizardConfig(player.getUniqueID());
         }
-
       });
       eventHandler = new WolEventHandler(() -> spellRegistry.getAll());
       fileRepository = new LuaFileRepository(new LuaFileRepository.Context() {
@@ -288,7 +282,6 @@ public class WizardsOfLua {
           return tempDir;
         }
       });
-
       restApiServer = new WolRestApiServer(new WolRestApiServer.Context() {
         @Override
         public LuaFile getLuaFileByReference(String fileReference) {
@@ -314,7 +307,6 @@ public class WizardsOfLua {
         public SpellPack createSpellPackByReference(String fileReference) {
           return getFileRepository().createSpellPack(fileReference);
         }
-
       });
       startup = new Startup(new Startup.Context() {
         @Override
@@ -345,6 +337,8 @@ public class WizardsOfLua {
       rootScope.registerResource(MinecraftServer.class, server);
       worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
       chunkForceManager = new ChunkForceManager();
+      spellEntityFactory =
+          new SpellEntityFactory(spellRegistry, spellProgramFactory, chunkForceManager);
       gameProfiles = new GameProfiles(server);
       permissions = new Permissions(server);
       customCommandRegistry = new CustomCommandRegistry(server, spellEntityFactory);
@@ -367,9 +361,7 @@ public class WizardsOfLua {
     public void onFmlServerStopping(FMLServerStoppingEvent event) {
       restApiServer.stop();
     }
-
   }
-
 
   private FileSystem createWorldFileSystem(File serverDir, String worldFolderName) {
     Path worldDirectory =
@@ -377,17 +369,12 @@ public class WizardsOfLua {
     return new RestrictedFileSystem(FileSystems.getDefault(), worldDirectory);
   }
 
-
   public void runStartupSequence(CommandSource source) {
     startup.runStartupSequence(source);
   }
 
   public WolConfig getConfig() {
     return checkNotNull(config, "config==null!");
-  }
-
-  public Profiles getProfiles() {
-    return checkNotNull(profiles, "profiles==null!");
   }
 
   public SpellEntityFactory getSpellEntityFactory() {
@@ -418,10 +405,6 @@ public class WizardsOfLua {
     return checkNotNull(fileRepository, "fileRepository==null!");
   }
 
-  public WolRestApiServer getRestServer() {
-    return checkNotNull(restApiServer, "restApiServer==null!");
-  }
-
   public GistRepo getGistRepo() {
     return checkNotNull(gistRepo, "gistRepo==null!");
   }
@@ -433,13 +416,4 @@ public class WizardsOfLua {
   public Permissions getPermissions() {
     return checkNotNull(permissions, "permissions==null!");
   }
-
-  public ChunkForceManager getChunkForceManager() {
-    return checkNotNull(chunkForceManager, "chunkForceManager == null!");
-  }
-
-  public CustomCommandRegistry getCustomCommandRegistry() {
-    return checkNotNull(customCommandRegistry, "customCommandRegistry == null!");
-  }
-
 }

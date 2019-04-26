@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
@@ -22,8 +20,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.block.ItemUtil;
+import net.wizardsoflua.chunk.ChunkForceManager;
 
 public class VirtualEntity implements ICommandSource {
 
@@ -48,14 +46,13 @@ public class VirtualEntity implements ICommandSource {
   private int age;
   private final Set<String> tags = new HashSet<>();
 
-  public VirtualEntity(World world, Vec3d position) {
+  public VirtualEntity(World world, Vec3d position, ChunkForceManager chunkForceManager) {
     this.world = world;
     server = world.getServer();
     posX = position.x;
     posY = position.y;
     posZ = position.z;
-    chunkForceSupport =
-        new VirtualEntityChunkForceSupport(WizardsOfLua.instance.getChunkForceManager(), this);
+    chunkForceSupport = new VirtualEntityChunkForceSupport(chunkForceManager, this);
     uuid = UUID.randomUUID();
     alive = true;
     setForceChunk(true);
