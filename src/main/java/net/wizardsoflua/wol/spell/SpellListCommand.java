@@ -6,6 +6,8 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
+import static net.minecraft.util.text.TextFormatting.AQUA;
+import static net.minecraft.util.text.TextFormatting.YELLOW;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -19,14 +21,14 @@ import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellListCommand implements Command<CommandSource> {
+  private static final int MAX_LINE_LENGTH = 55;
+  private static final String ELLIPSIS = "\u2026";
   private static final String SID_ARGUMENT = "sid";
   private static final String NAME_ARGUMENT = "name";
   private static final String OWNER_ARGUMENT = "owner";
@@ -118,22 +120,26 @@ public class SpellListCommand implements Command<CommandSource> {
   }
 
   private ITextComponent format(String message, Iterable<SpellEntity> spells) {
-    WolAnnouncementMessage result = new WolAnnouncementMessage(message + ":\n");
+    ITextComponent result = WolAnnouncementMessage.createAnnouncement(message + ":\n");
     for (SpellEntity spell : spells) {
-      TextComponentString name = new TextComponentString(spell.getSid() + ": ");
-      name.setStyle(new Style().setColor(TextFormatting.DARK_GREEN));
-      String description = spell.getProgram().getCode();
-      int maxLength = 40;
-      String ellipsis = "...";
-      if (description.length() > maxLength + ellipsis.length()) {
-        description = description.substring(0, maxLength) + ellipsis;
+      ITextComponent line = new TextComponentString("") //
+          .appendSibling(new TextComponentString("#" + spell.getSid()).applyTextStyle(YELLOW)) //
+          .appendText(" ") //
+          .appendSibling(spell.getDisplayName()) //
+          .appendText(": ") //
+      ;
+      int maxCodeLength = MAX_LINE_LENGTH - line.getString().length();
+      String code = spell.getProgram().getCode();
+      if (code.length() > maxCodeLength) {
+        if (maxCodeLength < ELLIPSIS.length()) {
+          code = ELLIPSIS;
+        } else {
+          code = code.substring(0, maxCodeLength - ELLIPSIS.length()) + ELLIPSIS;
+        }
       }
-      TextComponentString codeMsg = new TextComponentString(description + "\n");
-      codeMsg.setStyle(new Style().setColor(TextFormatting.WHITE));
-      result.appendSibling(name);
-      result.appendSibling(codeMsg);
+      line.appendSibling(new TextComponentString(code).applyTextStyle(AQUA));
+      result.appendSibling(line).appendText("\n");
     }
     return result;
   }
-
 }
