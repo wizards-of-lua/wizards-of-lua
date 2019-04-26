@@ -25,6 +25,7 @@ import net.minecraftforge.fml.VersionChecker;
 import net.minecraftforge.fml.VersionChecker.CheckResult;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
@@ -45,6 +46,8 @@ import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.file.SpellPack;
 import net.wizardsoflua.filesystem.RestrictedFileSystem;
 import net.wizardsoflua.gist.GistRepo;
+import net.wizardsoflua.imc.TypedImc;
+import net.wizardsoflua.imc.WizardsOfLuaConsumer;
 import net.wizardsoflua.lua.ExtensionLoader;
 import net.wizardsoflua.lua.LuaCommand;
 import net.wizardsoflua.lua.SpellProgramFactory;
@@ -65,10 +68,6 @@ public class WizardsOfLua {
   public static final String CONFIG_NAME = "wizards-of-lua";
   public static final String VERSION = "@MOD_VERSION@";
   public static final String URL = "http://www.wizards-of-lua.net";
-
-  // TODO do we need this anymore?
-  public static WizardsOfLua instance;
-
   public static final Logger LOGGER = LogManager.getLogger();
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
@@ -101,7 +100,6 @@ public class WizardsOfLua {
   private final InjectionScope rootScope = new InjectionScope();
 
   public WizardsOfLua() {
-    instance = this;
     rootScope.registerResource(WizardsOfLua.class, this);
     registerEventHandlers();
   }
@@ -327,6 +325,13 @@ public class WizardsOfLua {
       MinecraftForge.EVENT_BUS.register(getSpellRegistry());
       MinecraftForge.EVENT_BUS.register(aboutMessage);
       MinecraftForge.EVENT_BUS.register(eventHandler);
+    }
+
+    @SubscribeEvent
+    public void processImcMessages(InterModProcessEvent event) {
+      TypedImc.getMessages(event, WizardsOfLuaConsumer.class).forEach(it -> {
+        it.accept(WizardsOfLua.this);
+      });
     }
   }
 

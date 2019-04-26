@@ -7,14 +7,18 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.imc.TypedImc;
+import net.wizardsoflua.imc.WizardsOfLuaConsumer;
 import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
 import net.wizardsoflua.testenv.net.ClientChatReceivedMessage;
 import net.wizardsoflua.testenv.net.WolTestPacketChannel;
@@ -24,12 +28,15 @@ import net.wizardsoflua.testenv.net.WolTestPacketChannel;
 public class WolTestMod {
   public static final String MODID = "wol-test";
 
+  private WizardsOfLua wol;
   private WolTestPacketChannel packetChannel;
   private EventRecorder eventRecorder;
   private Log4j2ForgeEventBridge log4jEventBridge;
 
   public WolTestMod() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+    IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    bus.addListener(this::setup);
+    bus.addListener(this::enqueueImcMessages);
   }
 
   public void setup(FMLCommonSetupEvent event) {
@@ -43,6 +50,10 @@ public class WolTestMod {
 
     log4jEventBridge = new Log4j2ForgeEventBridge(Log4j2ForgeEventBridge.NET_MINECRAFT_LOGGER);
     log4jEventBridge.activate();
+  }
+
+  public void enqueueImcMessages(InterModEnqueueEvent event) {
+    TypedImc.sendTo(WizardsOfLua.MODID, WizardsOfLuaConsumer.class, it -> wol = it);
   }
 
   public void onServerStarting(FMLServerStartingEvent event) {
@@ -61,8 +72,7 @@ public class WolTestMod {
   }
 
   public WizardsOfLua getWol() {
-    // FIXME Adrodoc 24.04.2019: Proper synchronisation using mod event bus
-    return WizardsOfLua.instance;
+    return wol;
   }
 
   public WolTestPacketChannel getPacketChannel() {
