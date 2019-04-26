@@ -3,21 +3,15 @@ package net.wizardsoflua.wol.gist;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
-
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.IOException;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,7 +27,6 @@ public class GistGetCommand implements Command<CommandSource> {
   private static final String URL_ARGUMENT = "url";
   private static final String DIRECTORY_ARGUMENT = "directory";
 
-  private final Logger logger = LogManager.getLogger();
   private final WizardsOfLua wol;
   private final FileSection section;
 
@@ -69,7 +62,7 @@ public class GistGetCommand implements Command<CommandSource> {
 
     try {
       String accessToken = wol.getConfig().getGeneralConfig().getGitHubAccessToken();
-      logger.info("Loading Gist " + url);
+      LOGGER.info("Loading Gist " + url);
       List<GistFile> files = wol.getGistRepo().getGistFiles(url, accessToken);
       for (GistFile gistFile : files) {
         FileRef fileReference = toFileReference(player, directory, gistFile);
@@ -84,10 +77,10 @@ public class GistGetCommand implements Command<CommandSource> {
       if (accessToken == null) {
         RateLimit rateLimit = wol.getGistRepo().getRateLimitRemaining(accessToken);
         if (rateLimit.remaining < 10) {
-          logger.warn("This server is close to exceed the GitHub request rate limit of "
+          LOGGER.warn("This server is close to exceed the GitHub request rate limit of "
               + rateLimit.limit + " calls per hour!");
         }
-        logger.info(String.format(
+        LOGGER.info(String.format(
             "%s REST calls to GitHub remain until the limit of %s is reached. Consider using a GitHub access token to increase this limit.",
             rateLimit.remaining, rateLimit.limit));
       }
@@ -99,7 +92,7 @@ public class GistGetCommand implements Command<CommandSource> {
       if (!e.requestWasAuthorized()) {
         message += " Consider using a GitHub access token to increase this limit.";
       }
-      logger.error(message);
+      LOGGER.error(message);
       throw newCommandException(message);
     } catch (IOException | RuntimeException e) {
       throw newCommandException(e.getMessage());

@@ -1,7 +1,7 @@
 package net.wizardsoflua.rest;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,26 +27,20 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.SpellPack;
@@ -68,16 +62,14 @@ public class WolRestApiServer {
   }
 
   private final Context context;
-  private final Logger logger;
   private HTTPServer server;
 
   public WolRestApiServer(Context context) {
     this.context = checkNotNull(context, "context==null!");
-    this.logger = WizardsOfLua.instance.logger;
   }
 
   public void start() throws IOException {
-    logger.debug("[REST] starting WoL REST service");
+    LOGGER.debug("[REST] starting WoL REST service");
     File contextRoot = context.getRestApiConfig().getWebDir();
     int port = context.getRestApiConfig().getPort();
     boolean secure = context.getRestApiConfig().isSecure();
@@ -93,7 +85,7 @@ public class WolRestApiServer {
 
     createEmptyContextRoot(contextRoot);
 
-    logger.info("[REST] REST service will cache static files at " + contextRoot.getAbsolutePath());
+    LOGGER.info("[REST] REST service will cache static files at " + contextRoot.getAbsolutePath());
 
     server = new HTTPServer(port);
     server.setServerSocketFactory(
@@ -108,7 +100,7 @@ public class WolRestApiServer {
     host.addContext("/", staticResourceHandlers);
     host.addContexts(new RestHandlers(staticResourceHandlers));
 
-    logger.info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
+    LOGGER.info("Starting REST service at " + protocol + "://" + hostname + ":" + port);
     server.start();
   }
 
@@ -204,7 +196,7 @@ public class WolRestApiServer {
         String resource = resourcePath + path;
         URL url = WolRestApiServer.class.getResource(resource);
         if (url == null) {
-          WizardsOfLua.instance.logger.warn("WolRestServer couldn't find resource at " + resource);
+          LOGGER.warn("WolRestServer couldn't find resource at " + resource);
           return 404;
         }
         File targetFile = new File(contextRoot, path);
@@ -229,7 +221,7 @@ public class WolRestApiServer {
     @HTTPServer.Context(value = "/wol/login", methods = {"GET"})
     public int login(Request req, Response resp) throws IOException {
       try {
-        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LOGGER.debug("[REST] " + req.getMethod() + " " + req.getPath());
         if (isValidLoginToken(req)) {
           String loginToken = getLoginToken(req);
           UUID playerUuid = getPlayerUuid(req);
@@ -240,7 +232,7 @@ public class WolRestApiServer {
           return sendLoginFailed(req, resp);
         }
       } catch (Exception e) {
-        logger.error("Error handling GET: " + req.getPath(), e);
+        LOGGER.error("Error handling GET: " + req.getPath(), e);
         resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
             + "\n See fml-server-latest.log for more info!");
         return 0;
@@ -250,7 +242,7 @@ public class WolRestApiServer {
     @HTTPServer.Context(value = "/wol/lua", methods = {"GET"})
     public int get(Request req, Response resp) throws IOException {
       try {
-        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LOGGER.debug("[REST] " + req.getMethod() + " " + req.getPath());
         LoginCookie loginCookie = getLoginCookie(req);
         if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
           resp.sendError(401,
@@ -273,7 +265,7 @@ public class WolRestApiServer {
           return 0;
         }
       } catch (Exception e) {
-        logger.error("Error handling GET: " + req.getPath(), e);
+        LOGGER.error("Error handling GET: " + req.getPath(), e);
         resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
             + "\n See fml-server-latest.log for more info!");
         return 0;
@@ -283,7 +275,7 @@ public class WolRestApiServer {
     @HTTPServer.Context(value = "/wol/lua", methods = {"POST"})
     public int post(Request req, Response resp) throws IOException {
       try {
-        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LOGGER.debug("[REST] " + req.getMethod() + " " + req.getPath());
 
         LoginCookie loginCookie = getLoginCookie(req);
         if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
@@ -310,7 +302,7 @@ public class WolRestApiServer {
           throw new RuntimeException("Unexpected path: '" + req.getPath() + "'");
         }
       } catch (Exception e) {
-        logger.error("Error handling POST: " + req.getPath(), e);
+        LOGGER.error("Error handling POST: " + req.getPath(), e);
         resp.sendError(500, "Couldn't process POST method! e=" + e.getMessage()
             + "\n See fml-server-latest.log for more info!");
         return 0;
@@ -320,7 +312,7 @@ public class WolRestApiServer {
     @HTTPServer.Context(value = "/wol/export", methods = {"GET"})
     public int export(Request req, Response resp) throws IOException {
       try {
-        logger.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LOGGER.debug("[REST] " + req.getMethod() + " " + req.getPath());
         LoginCookie loginCookie = getLoginCookie(req);
         if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
           resp.sendError(401,
@@ -337,7 +329,7 @@ public class WolRestApiServer {
           return 0;
         }
       } catch (Exception e) {
-        logger.error("Error handling GET: " + req.getPath(), e);
+        LOGGER.error("Error handling GET: " + req.getPath(), e);
         resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
             + "\n See fml-server-latest.log for more info!");
         return 0;

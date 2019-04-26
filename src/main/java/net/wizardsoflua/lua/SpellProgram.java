@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.annotation.Nullable;
-import org.apache.logging.log4j.Logger;
 import com.google.common.cache.Cache;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -132,8 +131,8 @@ public class SpellProgram {
   private final Context context;
   private final String[] arguments;
 
-  SpellProgram(@Nullable Entity owner, String code, @Nullable String[] arguments, String defaultLuaPath,
-      World world, PrintReceiver printReceiver, Context context, Logger logger) {
+  SpellProgram(@Nullable Entity owner, String code, @Nullable String[] arguments,
+      String defaultLuaPath, World world, PrintReceiver printReceiver, Context context) {
     this.owner = owner;
     this.code = checkNotNull(code, "code==null!");
     this.arguments = arguments;

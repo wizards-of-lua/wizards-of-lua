@@ -69,7 +69,7 @@ public class WizardsOfLua {
   // TODO do we need this anymore?
   public static WizardsOfLua instance;
 
-  public final Logger logger = LogManager.getLogger();
+  public static final Logger LOGGER = LogManager.getLogger();
 
   private final SpellRegistry spellRegistry = new SpellRegistry();
   private final LuaFunctionBinaryCache luaFunctionCache = new LuaFunctionBinaryCache();
@@ -120,7 +120,7 @@ public class WizardsOfLua {
 
     @SubscribeEvent
     public void onFmlCommonSetup(FMLCommonSetupEvent event) {
-      logger.info("Initializing Wizards-of-Lua, Version " + VERSION);
+      LOGGER.info("Initializing Wizards-of-Lua, Version " + VERSION);
       ExtensionLoader.initialize();
       try {
         tempDir = Files.createTempDirectory("wizards-of-lua");
@@ -159,7 +159,7 @@ public class WizardsOfLua {
           return result;
         }
       });
-      spellProgramFactory = new SpellProgramFactory(logger, new SpellProgramFactory.Context() {
+      spellProgramFactory = new SpellProgramFactory(new SpellProgramFactory.Context() {
         @Override
         public Clock getClock() {
           return clock;
@@ -327,11 +327,6 @@ public class WizardsOfLua {
         }
 
         @Override
-        public Logger getLogger() {
-          return logger;
-        }
-
-        @Override
         public SpellEntityFactory getSpellEntityFactory() {
           return spellEntityFactory;
         }
@@ -361,7 +356,7 @@ public class WizardsOfLua {
 
     @SubscribeEvent
     public void onFmlServerStarted(FMLServerStartedEvent event) {
-      logger.info(aboutMessage);
+      LOGGER.info(aboutMessage);
       runStartupSequence(server.getCommandSource());
     }
 

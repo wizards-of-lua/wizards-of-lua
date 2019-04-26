@@ -3,7 +3,7 @@ package net.wizardsoflua.config;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,13 +16,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import javax.annotation.Nullable;
-
 import org.apache.commons.io.IOUtils;
-
 import com.google.common.io.Files;
-
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
@@ -38,7 +34,6 @@ import net.sandius.rembulan.load.LoaderException;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.LuaFunction;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.table.TableUtils;
 
@@ -90,9 +85,8 @@ public class WolConfig {
     this.configFile = checkNotNull(configFile, "configFile==null!");
     if (!configFile.getParentFile().exists()) {
       if (!configFile.getParentFile().mkdirs()) {
-        WizardsOfLua.instance.logger
-            .warn(format("Couldn't create config directory at %s because of an unknown reason!",
-                configFile.getParentFile().getAbsolutePath()));
+        LOGGER.warn(format("Couldn't create config directory at %s because of an unknown reason!",
+            configFile.getParentFile().getAbsolutePath()));
       }
     }
     generalConfig = new GeneralConfig(subContextImpl);
@@ -164,7 +158,7 @@ public class WolConfig {
         try {
           saveSync();
         } catch (IOException e) {
-          WizardsOfLua.instance.logger.error("Can't save config file!", e);
+          LOGGER.error("Can't save config file!", e);
         }
       }
     });
