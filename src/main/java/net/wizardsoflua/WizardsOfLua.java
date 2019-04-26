@@ -98,10 +98,11 @@ public class WizardsOfLua {
    * Clock used for RuntimeModule
    */
   private Clock clock = getDefaultClock();
-  private InjectionScope rootScope = new InjectionScope();
+  private final InjectionScope rootScope = new InjectionScope();
 
   public WizardsOfLua() {
     instance = this;
+    rootScope.registerResource(WizardsOfLua.class, this);
     registerEventHandlers();
   }
 
@@ -341,11 +342,13 @@ public class WizardsOfLua {
     @SubscribeEvent
     public void onFmlServerStarting(FMLServerStartingEvent event) throws IOException {
       server = event.getServer();
+      rootScope.registerResource(MinecraftServer.class, server);
       worldFileSystem = createWorldFileSystem(server.getDataDirectory(), server.getFolderName());
       chunkForceManager = new ChunkForceManager();
       gameProfiles = new GameProfiles(server);
       permissions = new Permissions(server);
       customCommandRegistry = new CustomCommandRegistry(server, spellEntityFactory);
+      rootScope.registerResource(CustomCommandRegistry.class, customCommandRegistry);
 
       CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
       WolCommand.register(cmdDispatcher, WizardsOfLua.this);
