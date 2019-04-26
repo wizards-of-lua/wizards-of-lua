@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.extension;
 
 import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
@@ -17,23 +16,20 @@ import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Scope;
 import javax.inject.Singleton;
-
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.reflect.ReflectionUtils;
@@ -49,37 +45,36 @@ public class InjectionScope {
   private final @Nullable InjectionScope parent;
   private final Class<? extends Annotation> scopeAnnotationType;
   private final ClassIndex cache = new ClassIndex();
-  private final Map<Class<?>, Object> resources = new HashMap<>();
+  private final ClassToInstanceMap<Object> resources = MutableClassToInstanceMap.create();
 
   public InjectionScope() {
     parent = null;
     scopeAnnotationType = Singleton.class;
   }
 
-  protected InjectionScope(@Nullable InjectionScope parent,
-      Class<? extends Annotation> scopeAnnotationType) {
+  public InjectionScope(InjectionScope parent, Class<? extends Annotation> scopeAnnotationType) {
     this.parent = requireNonNull(parent, "parent == null!");
     this.scopeAnnotationType = requireNonNull(scopeAnnotationType, "scopeAnnotationType == null!");
-  }
-
-  public InjectionScope createSubScope(Class<? extends Annotation> scopeAnnotationType) {
-    for (InjectionScope scope = this; scope != null; scope = scope.parent) {
+    for (InjectionScope scope = parent; scope != null; scope = scope.parent) {
       if (scope.scopeAnnotationType.equals(scopeAnnotationType)) {
         throw new IllegalArgumentException(
             "Trying to create nested scope for " + scopeAnnotationType);
       }
     }
+  }
+
+  public InjectionScope createSubScope(Class<? extends Annotation> scopeAnnotationType) {
     return new InjectionScope(this, scopeAnnotationType);
   }
 
   public <R> void registerResource(Class<R> resourceInterface, R resource) {
-    resources.put(resourceInterface, resource);
+    resources.putInstance(resourceInterface, resource);
   }
 
   public <R> R getResource(Class<R> resourceInterface) throws IllegalArgumentException {
-    Object resource = resources.get(resourceInterface);
+    R resource = resources.getInstance(resourceInterface);
     if (resource != null) {
-      return resourceInterface.cast(resource);
+      return resource;
     } else if (parent != null) {
       return parent.getResource(resourceInterface);
     } else {
