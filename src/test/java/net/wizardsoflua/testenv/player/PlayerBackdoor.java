@@ -51,6 +51,9 @@ public class PlayerBackdoor {
   }
 
   public void setOperator(boolean value) {
+    if (isOperator() == value) {
+      return;
+    }
     if (value) {
       minecraftBackdoor.executeCommand("/op " + getName());
     } else {
@@ -194,14 +197,14 @@ public class PlayerBackdoor {
   }
 
   public void clearInventory() {
-    testEnv.runAndWait(() -> {
+    getTestenv().runOnMainThreadAndWait(() -> {
       getDelegate().inventory.clear();
       getDelegate().inventoryContainer.detectAndSendChanges();
     });
   }
 
   public void tossItemFromInventory(int slot) {
-    testEnv.runAndWait(() -> {
+    getTestenv().runOnMainThreadAndWait(() -> {
       InventoryPlayer inventory = getDelegate().inventory;
       getDelegate().dropItem(inventory.removeStackFromSlot(slot), false);
     });

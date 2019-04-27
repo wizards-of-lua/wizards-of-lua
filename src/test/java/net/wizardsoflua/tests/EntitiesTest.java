@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -37,7 +36,7 @@ public class EntitiesTest extends WolTestBase {
     mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[" + tag + "]}", pos.getX(),
         pos.getY(), pos.getZ());
     mc().clearEvents();
-    List<Entity> pigs = mc().findEntities("@e[tag=" + tag + "]");
+    List<?extends Entity> pigs = mc().findEntities("@e[tag=" + tag + "]");
 
     // Expect:
     assertThat(pigs).hasSize(1);
@@ -56,8 +55,7 @@ public class EntitiesTest extends WolTestBase {
   @Test
   public void test_find_player_by_name() throws Exception {
     // Given:
-    EntityPlayerMP player = mc().getTestEnv().getTestPlayer();
-    String name = player.getName();
+    String name = mc().player().getName();
 
     // When:
     mc().executeCommand(

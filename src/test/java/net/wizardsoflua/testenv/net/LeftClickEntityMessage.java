@@ -34,7 +34,7 @@ public class LeftClickEntityMessage implements NetworkMessage {
   }
 
   @Override
-  public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
+  public void handle(NetworkEvent.Context contextSupplier) {
     Minecraft minecraft = Minecraft.getInstance();
     Entity entity = findEnityById(minecraft.world);
     if (entity != null) {

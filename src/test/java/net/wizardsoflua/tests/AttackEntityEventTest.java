@@ -1,21 +1,17 @@
 package net.wizardsoflua.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.testenv.MinecraftJUnitRunner;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
-@RunWith(MinecraftJUnitRunner.class)
 public class AttackEntityEventTest extends WolTestBase {
   BlockPos pigPos = mc().getWorldSpawnPoint();
   BlockPos playerPos = pigPos.east(2);
 
-  @Before
+  @BeforeEach
   public void before() {
     mc().player().setPosition(playerPos);
     sleep(100);
