@@ -7,11 +7,15 @@ import static java.util.Optional.ofNullable;
 import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
 import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
 import static net.minecraft.item.ItemStack.EMPTY;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+
 import javax.annotation.Nullable;
+
 import com.google.common.io.Files;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -48,6 +52,9 @@ public class PlayerBackdoor {
   }
 
   public void setOperator(boolean value) {
+    if (isOperator() == value) {
+      return;
+    }
     if (value) {
       minecraftBackdoor.executeCommand("/op " + getName());
     } else {
