@@ -12,17 +12,18 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
 
 public class PrintLuaTicksLimitCommand implements Command<CommandSource> {
-  public void register(CommandDispatcher<CommandSource> dispatcher) {
-    dispatcher.register(//
-        literal("wol")//
-            .then(literal("luaTicksLimit")//
-                .executes(this)));
-  }
 
   private final WizardsOfLua wol;
 
   public PrintLuaTicksLimitCommand(WizardsOfLua wol) {
     this.wol = checkNotNull(wol, "wol==null!");
+  }
+
+  public void register(CommandDispatcher<CommandSource> dispatcher) {
+    dispatcher.register(//
+        literal("wol")//
+            .then(literal("luaTicksLimit")//
+                .executes(this)));
   }
 
   @Override

@@ -19,6 +19,9 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
 
 public class FileMoveCommand implements Command<CommandSource> {
+  private static final String FILE_ARGUMENT = "file";
+  private static final String NEW_FILE_ARGUMENT = "newfile"; // TODO are spaces allowed?
+
   private final WizardsOfLua wol;
   private final FileSection section;
 
@@ -26,9 +29,6 @@ public class FileMoveCommand implements Command<CommandSource> {
     this.wol = checkNotNull(wol, "wol==null!");
     this.section = checkNotNull(section, "section==null!");
   }
-
-  private static final String FILE_ARGUMENT = "file";
-  private static final String NEW_FILE_ARGUMENT = "newfile"; // TODO are spaces allowed?
 
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
