@@ -2,6 +2,7 @@ package net.wizardsoflua.rest;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,16 +28,20 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.Nullable;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
+
 import org.apache.commons.io.IOUtils;
+
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
@@ -176,13 +181,11 @@ public class WolRestApiServer {
 
     private final String resourcePath;
     private final File contextRoot;
-    // private final HTTPServer.FileContextHandler cacheDirHandler;
 
     public StaticResourceHandlers(String resourcePath, File contextRoot, String context)
         throws IOException {
       this.resourcePath = resourcePath;
       this.contextRoot = contextRoot;
-      // this.cacheDirHandler = new HTTPServer.FileContextHandler(contextRoot);
     }
 
     @Override
@@ -194,7 +197,8 @@ public class WolRestApiServer {
       Path cachedFilePath = Paths.get(contextRoot.getAbsolutePath(), path);
       if (!Files.exists(cachedFilePath)) {
         String resource = resourcePath + path;
-        URL url = WolRestApiServer.class.getResource(resource);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource(resource);
         if (url == null) {
           LOGGER.warn("WolRestServer couldn't find resource at " + resource);
           return 404;
@@ -205,7 +209,6 @@ public class WolRestApiServer {
         }
         IOUtils.copy(url.openStream(), new FileOutputStream(targetFile));
       }
-      // return cacheDirHandler.serve(req, resp);
       return HTTPServer.serveFile(contextRoot, "", req, resp);
     }
   }
