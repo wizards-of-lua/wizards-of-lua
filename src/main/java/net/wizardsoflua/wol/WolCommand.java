@@ -21,6 +21,7 @@ import net.wizardsoflua.wol.luatickslimit.SetLuaTicksLimitCommand;
 import net.wizardsoflua.wol.pack.PackExportCommand;
 import net.wizardsoflua.wol.spell.SpellBreakCommand;
 import net.wizardsoflua.wol.spell.SpellListCommand;
+import net.wizardsoflua.wol.startup.StartupCommand;
 
 public class WolCommand {
   public static void register(CommandDispatcher<CommandSource> dispatcher, WizardsOfLua wol) {
@@ -51,5 +52,6 @@ public class WolCommand {
     new PackExportCommand(wol).register(dispatcher);
     new SpellListCommand(wol).register(dispatcher);
     new SpellBreakCommand(wol).register(dispatcher);
+    new StartupCommand(wol).register(dispatcher);
   }
 }
