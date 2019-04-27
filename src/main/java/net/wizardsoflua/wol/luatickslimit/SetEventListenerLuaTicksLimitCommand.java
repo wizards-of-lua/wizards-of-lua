@@ -19,6 +19,12 @@ import net.wizardsoflua.WolAnnouncementMessage;
 public class SetEventListenerLuaTicksLimitCommand implements Command<CommandSource> {
   private static final String LIMIT_ARGUMENT = "limit";
 
+  private final WizardsOfLua wol;
+
+  public SetEventListenerLuaTicksLimitCommand(WizardsOfLua wol) {
+    this.wol = checkNotNull(wol, "wol==null!");
+  }
+
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     int min = MIN_EVENT_LISTENER_LUA_TICKS_LIMIT;
     int max = MAX_EVENT_LISTENER_LUA_TICKS_LIMIT;
@@ -28,12 +34,6 @@ public class SetEventListenerLuaTicksLimitCommand implements Command<CommandSour
                 .then(literal("set")//
                     .then(argument(LIMIT_ARGUMENT, integer(min, max))//
                         .executes(this)))));
-  }
-
-  private final WizardsOfLua wol;
-
-  public SetEventListenerLuaTicksLimitCommand(WizardsOfLua wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
   }
 
   @Override

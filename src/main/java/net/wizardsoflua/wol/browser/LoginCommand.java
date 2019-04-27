@@ -18,6 +18,13 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
 
 public class LoginCommand implements Command<CommandSource> {
+
+  private final WizardsOfLua wol;
+
+  public LoginCommand(WizardsOfLua wol) {
+    this.wol = checkNotNull(wol, "wol==null!");
+  }
+
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(getNode());
   }
@@ -27,12 +34,6 @@ public class LoginCommand implements Command<CommandSource> {
         .then(literal("browser")//
             .then(literal("login")//
                 .executes(this)));
-  }
-
-  private final WizardsOfLua wol;
-
-  public LoginCommand(WizardsOfLua wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
   }
 
   @Override
