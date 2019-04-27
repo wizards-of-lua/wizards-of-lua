@@ -121,7 +121,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
 
     @LuaProperty
     public void setTime(long time) {
-      delegate.setTotalWorldTime(time);
+      delegate.getWorldInfo().setWorldTotalTime(time);
     }
 
     /**
