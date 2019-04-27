@@ -3,6 +3,7 @@ package net.wizardsoflua.startup;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,12 +12,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.Lists;
+
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -55,7 +60,7 @@ public class Startup {
 
   public void runStartupSequence(CommandSource source) {
     checkNotNull(source, "source == null!");
-    source.sendFeedback(new WolAnnouncementMessage("Running startup sequence..."), true);
+    sendMessage("Running startup sequence...", source);
     Path sharedLibDir = context.getSharedLibDir();
     try {
       List<String> modules = merge(startupModuleFinder.findStartupModulesIn(sharedLibDir),
@@ -107,12 +112,7 @@ public class Startup {
     TextComponentString details = new TextComponentString(stackTrace);
     txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
     txt.appendSibling(details);
-    source.sendFeedback(txt, true); // FIXME: use sendErrorMessage
-  }
-
-  private void sendMessage(String message, CommandSource source) {
-    WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
-    source.sendFeedback(txt, true);
+    sendErrorMessage(source, txt);
   }
 
   private String getStackTrace(Throwable throwable) {
@@ -123,6 +123,26 @@ public class Startup {
       result = result.substring(0, 200) + "...";
     }
     return result;
+  }
+
+  private void sendMessage(String message, CommandSource source) {
+    sendFeedback(source, new WolAnnouncementMessage(message));
+  }
+
+  private void sendFeedback(CommandSource source, ITextComponent message) {
+    Entity entity = source.getEntity();
+    if (entity instanceof EntityPlayer) {
+      context.getServer().sendMessage(message);
+    }
+    source.sendFeedback(message, true);
+  }
+
+  private void sendErrorMessage(CommandSource source, ITextComponent message) {
+    Entity entity = source.getEntity();
+    if (entity instanceof EntityPlayer) {
+      context.getServer().sendMessage(message);
+    }
+    source.sendErrorMessage(message);
   }
 
 }
