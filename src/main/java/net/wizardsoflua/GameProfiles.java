@@ -1,12 +1,11 @@
 package net.wizardsoflua;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import java.util.Map;
+import static java.util.Objects.requireNonNull;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.UsernameCache;
+import net.minecraft.server.management.PlayerProfileCache;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.server.api.ServerScoped;
 
@@ -15,27 +14,38 @@ public class GameProfiles {
   @Resource
   private MinecraftServer server;
 
+  public @Nullable GameProfile getGameProfileByName(String name) {
+    PlayerProfileCache cache = server.getPlayerProfileCache();
+    return cache.getGameProfileForUsername(name);
+  }
+
+  public @Nullable GameProfile getGameProfileById(UUID uuid) {
+    PlayerProfileCache cache = server.getPlayerProfileCache();
+    return cache.getProfileByUUID(uuid);
+  }
+
   public @Nullable GameProfile getGameProfile(String nameOrUuid) {
-    checkNotNull(nameOrUuid, "nameOrUuid==null!");
+    requireNonNull(nameOrUuid, "nameOrUuid");
+    UUID uuid;
     try {
-      return getGameProfileById(UUID.fromString(nameOrUuid));
+      uuid = UUID.fromString(nameOrUuid);
     } catch (IllegalArgumentException e) {
       return getGameProfileByName(nameOrUuid);
     }
+    return getGameProfileById(uuid);
   }
 
-  public GameProfile getGameProfileByName(String playerName) {
-    // TODO optimize performance
-    Map<UUID, String> map = UsernameCache.getMap();
-    for (Map.Entry<UUID, String> entry : map.entrySet()) {
-      if (entry.getValue().equals(playerName)) {
-        return server.getPlayerProfileCache().getProfileByUUID(entry.getKey());
+  public @Nullable UUID getUuid(String nameOrUuid) {
+    requireNonNull(nameOrUuid, "nameOrUuid");
+    try {
+      return UUID.fromString(nameOrUuid);
+    } catch (IllegalArgumentException e) {
+      GameProfile profile = getGameProfileByName(nameOrUuid);
+      if (profile != null) {
+        return profile.getId();
+      } else {
+        return null;
       }
     }
-    return null;
-  }
-
-  public GameProfile getGameProfileById(UUID uuid) {
-    return server.getPlayerProfileCache().getProfileByUUID(uuid);
   }
 }
