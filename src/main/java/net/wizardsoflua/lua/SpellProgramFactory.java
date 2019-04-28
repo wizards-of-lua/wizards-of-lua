@@ -15,7 +15,7 @@ public class SpellProgramFactory {
   private InjectionScope scope;
 
   public SpellProgram create(World world, @Nullable Entity owner, PrintReceiver printReceiver,
-      String code, @Nullable String[] arguments) {
+      String code, String... arguments) {
     SpellProgram result = new SpellProgram(world, owner, printReceiver, code, arguments);
     scope.injectMembers(result);
     scope.callLifecycleMethods(result, PostConstruct.class);
