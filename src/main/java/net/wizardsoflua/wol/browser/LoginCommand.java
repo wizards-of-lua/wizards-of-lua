@@ -3,25 +3,22 @@ package net.wizardsoflua.wol.browser;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
-
 import java.net.URL;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class LoginCommand implements Command<CommandSource> {
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public LoginCommand(WizardsOfLua wol) {
+  public LoginCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol==null!");
   }
 

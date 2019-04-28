@@ -1,7 +1,7 @@
 package net.wizardsoflua.spell;
 
-import static java.util.Objects.requireNonNull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ICommandSource;
 import net.minecraft.entity.Entity;
@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.chunk.ChunkForceManager;
 import net.wizardsoflua.lua.SpellProgram;
 import net.wizardsoflua.lua.SpellProgramFactory;
@@ -17,19 +18,16 @@ import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 /**
  * Factory for creating {@link SpellEntity} objects.
  */
+@ServerScoped
 public class SpellEntityFactory {
-  private final SpellRegistry spellRegistry;
-  private final SpellProgramFactory programFactory;
-  private final ChunkForceManager chunkForceManager;
+  @Inject
+  private SpellRegistry spellRegistry;
+  @Inject
+  private SpellProgramFactory programFactory;
+  @Inject
+  private ChunkForceManager chunkForceManager;
 
   private long nextSid = 1;
-
-  public SpellEntityFactory(SpellRegistry spellRegistry, SpellProgramFactory programFactory,
-      ChunkForceManager chunkForceManager) {
-    this.spellRegistry = requireNonNull(spellRegistry, "spellRegistry");
-    this.programFactory = requireNonNull(programFactory, "programFactory");
-    this.chunkForceManager = requireNonNull(chunkForceManager, "chunkForceManager");
-  }
 
   public SpellEntity create(CommandSource source, PrintReceiver printReceiver, String code,
       @Nullable String... arguments) {

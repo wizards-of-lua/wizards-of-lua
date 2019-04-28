@@ -6,22 +6,20 @@ import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.wizardsoflua.config.GeneralConfig.MAX_LUA_TICKS_LIMIT;
 import static net.wizardsoflua.config.GeneralConfig.MIN_LUA_TICKS_LIMIT;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-
 import net.minecraft.command.CommandSource;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class SetLuaTicksLimitCommand implements Command<CommandSource> {
   private static final String LIMIT_ARGUMENT = "limit";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public SetLuaTicksLimitCommand(WizardsOfLua wol) {
+  public SetLuaTicksLimitCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol==null!");
   }
 

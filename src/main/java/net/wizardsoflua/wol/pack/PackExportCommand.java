@@ -5,29 +5,25 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
-
 import java.net.URL;
-
 import javax.annotation.Nullable;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.TextComponentString;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class PackExportCommand implements Command<CommandSource> {
   private static final String DIRECTORY_ARGUMENT = "directory";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public PackExportCommand(WizardsOfLua wol) {
+  public PackExportCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol==null!");
   }
 

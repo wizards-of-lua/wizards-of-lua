@@ -2,20 +2,18 @@ package net.wizardsoflua.wol.luatickslimit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-
 import net.minecraft.command.CommandSource;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class PrintLuaTicksLimitCommand implements Command<CommandSource> {
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public PrintLuaTicksLimitCommand(WizardsOfLua wol) {
+  public PrintLuaTicksLimitCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol==null!");
   }
 

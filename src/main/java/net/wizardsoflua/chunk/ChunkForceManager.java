@@ -1,12 +1,11 @@
 package net.wizardsoflua.chunk;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.wizardsoflua.ServerScoped;
 
 /**
  * Intermediate adaptor for vanilla's chunk force loading system until Forge comes up with
@@ -14,6 +13,7 @@ import net.minecraft.world.World;
  *
  * @see https://github.com/MinecraftForge/MinecraftForge/issues/5487
  */
+@ServerScoped
 public class ChunkForceManager {
 
   private class WorldManager {

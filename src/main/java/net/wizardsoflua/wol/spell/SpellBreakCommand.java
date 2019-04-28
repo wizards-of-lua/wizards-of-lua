@@ -18,8 +18,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellBreakCommand implements Command<CommandSource> {
@@ -27,9 +27,9 @@ public class SpellBreakCommand implements Command<CommandSource> {
   private static final String NAME_ARGUMENT = "name";
   private static final String OWNER_ARGUMENT = "owner";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public SpellBreakCommand(WizardsOfLua wol) {
+  public SpellBreakCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol == null!");
   }
 

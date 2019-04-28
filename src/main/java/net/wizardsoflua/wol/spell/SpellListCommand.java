@@ -22,8 +22,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 import net.wizardsoflua.spell.SpellEntity;
 
 public class SpellListCommand implements Command<CommandSource> {
@@ -33,9 +33,9 @@ public class SpellListCommand implements Command<CommandSource> {
   private static final String NAME_ARGUMENT = "name";
   private static final String OWNER_ARGUMENT = "owner";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public SpellListCommand(WizardsOfLua wol) {
+  public SpellListCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol == null!");
   }
 

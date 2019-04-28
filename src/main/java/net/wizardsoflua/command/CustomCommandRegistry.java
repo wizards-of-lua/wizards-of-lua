@@ -1,36 +1,32 @@
 package net.wizardsoflua.command;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
-
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
+import javax.inject.Inject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.wizardsoflua.ServerScoped;
+import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.spell.SpellEntityFactory;
 
+@ServerScoped
 public class CustomCommandRegistry {
+  @Resource
+  private MinecraftServer server;
+  @Inject
+  private SpellEntityFactory spellEntityFactory;
   private final Set<String> registeredNames = new HashSet<>();
-
-  private final MinecraftServer server;
-  private final SpellEntityFactory spellEntityFactory;
-
-  public CustomCommandRegistry(MinecraftServer server, SpellEntityFactory spellEntityFactory) {
-    this.server = checkNotNull(server, "server == null!");
-    this.spellEntityFactory = checkNotNull(spellEntityFactory, "spellEntityFactory == null!");
-  }
 
   public void addCommand(String name, String code, String usage, Integer permissionLevel) {
     CommandDispatcher<CommandSource> dispatcher = server.getCommandManager().getDispatcher();

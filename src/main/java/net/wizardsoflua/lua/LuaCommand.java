@@ -16,19 +16,19 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 
 public class LuaCommand implements Command<CommandSource> {
 
-  public static void register(CommandDispatcher<CommandSource> dispatcher, WizardsOfLua wol) {
+  public static void register(CommandDispatcher<CommandSource> dispatcher, WolServer wol) {
     new LuaCommand(wol).register(dispatcher);
   }
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public LuaCommand(WizardsOfLua wol) {
+  public LuaCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol == null!");
   }
 

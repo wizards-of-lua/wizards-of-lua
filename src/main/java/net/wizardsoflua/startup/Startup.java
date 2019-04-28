@@ -3,34 +3,36 @@ package net.wizardsoflua.startup;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
-
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
-
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-
 import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.spell.SpellEntityFactory;
 
+@ServerScoped
 public class Startup {
-
   private static final Comparator<String> MODULE_COMPARATOR = new Comparator<String>() {
     @Override
     public int compare(String o1, String o2) {
@@ -40,28 +42,42 @@ public class Startup {
     }
   };
 
-  public interface Context extends AddOnFinder.Context {
-    Path getSharedLibDir();
+  private final StartupModuleFinder startupModuleFinder = new StartupModuleFinder();
+  @Resource
+  private MinecraftServer server;
+  @Inject
+  private AddOnFinder addOnFinder;
+  @Inject
+  private SpellEntityFactory spellEntityFactory;
+  @Inject
+  private WolConfig config;
 
-    @Override
-    MinecraftServer getServer();
-
-    SpellEntityFactory getSpellEntityFactory();
+  @PostConstruct
+  private void postConstruct() {
+    MinecraftForge.EVENT_BUS.register(this);
   }
 
-  private final Context context;
-  private final AddOnFinder addOnFinder;
-  private final StartupModuleFinder startupModuleFinder = new StartupModuleFinder();
+  @SubscribeEvent
+  public void onServerStarted(FMLServerStartedEvent event) {
+    MinecraftServer server = event.getServer();
+    if (this.server == server) {
+      CommandSource commandSource = server.getCommandSource();
+      runStartupSequence(commandSource);
+    }
+  }
 
-  public Startup(Context context) {
-    this.context = checkNotNull(context, "context==null!");
-    addOnFinder = new AddOnFinder(context);
+  @SubscribeEvent
+  public void onServerStopping(FMLServerStoppingEvent event) {
+    MinecraftServer server = event.getServer();
+    if (this.server == server) {
+      MinecraftForge.EVENT_BUS.unregister(this);
+    }
   }
 
   public void runStartupSequence(CommandSource source) {
     checkNotNull(source, "source == null!");
     sendMessage("Running startup sequence...", source);
-    Path sharedLibDir = context.getSharedLibDir();
+    Path sharedLibDir = config.getSharedLibDir().toPath();
     try {
       List<String> modules = merge(startupModuleFinder.findStartupModulesIn(sharedLibDir),
           addOnFinder.getStartupModules());
@@ -90,19 +106,15 @@ public class Startup {
     sendMessage(format("Launching module '%s'", module), source);
     String code = format("require('%s')", module);
 
-    SpellEntityFactory factory = context.getSpellEntityFactory();
     PrintReceiver printReceiver = new PrintReceiver() {
       @Override
       public void send(String message) {
         TextComponentString txt = new TextComponentString(message);
-        Entity entity = source.getEntity();
-        if (entity instanceof EntityPlayer) {
-          context.getServer().sendMessage(txt);
-        }
-        source.sendFeedback(txt, true);
+        source.sendFeedback(txt, false);
+        LOGGER.info(message);
       }
     };
-    factory.create(source, printReceiver, code);
+    spellEntityFactory.create(source, printReceiver, code);
   }
 
   private void sendException(String message, Throwable t, CommandSource source) {
@@ -116,9 +128,7 @@ public class Startup {
   }
 
   private String getStackTrace(Throwable throwable) {
-    StringWriter writer = new StringWriter();
-    throwable.printStackTrace(new PrintWriter(writer));
-    String result = writer.toString();
+    String result = Throwables.getStackTraceAsString(throwable);
     if (result.length() > 200) {
       result = result.substring(0, 200) + "...";
     }
@@ -130,19 +140,12 @@ public class Startup {
   }
 
   private void sendFeedback(CommandSource source, ITextComponent message) {
-    Entity entity = source.getEntity();
-    if (entity instanceof EntityPlayer) {
-      context.getServer().sendMessage(message);
-    }
-    source.sendFeedback(message, true);
+    source.sendFeedback(message, false);
+    LOGGER.info(message.getString());
   }
 
   private void sendErrorMessage(CommandSource source, ITextComponent message) {
-    Entity entity = source.getEntity();
-    if (entity instanceof EntityPlayer) {
-      context.getServer().sendMessage(message);
-    }
     source.sendErrorMessage(message);
+    LOGGER.error(message.getString());
   }
-
 }

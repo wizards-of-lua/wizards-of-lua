@@ -36,7 +36,7 @@ import net.wizardsoflua.reflect.ReflectionUtils;
 
 /**
  * An implementation of the {@link javax.inject} specification with support for registering
- * resources that can be injected using @{@link Resource}
+ * resources that can be injected using @{@link Resource}.
  *
  * @author Adrodoc
  * @see javax.inject
@@ -50,6 +50,7 @@ public class InjectionScope {
   public InjectionScope() {
     parent = null;
     scopeAnnotationType = Singleton.class;
+    registerResource(InjectionScope.class, this);
   }
 
   public InjectionScope(InjectionScope parent, Class<? extends Annotation> scopeAnnotationType) {
@@ -61,6 +62,7 @@ public class InjectionScope {
             "Trying to create nested scope for " + scopeAnnotationType);
       }
     }
+    registerResource(InjectionScope.class, this);
   }
 
   public InjectionScope createSubScope(Class<? extends Annotation> scopeAnnotationType) {
@@ -68,6 +70,10 @@ public class InjectionScope {
   }
 
   public <R> void registerResource(Class<R> resourceInterface, R resource) {
+    if (resources.containsKey(resourceInterface)) {
+      throw new IllegalArgumentException(
+          "Resource " + resourceInterface.getName() + " is already registered for this scope");
+    }
     resources.putInstance(resourceInterface, resource);
   }
 

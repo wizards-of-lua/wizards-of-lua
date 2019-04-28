@@ -3,26 +3,45 @@ package net.wizardsoflua.spell;
 import static com.google.common.collect.Lists.transform;
 import static java.lang.String.valueOf;
 import static java.util.Collections.unmodifiableCollection;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.wizardsoflua.ServerScoped;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.Resource;
 
+@ServerScoped
 public class SpellRegistry {
   private final List<SpellEntity> spells = new CopyOnWriteArrayList<>();
+  @Resource
+  private MinecraftServer server;
 
-  public void add(SpellEntity spell) {
-    spells.add(spell);
+  @PostConstruct
+  private void postConstruct() {
+    MinecraftForge.EVENT_BUS.register(this);
+  }
+
+  @SubscribeEvent
+  public void onServerStopping(FMLServerStoppingEvent event) {
+    MinecraftServer server = event.getServer();
+    if (this.server == server) {
+      MinecraftForge.EVENT_BUS.unregister(this);
+    }
   }
 
   @SubscribeEvent
   public void onEvent(SpellTerminatedEvent evt) {
     spells.remove(evt.getSpell());
+  }
+
+  public void add(SpellEntity spell) {
+    spells.add(spell);
   }
 
   public Collection<SpellEntity> getAll() {
@@ -48,5 +67,4 @@ public class SpellRegistry {
   public Iterable<String> getActiveNames() {
     return transform(spells, SpellEntity::getName);
   }
-
 }

@@ -2,23 +2,21 @@ package net.wizardsoflua.wol.browser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 import net.wizardsoflua.file.Crypto;
 
 public class LogoutCommand implements Command<CommandSource> {
-  private final WizardsOfLua wol;
+  private final WolServer wol;
   private final Crypto crypto = new Crypto();
 
-  public LogoutCommand(WizardsOfLua wol) {
+  public LogoutCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol==null!");
   }
 

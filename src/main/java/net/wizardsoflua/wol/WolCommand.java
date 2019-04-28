@@ -3,11 +3,9 @@ package net.wizardsoflua.wol;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.wizardsoflua.wol.file.FileSection.PERSONAL;
 import static net.wizardsoflua.wol.file.FileSection.SHARED;
-
 import com.mojang.brigadier.CommandDispatcher;
-
 import net.minecraft.command.CommandSource;
-import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.WolServer;
 import net.wizardsoflua.wol.browser.LoginCommand;
 import net.wizardsoflua.wol.browser.LogoutCommand;
 import net.wizardsoflua.wol.file.FileDeleteCommand;
@@ -24,13 +22,13 @@ import net.wizardsoflua.wol.spell.SpellListCommand;
 import net.wizardsoflua.wol.startup.StartupCommand;
 
 public class WolCommand {
-  public static void register(CommandDispatcher<CommandSource> dispatcher, WizardsOfLua wol) {
+  public static void register(CommandDispatcher<CommandSource> dispatcher, WolServer wol) {
     new WolCommand(wol).register(dispatcher);
   }
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public WolCommand(WizardsOfLua wol) {
+  public WolCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol == null!");
   }
 

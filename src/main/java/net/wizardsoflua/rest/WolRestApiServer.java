@@ -2,7 +2,6 @@ package net.wizardsoflua.rest;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,65 +27,76 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
-
 import org.apache.commons.io.IOUtils;
-
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.config.RestApiConfig;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.file.LuaFile;
+import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.file.SpellPack;
 
+@ServerScoped
 public class WolRestApiServer {
-
   private static final String LOGIN_COOKIE_KEY_PREFIX = "__HOST-Login-";
+  @Resource
+  private MinecraftServer mserver;
+  @Inject
+  private WolConfig config;
+  @Inject
+  private LuaFileRepository repo;
 
-  public interface Context {
-    LuaFile getLuaFileByReference(String fileref);
-
-    RestApiConfig getRestApiConfig();
-
-    void saveLuaFileByReference(String fileref, String content);
-
-    boolean isValidLoginToken(UUID uuid, String token);
-
-    SpellPack createSpellPackByReference(String fileref);
+  @PostConstruct
+  private void postConstruct() throws IOException {
+    start();
+    MinecraftForge.EVENT_BUS.register(this);
   }
 
-  private final Context context;
+  @SubscribeEvent
+  public void onServerStopping(FMLServerStoppingEvent event) {
+    MinecraftServer server = event.getServer();
+    if (mserver == server) {
+      stop();
+      MinecraftForge.EVENT_BUS.unregister(this);
+    }
+  }
+
   private HTTPServer server;
-
-  public WolRestApiServer(Context context) {
-    this.context = checkNotNull(context, "context==null!");
-  }
 
   public void start() throws IOException {
     LOGGER.debug("[REST] starting WoL REST service");
-    File contextRoot = context.getRestApiConfig().getWebDir();
-    int port = context.getRestApiConfig().getPort();
-    boolean secure = context.getRestApiConfig().isSecure();
-    String hostname = context.getRestApiConfig().getHostname();
-    String protocol = context.getRestApiConfig().getProtocol();
-    final String keystore = context.getRestApiConfig().getKeyStore();
+    RestApiConfig restApiConfig = config.getRestApiConfig();
+    File contextRoot = restApiConfig.getWebDir();
+    int port = restApiConfig.getPort();
+    boolean secure = restApiConfig.isSecure();
+    String hostname = restApiConfig.getHostname();
+    String protocol = restApiConfig.getProtocol();
+    final String keystore = restApiConfig.getKeyStore();
     if (secure) {
       checkNotNull(keystore,
           "Missing keystore! Please configure path to keystore file in WoL config!");
     }
-    final char[] keystorePassword = context.getRestApiConfig().getKeyStorePassword();
-    final char[] keyPassword = context.getRestApiConfig().getKeyPassword();
+    final char[] keystorePassword = restApiConfig.getKeyStorePassword();
+    final char[] keyPassword = restApiConfig.getKeyPassword();
 
     createEmptyContextRoot(contextRoot);
 
@@ -298,7 +308,7 @@ public class WolRestApiServer {
         Matcher matcher = pattern.matcher(req.getPath());
         if (matcher.matches()) {
           String fileref = matcher.group(1);
-          context.saveLuaFileByReference(fileref, root.get("content").getAsString());
+          repo.saveLuaFile(fileref, root.get("content").getAsString());
           resp.send(200, "OK");
           return 0;
         } else {
@@ -344,7 +354,7 @@ public class WolRestApiServer {
       Matcher matcher = pattern.matcher(req.getPath());
       if (matcher.matches()) {
         String fileref = matcher.group(1);
-        LuaFile luaFile = context.getLuaFileByReference(fileref);
+        LuaFile luaFile = repo.loadLuaFile(fileref);
         LuaFileJson luaFileJson = new LuaFileJson(luaFile.getPath(), luaFile.getName(),
             luaFile.getFileReference(), luaFile.getContent());
         Gson gson = new Gson();
@@ -365,7 +375,7 @@ public class WolRestApiServer {
       Matcher matcher = pattern.matcher(req.getPath());
       if (matcher.matches()) {
         String fileref = matcher.group(1);
-        SpellPack spellPack = context.createSpellPackByReference(fileref);
+        SpellPack spellPack = repo.createSpellPack(fileref);
         InputStream body = spellPack.open();
         long[] range = null;
         resp.sendHeaders(200, spellPack.getSize(), -1L, null, "application/java-archive", range);
@@ -421,7 +431,7 @@ public class WolRestApiServer {
     if (matcher.matches()) {
       String playerUuidStr = matcher.group(1);
       String token = matcher.group(2);
-      return context.isValidLoginToken(UUID.fromString(playerUuidStr), token);
+      return repo.isValidLoginToken(UUID.fromString(playerUuidStr), token);
     }
     return false;
   }
@@ -504,7 +514,7 @@ public class WolRestApiServer {
   public boolean isValidLoginCookie(LoginCookie loginCookie) {
     String token = loginCookie.getToken();
     UUID uuid = loginCookie.getPlayerUuid();
-    return context.isValidLoginToken(uuid, token);
+    return repo.isValidLoginToken(uuid, token);
   }
 
   public void deleteLoginCookie(Request req, Response resp) {
@@ -512,7 +522,7 @@ public class WolRestApiServer {
   }
 
   private void addCookie(Response resp, String key, String value, int maxAge) {
-    boolean secure = context.getRestApiConfig().isSecure();
+    boolean secure = config.getRestApiConfig().isSecure();
     String secureFlag = secure ? " Secure;" : "";
     resp.getHeaders().add("Set-Cookie",
         String.format("%s=%s; Max-Age=%s;%s Path=/", key, value, maxAge, secureFlag));
@@ -533,8 +543,9 @@ public class WolRestApiServer {
   }
 
   private String getLoginCookieKey() {
-    String hostname = context.getRestApiConfig().getHostname();
-    int port = context.getRestApiConfig().getPort();
+    RestApiConfig restApiConfig = config.getRestApiConfig();
+    String hostname = restApiConfig.getHostname();
+    int port = restApiConfig.getPort();
     String server = hostname + ":" + port;
     return LOGIN_COOKIE_KEY_PREFIX + server;
   }

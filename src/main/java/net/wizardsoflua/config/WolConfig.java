@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
+import javax.inject.Singleton;
 import org.apache.commons.io.IOUtils;
 import com.google.common.io.Files;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -37,19 +38,9 @@ import net.sandius.rembulan.runtime.LuaFunction;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.table.TableUtils;
 
+@Singleton
 public class WolConfig {
-
-  public static WolConfig create(String configName) throws FileNotFoundException, LoaderException,
-      CallException, CallPausedException, InterruptedException, IOException {
-    File configDir = FMLPaths.CONFIGDIR.get().toFile();
-    File wolConfigDir = new File(configDir, configName);
-
-    File oldConfigFile = new File(wolConfigDir, configName + ".cfg");
-    oldConfigFile.delete();
-
-    File wolConfigFile = new File(wolConfigDir, configName + ".luacfg");
-    return new WolConfig(wolConfigFile);
-  }
+  public static final String CONFIG_NAME = "wizards-of-lua";
 
   private class SubContextImpl implements RestApiConfig.Context, GeneralConfig.Context,
       WizardConfig.Context, ScriptGatewayConfig.Context {
@@ -80,8 +71,16 @@ public class WolConfig {
   private ScriptGatewayConfig scriptGatewayConfig;
   private final Map<UUID, WizardConfig> wizards = new HashMap<>();
 
-  public WolConfig(File configFile)
-      throws InterruptedException, FileNotFoundException, IOException {
+  public WolConfig() throws InterruptedException, FileNotFoundException, IOException {
+    File configDir = FMLPaths.CONFIGDIR.get().toFile();
+    File wolConfigDir = new File(configDir, CONFIG_NAME);
+
+    // TODO Adrodoc 27.04.2019: @mkarneim Can we remove this?
+    File oldConfigFile = new File(wolConfigDir, CONFIG_NAME + ".cfg");
+    oldConfigFile.delete();
+
+    File configFile = new File(wolConfigDir, CONFIG_NAME + ".luacfg");
+
     this.configFile = checkNotNull(configFile, "configFile==null!");
     if (!configFile.getParentFile().exists()) {
       if (!configFile.getParentFile().mkdirs()) {
@@ -295,5 +294,4 @@ public class WolConfig {
     saveAsync();
     return result;
   }
-
 }
