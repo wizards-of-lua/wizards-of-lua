@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,6 +64,8 @@ public class WizardsOfLua {
    * Clock used for RuntimeModule
    */
   private Clock clock = getDefaultClock();
+  // TODO Adrodoc 28.04.2019: Check for thread safety of creating root scope in mod loading thread
+  // and server scopes in server threads
   private final InjectionScope rootScope = new InjectionScope();
 
   public WizardsOfLua() {
@@ -138,11 +142,13 @@ public class WizardsOfLua {
     }
   }
 
+  private final Map<MinecraftServer, InjectionScope> serverScopes = new HashMap<>();
+
   private class MainForgeEventBusListener {
     @SubscribeEvent
     public void onFmlServerStarting(FMLServerStartingEvent event) throws IOException {
-      InjectionScope serverScope = rootScope.createSubScope(ServerScoped.class);
-      serverScope.registerResource(MinecraftServer.class, event.getServer());
+      InjectionScope serverScope =
+          serverScopes.computeIfAbsent(event.getServer(), it -> createServerScope(it));
 
       WolServer wolServer = serverScope.getInstance(WolServer.class);
       CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
@@ -153,7 +159,15 @@ public class WizardsOfLua {
 
       restApiServer = new WolRestApiServer();
       restApiServer.start();
+    }
 
+    @SubscribeEvent
+    public void onServerStopping(FMLServerStoppingEvent event) {
+      MinecraftServer server = event.getServer();
+      InjectionScope serverScope = serverScopes.remove(server);
+      if (serverScope != null) {
+        serverScope.close();
+      }
     }
 
     @SubscribeEvent
@@ -167,6 +181,11 @@ public class WizardsOfLua {
     }
   }
 
+  private InjectionScope createServerScope(MinecraftServer server) {
+    InjectionScope result = rootScope.createSubScope(ServerScoped.class);
+    result.registerResource(MinecraftServer.class, server);
+    return result;
+  }
 
   public Clock getClock() {
     return clock;
