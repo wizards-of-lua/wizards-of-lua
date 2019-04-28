@@ -6,11 +6,16 @@ import static java.util.Optional.ofNullable;
 import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
 import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
 import static net.minecraft.item.ItemStack.EMPTY;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+
 import javax.annotation.Nullable;
+
 import com.google.common.io.Files;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
@@ -23,6 +28,7 @@ import net.wizardsoflua.testenv.WolTestEnvironment;
 import net.wizardsoflua.testenv.net.ChatAction;
 import net.wizardsoflua.testenv.net.ClientAction;
 import net.wizardsoflua.testenv.net.LeftClickAction;
+import net.wizardsoflua.testenv.net.LeftClickEntityAction;
 import net.wizardsoflua.testenv.net.ReconnectAction;
 import net.wizardsoflua.testenv.net.RespawnAction;
 import net.wizardsoflua.testenv.net.RightClickAction;
@@ -33,7 +39,7 @@ public class PlayerBackdoor {
 
   public PlayerBackdoor(MinecraftBackdoor minecraftBackdoor) {
     this.minecraftBackdoor = minecraftBackdoor;
-    this.testEnv = minecraftBackdoor.getTestEnv();
+    testEnv = minecraftBackdoor.getTestEnv();
   }
 
   public void setOperator(boolean value) {
@@ -56,6 +62,10 @@ public class PlayerBackdoor {
 
   public void leftclick(BlockPos pos, EnumFacing face) {
     perform(new LeftClickAction(pos, face));
+  }
+
+  public void leftClick(Entity entity) {
+    perform(new LeftClickEntityAction(entity));
   }
 
   public void rightclick(BlockPos pos, EnumFacing face) {

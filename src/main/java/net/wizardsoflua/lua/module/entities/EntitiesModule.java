@@ -30,7 +30,8 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.spell.SpellEntity;
 
 /**
- * The <span class="notranslate">Entities</span> module provides access to all [Entity](/module/Entity) objects currently loaded.
+ * The <span class="notranslate">Entities</span> module provides access to all
+ * [Entity](/module/Entity) objects currently loaded.
  *
  */
 @AutoService(SpellExtension.class)
@@ -57,47 +58,47 @@ public class EntitiesModule extends LuaTableExtension {
 
   /**
    * The ‘find’ function returns a table of Entity objects that match the given selector.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the number of all players currently logged in.
-   * 
+   *
    * <code>
    * found = Entities.find("@a")
    * print(#found)
    * </code>
-   *  
+   * 
    * #### Example
-   * 
+   *
    * Printing the position of player mickkay.
-   * 
+   *
    * <code>
    * found = Entities.find("@a[name=mickkay]")[1]
    * print(found.pos)
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the positions of all cows in the (loaded part of the) world.
-   * 
+   *
    * <code>
    * found = Entities.find("@e[type=cow]")
    * for _,cow in pairs(found) do
    *   print(cow.pos)
    * end
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the names of all dropped items in the (loaded part of the) world.
-   * 
+   *
    * <code>
    * found = Entities.find("@e[type=item]")
    * for _,e in pairs(found) do
    *   print(e.name)
    * end
    * </code>
-   * 
+   *
    */
   @LuaFunction
   public List<Entity> find(String selector) {
@@ -110,30 +111,30 @@ public class EntitiesModule extends LuaTableExtension {
   }
 
   /**
-   * The ‘summon’ function returns a freshly created entity of the given type,
-   * having the optionally given Nbt values.
-   * 
+   * The ‘summon’ function returns a freshly created entity of the given type, having the optionally
+   * given Nbt values.
+   *
    * #### Example
-   * 
+   *
    * Creating a pig and moving it half a meter upwards.
-   * 
+   *
    * <code>
    * pig = Entities.summon("pig")
    * pig:move("up",0.5)
    * </code>
-   *  
-   * #### Example
    * 
+   * #### Example
+   *
    * Creating a creeper with no AI.
-   * 
+   *
    * <code>
-   * Entities.summon("creeper", {NoAI=1}) 
+   * Entities.summon("creeper", {NoAI=1})
    * </code>
-   * 
+   *
    * #### Example
-   * 
+   *
    * Creating a zombie with no AI that is spinning around.
-   * 
+   *
    * <code>
    * z = Entities.summon("zombie", {NoAI=1})
    * while true do
@@ -141,7 +142,7 @@ public class EntitiesModule extends LuaTableExtension {
    *   sleep(1)
    * end
    * </code>
-   * 
+   *
    */
   @LuaFunction
   @LuaFunctionDoc(returnType = EntityClass.NAME, args = {"nbt"})
