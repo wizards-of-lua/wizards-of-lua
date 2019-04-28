@@ -344,7 +344,7 @@ public class InjectionScope implements AutoCloseable {
     return provideInstance(type);
   }
 
-  private void callLifecycleMethods(Object instance,
+  public void callLifecycleMethods(Object instance,
       Class<? extends Annotation> lifecycleAnnotation) {
     Class<?> cls = instance.getClass();
     lifecycleMethods(cls, lifecycleAnnotation).forEach(method -> {
