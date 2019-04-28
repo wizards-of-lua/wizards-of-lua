@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,7 +19,6 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.sandius.rembulan.Conversions;
 import net.sandius.rembulan.StateContext;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.TableFactory;
@@ -87,7 +87,7 @@ public class SpellProgram {
   private @Nullable Entity owner;
   private final PrintReceiver printReceiver;
   private final String code;
-  private final String[] arguments;
+  private final ImmutableList<String> arguments;
 
   private final StateContext stateContext;
   private final LuaScheduler scheduler;
@@ -132,12 +132,12 @@ public class SpellProgram {
   }
 
   SpellProgram(World world, @Nullable Entity owner, PrintReceiver printReceiver, String code,
-      @Nullable String... arguments) {
+      String... arguments) {
     this.world = requireNonNull(world, "world");
     this.owner = owner;
     this.printReceiver = requireNonNull(printReceiver, "printReceiver");
     this.code = requireNonNull(code, "code");
-    this.arguments = arguments;
+    this.arguments = ImmutableList.copyOf(arguments);
 
     stateContext = StateContexts.newDefaultInstance();
     scheduler = new LuaScheduler(stateContext);
@@ -278,6 +278,31 @@ public class SpellProgram {
     return spellScope;
   }
 
+  private void installSystemLibraries() {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    FileSystem fileSystem = runtimeEnv.fileSystem();
+
+    BasicLib.installInto(stateContext, env, /* runtimeEnv */ null, loader);
+
+    // We don't pass the loader to the ModuleLib in order to prevent the installation of the
+    // ChunkLoadPathSearcher
+    ModuleLib.installInto(stateContext, env, /* runtimeEnv */ null, /* loader */ null,
+        /* classLoader */ null);
+    // Instead we install our own two searchers
+    ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache, classLoader);
+    PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader, fileSystem,
+        () -> luaPath);
+
+    CoroutineLib.installInto(stateContext, env);
+    StringLib.installInto(stateContext, env);
+    MathLib.installInto(stateContext, env);
+    TableLib.installInto(stateContext, env);
+
+    WolRuntimeEnvironment runtimeEnvironment =
+        new WolRuntimeEnvironment(RuntimeEnvironments.system(), this.fileSystem);
+    IoLib.installInto(stateContext, env, runtimeEnvironment);
+  }
+
   private void loadExtensions() {
     ExtensionLoader.getLuaToJavaConverters().forEach(this::registerLuaToJavaConverter);
     ExtensionLoader.getJavaToLuaConverters().forEach(this::registerJavaToLuaConverter);
@@ -388,6 +413,18 @@ public class SpellProgram {
     }
   }
 
+  private void compileAndRun()
+      throws LoaderException, CallException, CallPausedException, InterruptedException {
+    SpellModule.installInto(env, getConverters(), spellEntity);
+    SpellsModule.installInto(env, getConverters(), spellRegistry, spellEntity);
+
+    int luaTicksLimit = getLuaTicksLimit();
+    dependencies.installModules(env, scheduler, luaTicksLimit);
+
+    LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
+    scheduler.call(luaTicksLimit, commandLineFunc, arguments.toArray());
+  }
+
   private void handleException(String contextMessage, Throwable t) {
     terminate();
     SpellException s = exceptionFactory.create(t);
@@ -398,49 +435,5 @@ public class SpellProgram {
       txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
       owner.sendMessage(txt);
     }
-  }
-
-  private void compileAndRun()
-      throws LoaderException, CallException, CallPausedException, InterruptedException {
-    SpellModule.installInto(env, getConverters(), spellEntity);
-    SpellsModule.installInto(env, getConverters(), spellRegistry, spellEntity);
-
-    int luaTicksLimit = getLuaTicksLimit();
-    dependencies.installModules(env, scheduler, luaTicksLimit);
-
-    LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
-    if (arguments != null) {
-      Object[] luaArgs = new Object[arguments.length];
-      System.arraycopy(arguments, 0, luaArgs, 0, luaArgs.length);
-      Conversions.toCanonicalValues(luaArgs);
-      scheduler.call(luaTicksLimit, commandLineFunc, luaArgs);
-    } else {
-      scheduler.call(luaTicksLimit, commandLineFunc);
-    }
-  }
-
-  private void installSystemLibraries() {
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    FileSystem fileSystem = runtimeEnv.fileSystem();
-
-    BasicLib.installInto(stateContext, env, /* runtimeEnv */ null, loader);
-
-    // We don't pass the loader to the ModuleLib in order to prevent the installation of the
-    // ChunkLoadPathSearcher
-    ModuleLib.installInto(stateContext, env, /* runtimeEnv */ null, /* loader */ null,
-        /* classLoader */ null);
-    // Instead we install our own two searchers
-    ClasspathResourceSearcher.installInto(env, loader, luaFunctionCache, classLoader);
-    PatchedChunkLoadPathSearcher.installInto(env, loader, luaFunctionCache, classLoader, fileSystem,
-        () -> luaPath);
-
-    CoroutineLib.installInto(stateContext, env);
-    StringLib.installInto(stateContext, env);
-    MathLib.installInto(stateContext, env);
-    TableLib.installInto(stateContext, env);
-
-    WolRuntimeEnvironment runtimeEnvironment =
-        new WolRuntimeEnvironment(RuntimeEnvironments.system(), this.fileSystem);
-    IoLib.installInto(stateContext, env, runtimeEnvironment);
   }
 }

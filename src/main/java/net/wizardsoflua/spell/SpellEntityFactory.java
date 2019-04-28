@@ -30,7 +30,7 @@ public class SpellEntityFactory {
   private long nextSid = 1;
 
   public SpellEntity create(CommandSource source, PrintReceiver printReceiver, String code,
-      @Nullable String... arguments) {
+      String... arguments) {
     Entity owner = getOwner(source);
     World world = source.getWorld();
     PositionAndRotation pos = getPositionAndRotation(source);
