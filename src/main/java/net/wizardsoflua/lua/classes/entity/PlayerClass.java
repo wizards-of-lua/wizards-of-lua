@@ -3,6 +3,7 @@ package net.wizardsoflua.lua.classes.entity;
 import static java.lang.String.format;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import com.google.auto.service.AutoService;
@@ -14,12 +15,17 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.world.GameType;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
 import net.wizardsoflua.annotation.LuaProperty;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.PreDestroy;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.spell.api.resource.Injector;
 import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
@@ -44,6 +50,36 @@ public final class PlayerClass
   private LuaConverters converters;
   @Resource
   private Injector injector;
+
+  @PostConstruct
+  private void postConstruct() {
+    MinecraftForge.EVENT_BUS.register(this);
+  }
+
+  @PreDestroy
+  private void preDestroy() {
+    MinecraftForge.EVENT_BUS.unregister(this);
+  }
+
+  @SubscribeEvent
+  public void onPlayerClone(PlayerEvent.Clone event) {
+    EntityPlayer oldPlayer = event.getOriginal();
+    EntityPlayer newPlayer = event.getEntityPlayer();
+    if (oldPlayer instanceof EntityPlayerMP && newPlayer instanceof EntityPlayerMP) {
+      replacePlayer((EntityPlayerMP) oldPlayer, (EntityPlayerMP) newPlayer);
+    }
+  }
+
+  private void replacePlayer(EntityPlayerMP oldPlayer, EntityPlayerMP newPlayer) {
+    ConcurrentMap<EntityPlayer, Delegator<? extends Instance<EntityPlayerMP>>> cache =
+        getCache().asMap();
+    Delegator<? extends Instance<EntityPlayerMP>> value = cache.remove(oldPlayer);
+    if (value != null) {
+      Instance<EntityPlayerMP> instance = value.getDelegate();
+      instance.setDelegate(newPlayer);
+      cache.put(newPlayer, value);
+    }
+  }
 
   @Override
   protected Table createRawTable() {

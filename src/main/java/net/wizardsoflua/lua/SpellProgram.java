@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.annotation.Nullable;
-import com.google.common.cache.Cache;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
@@ -51,9 +49,6 @@ import net.wizardsoflua.extension.spell.api.resource.Spell;
 import net.wizardsoflua.extension.spell.api.resource.Time;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
-import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.lua.classes.entity.PlayerClass;
-import net.wizardsoflua.lua.classes.entity.PlayerClass.Instance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
@@ -278,6 +273,13 @@ public class SpellProgram {
     return owner;
   }
 
+  public void replacePlayer(@Nullable EntityPlayerMP oldPlayer,
+      @Nullable EntityPlayerMP newPlayer) {
+    if (owner == oldPlayer) {
+      owner = newPlayer;
+    }
+  }
+
   public boolean isTerminated() {
     if (state == State.TERMINATED) {
       return true;
@@ -421,25 +423,4 @@ public class SpellProgram {
         new WolRuntimeEnvironment(RuntimeEnvironments.system(), wolFs);
     IoLib.installInto(stateContext, env, runtimeEnvironment);
   }
-
-  public void replacePlayerInstance(EntityPlayerMP newPlayer) {
-    if (owner instanceof EntityPlayer) {
-      if (owner.getUniqueID().equals(newPlayer.getUniqueID())) {
-        owner = newPlayer;
-      }
-    }
-    PlayerClass playerClass = spellScope.getInstance(PlayerClass.class);
-    Cache<EntityPlayer, Delegator<? extends Instance<EntityPlayerMP>>> cache =
-        playerClass.getCache();
-    for (EntityPlayer oldPlayer : cache.asMap().keySet()) {
-      if (oldPlayer.getUniqueID().equals(newPlayer.getUniqueID())) {
-        Delegator<? extends Instance<EntityPlayerMP>> oldValue = cache.asMap().remove(oldPlayer);
-        cache.put(newPlayer, oldValue);
-        Instance<EntityPlayerMP> instance = oldValue.getDelegate();
-        instance.setDelegate(newPlayer);
-      }
-    }
-  }
-
-
 }

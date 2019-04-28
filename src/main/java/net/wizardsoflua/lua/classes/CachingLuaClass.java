@@ -1,17 +1,15 @@
 package net.wizardsoflua.lua.classes;
 
 import java.util.concurrent.ConcurrentMap;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 
 public abstract class CachingLuaClass<J, L> extends AnnotatedLuaClass
     implements LuaConverter<J, L> {
   private final Cache<J, L> cache = CacheBuilder.newBuilder().weakKeys().softValues().build();
 
-  public Cache<J, L> getCache() {
+  protected Cache<J, L> getCache() {
     return cache;
   }
 

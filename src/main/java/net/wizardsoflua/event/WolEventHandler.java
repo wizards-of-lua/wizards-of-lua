@@ -5,14 +5,15 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.wizardsoflua.WizardsOfLua;
@@ -45,7 +46,7 @@ public class WolEventHandler {
   @SubscribeEvent
   public void onEvent(Event event) {
     if (EffectiveSide.get() != LogicalSide.SERVER) {
-      return;
+      return; // This early exit is just to improve performance
     }
     if (event instanceof ServerTickEvent) {
       onServerTickEvent((ServerTickEvent) event);
@@ -84,30 +85,27 @@ public class WolEventHandler {
   }
 
   @SubscribeEvent
-  public void onPlayerRespawnEvent(PlayerRespawnEvent evt) {
-    if (EffectiveSide.get() != LogicalSide.SERVER) {
-      return;
+  public void onPlayerClone(PlayerEvent.Clone event) {
+    EntityPlayer oldPlayer = event.getOriginal();
+    EntityPlayer newPlayer = event.getEntityPlayer();
+    if (oldPlayer instanceof EntityPlayerMP && newPlayer instanceof EntityPlayerMP) {
+      EntityPlayerMP oldMultiPlayer = (EntityPlayerMP) oldPlayer;
+      EntityPlayerMP newMultiPlayer = (EntityPlayerMP) newPlayer;
+      for (SpellEntity spellEntity : registry.getAll()) {
+        // TODO Adrodoc 28.04.2019: Move this into an event listener in the program
+        spellEntity.getProgram().replacePlayer(oldMultiPlayer, newMultiPlayer);
+      }
+
+      addWolPacketHandler(newMultiPlayer);
     }
-    EntityPlayerMP player = (EntityPlayerMP) evt.getPlayer();
-    addWolPacketHandler(player);
-    replacePlayerInstance(player);
   }
 
   @SubscribeEvent
   public void onPlayerLoggedIn(PlayerLoggedInEvent evt) {
-    if (EffectiveSide.get() != LogicalSide.SERVER) {
-      return;
-    }
-    EntityPlayerMP player = (EntityPlayerMP) evt.getPlayer();
-    addWolPacketHandler(player);
-    replacePlayerInstance(player);
-  }
-
-  // FIXME Adrodoc 28.04.2019: Use PlayerEvent.Clone instead of PlayerLoggedInEvent and
-  // PlayerRespawnEvent
-  private void replacePlayerInstance(EntityPlayerMP player) {
-    for (SpellEntity spellEntity : registry.getAll()) {
-      spellEntity.getProgram().replacePlayerInstance(player);
+    EntityPlayer player = evt.getPlayer();
+    if (player instanceof EntityPlayerMP) {
+      EntityPlayerMP multiPlayer = (EntityPlayerMP) player;
+      addWolPacketHandler(multiPlayer);
     }
   }
 
@@ -130,5 +128,4 @@ public class WolEventHandler {
       handler.setPlayer(player);
     }
   }
-
 }
