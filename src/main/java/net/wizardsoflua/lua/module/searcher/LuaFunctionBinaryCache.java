@@ -7,9 +7,10 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.inject.Singleton;
 import net.wizardsoflua.lua.compiler.LuaFunctionBinary;
 
+@Singleton
 public class LuaFunctionBinaryCache
     implements LuaFunctionBinaryByPathCache, LuaFunctionBinaryByUrlCache {
 

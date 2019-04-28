@@ -2,20 +2,18 @@ package net.wizardsoflua.wol.startup;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandSource;
-import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.WolServer;
 
 public class StartupCommand implements Command<CommandSource> {
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public StartupCommand(WizardsOfLua wol) {
+  public StartupCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol == null!");
   }
 
@@ -31,5 +29,4 @@ public class StartupCommand implements Command<CommandSource> {
     wol.runStartupSequence(context.getSource());
     return Command.SINGLE_SUCCESS;
   }
-
 }

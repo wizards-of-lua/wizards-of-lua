@@ -94,13 +94,13 @@ public class SpellProgram {
 
     long getScriptTimeoutMillis();
 
-    SpellRegistry getSpellRegistry();
-
-    InjectionScope getRootScope();
+    InjectionScope getParentScope();
 
     FileSystem getWorldFileSystem();
 
     Profiles getProfiles();
+
+    SpellRegistry getSpellRegistry();
   }
 
   public static final String ROOT_CLASS_PREFIX = "SpellByteCode";
@@ -166,7 +166,7 @@ public class SpellProgram {
    * injection.
    */
   private SpellScope createSpellScope() {
-    SpellScope spellScope = new SpellScope(context.getRootScope());
+    SpellScope spellScope = new SpellScope(context.getParentScope());
     spellScope.registerResource(Injector.class, new Injector() {
       @Override
       public <T> T injectMembers(T instance) throws IllegalStateException {

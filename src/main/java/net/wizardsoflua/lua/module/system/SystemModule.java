@@ -3,7 +3,6 @@ package net.wizardsoflua.lua.module.system;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -11,19 +10,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
-
+import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
-
 import com.google.auto.service.AutoService;
-
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.ExecutionContext;
 import net.sandius.rembulan.runtime.ResolvedControlThrowable;
 import net.sandius.rembulan.runtime.UnresolvedControlThrowable;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
 import net.wizardsoflua.annotation.LuaFunction;
@@ -34,6 +29,7 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.api.resource.LuaScheduler;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.filesystem.PathUtil;
+import net.wizardsoflua.filesystem.WolServerFileSystem;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 
@@ -50,8 +46,8 @@ public class SystemModule extends LuaTableExtension {
   private LuaConverters converters;
   @Resource
   private LuaScheduler scheduler;
-  @Resource
-  private WizardsOfLua wizardsOfLua;
+  @Inject
+  private WolServerFileSystem fileSystem;
 
   private boolean enabled;
   private Path scriptDir;
@@ -86,11 +82,11 @@ public class SystemModule extends LuaTableExtension {
    * The <span class="notranslate">'listFiles'</span> function returns a table with the names of all
    * files that exist inside the directory at the given path. The path is interpreted relative to
    * the server's world folder.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the names of all files inside the "region" folder of the server's world folder.
-   * 
+   *
    * <code>
    * local path = '/region'
    * local names = System.listFiles(path)
@@ -98,19 +94,18 @@ public class SystemModule extends LuaTableExtension {
    *   print(name)
    * end
    * </code>
-   * 
+   *
    * #### Example
    *
    * Getting the names of all files inside server's world folder.
    *
-   * <code>        
+   * <code>
    * local names = System.listFiles('/')
    * </code>
    */
   @LuaFunction
   public Collection<String> listFiles(String path) {
     try {
-      FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
       Path pathObj = fileSystem.getPath(path);
       if (!Files.exists(pathObj)) {
         throw new LuaRuntimeException(String.format("%s does not exist!", path));
@@ -131,11 +126,11 @@ public class SystemModule extends LuaTableExtension {
    * The <span class="notranslate">'isDir'</span> function checks whether the given path points to a
    * directory (in contrast to a regular file). The path is interpreted relative to the server's
    * world folder.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the file type of the file "some/file" inside the server's world folder.
-   * 
+   *
    * <code>
    * local path = '/some/file'
    * if System.isFile(path) then
@@ -148,7 +143,6 @@ public class SystemModule extends LuaTableExtension {
    */
   @LuaFunction
   public boolean isDir(String path) {
-    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
     Path pathObj = fileSystem.getPath(path);
     return Files.exists(pathObj) && Files.isDirectory(pathObj);
   }
@@ -157,11 +151,11 @@ public class SystemModule extends LuaTableExtension {
    * The <span class="notranslate">'isFile'</span> function checks whether the given path points to
    * a regular file (in contrast to a directory). The path is interpreted relative to the server's
    * world folder.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Printing the file type of the file "some/file" inside the server's world folder.
-   * 
+   *
    * <code>
    * local path = '/some/file'
    * if System.isFile(path) then
@@ -174,7 +168,6 @@ public class SystemModule extends LuaTableExtension {
    */
   @LuaFunction
   public boolean isFile(String path) {
-    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
     Path pathObj = fileSystem.getPath(path);
     return Files.exists(pathObj) && Files.isRegularFile(pathObj);
   }
@@ -184,11 +177,11 @@ public class SystemModule extends LuaTableExtension {
    * path if it did not already exist. The path is interpreted relative to the server's world
    * folder. This function returns true if the directory already existed or if it has been be
    * created.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Creating the directory "some/dir" in the server's world folder.
-   * 
+   *
    * <code>
    * local created = System.makeDir('/some/dir')
    * if not created then
@@ -198,7 +191,6 @@ public class SystemModule extends LuaTableExtension {
    */
   @LuaFunction
   public boolean makeDir(String path) {
-    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
     Path pathObj = fileSystem.getPath(path);
     if (Files.exists(pathObj) && Files.isRegularFile(pathObj)) {
       return false;
@@ -215,21 +207,20 @@ public class SystemModule extends LuaTableExtension {
    * The <span class="notranslate">'delete'</span> function deletes the file with the given path.
    * The path is interpreted relative to the server's world folder. This function returns true if
    * the file did exist and has been deleted.
-   * 
+   *
    * Please note that deleting a directory is only supported if its empty.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Deleting the file "some-file-to-delete.txt" from the server's world folder.
-   * 
-   * <code> 
+   *
+   * <code>
    * System.delete('/some-file-to-delete.txt')
    * </code>
-   * 
+   *
    */
   @LuaFunction
   public boolean delete(String path) {
-    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
     Path pathObj = fileSystem.getPath(path);
     try {
       return Files.deleteIfExists(pathObj) && !Files.exists(pathObj);
@@ -243,19 +234,18 @@ public class SystemModule extends LuaTableExtension {
    * path so that the resulting file is accessible by the given new path. The path is interpreted
    * relative to the server's world folder. This function returns true if the operation was
    * successful.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Renaming the file "aaa.txt" to "bbb.txt"
-   * 
-   * <code> 
+   *
+   * <code>
    * System.move('aaa.txt','bbb.txt')
    * </code>
-   * 
+   *
    */
   @LuaFunction
   public boolean move(String path, String newPath) {
-    FileSystem fileSystem = wizardsOfLua.getWorldFileSystem();
     Path pathObj = fileSystem.getPath(path);
     Path newPathObj = fileSystem.getPath(newPath);
     boolean isFile = Files.isRegularFile(pathObj);
@@ -276,12 +266,12 @@ public class SystemModule extends LuaTableExtension {
    * programs living inside the server's [script gateway directory](/configuration-file). Please
    * note that this is a blocking call. The spell will resume its execution only after the program
    * has terminated.
-   * 
+   *
    * #### Example
-   * 
+   *
    * Calling the "echo.sh" shell script from the server's script gateway directory.
-   * 
-   * <code> 
+   *
+   * <code>
    * exitcode, result = System.execute('echo.sh','some argument')
    * print('exitcode', exitcode)
    * print('result', result)

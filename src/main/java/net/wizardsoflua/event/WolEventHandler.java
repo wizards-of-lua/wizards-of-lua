@@ -1,8 +1,8 @@
 package net.wizardsoflua.event;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,20 +19,16 @@ import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.lua.Converters;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.spell.SpellEntity;
+import net.wizardsoflua.spell.SpellRegistry;
 
 public class WolEventHandler {
-
   private static final String WOL_PACKET_HANDLER_NAME = WizardsOfLua.MODID + ":packet_handler";
   private static final String VANILLA_PACKET_HANDLER_NAME = "packet_handler";
+  @Inject
+  private SpellRegistry registry;
 
   public interface Context {
     Iterable<SpellEntity> getSpells();
-  }
-
-  private final Context context;
-
-  public WolEventHandler(Context context) {
-    this.context = checkNotNull(context, "context==null!");
   }
 
   @SubscribeEvent
@@ -44,7 +40,7 @@ public class WolEventHandler {
       onServerTickEvent((ServerTickEvent) event);
     }
     if (Converters.isSupported(event.getClass())) {
-      for (SpellEntity spellEntity : context.getSpells()) {
+      for (SpellEntity spellEntity : registry.getAll()) {
         String eventName = getEventName(event, spellEntity);
         if (eventName != null) {
           EventsModule events = spellEntity.getProgram().getEvents();
@@ -69,7 +65,7 @@ public class WolEventHandler {
   // FIXME Adrodoc 24.04.2019: ServerTickEvent happens twice per tick,
   // once with Phase.START and once with Phase.END
   private void onServerTickEvent(ServerTickEvent event) {
-    for (SpellEntity spellEntity : context.getSpells()) {
+    for (SpellEntity spellEntity : registry.getAll()) {
       if (spellEntity.isAlive()) {
         spellEntity.onUpdate();
       }
@@ -96,8 +92,10 @@ public class WolEventHandler {
     replacePlayerInstance(player);
   }
 
+  // FIXME Adrodoc 28.04.2019: Use PlayerEvent.Clone instead of PlayerLoggedInEvent and
+  // PlayerRespawnEvent
   private void replacePlayerInstance(EntityPlayerMP player) {
-    for (SpellEntity spellEntity : context.getSpells()) {
+    for (SpellEntity spellEntity : registry.getAll()) {
       spellEntity.getProgram().replacePlayerInstance(player);
     }
   }

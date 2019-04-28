@@ -16,8 +16,8 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 import net.wizardsoflua.gist.GistFile;
 import net.wizardsoflua.gist.RateLimit;
 import net.wizardsoflua.gist.RequestRateLimitExceededException;
@@ -27,10 +27,10 @@ public class GistGetCommand implements Command<CommandSource> {
   private static final String URL_ARGUMENT = "url";
   private static final String DIRECTORY_ARGUMENT = "directory";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
   private final FileSection section;
 
-  public GistGetCommand(WizardsOfLua wol, FileSection section) {
+  public GistGetCommand(WolServer wol, FileSection section) {
     this.wol = wol;
     this.section = section;
   }

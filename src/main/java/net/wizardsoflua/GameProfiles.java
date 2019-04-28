@@ -1,24 +1,18 @@
 package net.wizardsoflua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Map;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
 import com.mojang.authlib.GameProfile;
-
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.UsernameCache;
+import net.wizardsoflua.extension.api.inject.Resource;
 
+@ServerScoped
 public class GameProfiles {
-
-  private final MinecraftServer server;
-
-  public GameProfiles(MinecraftServer server) {
-    this.server = checkNotNull(server, "server==null!");
-  }
+  @Resource
+  private MinecraftServer server;
 
   public @Nullable GameProfile getGameProfile(String nameOrUuid) {
     checkNotNull(nameOrUuid, "nameOrUuid==null!");
@@ -43,5 +37,4 @@ public class GameProfiles {
   public GameProfile getGameProfileById(UUID uuid) {
     return server.getPlayerProfileCache().getProfileByUUID(uuid);
   }
-
 }

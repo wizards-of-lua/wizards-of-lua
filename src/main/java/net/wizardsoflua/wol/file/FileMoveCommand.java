@@ -4,28 +4,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class FileMoveCommand implements Command<CommandSource> {
   private static final String FILE_ARGUMENT = "file";
   private static final String NEW_FILE_ARGUMENT = "newfile"; // TODO are spaces allowed?
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
   private final FileSection section;
 
-  public FileMoveCommand(WizardsOfLua wol, FileSection section) {
+  public FileMoveCommand(WolServer wol, FileSection section) {
     this.wol = checkNotNull(wol, "wol==null!");
     this.section = checkNotNull(section, "section==null!");
   }

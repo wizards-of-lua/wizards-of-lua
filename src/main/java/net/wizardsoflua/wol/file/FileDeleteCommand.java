@@ -4,26 +4,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class FileDeleteCommand implements Command<CommandSource> {
   private static final String FILE_ARGUMENT = "file";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
   private final FileSection section;
 
-  public FileDeleteCommand(WizardsOfLua wol, FileSection section) {
+  public FileDeleteCommand(WolServer wol, FileSection section) {
     this.wol = checkNotNull(wol, "wol==null!");
     this.section = checkNotNull(section, "section==null!");
   }

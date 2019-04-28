@@ -1,20 +1,18 @@
 package net.wizardsoflua.permissions;
 
 import java.util.UUID;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListOps;
 import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.world.dimension.DimensionType;
+import net.wizardsoflua.ServerScoped;
+import net.wizardsoflua.extension.api.inject.Resource;
 
+@ServerScoped
 public class Permissions {
-
-  private final MinecraftServer server;
-
-  public Permissions(MinecraftServer server) {
-    this.server = server;
-  }
+  @Resource
+  private MinecraftServer server;
 
   public boolean hasOperatorPrivileges(UUID playerId) {
     if (server.isSinglePlayer()

@@ -1,7 +1,6 @@
 package net.wizardsoflua.file;
 
 import static java.lang.String.format;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,41 +14,36 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.crypto.BadPaddingException;
-
+import javax.inject.Inject;
 import net.minecraft.entity.player.EntityPlayer;
-import net.wizardsoflua.config.RestApiConfig;
+import net.wizardsoflua.ServerScoped;
+import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.permissions.Permissions;
 
+@ServerScoped
 public class LuaFileRepository {
-
-  public interface Context {
-    File getPlayerLibDir(UUID playerId);
-
-    File getSharedLibDir();
-
-    String getPlayerRestApiKey(UUID playerId);
-
-    RestApiConfig getRestApiConfig();
-
-    boolean isOperator(UUID playerId);
-
-    Path getTempDir();
-  }
+  @Resource
+  private WizardsOfLua wol;
+  @Inject
+  private WolConfig config;
+  @Inject
+  private Permissions permissions;
 
   private final Crypto crypto = new Crypto();
-  private final Context context;
-  private final SpellPackFactory spellPackFactory;
+  private SpellPackFactory spellPackFactory;
 
-  public LuaFileRepository(Context context) {
-    this.context = context;
-    spellPackFactory =
-        new SpellPackFactory(context.getTempDir(), context.getSharedLibDir().toPath());
+  @PostConstruct
+  private void postConstruct() {
+    spellPackFactory = new SpellPackFactory(wol.getTempDir(), config.getSharedLibDir().toPath());
   }
 
   public List<String> getLuaFilenames(EntityPlayer player) {
     try {
-      Path playerLibDir = context.getPlayerLibDir(player.getUniqueID()).toPath();
+      Path playerLibDir = config.getOrCreateWizardConfig(player.getUniqueID()).getLibDir().toPath();
       try (Stream<Path> files = Files.walk(playerLibDir, FileVisitOption.FOLLOW_LINKS)) {
         return files.filter(p -> !Files.isDirectory(p)).filter(p -> !isHidden(p))
             .map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
@@ -61,7 +55,7 @@ public class LuaFileRepository {
 
   public List<String> getSharedLuaFilenames() {
     try {
-      Path sharedLibDir = context.getSharedLibDir().toPath();
+      Path sharedLibDir = config.getSharedLibDir().toPath();
       try (Stream<Path> files = Files.walk(sharedLibDir, FileVisitOption.FOLLOW_LINKS)) {
         return files.filter(p -> !Files.isDirectory(p)).filter(p -> !isHidden(p))
             .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
@@ -73,7 +67,7 @@ public class LuaFileRepository {
 
   public List<String> getToplevelSharedDirectoryNames() {
     try {
-      Path sharedLibDir = context.getSharedLibDir().toPath();
+      Path sharedLibDir = config.getSharedLibDir().toPath();
       try (Stream<Path> files = Files.walk(sharedLibDir, 1, FileVisitOption.FOLLOW_LINKS)) {
         return files.filter(p -> Files.isDirectory(p)).filter(p -> !isHidden(p))
             .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
@@ -96,9 +90,9 @@ public class LuaFileRepository {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
-    String hostname = context.getRestApiConfig().getHostname();
-    String protocol = context.getRestApiConfig().getProtocol();
-    int port = context.getRestApiConfig().getPort();
+    String hostname = config.getRestApiConfig().getHostname();
+    String protocol = config.getRestApiConfig().getProtocol();
+    int port = config.getRestApiConfig().getPort();
 
     String fileReference = getFileReferenceFor(player, filepath);
     try {
@@ -113,9 +107,9 @@ public class LuaFileRepository {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
-    String hostname = context.getRestApiConfig().getHostname();
-    String protocol = context.getRestApiConfig().getProtocol();
-    int port = context.getRestApiConfig().getPort();
+    String hostname = config.getRestApiConfig().getHostname();
+    String protocol = config.getRestApiConfig().getProtocol();
+    int port = config.getRestApiConfig().getPort();
 
     String fileReference = getSharedFileReferenceFor(filepath);
     try {
@@ -130,7 +124,7 @@ public class LuaFileRepository {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
-    File file = new File(context.getSharedLibDir(), filepath);
+    File file = new File(config.getSharedLibDir(), filepath);
 
     if (!file.exists()) {
       throw new IllegalArgumentException(
@@ -139,9 +133,9 @@ public class LuaFileRepository {
     if (!file.isDirectory()) {
       throw new IllegalArgumentException("Can't export " + filepath + "! It's not a directory!");
     }
-    String hostname = context.getRestApiConfig().getHostname();
-    String protocol = context.getRestApiConfig().getProtocol();
-    int port = context.getRestApiConfig().getPort();
+    String hostname = config.getRestApiConfig().getHostname();
+    String protocol = config.getRestApiConfig().getProtocol();
+    int port = config.getRestApiConfig().getPort();
 
     String fileReference = getSpellPackFileReferenceFor(filepath);
     try {
@@ -167,7 +161,7 @@ public class LuaFileRepository {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
       UUID playerId = player.getUniqueID();
-      File file = new File(context.getPlayerLibDir(playerId), filepath);
+      File file = new File(config.getOrCreateWizardConfig(playerId).getLibDir(), filepath);
       Files.delete(file.toPath());
       Path parent = file.getParentFile().toPath();
       if (isEmpty(parent)) {
@@ -183,7 +177,7 @@ public class LuaFileRepository {
       if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
       }
-      File file = new File(context.getSharedLibDir(), filepath);
+      File file = new File(config.getSharedLibDir(), filepath);
       Files.delete(file.toPath());
       Path parent = file.getParentFile().toPath();
       if (isEmpty(parent)) {
@@ -205,8 +199,8 @@ public class LuaFileRepository {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
       }
       UUID playerId = player.getUniqueID();
-      File oldFile = new File(context.getPlayerLibDir(playerId), filepath);
-      File newFile = new File(context.getPlayerLibDir(playerId), newFilepath);
+      File oldFile = new File(config.getOrCreateWizardConfig(playerId).getLibDir(), filepath);
+      File newFile = new File(config.getOrCreateWizardConfig(playerId).getLibDir(), newFilepath);
       if (!oldFile.exists()) {
         throw new IllegalArgumentException(
             "Can't move " + filepath + " to " + newFilepath + "! Source file does not exist!");
@@ -235,8 +229,8 @@ public class LuaFileRepository {
           || newFilepath.startsWith("\\")) {
         throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
       }
-      File oldFile = new File(context.getSharedLibDir(), filepath);
-      File newFile = new File(context.getSharedLibDir(), newFilepath);
+      File oldFile = new File(config.getSharedLibDir(), filepath);
+      File newFile = new File(config.getSharedLibDir(), newFilepath);
       if (!oldFile.exists()) {
         throw new IllegalArgumentException(
             "Can't move " + filepath + " to " + newFilepath + "! Source file does not exist!");
@@ -297,7 +291,7 @@ public class LuaFileRepository {
 
   /**
    * Saves the given content to the file denoted by the given file reference.
-   * 
+   *
    * @param fileReference
    * @param content
    */
@@ -318,7 +312,7 @@ public class LuaFileRepository {
 
   /**
    * Returns true, if the file denoted by the given file reference exists.
-   * 
+   *
    * @return true, if the file denoted by the given file reference exists
    */
   public boolean exists(String fileReference) {
@@ -327,9 +321,9 @@ public class LuaFileRepository {
   }
 
   public URL getPasswordTokenUrl(EntityPlayer player) {
-    String hostname = context.getRestApiConfig().getHostname();
-    String protocol = context.getRestApiConfig().getProtocol();
-    int port = context.getRestApiConfig().getPort();
+    String hostname = config.getRestApiConfig().getHostname();
+    String protocol = config.getRestApiConfig().getProtocol();
+    int port = config.getRestApiConfig().getPort();
     String uuid = player.getUniqueID().toString();
     String token = getLoginToken(player);
     try {
@@ -343,15 +337,15 @@ public class LuaFileRepository {
 
   public boolean isValidLoginToken(UUID playerId, String token) {
     int index = token.indexOf('/');
-    if (!context.isOperator(playerId)) {
+    if (!permissions.hasOperatorPrivileges(playerId)) {
       return false;
     }
     String encryptedPlayerPassword = token.substring(index + 1);
-    String serverPassword = context.getRestApiConfig().getApiKey();
+    String serverPassword = config.getRestApiConfig().getApiKey();
 
     try {
       String playerPassword = crypto.decrypt(playerId, serverPassword, encryptedPlayerPassword);
-      String expectedPlayerPassword = context.getPlayerRestApiKey(playerId);
+      String expectedPlayerPassword = config.getOrCreateWizardConfig(playerId).getRestApiKey();
       return expectedPlayerPassword.equals(playerPassword);
     } catch (BadPaddingException e) {
       return false;
@@ -363,8 +357,8 @@ public class LuaFileRepository {
   }
 
   private String getLoginToken(UUID playerId) {
-    String playerPassword = context.getPlayerRestApiKey(playerId);
-    String serverPassword = context.getRestApiConfig().getApiKey();
+    String playerPassword = config.getOrCreateWizardConfig(playerId).getRestApiKey();
+    String serverPassword = config.getRestApiConfig().getApiKey();
     try {
       String encryptedPlayerPassword = crypto.encrypt(playerId, serverPassword, playerPassword);
       return encryptedPlayerPassword;
@@ -380,10 +374,10 @@ public class LuaFileRepository {
       throw new IllegalArgumentException("Filepath must not contain '..' elements!");
     }
     if (fileReference.startsWith("shared/")) {
-      return new File(context.getSharedLibDir(), filepath);
+      return new File(config.getSharedLibDir(), filepath);
     } else {
       UUID ownerId = getOwnerIdFor(fileReference);
-      return new File(context.getPlayerLibDir(ownerId), filepath);
+      return new File(config.getOrCreateWizardConfig(ownerId).getLibDir(), filepath);
     }
   }
 

@@ -4,22 +4,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-
 import net.minecraft.command.CommandSource;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.WolAnnouncementMessage;
+import net.wizardsoflua.WolServer;
 
 public class SetEventListenerLuaTicksLimitCommand implements Command<CommandSource> {
   private static final String LIMIT_ARGUMENT = "limit";
 
-  private final WizardsOfLua wol;
+  private final WolServer wol;
 
-  public SetEventListenerLuaTicksLimitCommand(WizardsOfLua wol) {
+  public SetEventListenerLuaTicksLimitCommand(WolServer wol) {
     this.wol = checkNotNull(wol, "wol==null!");
   }
 
