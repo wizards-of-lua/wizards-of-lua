@@ -22,11 +22,11 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.PreDestroy;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.spell.SpellEntityFactory;
@@ -57,20 +57,17 @@ public class Startup {
     MinecraftForge.EVENT_BUS.register(this);
   }
 
+  @PreDestroy
+  private void preDestroy() {
+    MinecraftForge.EVENT_BUS.unregister(this);
+  }
+
   @SubscribeEvent
   public void onServerStarted(FMLServerStartedEvent event) {
     MinecraftServer server = event.getServer();
     if (this.server == server) {
       CommandSource commandSource = server.getCommandSource();
       runStartupSequence(commandSource);
-    }
-  }
-
-  @SubscribeEvent
-  public void onServerStopping(FMLServerStoppingEvent event) {
-    MinecraftServer server = event.getServer();
-    if (this.server == server) {
-      MinecraftForge.EVENT_BUS.unregister(this);
     }
   }
 

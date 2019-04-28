@@ -42,15 +42,12 @@ import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
-import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.api.inject.PreDestroy;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.file.SpellPack;
@@ -58,8 +55,6 @@ import net.wizardsoflua.file.SpellPack;
 @ServerScoped
 public class WolRestApiServer {
   private static final String LOGIN_COOKIE_KEY_PREFIX = "__HOST-Login-";
-  @Resource
-  private MinecraftServer mserver;
   @Inject
   private WolConfig config;
   @Inject
@@ -71,13 +66,10 @@ public class WolRestApiServer {
     MinecraftForge.EVENT_BUS.register(this);
   }
 
-  @SubscribeEvent
-  public void onServerStopping(FMLServerStoppingEvent event) {
-    MinecraftServer server = event.getServer();
-    if (mserver == server) {
-      stop();
-      MinecraftForge.EVENT_BUS.unregister(this);
-    }
+  @PreDestroy
+  private void preDestroy() {
+    MinecraftForge.EVENT_BUS.unregister(this);
+    stop();
   }
 
   private HTTPServer server;
