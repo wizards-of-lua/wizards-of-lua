@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension;
+package net.wizardsoflua.extension;
 
 import java.lang.annotation.Annotation;
 import javax.annotation.Nullable;

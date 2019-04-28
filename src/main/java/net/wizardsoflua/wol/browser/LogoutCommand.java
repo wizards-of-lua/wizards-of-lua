@@ -1,7 +1,8 @@
 package net.wizardsoflua.wol.browser;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -9,17 +10,17 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.file.Crypto;
 
-public class LogoutCommand implements Command<CommandSource> {
-  private final WolServer wol;
+@AutoService(CommandRegisterer.class)
+public class LogoutCommand implements CommandRegisterer, Command<CommandSource> {
   private final Crypto crypto = new Crypto();
+  @Inject
+  private WolConfig config;
 
-  public LogoutCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -35,7 +36,7 @@ public class LogoutCommand implements Command<CommandSource> {
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
       String password = crypto.createRandomPassword();
-      wol.getConfig().getOrCreateWizardConfig(player.getUniqueID()).setRestApiKey(password);
+      config.getOrCreateWizardConfig(player.getUniqueID()).setRestApiKey(password);
       WolAnnouncementMessage message =
           new WolAnnouncementMessage("Your web browser is logged out.");
       source.sendFeedback(message, true);

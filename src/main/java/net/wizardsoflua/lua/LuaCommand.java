@@ -1,12 +1,13 @@
 package net.wizardsoflua.lua;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -17,22 +18,17 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
+import net.wizardsoflua.spell.SpellEntityFactory;
 
-public class LuaCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class LuaCommand implements CommandRegisterer, Command<CommandSource> {
+  @Inject
+  private SpellEntityFactory factory;
 
-  public static void register(CommandDispatcher<CommandSource> dispatcher, WolServer wol) {
-    new LuaCommand(wol).register(dispatcher);
-  }
-
-  private final WolServer wol;
-
-  public LuaCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol == null!");
-  }
-
-  private void register(CommandDispatcher<CommandSource> dispatcher) {
+  @Override
+  public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("lua")//
             .then(argument("code", greedyString())//
@@ -51,7 +47,7 @@ public class LuaCommand implements Command<CommandSource> {
           source.sendFeedback(txt, true);
         }
       };
-      wol.getSpellEntityFactory().create(source, printReceiver, luaCode);
+      factory.create(source, printReceiver, luaCode);
       return Command.SINGLE_SUCCESS;
     } catch (Throwable t) {
       // FIXME check if we need to check for exceptions here or at some other place

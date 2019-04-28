@@ -7,15 +7,11 @@ import static java.util.Optional.ofNullable;
 import static net.minecraft.inventory.EntityEquipmentSlot.MAINHAND;
 import static net.minecraft.inventory.EntityEquipmentSlot.OFFHAND;
 import static net.minecraft.item.ItemStack.EMPTY;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import javax.annotation.Nullable;
-
 import com.google.common.io.Files;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -63,7 +59,7 @@ public class PlayerBackdoor {
   }
 
   public boolean isOperator() {
-    return getWol().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
+    return getTestenv().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
   }
 
   public EntityPlayerMP getDelegate() {
@@ -167,7 +163,7 @@ public class PlayerBackdoor {
   private File getModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
     return new File(
-        getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(),
+        getTestenv().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(),
         path);
   }
 

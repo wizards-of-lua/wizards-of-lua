@@ -1,28 +1,29 @@
 package net.wizardsoflua.wol.luatickslimit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.wizardsoflua.config.GeneralConfig.MAX_EVENT_LISTENER_LUA_TICKS_LIMIT;
 import static net.wizardsoflua.config.GeneralConfig.MIN_EVENT_LISTENER_LUA_TICKS_LIMIT;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandSource;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 
-public class SetEventListenerLuaTicksLimitCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class SetEventListenerLuaTicksLimitCommand
+    implements CommandRegisterer, Command<CommandSource> {
   private static final String LIMIT_ARGUMENT = "limit";
+  @Inject
+  private WolConfig config;
 
-  private final WolServer wol;
-
-  public SetEventListenerLuaTicksLimitCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     int min = MIN_EVENT_LISTENER_LUA_TICKS_LIMIT;
     int max = MAX_EVENT_LISTENER_LUA_TICKS_LIMIT;
@@ -37,7 +38,7 @@ public class SetEventListenerLuaTicksLimitCommand implements Command<CommandSour
   @Override
   public int run(CommandContext<CommandSource> context) {
     int limit = IntegerArgumentType.getInteger(context, LIMIT_ARGUMENT);
-    limit = wol.getConfig().getGeneralConfig().setEventListenerLuaTicksLimit(limit);
+    limit = config.getGeneralConfig().setEventListenerLuaTicksLimit(limit);
     // TODO I18n
     WolAnnouncementMessage message =
         new WolAnnouncementMessage("eventListenerLuaTicksLimit has been updated to " + limit);

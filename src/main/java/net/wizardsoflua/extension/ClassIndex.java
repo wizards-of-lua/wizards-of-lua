@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension;
+package net.wizardsoflua.extension;
 
 import java.util.Collection;
 import java.util.Collections;

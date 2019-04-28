@@ -1,6 +1,7 @@
 package net.wizardsoflua.testenv;
 
 import static java.util.Objects.requireNonNull;
+import java.nio.file.FileSystem;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +20,11 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.InjectionScope;
+import net.wizardsoflua.filesystem.WolServerFileSystem;
+import net.wizardsoflua.permissions.Permissions;
+import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.testenv.junit.AbortExtension;
 import net.wizardsoflua.testenv.net.NetworkMessage;
 import net.wizardsoflua.testenv.net.WolTestPacketChannel;
@@ -69,21 +75,21 @@ public final class WolTestenv implements AutoCloseable {
 
   private final AbortExtension abortExtension = new AbortExtension();
   private final WolTestMod mod;
-  private final MinecraftServer server;
+  private final InjectionScope serverScope;
   private volatile EntityPlayerMP testPlayer;
 
   /**
    * Creates a new {@link WolTestenv} and associates it with the current thread.
    *
    * @param mod
-   * @param server
+   * @param serverScope
    * @param testPlayer
    * @see WolTestenv
    * @see #getInstanceForCurrentThread()
    */
-  public WolTestenv(WolTestMod mod, MinecraftServer server, EntityPlayerMP testPlayer) {
+  public WolTestenv(WolTestMod mod, InjectionScope serverScope, EntityPlayerMP testPlayer) {
     this.mod = requireNonNull(mod, "mod");
-    this.server = requireNonNull(server, "server");
+    this.serverScope = requireNonNull(serverScope, "serverScope");
     this.testPlayer = requireNonNull(testPlayer, "testPlayer");
     MinecraftForge.EVENT_BUS.register(this);
     INSTANCE.set(this);
@@ -139,7 +145,23 @@ public final class WolTestenv implements AutoCloseable {
   }
 
   public MinecraftServer getServer() {
-    return server;
+    return serverScope.getResource(MinecraftServer.class);
+  }
+
+  public SpellRegistry getSpellRegistry() {
+    return serverScope.getInstance(SpellRegistry.class);
+  }
+
+  public WolConfig getConfig() {
+    return serverScope.getInstance(WolConfig.class);
+  }
+
+  public FileSystem getWorldFileSystem() {
+    return serverScope.getInstance(WolServerFileSystem.class);
+  }
+
+  public Permissions getPermissions() {
+    return serverScope.getInstance(Permissions.class);
   }
 
   private static final int SYNCED = -1;
@@ -224,11 +246,11 @@ public final class WolTestenv implements AutoCloseable {
    * @return a future representing pending completion of the task
    */
   public ListenableFuture<Object> runOnMainThread(Runnable runnable) {
-    return server.addScheduledTask(runnable);
+    return getServer().addScheduledTask(runnable);
   }
 
   public <V> V callOnMainThread(Callable<V> callable) {
-    ListenableFuture<V> future = server.callFromMainThread(callable);
+    ListenableFuture<V> future = getServer().callFromMainThread(callable);
     try {
       return future.get();
     } catch (InterruptedException | ExecutionException e) {
@@ -246,7 +268,7 @@ public final class WolTestenv implements AutoCloseable {
    */
   @Deprecated
   public void runOnMainThreadAndWait(Runnable runnable) {
-    ListenableFuture<Object> future = server.addScheduledTask(runnable);
+    ListenableFuture<Object> future = getServer().addScheduledTask(runnable);
     try {
       future.get(30, TimeUnit.SECONDS);
     } catch (InterruptedException | ExecutionException | TimeoutException e) {

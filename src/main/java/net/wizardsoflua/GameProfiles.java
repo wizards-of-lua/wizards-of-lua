@@ -8,6 +8,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.UsernameCache;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 
 @ServerScoped
 public class GameProfiles {

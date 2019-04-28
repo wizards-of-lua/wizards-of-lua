@@ -17,6 +17,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.wizardsoflua.WizardsOfLua;
+import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.imc.TypedImc;
 import net.wizardsoflua.imc.WizardsOfLuaConsumer;
 import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
@@ -58,8 +59,9 @@ public class WolTestMod {
 
   public void onServerStarting(FMLServerStartingEvent event) {
     MinecraftServer server = event.getServer();
+    InjectionScope serverScope = wol.provideServerScope(server);
     CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
-    new TestCommand(this, server).register(dispatcher);
+    new TestCommand(this, serverScope).register(dispatcher);
   }
 
   private class MainForgeEventBusListener {

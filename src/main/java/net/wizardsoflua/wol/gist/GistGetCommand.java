@@ -1,12 +1,15 @@
 package net.wizardsoflua.wol.gist;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -17,24 +20,47 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.gist.GistFile;
+import net.wizardsoflua.gist.GistRepo;
 import net.wizardsoflua.gist.RateLimit;
 import net.wizardsoflua.gist.RequestRateLimitExceededException;
 import net.wizardsoflua.wol.file.FileSection;
 
-public class GistGetCommand implements Command<CommandSource> {
+public class GistGetCommand implements CommandRegisterer, Command<CommandSource> {
+  @AutoService(CommandRegisterer.class)
+  public static class PersonalGistGetCommand extends GistGetCommand {
+    public PersonalGistGetCommand() {
+      super(FileSection.PERSONAL);
+    }
+  }
+
+  @AutoService(CommandRegisterer.class)
+  public static class SharedGistGetCommand extends GistGetCommand {
+    public SharedGistGetCommand() {
+      super(FileSection.SHARED);
+    }
+  }
+
   private static final String URL_ARGUMENT = "url";
   private static final String DIRECTORY_ARGUMENT = "directory";
 
-  private final WolServer wol;
+  @Inject
+  private WolConfig config;
+  @Inject
+  private LuaFileRepository fileRepo;
+  @Inject
+  private GistRepo gistRepo;
+
   private final FileSection section;
 
-  public GistGetCommand(WolServer wol, FileSection section) {
-    this.wol = wol;
-    this.section = section;
+  public GistGetCommand(FileSection section) {
+    this.section = requireNonNull(section, "section");
   }
 
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -61,21 +87,21 @@ public class GistGetCommand implements Command<CommandSource> {
     }
 
     try {
-      String accessToken = wol.getConfig().getGeneralConfig().getGitHubAccessToken();
+      String accessToken = config.getGeneralConfig().getGitHubAccessToken();
       LOGGER.info("Loading Gist " + url);
-      List<GistFile> files = wol.getGistRepo().getGistFiles(url, accessToken);
+      List<GistFile> files = gistRepo.getGistFiles(url, accessToken);
       for (GistFile gistFile : files) {
         FileRef fileReference = toFileReference(player, directory, gistFile);
         String content = gistFile.content;
-        boolean existed = wol.getFileRepository().exists(fileReference.fullPath);
-        wol.getFileRepository().saveLuaFile(fileReference.fullPath, content);
+        boolean existed = fileRepo.exists(fileReference.fullPath);
+        fileRepo.saveLuaFile(fileReference.fullPath, content);
         String action = existed ? "updated" : "created";
         WolAnnouncementMessage message =
             new WolAnnouncementMessage(fileReference.localPath + " " + action + ".");
         source.sendFeedback(message, true);
       }
       if (accessToken == null) {
-        RateLimit rateLimit = wol.getGistRepo().getRateLimitRemaining(accessToken);
+        RateLimit rateLimit = gistRepo.getRateLimitRemaining(accessToken);
         if (rateLimit.remaining < 10) {
           LOGGER.warn("This server is close to exceed the GitHub request rate limit of "
               + rateLimit.limit + " calls per hour!");
@@ -180,10 +206,9 @@ public class GistGetCommand implements Command<CommandSource> {
     String localPath = directory == null ? gistFile.filename : directory + "/" + gistFile.filename;
     switch (section) {
       case PERSONAL:
-        return new FileRef(localPath,
-            wol.getFileRepository().getFileReferenceFor(owner, localPath));
+        return new FileRef(localPath, fileRepo.getFileReferenceFor(owner, localPath));
       case SHARED:
-        return new FileRef(localPath, wol.getFileRepository().getSharedFileReferenceFor(localPath));
+        return new FileRef(localPath, fileRepo.getSharedFileReferenceFor(localPath));
       default:
         throw new IllegalStateException("Unexpected section: " + section);
     }

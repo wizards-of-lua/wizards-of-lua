@@ -1,22 +1,23 @@
 package net.wizardsoflua.wol.luatickslimit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandSource;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.config.WolConfig;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 
-public class PrintEventListenerLuaTicksLimitCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class PrintEventListenerLuaTicksLimitCommand
+    implements CommandRegisterer, Command<CommandSource> {
+  @Inject
+  private WolConfig config;
 
-  private final WolServer wol;
-
-  public PrintEventListenerLuaTicksLimitCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -26,8 +27,7 @@ public class PrintEventListenerLuaTicksLimitCommand implements Command<CommandSo
 
   @Override
   public int run(CommandContext<CommandSource> context) {
-    int eventListenerLuaTicksLimit =
-        wol.getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
+    int eventListenerLuaTicksLimit = config.getGeneralConfig().getEventListenerLuaTicksLimit();
     WolAnnouncementMessage message =
         new WolAnnouncementMessage("eventListenerLuaTicksLimit = " + eventListenerLuaTicksLimit);
     CommandSource source = context.getSource();

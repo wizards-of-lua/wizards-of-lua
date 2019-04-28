@@ -1,9 +1,8 @@
 package net.wizardsoflua.lua.module.command;
 
 import javax.annotation.Nullable;
-
+import javax.inject.Inject;
 import com.google.auto.service.AutoService;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
@@ -25,8 +24,7 @@ public class CommandsModule extends LuaTableExtension {
   public static final String NAME = "Commands";
   @Resource
   private LuaConverters converters;
-
-  @Resource
+  @Inject
   private CustomCommandRegistry commandRegistry;
 
   @Override

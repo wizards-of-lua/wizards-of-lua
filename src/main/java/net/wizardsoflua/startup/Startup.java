@@ -22,12 +22,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.PreDestroy;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.spell.SpellEntityFactory;
 

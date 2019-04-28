@@ -1,14 +1,11 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static java.lang.String.format;
-
 import java.util.EnumSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
+import javax.inject.Inject;
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
@@ -18,7 +15,6 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.world.GameType;
 import net.sandius.rembulan.LuaRuntimeException;
 import net.sandius.rembulan.Table;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
@@ -30,6 +26,7 @@ import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
+import net.wizardsoflua.permissions.Permissions;
 
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerClass.NAME, superClass = EntityClass.class)
@@ -56,9 +53,8 @@ public final class PlayerClass
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends EntityPlayerMP> extends EntityLivingBaseClass.Instance<D> {
-
-    @Resource
-    private WizardsOfLua wol;
+    @Inject
+    private Permissions permissions;
 
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
@@ -86,7 +82,7 @@ public final class PlayerClass
 
     @LuaProperty
     public boolean isOperator() {
-      return wol.getPermissions().hasOperatorPrivileges(delegate.getUniqueID());
+      return permissions.hasOperatorPrivileges(delegate.getUniqueID());
     }
 
     // TODO: isn't team supported for entities?

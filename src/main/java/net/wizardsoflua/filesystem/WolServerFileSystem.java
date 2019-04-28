@@ -3,8 +3,8 @@ package net.wizardsoflua.filesystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import net.minecraft.server.MinecraftServer;
-import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 
 @ServerScoped
 public class WolServerFileSystem extends RestrictedFileSystem {

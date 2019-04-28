@@ -6,8 +6,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListOps;
 import net.minecraft.server.management.UserListOpsEntry;
 import net.minecraft.world.dimension.DimensionType;
-import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 
 @ServerScoped
 public class Permissions {

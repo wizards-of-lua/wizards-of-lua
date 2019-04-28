@@ -17,13 +17,14 @@ import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.inject.Inject;
 import net.minecraft.entity.player.EntityPlayer;
-import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 import net.wizardsoflua.permissions.Permissions;
 
+// FIXME Adrodoc 28.04.2019: This class seems to implement multiple unrelated features
 @ServerScoped
 public class LuaFileRepository {
   @Resource
