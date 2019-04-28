@@ -7,16 +7,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.concurrent.ThreadSafe;
+import java.util.concurrent.atomic.AtomicReference;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.wizardsoflua.WizardsOfLua;
@@ -45,10 +44,8 @@ import net.wizardsoflua.testenv.net.WolTestPacketChannel;
  * }
  * </pre></code>
  *
- *
  * @author Adrodoc
  */
-@ThreadSafe
 public final class WolTestenv implements AutoCloseable {
   private static final ThreadLocal<WolTestenv> INSTANCE = new ThreadLocal<>();
 
@@ -76,7 +73,7 @@ public final class WolTestenv implements AutoCloseable {
   private final AbortExtension abortExtension = new AbortExtension();
   private final WolTestMod mod;
   private final InjectionScope serverScope;
-  private volatile EntityPlayerMP testPlayer;
+  private final AtomicReference<EntityPlayerMP> testPlayer = new AtomicReference<>();
 
   /**
    * Creates a new {@link WolTestenv} and associates it with the current thread.
@@ -90,7 +87,7 @@ public final class WolTestenv implements AutoCloseable {
   public WolTestenv(WolTestMod mod, InjectionScope serverScope, EntityPlayerMP testPlayer) {
     this.mod = requireNonNull(mod, "mod");
     this.serverScope = requireNonNull(serverScope, "serverScope");
-    this.testPlayer = requireNonNull(testPlayer, "testPlayer");
+    this.testPlayer.set(requireNonNull(testPlayer, "testPlayer"));
     MinecraftForge.EVENT_BUS.register(this);
     INSTANCE.set(this);
   }
@@ -105,35 +102,6 @@ public final class WolTestenv implements AutoCloseable {
 
   public AbortExtension getAbortExtension() {
     return abortExtension;
-  }
-
-  @SubscribeEvent
-  public void onEvent(PlayerLoggedInEvent evt) {
-    EntityPlayer player = evt.getPlayer();
-    if (player instanceof EntityPlayerMP) {
-      EntityPlayerMP multiPlayer = (EntityPlayerMP) player;
-      updateTestPlayerIfSameAs(multiPlayer);
-    }
-  }
-
-  @SubscribeEvent
-  public void onEvent(PlayerRespawnEvent evt) {
-    EntityPlayer player = evt.getPlayer();
-    if (player instanceof EntityPlayerMP) {
-      EntityPlayerMP multiPlayer = (EntityPlayerMP) player;
-      updateTestPlayerIfSameAs(multiPlayer);
-    }
-  }
-
-  private void updateTestPlayerIfSameAs(EntityPlayerMP player) {
-    requireNonNull(player, "player");
-    if (testPlayer.getUniqueID().equals(player.getUniqueID())) {
-      testPlayer = player;
-    }
-  }
-
-  public EntityPlayerMP getTestPlayer() {
-    return testPlayer;
   }
 
   public WizardsOfLua getWol() {
@@ -162,6 +130,19 @@ public final class WolTestenv implements AutoCloseable {
 
   public Permissions getPermissions() {
     return serverScope.getInstance(Permissions.class);
+  }
+
+  @SubscribeEvent
+  public void onEvent(PlayerEvent.Clone evt) {
+    EntityPlayer oldPlayer = evt.getOriginal();
+    EntityPlayer newPlayer = evt.getEntityPlayer();
+    if (oldPlayer instanceof EntityPlayerMP && newPlayer instanceof EntityPlayerMP) {
+      testPlayer.compareAndSet((EntityPlayerMP) oldPlayer, (EntityPlayerMP) newPlayer);
+    }
+  }
+
+  public EntityPlayerMP getTestPlayer() {
+    return testPlayer.get();
   }
 
   private static final int SYNCED = -1;
