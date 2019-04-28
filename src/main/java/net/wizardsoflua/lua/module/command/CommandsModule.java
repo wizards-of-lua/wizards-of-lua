@@ -132,7 +132,4 @@ public class CommandsModule extends LuaTableExtension {
       throw new IllegalArgumentException(String.format("Can't deregister command '%s'", name));
     }
   }
-
-
-
 }
