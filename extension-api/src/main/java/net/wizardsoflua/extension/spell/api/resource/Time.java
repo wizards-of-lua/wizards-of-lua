@@ -1,7 +1,9 @@
 package net.wizardsoflua.extension.spell.api.resource;
 
-import net.wizardsoflua.extension.api.resource.RealTime;
+import java.time.Clock;
 
-public interface Time extends RealTime {
+public interface Time {
+  Clock getClock();
+
   long getGameTime();
 }

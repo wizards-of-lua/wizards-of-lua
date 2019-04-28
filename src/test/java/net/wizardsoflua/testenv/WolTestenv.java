@@ -18,6 +18,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.wizardsoflua.TimeService;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.InjectionScope;
@@ -130,6 +131,10 @@ public final class WolTestenv implements AutoCloseable {
 
   public Permissions getPermissions() {
     return serverScope.getInstance(Permissions.class);
+  }
+
+  public TimeService getTimeService() {
+    return serverScope.getInstance(TimeService.class);
   }
 
   @SubscribeEvent
