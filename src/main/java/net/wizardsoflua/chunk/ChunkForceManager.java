@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.wizardsoflua.ServerScoped;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 
 /**
  * Intermediate adaptor for vanilla's chunk force loading system until Forge comes up with

@@ -62,7 +62,7 @@ public class PlayerBackdoor {
   }
 
   public boolean isOperator() {
-    return getWol().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
+    return getTestenv().getPermissions().hasOperatorPrivileges(getDelegate().getUniqueID());
   }
 
   public EntityPlayerMP getDelegate() {
@@ -170,7 +170,7 @@ public class PlayerBackdoor {
   private File getModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
     return new File(
-        getWol().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(),
+        getTestenv().getConfig().getOrCreateWizardConfig(getDelegate().getUniqueID()).getLibDir(),
         path);
   }
 

@@ -10,9 +10,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.PreDestroy;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 
 @ServerScoped
 public class SpellRegistry {

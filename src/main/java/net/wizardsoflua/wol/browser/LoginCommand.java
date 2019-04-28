@@ -1,9 +1,10 @@
 package net.wizardsoflua.wol.browser;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
 import java.net.URL;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -12,16 +13,15 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.file.LuaFileRepository;
 
-public class LoginCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class LoginCommand implements CommandRegisterer, Command<CommandSource> {
+  @Inject
+  private LuaFileRepository fileRepo;
 
-  private final WolServer wol;
-
-  public LoginCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(getNode());
   }
@@ -39,7 +39,7 @@ public class LoginCommand implements Command<CommandSource> {
     Entity entity = source.getEntity();
     if (entity instanceof EntityPlayer) {
       EntityPlayer player = (EntityPlayer) entity;
-      URL url = wol.getFileRepository().getPasswordTokenUrl(player);
+      URL url = fileRepo.getPasswordTokenUrl(player);
       WolAnnouncementMessage message =
           new WolAnnouncementMessage("Click here to log in with your web browser: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));

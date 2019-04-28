@@ -1,4 +1,4 @@
-package net.wizardsoflua.lua.extension;
+package net.wizardsoflua.extension;
 
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;

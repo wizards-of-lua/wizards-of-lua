@@ -25,7 +25,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
+import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.testenv.junit.WolTestExecutionListener;
 
 public class TestCommand implements Command<CommandSource> {
@@ -42,11 +42,11 @@ public class TestCommand implements Command<CommandSource> {
   });
   private final Set<Runnable> aborters = Collections.newSetFromMap(new WeakHashMap<>());
   private final WolTestMod mod;
-  private final MinecraftServer server;
+  private final InjectionScope serverScope;
 
-  public TestCommand(WolTestMod mod, MinecraftServer server) {
+  public TestCommand(WolTestMod mod, InjectionScope serverScope) {
     this.mod = requireNonNull(mod, "mod");
-    this.server = requireNonNull(server, "server");
+    this.serverScope = requireNonNull(serverScope, "serverScope");
   }
 
   public void register(CommandDispatcher<CommandSource> dispatcher) {
@@ -87,7 +87,7 @@ public class TestCommand implements Command<CommandSource> {
     int result = (int) plan.countTestIdentifiers(it -> it.isTest());
 
     executor.submit(() -> {
-      try (WolTestenv testenv = new WolTestenv(mod, server, player)) {
+      try (WolTestenv testenv = new WolTestenv(mod, serverScope, player)) {
         WolTestExecutionListener listener = new WolTestExecutionListener(source);
         Runnable aborter = () -> {
           listener.onAbort();

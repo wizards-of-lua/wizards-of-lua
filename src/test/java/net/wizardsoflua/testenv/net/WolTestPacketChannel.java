@@ -14,7 +14,7 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.wizardsoflua.WizardsOfLua;
-import net.wizardsoflua.lua.extension.ServiceLoader;
+import net.wizardsoflua.extension.ServiceLoader;
 
 public class WolTestPacketChannel {
   private final ResourceLocation name = new ResourceLocation(WizardsOfLua.MODID, "channel/test");

@@ -1,12 +1,13 @@
 package net.wizardsoflua.wol.pack;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
 import java.net.URL;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -16,17 +17,16 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.TextComponentString;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.file.LuaFileRepository;
 
-public class PackExportCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class PackExportCommand implements CommandRegisterer, Command<CommandSource> {
   private static final String DIRECTORY_ARGUMENT = "directory";
+  @Inject
+  private LuaFileRepository fileRepo;
 
-  private final WolServer wol;
-
-  public PackExportCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol==null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(literal("wol")//
         .then(literal("pack")//
@@ -42,7 +42,7 @@ public class PackExportCommand implements Command<CommandSource> {
     CommandSource source = context.getSource();
     URL url;
     try {
-      url = wol.getFileRepository().getSpellPackExportURL(directory);
+      url = fileRepo.getSpellPackExportURL(directory);
     } catch (IllegalArgumentException e) {
       throw new CommandException(new TextComponentString(e.getMessage()));
     }

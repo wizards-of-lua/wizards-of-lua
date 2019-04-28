@@ -1,11 +1,12 @@
 package net.wizardsoflua.wol.spell;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -19,20 +20,19 @@ import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.spell.SpellEntity;
+import net.wizardsoflua.spell.SpellRegistry;
 
-public class SpellBreakCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class SpellBreakCommand implements CommandRegisterer, Command<CommandSource> {
   private static final String SID_ARGUMENT = "sid";
   private static final String NAME_ARGUMENT = "name";
   private static final String OWNER_ARGUMENT = "owner";
+  @Inject
+  private SpellRegistry spellRegistry;
 
-  private final WolServer wol;
-
-  public SpellBreakCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol == null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -71,7 +71,7 @@ public class SpellBreakCommand implements Command<CommandSource> {
 
   public int breakAll(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
-    Iterable<SpellEntity> spells = wol.getSpellRegistry().getAll();
+    Iterable<SpellEntity> spells = spellRegistry.getAll();
     return breakSpells(source, spells);
   }
 
@@ -94,7 +94,7 @@ public class SpellBreakCommand implements Command<CommandSource> {
   }
 
   private int breakSpells(CommandSource source, Predicate<SpellEntity> predicate) {
-    Iterable<SpellEntity> spells = wol.getSpellRegistry().get(predicate);
+    Iterable<SpellEntity> spells = spellRegistry.get(predicate);
     return breakSpells(source, spells);
   }
 

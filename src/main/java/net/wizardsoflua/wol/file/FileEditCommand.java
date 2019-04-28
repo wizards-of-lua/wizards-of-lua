@@ -1,11 +1,13 @@
 package net.wizardsoflua.wol.file;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraftforge.common.ForgeHooks.newChatWithLinks;
 import java.net.URL;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
@@ -15,19 +17,36 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.file.LuaFileRepository;
 
-public class FileEditCommand implements Command<CommandSource> {
-  private static final String FILE_ARGUMENT = "file";
-
-  private final WolServer wol;
-  private final FileSection section;
-
-  public FileEditCommand(WolServer wol, FileSection section) {
-    this.wol = checkNotNull(wol, "wol==null!");
-    this.section = checkNotNull(section, "section==null!");
+public class FileEditCommand implements CommandRegisterer, Command<CommandSource> {
+  @AutoService(CommandRegisterer.class)
+  public static class PersonalFileEditCommand extends FileEditCommand {
+    public PersonalFileEditCommand() {
+      super(FileSection.PERSONAL);
+    }
   }
 
+  @AutoService(CommandRegisterer.class)
+  public static class SharedFileEditCommand extends FileEditCommand {
+    public SharedFileEditCommand() {
+      super(FileSection.SHARED);
+    }
+  }
+
+  private static final String FILE_ARGUMENT = "file";
+
+  @Inject
+  private LuaFileRepository fileRepo;
+
+  private final FileSection section;
+
+  public FileEditCommand(FileSection section) {
+    this.section = requireNonNull(section, "section");
+  }
+
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -46,9 +65,9 @@ public class FileEditCommand implements Command<CommandSource> {
     URL url = null;
     try {
       if (section == FileSection.PERSONAL) {
-        url = wol.getFileRepository().getFileEditURL(player, file);
+        url = fileRepo.getFileEditURL(player, file);
       } else if (section == FileSection.SHARED) {
-        url = wol.getFileRepository().getSharedFileEditURL(file);
+        url = fileRepo.getSharedFileEditURL(file);
       }
     } catch (IllegalArgumentException e) {
       throw new CommandSyntaxException(null, new LiteralMessage(e.getMessage()));

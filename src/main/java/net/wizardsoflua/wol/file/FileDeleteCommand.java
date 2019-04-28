@@ -1,9 +1,11 @@
 package net.wizardsoflua.wol.file;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
@@ -13,19 +15,35 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.file.LuaFileRepository;
 
-public class FileDeleteCommand implements Command<CommandSource> {
-  private static final String FILE_ARGUMENT = "file";
-
-  private final WolServer wol;
-  private final FileSection section;
-
-  public FileDeleteCommand(WolServer wol, FileSection section) {
-    this.wol = checkNotNull(wol, "wol==null!");
-    this.section = checkNotNull(section, "section==null!");
+public class FileDeleteCommand implements Command<CommandSource>, CommandRegisterer {
+  @AutoService(CommandRegisterer.class)
+  public static class PersonalFileDeleteCommand extends FileDeleteCommand {
+    public PersonalFileDeleteCommand() {
+      super(FileSection.PERSONAL);
+    }
   }
 
+  @AutoService(CommandRegisterer.class)
+  public static class SharedFileDeleteCommand extends FileDeleteCommand {
+    public SharedFileDeleteCommand() {
+      super(FileSection.SHARED);
+    }
+  }
+
+  private static final String FILE_ARGUMENT = "file";
+  @Inject
+  private LuaFileRepository fileRepo;
+
+  private final FileSection section;
+
+  public FileDeleteCommand(FileSection section) {
+    this.section = requireNonNull(section, "section");
+  }
+
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -43,9 +61,9 @@ public class FileDeleteCommand implements Command<CommandSource> {
     EntityPlayer player = source.asPlayer();
     try {
       if (section == FileSection.PERSONAL) {
-        wol.getFileRepository().deleteFile(player, file);
+        fileRepo.deleteFile(player, file);
       } else if (section == FileSection.SHARED) {
-        wol.getFileRepository().deleteSharedFile(file);
+        fileRepo.deleteSharedFile(file);
       }
     } catch (IllegalArgumentException e) {
       throw new CommandSyntaxException(null, new LiteralMessage(e.getMessage()));

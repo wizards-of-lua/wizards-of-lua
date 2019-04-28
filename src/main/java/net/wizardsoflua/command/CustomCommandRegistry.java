@@ -15,8 +15,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
-import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.extension.api.inject.Resource;
+import net.wizardsoflua.extension.server.api.ServerScoped;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.spell.SpellEntityFactory;
 

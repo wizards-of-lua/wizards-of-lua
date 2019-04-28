@@ -1,14 +1,14 @@
-package net.wizardsoflua.lua;
+package net.wizardsoflua.extension;
 
 import java.util.Set;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.extension.spell.spi.JavaToLuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.extension.spell.spi.LuaToJavaConverter;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
-import net.wizardsoflua.lua.extension.ServiceLoader;
 
 public class ExtensionLoader {
   private static @Nullable ImmutableSet<Class<? extends LuaConverter<?, ?>>> lUA_CONVERTERS;
@@ -57,5 +57,16 @@ public class ExtensionLoader {
       SPELL_EXTENSIONS = builder.build();
     }
     return SPELL_EXTENSIONS;
+  }
+
+  private static @Nullable ImmutableSet<Class<? extends CommandRegisterer>> COMMAND_REGISTERERS;
+
+  public static ImmutableSet<Class<? extends CommandRegisterer>> getCommandRegisterers() {
+    if (COMMAND_REGISTERERS == null) {
+      Builder<Class<? extends CommandRegisterer>> builder = ImmutableSet.builder();
+      builder.addAll(ServiceLoader.load(CommandRegisterer.class));
+      COMMAND_REGISTERERS = builder.build();
+    }
+    return COMMAND_REGISTERERS;
   }
 }

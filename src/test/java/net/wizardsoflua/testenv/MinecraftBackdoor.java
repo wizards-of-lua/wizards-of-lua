@@ -167,7 +167,7 @@ public class MinecraftBackdoor {
 
   public void breakAllSpells() {
     testenv.runOnMainThreadAndWait(() -> {
-      Collection<SpellEntity> spells = getWol().getSpellRegistry().getAll();
+      Collection<SpellEntity> spells = testenv.getSpellRegistry().getAll();
       for (SpellEntity spell : spells) {
         spell.setDead();
       }
@@ -175,7 +175,7 @@ public class MinecraftBackdoor {
   }
 
   public Iterable<SpellEntity> spells() {
-    return getWol().getSpellRegistry().getAll();
+    return testenv.getSpellRegistry().getAll();
   }
 
   public void setBlock(BlockPos pos, Block blockType) {
@@ -213,20 +213,20 @@ public class MinecraftBackdoor {
   }
 
   public long getLuaTicksLimit() {
-    return getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
+    return testenv.getConfig().getGeneralConfig().getLuaTicksLimit();
   }
 
   public void setLuaTicksLimit(long luaTicksLimit) {
     testenv.runOnMainThreadAndWait(
-        () -> getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
+        () -> testenv.getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
   public long getEventListenerLuaTicksLimit() {
-    return getWol().getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
+    return testenv.getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
   }
 
   public void setEventListenerLuaTicksLimit(long eventListenerluaTicksLimit) {
-    testenv.runOnMainThreadAndWait(() -> getWol().getConfig().getGeneralConfig()
+    testenv.runOnMainThreadAndWait(() -> testenv.getConfig().getGeneralConfig()
         .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }
 
@@ -253,7 +253,7 @@ public class MinecraftBackdoor {
   }
 
   public void clearWizardConfigs() throws IOException {
-    getWol().getConfig().clearWizardConfigs();
+    testenv.getConfig().clearWizardConfigs();
   }
 
   public void createSharedModule(String moduleName, String content) {
@@ -278,7 +278,7 @@ public class MinecraftBackdoor {
 
   private File getSharedModuleFile(String moduleName) {
     String path = moduleName.replace(".", File.separator) + ".lua";
-    return new File(getWol().getConfig().getSharedLibDir(), path);
+    return new File(testenv.getConfig().getSharedLibDir(), path);
   }
 
   public void deleteSharedModule(String moduleName) {
@@ -287,7 +287,7 @@ public class MinecraftBackdoor {
   }
 
   public void writeWorldFile(String path, String content) {
-    FileSystem fs = getWol().getWorldFileSystem();
+    FileSystem fs = testenv.getWorldFileSystem();
     Path p = fs.getPath(path);
     try {
       Files.createParentDirs(p.toFile());
@@ -298,7 +298,7 @@ public class MinecraftBackdoor {
   }
 
   public String readWorldFile(String path) {
-    FileSystem fs = getWol().getWorldFileSystem();
+    FileSystem fs = testenv.getWorldFileSystem();
     Path p = fs.getPath(path);
     try {
       if (java.nio.file.Files.exists(p)) {
@@ -313,7 +313,7 @@ public class MinecraftBackdoor {
 
   public void deleteWorldFile(String path) {
     try {
-      FileSystem fs = getWol().getWorldFileSystem();
+      FileSystem fs = testenv.getWorldFileSystem();
       delete(fs.getPath(path));
     } catch (IOException e) {
       throw new UndeclaredThrowableException(e);
@@ -330,7 +330,7 @@ public class MinecraftBackdoor {
   }
 
   public boolean existsWorldFile(String path) {
-    FileSystem fs = getWol().getWorldFileSystem();
+    FileSystem fs = testenv.getWorldFileSystem();
     Path p = fs.getPath(path);
     return java.nio.file.Files.exists(p);
   }

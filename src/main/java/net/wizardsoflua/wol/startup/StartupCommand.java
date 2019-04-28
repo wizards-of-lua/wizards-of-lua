@@ -1,22 +1,22 @@
 package net.wizardsoflua.wol.startup;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static net.minecraft.command.Commands.literal;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.startup.Startup;
 
-public class StartupCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class StartupCommand implements CommandRegisterer, Command<CommandSource> {
+  @Inject
+  private Startup startup;
 
-  private final WolServer wol;
-
-  public StartupCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol == null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -26,7 +26,7 @@ public class StartupCommand implements Command<CommandSource> {
 
   @Override
   public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-    wol.runStartupSequence(context.getSource());
+    startup.runStartupSequence(context.getSource());
     return Command.SINGLE_SUCCESS;
   }
 }

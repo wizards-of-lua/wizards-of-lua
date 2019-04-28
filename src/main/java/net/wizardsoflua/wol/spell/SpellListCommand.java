@@ -1,6 +1,5 @@
 package net.wizardsoflua.wol.spell;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
@@ -8,6 +7,8 @@ import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
 import static net.minecraft.util.text.TextFormatting.AQUA;
 import static net.minecraft.util.text.TextFormatting.YELLOW;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -23,22 +24,21 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.spell.SpellEntity;
+import net.wizardsoflua.spell.SpellRegistry;
 
-public class SpellListCommand implements Command<CommandSource> {
+@AutoService(CommandRegisterer.class)
+public class SpellListCommand implements CommandRegisterer, Command<CommandSource> {
   private static final int MAX_LINE_LENGTH = 55;
   private static final String ELLIPSIS = "\u2026";
   private static final String SID_ARGUMENT = "sid";
   private static final String NAME_ARGUMENT = "name";
   private static final String OWNER_ARGUMENT = "owner";
+  @Inject
+  private SpellRegistry spellRegistry;
 
-  private final WolServer wol;
-
-  public SpellListCommand(WolServer wol) {
-    this.wol = checkNotNull(wol, "wol == null!");
-  }
-
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -81,7 +81,7 @@ public class SpellListCommand implements Command<CommandSource> {
     CommandSource source = context.getSource();
     // TODO I18n
     String message = "Active spells";
-    Iterable<SpellEntity> spells = wol.getSpellRegistry().getAll();
+    Iterable<SpellEntity> spells = spellRegistry.getAll();
     return listSpells(source, message, spells);
   }
 
@@ -110,7 +110,7 @@ public class SpellListCommand implements Command<CommandSource> {
   }
 
   private int listSpells(CommandSource source, String message, Predicate<SpellEntity> predicate) {
-    Iterable<SpellEntity> spells = wol.getSpellRegistry().get(predicate);
+    Iterable<SpellEntity> spells = spellRegistry.get(predicate);
     return listSpells(source, message, spells);
   }
 

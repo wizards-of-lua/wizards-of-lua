@@ -1,9 +1,11 @@
 package net.wizardsoflua.wol.file;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
+import javax.inject.Inject;
+import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -14,20 +16,37 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 import net.wizardsoflua.WolAnnouncementMessage;
-import net.wizardsoflua.WolServer;
+import net.wizardsoflua.extension.server.spi.CommandRegisterer;
+import net.wizardsoflua.file.LuaFileRepository;
 
-public class FileMoveCommand implements Command<CommandSource> {
+public class FileMoveCommand implements CommandRegisterer, Command<CommandSource> {
+  @AutoService(CommandRegisterer.class)
+  public static class PersonalFileMoveCommand extends FileMoveCommand {
+    public PersonalFileMoveCommand() {
+      super(FileSection.PERSONAL);
+    }
+  }
+
+  @AutoService(CommandRegisterer.class)
+  public static class SharedFileMoveCommand extends FileMoveCommand {
+    public SharedFileMoveCommand() {
+      super(FileSection.SHARED);
+    }
+  }
+
   private static final String FILE_ARGUMENT = "file";
   private static final String NEW_FILE_ARGUMENT = "newfile"; // TODO are spaces allowed?
 
-  private final WolServer wol;
+  @Inject
+  private LuaFileRepository fileRepo;
+
   private final FileSection section;
 
-  public FileMoveCommand(WolServer wol, FileSection section) {
-    this.wol = checkNotNull(wol, "wol==null!");
-    this.section = checkNotNull(section, "section==null!");
+  public FileMoveCommand(FileSection section) {
+    this.section = requireNonNull(section, "section");
   }
 
+  @Override
   public void register(CommandDispatcher<CommandSource> dispatcher) {
     dispatcher.register(//
         literal("wol")//
@@ -49,9 +68,9 @@ public class FileMoveCommand implements Command<CommandSource> {
     if (name != null && newName != null) {
       try {
         if (section == FileSection.PERSONAL) {
-          wol.getFileRepository().moveFile(player, name, newName);
+          fileRepo.moveFile(player, name, newName);
         } else if (section == FileSection.SHARED) {
-          wol.getFileRepository().moveSharedFile(name, newName);
+          fileRepo.moveSharedFile(name, newName);
         }
       } catch (IllegalArgumentException e) {
         throw newCommandException(e.getMessage());
