@@ -1,10 +1,8 @@
 package net.wizardsoflua;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Clock;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.common.annotations.VisibleForTesting;
@@ -13,7 +11,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.wizardsoflua.extension.InjectionScope;
-import net.wizardsoflua.extension.api.resource.RealTime;
 import net.wizardsoflua.imc.TypedImc;
 import net.wizardsoflua.imc.WizardsOfLuaConsumer;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
@@ -29,10 +26,6 @@ public class WizardsOfLua {
 
   private final Path tempDir;
 
-  /**
-   * Clock used for RuntimeModule
-   */
-  private Clock clock = getDefaultClock();
   // TODO Adrodoc 28.04.2019: Check for thread safety of creating root scope in mod loading thread
   // and server scopes in server threads
   private final InjectionScope rootScope;
@@ -52,12 +45,6 @@ public class WizardsOfLua {
   private InjectionScope createRootScope() {
     InjectionScope rootScope = new InjectionScope();
     rootScope.registerResource(WizardsOfLua.class, this);
-    rootScope.registerResource(RealTime.class, new RealTime() {
-      @Override
-      public Clock getClock() {
-        return clock;
-      }
-    });
     return rootScope;
   }
 
@@ -67,29 +54,18 @@ public class WizardsOfLua {
     });
   }
 
+  public Path getTempDir() {
+    return tempDir;
+  }
+
   @VisibleForTesting
   public InjectionScope provideServerScope(MinecraftServer server) {
     return serverScopeManager.provideServerScope(server);
   }
 
   @VisibleForTesting
-  public void setClock(Clock clock) {
-    this.clock = checkNotNull(clock, "clock==null!");
-  }
-
-  @VisibleForTesting
-  public Clock getDefaultClock() {
-    return Clock.systemDefaultZone();
-  }
-
-  @VisibleForTesting
   public void clearLuaFunctionCache() {
     LuaFunctionBinaryCache cache = rootScope.getInstance(LuaFunctionBinaryCache.class);
     cache.clear();
-  }
-
-  @VisibleForTesting
-  public Path getTempDir() {
-    return tempDir;
   }
 }

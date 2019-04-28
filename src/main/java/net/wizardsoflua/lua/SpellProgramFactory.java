@@ -12,13 +12,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.wizardsoflua.GameProfiles;
+import net.wizardsoflua.TimeService;
 import net.wizardsoflua.config.GeneralConfig;
 import net.wizardsoflua.config.ScriptGatewayConfig;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
-import net.wizardsoflua.extension.api.resource.RealTime;
 import net.wizardsoflua.extension.server.api.ServerScoped;
 import net.wizardsoflua.filesystem.WolServerFileSystem;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
@@ -30,8 +30,8 @@ import net.wizardsoflua.spell.SpellRegistry;
 public class SpellProgramFactory {
   @Resource
   private InjectionScope scope;
-  @Resource
-  private RealTime time;
+  @Inject
+  private TimeService time;
   @Inject
   private SpellRegistry spellRegistry;
   @Inject

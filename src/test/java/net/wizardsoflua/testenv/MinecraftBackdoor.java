@@ -44,6 +44,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
+import net.wizardsoflua.TimeService;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
@@ -151,18 +152,18 @@ public class MinecraftBackdoor {
   public void freezeClock(long millis) {
     ZoneId zoneId = ZoneId.systemDefault();
     Clock clock = Clock.fixed(Instant.ofEpochMilli(millis), zoneId);
-    getWol().setClock(clock);
+    testenv.getTimeService().setClock(clock);
   }
 
   public void freezeClock(LocalDateTime date) {
     ZoneId zoneId = ZoneId.systemDefault();
     Clock clock = Clock.fixed(date.atZone(zoneId).toInstant(), zoneId);
-    getWol().setClock(clock);
+    testenv.getTimeService().setClock(clock);
   }
 
   public void resetClock() {
-    Clock clock = getWol().getDefaultClock();
-    getWol().setClock(clock);
+    TimeService timeService = testenv.getTimeService();
+    timeService.setClock(timeService.getDefaultClock());
   }
 
   public void breakAllSpells() {
