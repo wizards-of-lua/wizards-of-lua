@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -31,6 +32,7 @@ import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
+import net.wizardsoflua.extension.api.inject.PreDestroy;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.reflect.ReflectionUtils;
 
@@ -41,11 +43,12 @@ import net.wizardsoflua.reflect.ReflectionUtils;
  * @author Adrodoc
  * @see javax.inject
  */
-public class InjectionScope {
+public class InjectionScope implements AutoCloseable {
   private final @Nullable InjectionScope parent;
   private final Class<? extends Annotation> scopeAnnotationType;
-  private final ClassIndex cache = new ClassIndex();
+  private final ClassIndex instances = new ClassIndex();
   private final ClassToInstanceMap<Object> resources = MutableClassToInstanceMap.create();
+  private final List<Object> dependentScopedInstancesWithPreDestroyMethod = new ArrayList<>();
 
   public InjectionScope() {
     parent = null;
@@ -67,6 +70,16 @@ public class InjectionScope {
 
   public InjectionScope createSubScope(Class<? extends Annotation> scopeAnnotationType) {
     return new InjectionScope(this, scopeAnnotationType);
+  }
+
+  @Override
+  public void close() {
+    for (Object instance : instances.values()) {
+      callLifecycleMethods(instance, PreDestroy.class);
+    }
+    for (Object instance : dependentScopedInstancesWithPreDestroyMethod) {
+      callLifecycleMethods(instance, PreDestroy.class);
+    }
   }
 
   public <R> void registerResource(Class<R> resourceInterface, R resource) {
@@ -117,12 +130,16 @@ public class InjectionScope {
   public <T> T getInstance(Class<T> cls) throws IllegalStateException {
     Class<? extends Annotation> scopeType = getScopeType(cls);
     if (scopeType == null) {
-      return provideNewInstance(cls);
+      T result = provideNewInstance(cls);
+      if (lifecycleMethods(cls, PreDestroy.class).findAny().isPresent()) {
+        dependentScopedInstancesWithPreDestroyMethod.add(result);
+      }
+      return result;
     } else if (scopeType.equals(scopeAnnotationType)) {
-      T result = cache.get(cls);
+      T result = instances.get(cls);
       if (result == null) {
         result = provideNewInstance(cls);
-        cache.add(result);
+        instances.add(result);
       }
       return result;
     } else if (parent != null) {
@@ -155,7 +172,7 @@ public class InjectionScope {
   private <T> T provideNewInstance(Class<T> cls) throws IllegalStateException {
     T instance = createInstance(cls);
     injectMembers(instance);
-    callPostConstruct(instance);
+    callLifecycleMethods(instance, PostConstruct.class);
     return instance;
   }
 
@@ -327,28 +344,34 @@ public class InjectionScope {
     return provideInstance(type);
   }
 
-  private void callPostConstruct(Object instance) {
-    Deque<Class<?>> classes = getSortedSuperTypes(instance.getClass());
-    for (Class<?> cls : classes) {
-      for (Method method : cls.getDeclaredMethods()) {
-        if (method.isAnnotationPresent(PostConstruct.class)
-            && !isMethodOverridden(method, classes)) {
-          runAccessible(method, () -> {
-            try {
-              method.invoke(instance);
-            } catch (IllegalAccessException ex) {
-              throw fail(cls, "failed to access method " + method, ex);
-            } catch (IllegalArgumentException ex) {
-              throw fail(instance.getClass(), "the method " + method + " is annotated with @"
-                  + PostConstruct.class.getSimpleName() + ", but declares a parameter", ex);
-            } catch (InvocationTargetException ex) {
-              throw fail(instance.getClass(), "the method " + method + " threw an exeption",
-                  ex.getCause());
-            }
-          });
+  private void callLifecycleMethods(Object instance,
+      Class<? extends Annotation> lifecycleAnnotation) {
+    Class<?> cls = instance.getClass();
+    lifecycleMethods(cls, lifecycleAnnotation).forEach(method -> {
+      runAccessible(method, () -> {
+        try {
+          method.invoke(instance);
+        } catch (IllegalAccessException ex) {
+          throw fail(cls, "failed to access method " + method, ex);
+        } catch (IllegalArgumentException ex) {
+          throw fail(cls, "the method " + method + " is annotated with @"
+              + lifecycleAnnotation.getSimpleName() + ", but declares a parameter", ex);
+        } catch (InvocationTargetException ex) {
+          throw fail(cls, "the method " + method + " threw an exeption", ex.getCause());
         }
-      }
-    }
+      });
+    });
+  }
+
+  private Stream<Method> lifecycleMethods(Class<?> cls,
+      Class<? extends Annotation> lifecycleAnnotation) {
+    Deque<Class<?>> classes = getSortedSuperTypes(cls);
+    return classes.stream() //
+        .map(it -> it.getDeclaredMethods()) //
+        .flatMap(Stream::of) //
+        .filter(it -> it.isAnnotationPresent(lifecycleAnnotation)) //
+        .filter(it -> !isMethodOverridden(it, classes)) //
+    ;
   }
 
   private static void runAccessible(AccessibleObject object, Runnable runnable) {
