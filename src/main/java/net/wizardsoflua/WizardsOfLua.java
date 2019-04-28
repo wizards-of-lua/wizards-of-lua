@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.mojang.brigadier.CommandDispatcher;
@@ -15,17 +14,12 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.VersionChecker;
-import net.minecraftforge.fml.VersionChecker.CheckResult;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forgespi.language.IModInfo;
 import net.sandius.rembulan.exec.CallException;
 import net.sandius.rembulan.exec.CallPausedException;
 import net.sandius.rembulan.load.LoaderException;
@@ -54,9 +48,7 @@ public class WizardsOfLua {
 
   // TODO move these lazy instances into a new state class
   private Path tempDir;
-  private AboutMessage aboutMessage;
   private WolEventHandler eventHandler;
-  private WolRestApiServer restApiServer;
 
   private Permissions permissions;
 
@@ -87,7 +79,7 @@ public class WizardsOfLua {
    */
   private void registerEventHandlers() {
     FMLJavaModLoadingContext.get().getModEventBus().register(new ModSpecificEventBusHandling());
-    MinecraftForge.EVENT_BUS.register(new MainForgeEventBusListener());
+    MinecraftForge.EVENT_BUS.register(new ServerScopeManager());
   }
 
   private class ModSpecificEventBusHandling {
@@ -100,37 +92,8 @@ public class WizardsOfLua {
           | InterruptedException e1) {
         throw new RuntimeException(e1);
       }
-      aboutMessage = new AboutMessage(new AboutMessage.Context() {
-        @Override
-        public boolean shouldShowAboutMessage() {
-          return getConfig().getGeneralConfig().isShowAboutMessage();
-        }
-
-        @Override
-        public String getVersion() {
-          return VERSION;
-        }
-
-        @Override
-        public String getUrl() {
-          return URL;
-        }
-
-        @Override
-        public @Nullable String getRecommendedVersion() {
-          String result = null;
-          IModInfo modInfo = ModList.get().getModFileById(MODID).getMods().get(0);
-          CheckResult checkResult = VersionChecker.getResult(modInfo);
-          VersionChecker.Status status = checkResult.status;
-          if (status == VersionChecker.Status.OUTDATED
-              || status == VersionChecker.Status.BETA_OUTDATED) {
-            result = checkResult.target.toString();
-          }
-          return result;
-        }
-      });
+      rootScope.getInstance(AboutMessage.class); // Initialize AboutMessage
       eventHandler = new WolEventHandler(() -> spellRegistry.getAll());
-      MinecraftForge.EVENT_BUS.register(aboutMessage);
       MinecraftForge.EVENT_BUS.register(eventHandler);
     }
 
@@ -142,13 +105,13 @@ public class WizardsOfLua {
     }
   }
 
-  private final Map<MinecraftServer, InjectionScope> serverScopes = new HashMap<>();
+  private class ServerScopeManager {
+    private final Map<MinecraftServer, InjectionScope> serverScopes = new HashMap<>();
 
-  private class MainForgeEventBusListener {
     @SubscribeEvent
-    public void onFmlServerStarting(FMLServerStartingEvent event) throws IOException {
+    public void onServerStarting(FMLServerStartingEvent event) throws IOException {
       InjectionScope serverScope =
-          serverScopes.computeIfAbsent(event.getServer(), it -> createServerScope(it));
+          serverScopes.computeIfAbsent(event.getServer(), this::createServerScope);
 
       WolServer wolServer = serverScope.getInstance(WolServer.class);
       CommandDispatcher<CommandSource> cmdDispatcher = event.getCommandDispatcher();
@@ -156,9 +119,13 @@ public class WizardsOfLua {
       LuaCommand.register(cmdDispatcher, wolServer);
 
       serverScope.getInstance(Startup.class); // Initialize Startup
+      serverScope.getInstance(WolRestApiServer.class); // Initialize rest server
+    }
 
-      restApiServer = new WolRestApiServer();
-      restApiServer.start();
+    private InjectionScope createServerScope(MinecraftServer server) {
+      InjectionScope result = rootScope.createSubScope(ServerScoped.class);
+      result.registerResource(MinecraftServer.class, server);
+      return result;
     }
 
     @SubscribeEvent
@@ -169,22 +136,6 @@ public class WizardsOfLua {
         serverScope.close();
       }
     }
-
-    @SubscribeEvent
-    public void onFmlServerStarted(FMLServerStartedEvent event) {
-      LOGGER.info(aboutMessage);
-    }
-
-    @SubscribeEvent
-    public void onFmlServerStopping(FMLServerStoppingEvent event) {
-      restApiServer.stop();
-    }
-  }
-
-  private InjectionScope createServerScope(MinecraftServer server) {
-    InjectionScope result = rootScope.createSubScope(ServerScoped.class);
-    result.registerResource(MinecraftServer.class, server);
-    return result;
   }
 
   public Clock getClock() {

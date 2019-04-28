@@ -42,7 +42,6 @@ import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
-import net.minecraftforge.common.MinecraftForge;
 import net.wizardsoflua.ServerScoped;
 import net.wizardsoflua.config.RestApiConfig;
 import net.wizardsoflua.config.WolConfig;
@@ -63,12 +62,10 @@ public class WolRestApiServer {
   @PostConstruct
   private void postConstruct() throws IOException {
     start();
-    MinecraftForge.EVENT_BUS.register(this);
   }
 
   @PreDestroy
   private void preDestroy() {
-    MinecraftForge.EVENT_BUS.unregister(this);
     stop();
   }
 
