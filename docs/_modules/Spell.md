@@ -23,7 +23,7 @@ properties:
        
         #### Example
        
-        Inspecting the block the spell's position.
+        Inspecting the block at the spell's position.
        
         ```lua
         print(str(spell.block))
@@ -96,15 +96,17 @@ properties:
     type: '[Entity](/modules/Entity)'
     access: r
     description: |
-        The entity that has casted this spell. Normally this is a Player, or nil if the spell has
-        been casted by a command block.
+        The entity that has casted this spell. Normally this is a [player](/modules/Player), or nil
+        if the spell has been casted by a command block.
        
         #### Example
        
         Printing the name of this spell's onwer.
        
         ```lua
-        print( spell.owner.name )
+        if spell.owner then
+          print(spell.owner.name)
+        end
         ```
   - name: sid
     type: 'number (long)'
@@ -158,7 +160,7 @@ functions:
     description: |
         This function executes the given Minecraft command.
        
-        When specifying the command the leading slash '/' character is optional.
+        A command can be specified with or without the leading slash '/' character.
        
         This function supports additional arguments which are 'formatted' into placeholders that must
         be present in the command string. See
@@ -198,7 +200,6 @@ functions:
         Spawning a zombie at the spell's current location.
        
         ```lua
-        spell:move("up")
         spell:execute("summon zombie ~ ~ ~")
         ```
        
