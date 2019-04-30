@@ -75,9 +75,9 @@ ext.libs = [
   jlhttp:               'net.freeutils:jlhttp:2.4',
   jsr305:               'com.google.code.findbugs:jsr305:3.0.1',
   junit:                'junit:junit:4.12',
-  rembulan_compiler:    'net.sandius.rembulan:rembulan-compiler:0.2-SNAPSHOT',
-  rembulan_runtime:     'net.sandius.rembulan:rembulan-runtime:0.2-SNAPSHOT',
-  rembulan_stdlib:      'net.sandius.rembulan:rembulan-stdlib:0.2-SNAPSHOT',
+  rembulan_compiler:    'net.sandius.rembulan:rembulan-compiler:0.3-SNAPSHOT',
+  rembulan_runtime:     'net.sandius.rembulan:rembulan-runtime:0.3-SNAPSHOT',
+  rembulan_stdlib:      'net.sandius.rembulan:rembulan-stdlib:0.3-SNAPSHOT',
 ]
 
 configurations {
