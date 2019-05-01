@@ -13,13 +13,13 @@ public class DroppedItemTest extends WolTestBase {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon Item %s %s %s {Item:{id:anvil,Count:1},CustomName:testitem}",
+    mc().executeCommand("/summon item %s %s %s {Item:{id:anvil,Count:1},Tags:[testitem]}",
         pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
     mc().executeCommand(
-        "/lua p=Entities.find('@e[name=testitem]')[1]; print(instanceOf(DroppedItem,p))");
+        "/lua p=Entities.find('@e[tag=testitem]')[1]; print(instanceOf(DroppedItem,p))");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
