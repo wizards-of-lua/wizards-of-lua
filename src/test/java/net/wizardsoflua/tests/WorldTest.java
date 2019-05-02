@@ -50,6 +50,20 @@ public class WorldTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo(expected);
   }
 
+  // /test net.wizardsoflua.tests.WorldTest test_world_folder_is_readable
+  @Test
+  public void test_world_folder_is_readable() {
+    // Given:
+    String expected = mc().getWorldFolderName();
+
+    // When:
+    mc().executeCommand("/lua w=spell.world; print(w.folder)");
+
+    // Then:
+    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    assertThat(act.getMessage()).isEqualTo(expected);
+  }
+
   // /test net.wizardsoflua.tests.WorldTest test_world_dimension_is_readable
   @Test
   public void test_world_dimension_is_readable() {

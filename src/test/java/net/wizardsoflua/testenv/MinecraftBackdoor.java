@@ -55,11 +55,15 @@ public class MinecraftBackdoor {
   public MinecraftBackdoor(WolTestEnvironment testEnv, EventBus eventBus) {
     this.testEnv = testEnv;
     this.eventBus = eventBus;
-    this.player = new PlayerBackdoor(this);
+    player = new PlayerBackdoor(this);
   }
 
   public String getName() {
     return testEnv.getServer().getName();
+  }
+
+  public String getWorldFolderName() {
+    return testEnv.getServer().getFolderName();
   }
 
   public String getWorldName() {

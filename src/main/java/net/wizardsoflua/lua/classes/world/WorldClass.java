@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.auto.service.AutoService;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -37,6 +38,8 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
   public static final String NAME = "World";
   @Resource
   private LuaConverters converters;
+  @Resource
+  private MinecraftServer server;
 
   @Override
   protected Table createRawTable() {
@@ -45,14 +48,18 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
 
   @Override
   protected Delegator<Instance<World>> toLuaInstance(World javaInstance) {
-    return new WorldClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
+    return new WorldClassInstanceTable<>(new Instance<>(javaInstance, server.getFolderName()),
+        getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends World> extends LuaInstance<D> {
 
-    public Instance(D delegate) {
+    private String folder;
+
+    public Instance(D delegate, String folder) {
       super(delegate);
+      this.folder = folder;
     }
 
     /**
@@ -70,6 +77,14 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
     @LuaProperty
     public String getName() {
       return delegate.getWorldInfo().getWorldName();
+    }
+
+    /**
+     * This is the name of the folder where this world is stored on the file system.
+     */
+    @LuaProperty
+    public String getFolder() {
+      return folder;
     }
 
     /**

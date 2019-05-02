@@ -26,6 +26,11 @@ properties:
     description: |
         The 'dimension' is a magic number that defines which kind of world this is. 0 means the
         Overworld. -1 is the Nether, and 1 is the End.
+  - name: folder
+    type: 'string'
+    access: r
+    description: |
+        This is the name of the folder where this world is stored on the file system.
   - name: name
     type: 'string'
     access: r
