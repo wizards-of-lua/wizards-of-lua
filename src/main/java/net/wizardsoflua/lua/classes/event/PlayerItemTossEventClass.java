@@ -27,11 +27,11 @@ import net.wizardsoflua.lua.classes.common.Delegator;
  * removed from the inventory - and thus removed from the system.
  */
 @AutoService(LuaConverter.class)
-@LuaClassAttributes(name = PlayerItemTossEvent.NAME, superClass = EntityEventClass.class)
-@GenerateLuaClassTable(instance = PlayerItemTossEvent.Instance.class)
-@GenerateLuaDoc(subtitle = "When an Entity Enters the World", type = EventClass.TYPE)
-public final class PlayerItemTossEvent
-    extends BasicLuaClass<ItemTossEvent, PlayerItemTossEvent.Instance<ItemTossEvent>> {
+@LuaClassAttributes(name = PlayerItemTossEventClass.NAME, superClass = EntityEventClass.class)
+@GenerateLuaClassTable(instance = PlayerItemTossEventClass.Instance.class)
+@GenerateLuaDoc(type = EventClass.TYPE)
+public final class PlayerItemTossEventClass
+    extends BasicLuaClass<ItemTossEvent, PlayerItemTossEventClass.Instance<ItemTossEvent>> {
   public static final String NAME = "PlayerItemTossEvent";
   @Resource
   private LuaConverters converters;
@@ -40,13 +40,13 @@ public final class PlayerItemTossEvent
 
   @Override
   protected Table createRawTable() {
-    return new PlayerItemTossEventTable<>(this, converters);
+    return new PlayerItemTossEventClassTable<>(this, converters);
   }
 
   @Override
   protected Delegator<Instance<ItemTossEvent>> toLuaInstance(ItemTossEvent javaInstance) {
-    return new PlayerItemTossEventInstanceTable<>(new Instance<>(javaInstance, getName(), injector),
-        getTable(), converters);
+    return new PlayerItemTossEventClassInstanceTable<>(
+        new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
