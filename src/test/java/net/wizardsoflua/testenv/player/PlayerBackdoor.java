@@ -17,6 +17,7 @@ import com.google.common.io.Files;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.EnumFacing;
@@ -185,6 +186,20 @@ public class PlayerBackdoor {
     });
   }
 
+  public void clearInventory() {
+    testEnv.runAndWait(() -> {
+      getDelegate().inventory.clear();
+      getDelegate().inventoryContainer.detectAndSendChanges();
+    });
+  }
+
+  public void tossItemFromInventory(int slot) {
+    testEnv.runAndWait(() -> {
+      InventoryPlayer inventory = getDelegate().inventory;
+      getDelegate().dropItem(inventory.removeStackFromSlot(slot), false);
+    });
+  }
+
   public ItemStack getOffHandItem() {
     return getDelegate().getHeldItemOffhand();
   }
@@ -222,5 +237,7 @@ public class PlayerBackdoor {
       throw new RuntimeException(e);
     }
   }
+
+
 
 }

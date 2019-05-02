@@ -44,6 +44,7 @@ public class WolTestBase extends TestDataFactory {
     mc().clearLuaFunctionCache();
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
+    mc().player().clearInventory();
     oldDoDaylighCycle = mc().isDoDaylighCycle();
     wasOperator = mc().player().isOperator();
     oldDayTime = mc().getWorldtime();
@@ -57,7 +58,7 @@ public class WolTestBase extends TestDataFactory {
     mc().breakAllSpells();
     mc().setDoDaylightCycle(oldDoDaylighCycle);
     mc().setWorldTime(oldDayTime);
-    
+
     mc().resetClock();
   }
 
