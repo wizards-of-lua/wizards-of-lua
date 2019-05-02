@@ -96,7 +96,7 @@ functions:
         if err then
           error(err)
         end   
-        local contents = f:real("*a")
+        local contents = f:read("*a")
         f:close()
         ```
   - name: output
