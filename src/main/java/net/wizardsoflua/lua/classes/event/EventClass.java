@@ -1,8 +1,11 @@
 package net.wizardsoflua.lua.classes.event;
 
 import static java.util.Objects.requireNonNull;
+
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.IllegalOperationAttemptException;
@@ -20,6 +23,10 @@ import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.module.events.EventsModule;
 
+/**
+ * The <span class="notranslate">Event</span> class represents a notification about something that
+ * happend in the world.
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = EventClass.NAME)
 @GenerateLuaClassTable(instance = EventClass.Instance.class)
@@ -55,11 +62,26 @@ public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<E
       injector.injectMembers(this);
     }
 
-    @LuaProperty
-    public String getName() {
-      return name;
-    }
-
+    /**
+     * The 'cancelable' property can be used to detect dynamically whether this event instance can
+     * be [canceled](#canceled) by calling
+     *
+     * <code>
+     * event.canceled = true
+     * </code>
+     *
+     * In general, this is determined by the event class.
+     *
+     * For instance, a [BlockPlaceEvent](/modules/BlockPlaceEvent) is *cancelable*, but a
+     * [SwingArmEvent](/modules/SwingArmEvent) is not.
+     *
+     * If *cancelable* is <span class="notranslate">*false*</span>, then setting
+     * [canceled](#canceled) results in an error.
+     *
+     * Please note, an event can only be canceled during [event
+     * interception](/modules/Events#intercept).
+     *
+     */
     @LuaProperty
     public boolean isCancelable() {
       if (!events.isDuringEventIntercepting()) {
@@ -68,6 +90,27 @@ public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<E
       return delegate.isCancelable();
     }
 
+    /**
+     * The 'canceled' property can be used to define whether this event should be canceled.
+     *
+     * If *cancelable* is <span class="notranslate">*false*</span>, then setting
+     * [canceled](#canceled) results in an error.
+     *
+     * Please note, an event can only be canceled during [event
+     * interception](/modules/Events#intercept).
+     *
+     * #### Example
+     *
+     * Canceling all chat messages from player 'mickkay'.
+     *
+     * <code>
+     * Events.on('ChatEvent'):call(function(event)
+     *   if event.player.name == 'mickkay' then
+     *      event.canceled = true
+     *   end
+     * end)
+     * </code>
+     */
     @LuaProperty
     public boolean isCanceled() {
       return delegate.isCanceled();
@@ -80,5 +123,15 @@ public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<E
       }
       delegate.setCanceled(canceled);
     }
+
+    /**
+     * The name of this kind of event. Use this name to [connect an event
+     * queue](/modules/Events/#collect) to the event source for events of this kind.
+     */
+    @LuaProperty
+    public String getName() {
+      return name;
+    }
   }
 }
+

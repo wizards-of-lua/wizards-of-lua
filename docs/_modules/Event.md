@@ -1,40 +1,63 @@
 ---
 name: Event
+title: Event
 subtitle: The Event Base Class
 type: event
+extends: Object
 layout: module
 properties:
   - name: cancelable
-    type: boolean
+    type: 'boolean'
     access: r
     description: |
-        Whether the event can be [canceled](#canceled), for instance a [BlockPlaceEvent](/modules/BlockPlaceEvent) is *cancelable*, but a [SwingArmEvent](/modules/SwingArmEvent) is not.
-        Events can only be canceled in an [event interceptor](/modules/Events#intercept).
-        If *cancelable* is <span class="notranslate">*false*</span> then setting [canceled](#canceled) results in an error.
+        The 'cancelable' property can be used to detect dynamically whether this event instance can
+        be [canceled](#canceled) by calling
+       
+        ```lua
+        event.canceled = true
+        ```
+       
+        In general, this is determined by the event class.
+       
+        For instance, a [BlockPlaceEvent](/modules/BlockPlaceEvent) is *cancelable*, but a
+        [SwingArmEvent](/modules/SwingArmEvent) is not.
+       
+        If *cancelable* is <span class="notranslate">*false*</span>, then setting
+        [canceled](#canceled) results in an error.
+       
+        Please note, an event can only be canceled during [event
+        interception](/modules/Events#intercept).
   - name: canceled
-    type: boolean
+    type: 'boolean'
     access: r/w
     description: |
-        Whether the event is canceled.
-        A canceled event is not passed to any other [event interceptor](/modules/Events#intercept) or [EventQueues](/modules/EventQueue) and does not affect the world.
-
-        Please note that an event can only be canceled by [event interceptors](/modules/Events#intercept), since those are called *before* the actual event is handled by Minecraft.
-        Therefore an event can't be canceled if it is already collected by an [EventQueues](/modules/EventQueue), because this happens after the event has been handled by Minecraft.
-
+        The 'canceled' property can be used to define whether this event should be canceled.
+       
+        If *cancelable* is <span class="notranslate">*false*</span>, then setting
+        [canceled](#canceled) results in an error.
+       
+        Please note, an event can only be canceled during [event
+        interception](/modules/Events#intercept).
+       
         #### Example
-        Canceling all BlockPlaceEvents.
+       
+        Canceling all chat messages from player 'mickkay'.
+       
         ```lua
-        Events.on('BlockPlaceEvent'):call(function(event)
-            event.canceled = true
+        Events.on('ChatEvent'):call(function(event)
+          if event.player.name == 'mickkay' then
+             event.canceled = true
+          end
         end)
         ```
   - name: name
-    type: string
+    type: 'string'
     access: r
-    description: "The name of this kind of event.
-    Use this name to [connect an event queue](/modules/Events/#collect) to the event source for events of this kind.
-    "
+    description: |
+        The name of this kind of event. Use this name to [connect an event
+        queue](/modules/Events/#collect) to the event source for events of this kind.
 functions:
 ---
 
-The <span class="notranslate">Event</span> class represents a notification about something that happend in the world.
+The <span class="notranslate">Event</span> class represents a notification about something that
+happend in the world.

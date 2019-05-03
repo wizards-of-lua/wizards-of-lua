@@ -1,7 +1,7 @@
 ---
 name: EntityEvent
 title: EntityEvent
-subtitle:
+subtitle: 
 type: event
 extends: Event
 layout: module
