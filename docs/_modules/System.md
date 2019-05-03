@@ -6,24 +6,24 @@ type: module
 layout: module
 properties:
 functions:
-  - name: delete
+  - name: 'delete'
     parameters: path
     results: 'boolean'
     description: |
         The <span class="notranslate">'delete'</span> function deletes the file with the given path.
         The path is interpreted relative to the server's world folder. This function returns true if
         the file did exist and has been deleted.
-
+        
         Please note that deleting a directory is only supported if its empty.
-
+        
         #### Example
-
+        
         Deleting the file "some-file-to-delete.txt" from the server's world folder.
-
-        ```lua
+        
+        ```lua 
         System.delete('/some-file-to-delete.txt')
         ```
-  - name: execute
+  - name: 'execute'
     parameters: name, arg...
     results: 'number, string'
     description: |
@@ -32,28 +32,28 @@ functions:
         programs living inside the server's [script gateway directory](/configuration-file). Please
         note that this is a blocking call. The spell will resume its execution only after the program
         has terminated.
-
+        
         #### Example
-
+        
         Calling the "echo.sh" shell script from the server's script gateway directory.
-
-        ```lua
+        
+        ```lua 
         exitcode, result = System.execute('echo.sh','some argument')
         print('exitcode', exitcode)
         print('result', result)
         ```
-  - name: isDir
+  - name: 'isDir'
     parameters: path
     results: 'boolean'
     description: |
         The <span class="notranslate">'isDir'</span> function checks whether the given path points to a
         directory (in contrast to a regular file). The path is interpreted relative to the server's
         world folder.
-
+        
         #### Example
-
+        
         Printing the file type of the file "some/file" inside the server's world folder.
-
+        
         ```lua
         local path = '/some/file'
         if System.isFile(path) then
@@ -63,18 +63,18 @@ functions:
           print(string.format('% is a directory',path))
         end
         ```
-  - name: isFile
+  - name: 'isFile'
     parameters: path
     results: 'boolean'
     description: |
         The <span class="notranslate">'isFile'</span> function checks whether the given path points to
         a regular file (in contrast to a directory). The path is interpreted relative to the server's
         world folder.
-
+        
         #### Example
-
+        
         Printing the file type of the file "some/file" inside the server's world folder.
-
+        
         ```lua
         local path = '/some/file'
         if System.isFile(path) then
@@ -84,18 +84,18 @@ functions:
           print(string.format('% is a directory',path))
         end
         ```
-  - name: listFiles
+  - name: 'listFiles'
     parameters: path
     results: 'table'
     description: |
         The <span class="notranslate">'listFiles'</span> function returns a table with the names of all
         files that exist inside the directory at the given path. The path is interpreted relative to
         the server's world folder.
-
+        
         #### Example
-
+        
         Printing the names of all files inside the "region" folder of the server's world folder.
-
+        
         ```lua
         local path = '/region'
         local names = System.listFiles(path)
@@ -103,15 +103,15 @@ functions:
           print(name)
         end
         ```
-
+        
         #### Example
-
+       
         Getting the names of all files inside server's world folder.
-
+       
         ```lua        
         local names = System.listFiles('/')
         ```
-  - name: makeDir
+  - name: 'makeDir'
     parameters: path
     results: 'boolean'
     description: |
@@ -119,18 +119,18 @@ functions:
         path if it did not already exist. The path is interpreted relative to the server's world
         folder. This function returns true if the directory already existed or if it has been be
         created.
-
+        
         #### Example
-
+        
         Creating the directory "some/dir" in the server's world folder.
-
+        
         ```lua
         local created = System.makeDir('/some/dir')
         if not created then
           error('Could not create directory')
         end
         ```
-  - name: move
+  - name: 'move'
     parameters: path, newPath
     results: 'boolean'
     description: |
@@ -138,12 +138,12 @@ functions:
         path so that the resulting file is accessible by the given new path. The path is interpreted
         relative to the server's world folder. This function returns true if the operation was
         successful.
-
+        
         #### Example
-
+        
         Renaming the file "aaa.txt" to "bbb.txt"
-
-        ```lua
+        
+        ```lua 
         System.move('aaa.txt','bbb.txt')
         ```
 ---
