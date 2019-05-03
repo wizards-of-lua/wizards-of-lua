@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
@@ -16,12 +17,17 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">RightClickBlockEvent</span> class is fired when a player
+ * right-clicks at some block.
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = RightClickBlockEventClass.NAME,
     superClass = PlayerInteractEventClass.class)
 @GenerateLuaClassTable(instance = RightClickBlockEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
-public final class RightClickBlockEventClass extends BasicLuaClass<PlayerInteractEvent.RightClickBlock, RightClickBlockEventClass.Instance<PlayerInteractEvent.RightClickBlock>> {
+@GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player Right-Clicks on a Block")
+public final class RightClickBlockEventClass extends
+    BasicLuaClass<PlayerInteractEvent.RightClickBlock, RightClickBlockEventClass.Instance<PlayerInteractEvent.RightClickBlock>> {
   public static final String NAME = "RightClickBlockEvent";
   @Resource
   private LuaConverters converters;
@@ -47,6 +53,9 @@ public final class RightClickBlockEventClass extends BasicLuaClass<PlayerInterac
       super(delegate, name, injector);
     }
 
+    /**
+     * The exact position the player clicked at.
+     */
     @LuaProperty
     public Vec3d getHitVec() {
       return delegate.getHitVec();
