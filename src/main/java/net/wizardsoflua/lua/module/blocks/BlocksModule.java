@@ -20,6 +20,10 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
+/**
+ * The <span class="notranslate">Blocks</span> module provides access to all [block
+ * types](https://minecraft.gamepedia.com/Block) known in Minecraft.
+ */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = BlocksModule.NAME, subtitle = "The Building Blocks Directory")
@@ -38,6 +42,37 @@ public class BlocksModule extends LuaTableExtension {
     return new BlocksModuleTable<>(this, converters);
   }
 
+  /**
+   * The 'get' function returns the block with the given name.
+   *
+   * #### Example
+   *
+   * Creating a stone block and placing it at the spell's position.
+   *
+   * <code>
+   * spell.block = Blocks.get( "stone")
+   * </code>
+   *
+   * #### Example
+   *
+   * Creating a smooth diorite block and placing it at the spell's position.
+   *
+   * <code>
+   * spell.block = Blocks.get( "stone"):withData( { variant = "smooth_diorite"})
+   * </code>
+   *
+   * #### Example
+   *
+   * Creating a standing sign with the name of the current spell's owner written onto it and placing
+   * it at the spell's position.
+   *
+   * <code>
+   * spell.block = Blocks.get("standing_sign"):withNbt( {
+   *   Text1='{"text":"'..spell.owner.name..'"}'
+   * })
+   * </code>
+   *
+   */
   @LuaFunction
   public ImmutableWolBlock get(String name) {
     Block block = getBlockByName(name);
