@@ -41,6 +41,10 @@ import net.wizardsoflua.lua.function.NamedFunction2;
 import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 import net.wizardsoflua.lua.view.ViewFactory;
 
+/**
+ * The <span class="notranslate">Events</span> module provides functions for accessing and firing
+ * [Events](/modules/Event/).
+ */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = EventsModule.NAME, subtitle = "Knowing What Happened")
@@ -115,11 +119,68 @@ public class EventsModule extends LuaTableExtension {
     return new EventsModuleTable<>(this, converters);
   }
 
+  /**
+   * The 'fire' function posts a new [CustomEvent](/modules/CustomEvent/) with the given name and
+   * the optional given content data.
+   *
+   * #### Example
+   *
+   * Firing a custom event without any data.
+   *
+   * <code>
+   * Events.fire("my-event")
+   * </code>
+   *
+   * #### Example
+   *
+   * Registering an event intereptor for a custom event that prints the event data.
+   *
+   * <code>
+   * Events.on("my-event"):call(function(event)
+   *   print(str(event.data))
+   * end)
+   * </code>
+   *
+   * Firing a custom event with some data.
+   *
+   * <code>
+   * local data = spell.block
+   * Events.fire("my-event", data)
+   * </code>
+   */
   @net.wizardsoflua.annotation.LuaFunction
   public void fire(String eventName, Object data) {
     MinecraftForge.EVENT_BUS.post(new CustomLuaEvent(eventName, data, viewFactory));
   }
 
+  /**
+   * The 'collect' function creates an [EventQueue](/modules/EventQueue/) that collects all
+   * [Event](/modules/Event) occurrences of the specified kind(s).
+   *
+   * #### Example
+   *
+   * Echoing all chat messages.
+   *
+   * <code>
+   * local queue = Events.collect("ChatEvent")
+   * while true do
+   *   local event = queue:next()
+   *   spell:execute("say %s", event.message)
+   * end
+   * </code>
+   *
+   * #### Example
+   *
+   * Posting the position of all block-click events into the chat.
+   *
+   * <code>
+   * local queue=Events.collect("LeftClickBlockEvent","RightClickBlockEvent")
+   * while true do
+   *   local event = queue:next()
+   *   spell:execute("say %s at %s", event.name, event.pos)
+   * end
+   * </code>
+   */
   @net.wizardsoflua.annotation.LuaFunction(name = CollectFunction.NAME)
   @LuaFunctionDoc(returnType = EventQueueClass.NAME, args = {"eventName..."})
   class CollectFunction extends NamedFunctionAnyArg {
@@ -147,6 +208,20 @@ public class EventsModule extends LuaTableExtension {
     return result;
   }
 
+  /**
+   * Returns a table containing the specified event names and a reference to
+   * [intercept](#intercept). This can be used as shorthand for [intercept](#intercept).
+   *
+   * #### Example
+   *
+   * Subscribing for chat events and printing the messages.
+   *
+   * <code>
+   * local interceptor = Events.on('ChatEvent'):call( function(event)
+   *   print(event.message)
+   * end)
+   * </code>
+   */
   @net.wizardsoflua.annotation.LuaFunction(name = OnFunction.NAME)
   @LuaFunctionDoc(returnType = LuaTypes.TABLE, args = {"eventName..."})
   class OnFunction extends NamedFunctionAnyArg {
@@ -180,6 +255,60 @@ public class EventsModule extends LuaTableExtension {
     return result;
   }
 
+  /**
+   * Creates an event interceptor for [Events](/module/Event) with the specified names.
+   *
+   * The interceptor will be called immediately when an event occurs, which allows events to be
+   * modified and [canceled](/modules/Event#canceled).
+   *
+   * Event interceptors do not support [sleeping](/modules/Time#sleep) - therefor,
+   * [autosleep](/modules/Time#autosleep) is disabled and manual sleeping is treated as an illegal
+   * operation.
+   *
+   * As long as a [Spell](/modules/Spell) has any active event interceptors it will not terminate by
+   * itself, so make sure to [stop](/modules/EventInterceptor#stop) each event interceptor that is
+   * no longer needed.
+   *
+   * #### Example
+   *
+   * Intercepting chat events.
+   *
+   * <code>
+   * local interceptor =
+   * Events.intercept({'ChatEvent'}, function(event)
+   *   print(str(event))
+   * end )
+   * </code>
+   *
+   * #### *Warning: Beware of possible race conditions!*
+   *
+   * Be careful, when accessing variables that are used both by the main program as well as by the
+   * event interceptor.
+   *
+   * If [autosleep](/modules/Time#autosleep) is enabled, the main program can fall asleep eventually
+   * at any time, which allows that a variable might be modified in an awkward situation.
+   *
+   * For instance, the following program fails due to indexing a nil value in line 10 despite the
+   * nil check in line 8.
+   *
+   * In this example there is an explicit sleep in line 9, but that sleep could just as well be
+   * caused by [autosleep](/modules/Time#autosleep).
+   *
+   * <code>
+   * lua local abc = 'abc'
+   * local interceptor = Events.intercept({'my-event'}, function(event)
+   *   abc = nil
+   * end)
+   * spell:execute([[lua
+   *   Events.fire('my-event')
+   * ]])
+   * if abc ~= nil then
+   *   sleep(1)
+   *   print(abc:len())
+   * end
+   * interceptor:stop()
+   * </code>
+   */
   @net.wizardsoflua.annotation.LuaFunction(name = InterceptFunction.NAME)
   @LuaFunctionDoc(returnType = EventInterceptorClass.NAME, args = {"eventNames", "eventHandler"})
   class InterceptFunction extends NamedFunction2 {
