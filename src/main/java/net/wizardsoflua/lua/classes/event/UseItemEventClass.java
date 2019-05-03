@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
@@ -18,19 +19,28 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">UseItemEvent</span> class is the base class of events about
- * [Item](/modules/Item) usage. Typical scenarios are:
+ * [Item](/modules/Item) usage.
+ *
+ * The <span class="notranslate">UseItemEvent</span> is fired when a [Mob](/modules/Mob) or
+ * [Player](/modules/Player) uses an [Item](/modules/Item).
+ *
+ * Typical scenarios are:
  * <ul>
  * <li>Drawing a bow</li>
  * <li>Eating food</li>
  * <li>Drinking potions or milk</li>
  * <li>Guarding with a shield</li>
  * </ul>
+ *
+ * Setting the [duration](/modules/UseItemEvent#duration) to zero or less cancels this event.
+ *
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = UseItemEventClass.NAME, superClass = LivingEventClass.class)
 @GenerateLuaClassTable(instance = UseItemEventClass.Instance.class)
-@GenerateLuaDoc(subtitle = "When an Entity uses an Item", type = EventClass.TYPE)
-public final class UseItemEventClass extends BasicLuaClass<LivingEntityUseItemEvent, UseItemEventClass.Instance<LivingEntityUseItemEvent>> {
+@GenerateLuaDoc(subtitle = "When an Entity Uses an Item", type = EventClass.TYPE)
+public final class UseItemEventClass extends
+    BasicLuaClass<LivingEntityUseItemEvent, UseItemEventClass.Instance<LivingEntityUseItemEvent>> {
   public static final String NAME = "UseItemEvent";
   @Resource
   private LuaConverters converters;
@@ -65,7 +75,8 @@ public final class UseItemEventClass extends BasicLuaClass<LivingEntityUseItemEv
     }
 
     /**
-     * The time in ticks left until the item use is finished.
+     * The 'duration' is the number of remaining game ticks until this event will terminate normally
+     * and the use is finished.
      *
      * #### Example
      *
