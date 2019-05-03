@@ -18,10 +18,14 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">PlayerItemPickupEvent</span> is fired whenever a
+ * [Player](/modules/Player) picks up an [DroppedItem](/modules/DroppedItem).
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerItemPickupEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerItemPickupEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
+@GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player Collects Something")
 public final class PlayerItemPickupEventClass extends
     BasicLuaClass<PlayerEvent.ItemPickupEvent, PlayerItemPickupEventClass.Instance<PlayerEvent.ItemPickupEvent>> {
   public static final String NAME = "PlayerItemPickupEvent";
@@ -49,11 +53,17 @@ public final class PlayerItemPickupEventClass extends
       super(delegate, name, injector);
     }
 
+    /**
+     * The player that triggered this event.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.player;
     }
 
+    /**
+     * The item that has been collected.
+     */
     @LuaProperty
     public EntityItem getItem() {
       return delegate.getOriginalEntity();
