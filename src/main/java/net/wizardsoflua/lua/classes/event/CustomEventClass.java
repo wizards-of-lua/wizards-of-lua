@@ -21,6 +21,14 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.view.ViewFactory;
 
+/**
+ * The <span class="notranslate">CustomEvent</span> represents any event that has been fired from
+ * some Lua code using [Events.fire()](/modules/Events/#fire), for example:
+ *
+ * <code>
+ * Events.fire("my-event", {someKey="some data"})
+ * </code>
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = CustomEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = CustomEventClass.Instance.class)
@@ -53,11 +61,38 @@ public final class CustomEventClass
       super(delegate, name, injector);
     }
 
+    /**
+     * The name of the custom event.
+     */
     @Override
     public String getName() {
       return delegate.getName();
     }
 
+    /**
+     * The data value that has been sent with this event. See [Events.fire()](/modules/Events/#fire)
+     * for more details on this.
+     *
+     * #### Example
+     *
+     * Firing a custom event with some complex data.
+     *
+     * <code>
+     * local data = {pos=spell.pos, time=Time.gametime}
+     * Events.fire("my-event", data)
+     * </code>
+     *
+     * #### Example
+     *
+     * Accessing the data of a custom event.
+     *
+     * <code>
+     * local q = Events.collect("my-event")
+     * local event = q:next()
+     * print("event.data", str(event.data))
+     * </code>
+     *
+     */
     @LuaProperty
     @LuaPropertyDoc(type = "any")
     public @Nullable Object getData() {
