@@ -15,6 +15,10 @@ import net.wizardsoflua.extension.spell.api.resource.LuaConverters;
 import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
+/**
+ * The <span class="notranslate">Items</span> module can be used to create an [item](/modules/Item/)
+ * of any type.
+ */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
 @GenerateLuaDoc(name = ItemsModule.NAME, subtitle = "Creating Items")
@@ -33,6 +37,27 @@ public class ItemsModule extends LuaTableExtension {
     return new ItemsModuleTable<>(this, converters);
   }
 
+  /**
+   * The 'get' function returns a new [item](/modules/Item/) of the given type and amount.
+   *
+   * #### Example
+   *
+   * Creating one diamond axe and putting it into the player's hand.
+   *
+   * <code>
+   * local axe = Items.get("diamond_axe")
+   * spell.owner.mainhand = axe
+   * </code>
+   *
+   * #### Example
+   *
+   * Creating a full stack of wheat and putting it into the wizard's hand.
+   *
+   * <code>
+   * spell.owner.mainhand = Items.get("wheat", 64)
+   * </code>
+   *
+   */
   @LuaFunction
   public ItemStack get(String name, @Nullable Integer amount) {
     amount = amount != null ? amount : 1;
