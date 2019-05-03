@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -18,11 +19,26 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * he <span class="notranslate">SwingArmEvent</span> is fired whenever a [Player](/modules/Player)
+ * waves an arm. This can be the left arm or the right arm.
+ *
+ * This event is fired on three occasions:
+ *
+ * - just before the [RightClickBlockEvent](/modules/RightClickBlockEvent)
+ *
+ * - just before the [LeftClickBlockEvent](/modules/LeftClickBlockEvent)
+ *
+ * - when the player does a left-click into the air.
+ *
+ *
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = SwingArmEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = SwingArmEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class SwingArmEventClass extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<SwingArmEvent>> {
+public final class SwingArmEventClass
+    extends BasicLuaClass<SwingArmEvent, SwingArmEventClass.Instance<SwingArmEvent>> {
   public static final String NAME = "SwingArmEvent";
   @Resource
   private LuaConverters converters;
@@ -46,16 +62,25 @@ public final class SwingArmEventClass extends BasicLuaClass<SwingArmEvent, Swing
       super(delegate, name, injector);
     }
 
+    /**
+     * he hand the player waved. Can be 'MAIN_HAND' or 'OFF_HAND'.
+     */
     @LuaProperty
     public EnumHand getHand() {
       return delegate.getHand();
     }
 
+    /**
+     * The item in the player's hand.
+     */
     @LuaProperty
     public ItemStack getItem() {
       return delegate.getItemStack();
     }
 
+    /**
+     * The player that triggered this event.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.getPlayer();
