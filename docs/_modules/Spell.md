@@ -6,7 +6,7 @@ type: class
 extends: VirtualEntity
 layout: module
 properties:
-  - name: block
+  - name: 'block'
     type: '[Block](/modules/Block)'
     access: r/w
     description: |
@@ -48,7 +48,7 @@ properties:
           spell.block = copy
         end
         ```
-  - name: data
+  - name: 'data'
     type: 'table'
     access: r
     description: |
@@ -92,7 +92,7 @@ properties:
         local otherSpell = Spells.find({name=otherSpellName})[1]
         otherSpell.data.item = Items.get('diamond_axe')
         ```
-  - name: owner
+  - name: 'owner'
     type: '[Entity](/modules/Entity)'
     access: r
     description: |
@@ -108,7 +108,7 @@ properties:
           print(spell.owner.name)
         end
         ```
-  - name: sid
+  - name: 'sid'
     type: 'number (long)'
     access: r
     description: |
@@ -124,7 +124,7 @@ properties:
           spell:execute("wol spell break bySid %s", s.sid)
         end
         ```
-  - name: visible
+  - name: 'visible'
     type: 'boolean'
     access: r/w
     description: |
@@ -154,7 +154,7 @@ properties:
         end
         ```
 functions:
-  - name: execute
+  - name: 'execute'
     parameters: command, ...
     results: 'number'
     description: |
