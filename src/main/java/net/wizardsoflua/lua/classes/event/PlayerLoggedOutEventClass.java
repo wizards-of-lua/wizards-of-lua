@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
@@ -16,11 +17,16 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">PlayerLoggedOutEvent</span> is fired whenever a
+ * [Player](/modules/Player) leaves the world (server).
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerLoggedOutEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerLoggedOutEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerLoggedOutEventClass extends BasicLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Instance<PlayerEvent.PlayerLoggedOutEvent>> {
+@GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player Leaves the World")
+public final class PlayerLoggedOutEventClass extends
+    BasicLuaClass<PlayerEvent.PlayerLoggedOutEvent, PlayerLoggedOutEventClass.Instance<PlayerEvent.PlayerLoggedOutEvent>> {
   public static final String NAME = "PlayerLoggedOutEvent";
   @Resource
   private LuaConverters converters;
@@ -46,6 +52,9 @@ public final class PlayerLoggedOutEventClass extends BasicLuaClass<PlayerEvent.P
       super(delegate, name, injector);
     }
 
+    /**
+     * The player who left the world.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.player;
