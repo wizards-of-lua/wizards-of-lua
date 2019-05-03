@@ -1,7 +1,7 @@
 ---
 name: PostPopulateChunkEvent
 title: PostPopulateChunkEvent
-subtitle:
+subtitle: 
 type: event
 extends: PopulateChunkEvent
 layout: module
@@ -14,7 +14,7 @@ chunk has been loaded and then been populated with blocks, ores, structures, and
 
 #### Example
 
-Printing all <tt>PostPopulateChunkEvent</tt>s when they occur.
+Printing all <tt>PostPopulateChunkEvent</tt>s when they occur. 
 
 ```lua
 Events.on('PostPopulateChunkEvent'):call(function(event)
