@@ -6,12 +6,12 @@ type: event
 extends: EntityEvent
 layout: module
 properties:
-  - name: item
+  - name: 'item'
     type: '[DroppedItem](/modules/DroppedItem)'
     access: r
     description: |
         This is the [dropped item](/modules/DroppedItem) being tossed.
-  - name: player
+  - name: 'player'
     type: '[Player](/modules/Player)'
     access: r
     description: |
