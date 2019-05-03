@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -20,11 +21,17 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">PlayerInteractEvent</span> is the base class of
+ * [LeftClickBlockEvent](/modules/LeftClickBlockEvent/) and
+ * [RightClickBlockEvent](/modules/RightClickBlockEvent/).
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerInteractEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerInteractEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerInteractEventClass extends BasicLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Instance<PlayerInteractEvent>> {
+public final class PlayerInteractEventClass extends
+    BasicLuaClass<PlayerInteractEvent, PlayerInteractEventClass.Instance<PlayerInteractEvent>> {
   public static final String NAME = "PlayerInteractEvent";
   @Resource
   private LuaConverters converters;
@@ -49,26 +56,42 @@ public final class PlayerInteractEventClass extends BasicLuaClass<PlayerInteract
       super(delegate, name, injector);
     }
 
+    /**
+     * The player that triggered this event.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.getEntityPlayer();
     }
 
+    /**
+     * The face of the block that was clicked at. Can be one of 'up', 'down', 'north', 'east',
+     * 'south', and 'west'.
+     */
     @LuaProperty
     public EnumFacing getFace() {
       return delegate.getFace();
     }
 
+    /**
+     * The hand the player used to hit the block. Can be 'MAIN_HAND' or 'OFF_HAND'.
+     */
     @LuaProperty
     public EnumHand getHand() {
       return delegate.getHand();
     }
 
+    /**
+     * The block's position.
+     */
     @LuaProperty
     public BlockPos getPos() {
       return delegate.getPos();
     }
 
+    /**
+     * The item in the player's hand.
+     */
     @LuaProperty
     public ItemStack getItem() {
       return delegate.getItemStack();
