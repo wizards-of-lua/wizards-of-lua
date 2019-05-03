@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.scan;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -18,11 +19,17 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">BlockHit</span> class contains the results of a call to the
+ * entity's [scanView()](/modules/Entity/#scanView) function.
+ *
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = BlockHitClass.NAME)
 @GenerateLuaClassTable(instance = BlockHitClass.Instance.class)
-@GenerateLuaDoc(subtitle = "What Lies in View")
-public final class BlockHitClass extends BasicLuaClass<RayTraceResult, BlockHitClass.Instance<RayTraceResult>> {
+@GenerateLuaDoc(subtitle = "What is in Sight")
+public final class BlockHitClass
+    extends BasicLuaClass<RayTraceResult, BlockHitClass.Instance<RayTraceResult>> {
   public static final String NAME = "BlockHit";
   @Resource
   private LuaConverters converters;
@@ -43,16 +50,26 @@ public final class BlockHitClass extends BasicLuaClass<RayTraceResult, BlockHitC
       super(delegate);
     }
 
+    /**
+     * This is the exact position where the scan hit the block.
+     */
     @LuaProperty
     public Vec3d getHitVec() {
       return delegate.hitVec;
     }
 
+    /**
+     * This is the position of the block that was hit by the scan.
+     */
     @LuaProperty
     public BlockPos getPos() {
       return delegate.getBlockPos();
     }
 
+    /**
+     * This is the name of the block's side where the scan hit the block. This can be one of 'down',
+     * 'up', 'south', 'west', 'north', and 'east'.
+     */
     @LuaProperty
     public EnumFacing getSideHit() {
       return delegate.sideHit;
