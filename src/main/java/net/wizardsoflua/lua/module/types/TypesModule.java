@@ -18,9 +18,13 @@ import net.wizardsoflua.lua.BadArgumentException;
 import net.wizardsoflua.lua.classes.ObjectClass;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
+/**
+ * The <span class="notranslate">Types</span> module can be used to check objects for their type and
+ * to create new types.
+ */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
-@GenerateLuaDoc(name = TypesModule.NAME)
+@GenerateLuaDoc(name = TypesModule.NAME, subtitle = "Managing Types")
 public class TypesModule extends LuaTableExtension {
   public static final String NAME = "Types";
   @Resource
@@ -44,6 +48,48 @@ public class TypesModule extends LuaTableExtension {
     return new TypesModuleTable<>(this, converters);
   }
 
+  /**
+   * The 'declare' function creates a new class with the given name and the optionally given
+   * superclass.
+   *
+   * #### Example
+   *
+   * Declaring a "Book" class with some functions.
+   *
+   * <code>
+   * Types.declare("Book")
+   *
+   * function Book.new(title)
+   *   local o = {title=title, pages={}}
+   *   setmetatable(o,Book)
+   *   return o
+   * end
+   *
+   * function Book:addPage(text)
+   *   table.insert(self.pages, text)
+   * end
+   * </code>
+   *
+   * Please note that there is also a shortcut for "Types.declare":
+   *
+   * <code>
+   * declare("Book")
+   </code>
+   *
+   * #### Example
+   *
+   * Declaring the "Newspaper" class as a subclass of "Book".
+   *
+   * <code>
+   * declare("Newspaper", Book)
+   *
+   * function Newspaper.new(title)
+   *   local o = {title=title, pages={}}
+   *   setmetatable(o,Newspaper)
+   *   return o
+   * end
+   * </code>
+   */
   @LuaFunction
   public void declare(String className, @Nullable Table metatable) {
     if (env.rawget(className) != null) {
@@ -61,6 +107,19 @@ public class TypesModule extends LuaTableExtension {
     env.rawset(className, classTable);
   }
 
+  /**
+   * The 'instanceOf' function returns true if the given object is an instance of the given class.
+   *
+   * #### Example
+   *
+   * Checking if the current spell's owner is a player.
+   *
+   * <code>
+   * if Types.instanceOf(Player, spell.owner) then
+   *   print("Owner is a player")
+   * end
+   * </code>
+   */
   @LuaFunction
   public boolean instanceOf(Table classTable, @Nullable Object object) {
     if (object == null) {
@@ -73,6 +132,24 @@ public class TypesModule extends LuaTableExtension {
     return classTable.equals(metatable) || instanceOf(classTable, metatable);
   }
 
+  /**
+   *
+   * The 'type' function returns the name of the given object's type.
+   *
+   * #### Example
+   *
+   * Printing the type of the spell's owner.
+   *
+   * <code>
+   * print( Types.type(spell.owner))
+   * </code>
+   *
+   * Since "Types.type" is widely used there exists also a shortcut: "type".
+   *
+   * <code>
+   * print( type(spell.owner))
+   * </code>
+   */
   @LuaFunction
   public String type(@Nullable Object LuaObject) {
     return types.getLuaTypeNameOfLuaObject(LuaObject);
