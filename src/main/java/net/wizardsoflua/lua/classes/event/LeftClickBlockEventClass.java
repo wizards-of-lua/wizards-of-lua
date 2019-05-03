@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
@@ -16,12 +17,17 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">LeftClickBlockEvent</span> class is fired when a player left-clicks
+ * at some block.
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = LeftClickBlockEventClass.NAME,
     superClass = PlayerInteractEventClass.class)
 @GenerateLuaClassTable(instance = LeftClickBlockEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
-public final class LeftClickBlockEventClass extends BasicLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Instance<PlayerInteractEvent.LeftClickBlock>> {
+@GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player Left-Clicks on a Block")
+public final class LeftClickBlockEventClass extends
+    BasicLuaClass<PlayerInteractEvent.LeftClickBlock, LeftClickBlockEventClass.Instance<PlayerInteractEvent.LeftClickBlock>> {
   public static final String NAME = "LeftClickBlockEvent";
   @Resource
   private LuaConverters converters;
@@ -47,6 +53,25 @@ public final class LeftClickBlockEventClass extends BasicLuaClass<PlayerInteract
       super(delegate, name, injector);
     }
 
+    /**
+     * The exact position the player clicked at.
+     *
+     * #### Example
+     *
+     * Creating some particle effect at the left-click hit position.
+     *
+     * <code>
+     * local queue = Events.collect("LeftClickBlockEvent")
+     * while true do
+     *   local event = queue:next()
+     *   local v = event.hitVec
+     *   spell:execute([[
+     *     /particle angryVillager %s %s %s 0 0 0 0 1 true
+     *   ]], v.x, v.y, v.z)
+     * end
+     * </code>
+     *
+     */
     @LuaProperty
     public Vec3d getHitVec() {
       return delegate.getHitVec();
