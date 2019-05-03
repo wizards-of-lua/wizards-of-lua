@@ -30,6 +30,12 @@ import net.wizardsoflua.lua.function.NamedFunctionAnyArg;
 /**
  * The <span class="notranslate">Logger</span> class supports writing log messages into the server's
  * log file.
+ *
+ * The log messages can be of the following severity: error, warn, info, debug, and trace.
+ *
+ * The server's log files are found inside the server's ```logs``` folder. By default "error",
+ * "warn", and "info" messages go into the files "latest.log" and "debug.log", while "debug" and
+ * "trace" messages only go into "debug.log".
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = LoggerClass.NAME)
@@ -57,28 +63,28 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
     }
 
     /**
-     * The <span class="notranslate">'error'</span> function writes the given message into the
+     * The <span class="notranslate">'error'</span> function writes the given error message into the
      * server's log file if the log level is at least 'error', prefixed with this logger's name.
-     * 
+     *
      * Optionally you can provide some message arguments that will be formatted into the final
      * message ([see
      * string.format()](https://www.lua.org/manual/5.3/manual.html#pdf-string.format)).
-     * 
+     *
      * #### Example
-     * 
+     *
      * Printing an error message into the server's log file, prefixed with the category label
      * "my-logger".
-     * 
+     *
      * <code>
      * local logger = Loggers.get("my-logger")
      * logger:error("Some error message")
      * </code>
-     * 
+     *
      * #### Example
-     * 
+     *
      * Printing a formatted error message into the server's log file, prefixed with the category
      * label "my-logger.
-     * 
+     *
      * <code>
      * local logger = Loggers.get("my-logger")
      * logger:error("Some error message with some value %s", value)
@@ -95,12 +101,32 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
     }
 
     /**
-     * The <span class="notranslate">'warn'</span> function writes the given message into the
-     * server's log file if the log level is at least 'warn', prefixed with this logger's name.
-     * 
+     * The <span class="notranslate">'warn'</span> function writes the given warning message into
+     * the server's log file if the log level is at least 'warn', prefixed with this logger's name.
+     *
      * Optionally you can provide some message arguments that will be formatted into the final
      * message ([see
      * string.format()](https://www.lua.org/manual/5.3/manual.html#pdf-string.format)).
+     *
+     * #### Example
+     *
+     * Printing an error message into the server's log file, prefixed with the category label
+     * "my-logger".
+     *
+     * <code>
+     * local logger = Loggers.get("my-logger")
+     * logger:warn("Some warning message")
+     * </code>
+     *
+     * #### Example
+     *
+     * Printing a formatted warning message into the server's log file, prefixed with the category
+     * label "my-logger.
+     *
+     * <code>
+     * local logger = Loggers.get("my-logger")
+     * logger:warn("Some warning message with some value %s", value)
+     * </code>
      */
     @LuaFunction(name = WarnFunction.NAME)
     @LuaFunctionDoc(returnType = LuaTypes.NIL, args = {"message", "arg..."})
@@ -113,31 +139,32 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
     }
 
     /**
-     * The <span class="notranslate">'info'</span> function writes the given message into the
-     * server's log file if the log level is at least 'info', prefixed with this logger's name.
-     * 
+     * The <span class="notranslate">'info'</span> function writes the given information message
+     * into the server's log file if the log level is at least 'info', prefixed with this logger's
+     * name.
+     *
      * Optionally you can provide some message arguments that will be formatted into the final
      * message ([see
      * string.format()](https://www.lua.org/manual/5.3/manual.html#pdf-string.format)).
-     * 
+     *
      * #### Example
-     * 
+     *
      * Printing an info message into the server's log file, prefixed with the category label
      * "my-logger".
-     * 
+     *
      * <code>
      * local logger = Loggers.get("my-logger")
-     * logger:info("Some message")
+     * logger:info("Some info message")
      * </code>
-     * 
+     *
      * #### Example
-     * 
+     *
      * Printing a formatted info message into the server's log file, prefixed with the category
-     * label "my-logger".
-     * 
+     * label "my-logger.
+     *
      * <code>
      * local logger = Loggers.get("my-logger")
-     * logger:info("Some message with values %s and %s", valueA, valueB)
+     * logger:info("Some info message with some value %s", value)
      * </code>
      */
     @LuaFunction(name = InfoFunction.NAME)
@@ -151,12 +178,32 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
     }
 
     /**
-     * The <span class="notranslate">'debug'</span> function writes the given message into the
+     * The <span class="notranslate">'debug'</span> function writes the given debug message into the
      * server's log file if the log level is at least 'debug', prefixed with this logger's name.
-     * 
+     *
      * Optionally you can provide some message arguments that will be formatted into the final
      * message ([see
      * string.format()](https://www.lua.org/manual/5.3/manual.html#pdf-string.format)).
+     *
+     * #### Example
+     *
+     * Printing an debug message into the server's log file, prefixed with the category label
+     * "my-logger".
+     *
+     * <code>
+     * local logger = Loggers.get("my-logger")
+     * logger:debug("Some debug message")
+     * </code>
+     *
+     * #### Example
+     *
+     * Printing a formatted debug message into the server's log file, prefixed with the category
+     * label "my-logger.
+     *
+     * <code>
+     * local logger = Loggers.get("my-logger")
+     * logger:debug("Some debug message with some value %s", value)
+     * </code>
      */
     @LuaFunction(name = DebugFunction.NAME)
     @LuaFunctionDoc(returnType = LuaTypes.NIL, args = {"message", "arg..."})
@@ -169,12 +216,32 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
     }
 
     /**
-     * The <span class="notranslate">'trace'</span> function writes the given message into the
-     * server's log file if the log level is at least 'trace', prefixed with this logger's name.
-     * 
+     * The <span class="notranslate">'trace'</span> function writes the given tracing message into
+     * the server's log file if the log level is at least 'trace', prefixed with this logger's name.
+     *
      * Optionally you can provide some message arguments that will be formatted into the final
      * message ([see
      * string.format()](https://www.lua.org/manual/5.3/manual.html#pdf-string.format)).
+     *
+     * #### Example
+     *
+     * Printing an tracing message into the server's log file, prefixed with the category label
+     * "my-logger".
+     *
+     * <code>
+     * local logger = Loggers.get("my-logger")
+     * logger:trace("Some tracing message")
+     * </code>
+     *
+     * #### Example
+     *
+     * Printing a formatted traceing message into the server's log file, prefixed with the category
+     * label "my-logger.
+     *
+     * <code>
+     * local logger = Loggers.get("my-logger")
+     * logger:trace("Some traceing message with some value %s", value)
+     * </code>
      */
     @LuaFunction(name = TraceFunction.NAME)
     @LuaFunctionDoc(returnType = LuaTypes.NIL, args = {"message", "arg..."})
