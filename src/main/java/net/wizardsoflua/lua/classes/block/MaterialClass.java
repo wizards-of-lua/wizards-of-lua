@@ -2,8 +2,11 @@ package net.wizardsoflua.lua.classes.block;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+
 import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
@@ -19,6 +22,10 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.LuaInstance;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">Material</span> class describes the physical behaviour of a
+ * [Block](modules/Block).
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = MaterialClass.NAME)
 @GenerateLuaClassTable(instance = MaterialClass.Instance.class)
@@ -89,51 +96,93 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
       super(delegate);
     }
 
+    /**
+     * This is The <span class="notranslate">true</span> if light can not pass this material. If so
+     * it will prevent grass from growing on dirt underneath and kill any grass below it.
+     */
     @LuaProperty
     public boolean getBlocksLight() {
       return delegate.blocksLight();
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if entites can not pass this material.
+     */
     @LuaProperty
     public boolean getBlocksMovement() {
       return delegate.blocksMovement();
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this material can catch fire.
+     */
     @LuaProperty
     public boolean getCanBurn() {
       return delegate.getCanBurn();
     }
 
+    /**
+     * This defines, if this material can be pushed, e.g. by a piston. The value is one of 'NORMAL',
+     * 'DESTROY', 'BLOCK', 'IGNORE'.
+     */
     @LuaProperty
     public EnumPushReaction getMobility() {
       return delegate.getMobilityFlag();
     }
 
+    /**
+     * This property contains the name of this material, if known, or nil, if not. This is something
+     * like 'GRASS', 'WOOD', 'IRON', and many others.
+     *
+     * Please note that you must not confuse this with the [block name](/modules/Block/#name).
+     *
+     * For example, 'IRON' is the material not only of 'iron_bars', 'iron_block', 'iron_door',
+     * 'iron_trapdoor', 'light_weighted_pressure_plate', and 'heavy_weighted_pressure_plate', but
+     * also of 'gold_block', 'lapis_block', 'diamond_block', 'emerald_block', and 'redstone_block'.
+     *
+     */
     @LuaProperty
     public @Nullable String getName() {
       return MaterialClass.getName(delegate);
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this material can be harvested just by
+     * hands.
+     */
     @LuaProperty
     public boolean getRequiresNoTool() {
       return delegate.isToolNotRequired();
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this material is liquid and can flow.
+     */
     @LuaProperty
     public boolean isLiquid() {
       return delegate.isLiquid();
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this material blocks the sight of entities.
+     */
     @LuaProperty
     public boolean isOpaque() {
       return delegate.isOpaque();
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this material can be replaced by other
+     * blocks, eg. snow, vines, and tall grass.
+     */
     @LuaProperty
     public boolean isReplaceable() {
       return delegate.isReplaceable();
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this material is solid.
+     */
     @LuaProperty
     public boolean isSolid() {
       return delegate.isSolid();
