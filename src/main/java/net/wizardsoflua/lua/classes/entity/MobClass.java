@@ -1,7 +1,11 @@
 package net.wizardsoflua.lua.classes.entity;
 
+import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -60,6 +64,59 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     @LuaProperty
     public void setAi(boolean ai) {
       delegate.setNoAI(!ai);
+    }
+
+    // TODO remove the following part when the lua doc generator is fixed
+
+    /**
+     * The 'health' is the energy of this entity. When it falls to zero this entity dies.
+     */
+    @Override
+    @LuaProperty
+    public float getHealth() {
+      // NOTE: this method is redeclared here to force the lua doc generator to write this docs
+      return super.getHealth();
+    }
+
+    @Override
+    @LuaProperty
+    public void setHealth(float value) {
+      // NOTE: this method is redeclared here to force the lua doc generator to write this docs
+      super.setHealth(value);
+    }
+
+    /**
+     * This is the [item](/modules/Item) this entity is holding in its main hand.
+     */
+    @Override
+    @LuaProperty
+    public @Nullable ItemStack getMainhand() {
+      // NOTE: this method is redeclared here to force the lua doc generator to write this docs
+      return super.getMainhand();
+    }
+
+    @Override
+    @LuaProperty
+    public void setMainhand(@Nullable ItemStack mainhand) {
+      // NOTE: this method is redeclared here to force the lua doc generator to write this docs
+      super.setMainhand(mainhand);
+    }
+
+    /**
+     * This is the [item](/modules/Item) this entity is holding in his off hand.
+     */
+    @Override
+    @LuaProperty
+    public @Nullable ItemStack getOffhand() {
+      // NOTE: this method is redeclared here to force the lua doc generator to write this docs
+      return super.getOffhand();
+    }
+
+    @Override
+    @LuaProperty
+    public void setOffhand(@Nullable ItemStack offhand) {
+      // NOTE: this method is redeclared here to force the lua doc generator to write this docs
+      super.setOffhand(offhand);
     }
   }
 }
