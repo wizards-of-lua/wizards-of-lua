@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,11 +22,16 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">BlockPlaceEvent</span> class is fired when a player places a
+ * [block](/modules/Block).
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = BlockPlaceEventClass.NAME, superClass = BlockEventClass.class)
 @GenerateLuaClassTable(instance = BlockPlaceEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
-public final class BlockPlaceEventClass extends BasicLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.PlaceEvent>> {
+@GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player Places a Block")
+public final class BlockPlaceEventClass extends
+    BasicLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.PlaceEvent>> {
   public static final String NAME = "BlockPlaceEvent";
   @Resource
   private LuaConverters converters;
@@ -51,11 +57,34 @@ public final class BlockPlaceEventClass extends BasicLuaClass<BlockEvent.PlaceEv
       super(delegate, name, injector);
     }
 
+    /**
+     * The hand the player used to place the block. Can be 'MAIN_HAND' or 'OFF_HAND'.
+     */
     @LuaProperty
     public EnumHand getHand() {
       return delegate.getHand();
     }
 
+    /**
+     * The block against which the new block was placed. Unfortunately the NBT of the block
+     * placedAgainst is unavailable in this event.
+     *
+     * #### Example
+     *
+     * Transform all torches that are placed against a redstone block into redstone torches.
+     *
+     * <code>
+     * local queue = Events.collect("BlockPlaceEvent")
+     * while true do
+     *   local event = queue:next()
+     *   if event.block.name == 'torch' and event.placedAgainst.name == 'redstone_block' then
+     *     spell.pos = event.pos
+     *     spell.block = Blocks.get('redstone_torch'):withData(event.block.data)
+     *   end
+     * end
+     * </code>
+     *
+     */
     @LuaProperty
     public ImmutableWolBlock getPlacedAgainst() {
       IBlockState blockState = delegate.getPlacedAgainst();
@@ -63,6 +92,9 @@ public final class BlockPlaceEventClass extends BasicLuaClass<BlockEvent.PlaceEv
       return new ImmutableWolBlock(blockState, nbt);
     }
 
+    /**
+     * The block that is replaced by this event.
+     */
     @LuaProperty
     public ImmutableWolBlock getReplacedBlock() {
       BlockSnapshot blockSnapshot = delegate.getBlockSnapshot();
@@ -71,6 +103,9 @@ public final class BlockPlaceEventClass extends BasicLuaClass<BlockEvent.PlaceEv
       return new ImmutableWolBlock(blockState, nbt);
     }
 
+    /**
+     * The player that triggered this event.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.getPlayer();
