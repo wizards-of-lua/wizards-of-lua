@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.sandius.rembulan.Table;
@@ -16,10 +17,16 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">BlockBreakEvent</span> is fired when an Block is about to be broken
+ * by a player.
+ *
+ * Canceling this event will prevent the Block from being broken.
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = BlockBreakEventClass.NAME, superClass = BlockEventClass.class)
 @GenerateLuaClassTable(instance = BlockBreakEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
+@GenerateLuaDoc(subtitle = "When a Player Breaks a Block", type = EventClass.TYPE)
 public final class BlockBreakEventClass extends
     BasicLuaClass<BlockEvent.BreakEvent, BlockBreakEventClass.Instance<BlockEvent.BreakEvent>> {
   public static final String NAME = "BlockBreakEvent";
@@ -47,11 +54,22 @@ public final class BlockBreakEventClass extends
       super(delegate, name, injector);
     }
 
+    /**
+     * This is the amount of experience to drop by the block, if the event won't be canceled.
+     */
     @LuaProperty
     public int getExperience() {
       return delegate.getExpToDrop();
     }
 
+    @LuaProperty
+    public void setExperience(int newValue) {
+      delegate.setExpToDrop(newValue);
+    }
+
+    /**
+     * This is the [player](/modules/Player) who broke the block.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.getPlayer();

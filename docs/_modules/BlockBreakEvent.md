@@ -7,18 +7,19 @@ extends: BlockEvent
 layout: module
 properties:
   - name: experience
-    type: number
-    access: r
-    description: "The experience dropped by the block.
-    "
-    examples:
-      - url: BlockBreakEvent/experience.md
+    type: 'number (int)'
+    access: r/w
+    description: |
+        This is the amount of experience to drop by the block, if the event won't be canceled.
   - name: player
-    type: "[Player](/modules/Player/)"
+    type: '[Player](/modules/Player)'
     access: r
-    description: "The player that triggered this event.
-    "
+    description: |
+        This is the [player](/modules/Player) who broke the block.
 functions:
 ---
 
-The <span class="notranslate">BlockBreakEvent</span> class is fired when a player breaks a block.
+The <span class="notranslate">BlockBreakEvent</span> is fired when an Block is about to be broken
+by a player.
+
+Canceling this event will prevent the Block from being broken.
