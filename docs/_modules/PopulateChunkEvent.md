@@ -1,22 +1,22 @@
 ---
 name: PopulateChunkEvent
 title: PopulateChunkEvent
-subtitle:
+subtitle: 
 type: event
 extends: Event
 layout: module
 properties:
-  - name: chunkX
+  - name: 'chunkX'
     type: 'number (int)'
     access: r
     description: |
         This is the x-component of the chunk coordinate.
-  - name: chunkZ
+  - name: 'chunkZ'
     type: 'number (int)'
     access: r
     description: |
         This is the z-component of the chunk coordinate.
-  - name: world
+  - name: 'world'
     type: '[World](/modules/World)'
     access: r
     description: |
@@ -25,7 +25,7 @@ functions:
 ---
 
 The <span class="notranslate">PopulateChunkEvent</span> is the base class of the
- [PostPopulateChunkEvent](/modules/PostPopulateChunkEvent).
+[PostPopulateChunkEvent](/modules/PostPopulateChunkEvent).
 
- Please note that instances of these events could occur asynchronously to the game loop. Hence, if
- you use an event interceptor to handle them, make sure that your code is thread safe.
+Please note that instances of these events could occur asynchronously to the game loop. Hence, if
+you use an event interceptor to handle them, make sure that your code is thread safe.
