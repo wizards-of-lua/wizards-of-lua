@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
@@ -16,11 +17,16 @@ import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
+/**
+ * The <span class="notranslate">PlayerRespawnEvent</span> is fired whenever a
+ * [Player](/modules/Player) is reborn.
+ */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerRespawnEventClass.NAME, superClass = EventClass.class)
 @GenerateLuaClassTable(instance = PlayerRespawnEventClass.Instance.class)
-@GenerateLuaDoc(type = EventClass.TYPE)
-public final class PlayerRespawnEventClass extends BasicLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Instance<PlayerEvent.PlayerRespawnEvent>> {
+@GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player is Reborn")
+public final class PlayerRespawnEventClass extends
+    BasicLuaClass<PlayerEvent.PlayerRespawnEvent, PlayerRespawnEventClass.Instance<PlayerEvent.PlayerRespawnEvent>> {
   public static final String NAME = "PlayerRespawnEvent";
   @Resource
   private LuaConverters converters;
@@ -46,11 +52,18 @@ public final class PlayerRespawnEventClass extends BasicLuaClass<PlayerEvent.Pla
       super(delegate, name, injector);
     }
 
+    /**
+     * The player who respawned in the world.
+     */
     @LuaProperty
     public EntityPlayer getPlayer() {
       return delegate.player;
     }
 
+    /**
+     * This is <span class="notranslate">true</span> if this respawn was because the player
+     * conquered the end.
+     */
     @LuaProperty
     public boolean getEndConquered() {
       return delegate.isEndConquered();
