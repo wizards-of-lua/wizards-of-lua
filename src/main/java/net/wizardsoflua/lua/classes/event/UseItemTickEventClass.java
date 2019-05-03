@@ -1,6 +1,7 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
+
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -15,8 +16,9 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
+ *
  * The <span class="notranslate">UseItemTickEvent</span> class is fired every gametick while a
- * [Mob](/modules/Mob) uses an [Item](/modules/Item). Setting the
+ * [Mob](/modules/Mob) or [Player](/modules/Player) uses an [Item](/modules/Item). Setting the
  * [duration](/modules/UseItemEvent#duration) to zero or less cancels this event.
  *
  * #### Example
@@ -34,8 +36,9 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = UseItemTickEventClass.NAME, superClass = UseItemEventClass.class)
 @GenerateLuaClassTable(instance = UseItemTickEventClass.Instance.class)
-@GenerateLuaDoc(subtitle = "While an Entity uses an Item", type = EventClass.TYPE)
-public final class UseItemTickEventClass extends BasicLuaClass<LivingEntityUseItemEvent.Tick, UseItemTickEventClass.Instance<LivingEntityUseItemEvent.Tick>> {
+@GenerateLuaDoc(subtitle = "While an Entity Uses an Item", type = EventClass.TYPE)
+public final class UseItemTickEventClass extends
+    BasicLuaClass<LivingEntityUseItemEvent.Tick, UseItemTickEventClass.Instance<LivingEntityUseItemEvent.Tick>> {
   public static final String NAME = "UseItemTickEvent";
   @Resource
   private LuaConverters converters;
