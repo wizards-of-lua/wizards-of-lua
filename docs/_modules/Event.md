@@ -11,27 +11,17 @@ properties:
     access: r
     description: |
         The 'cancelable' property can be used to detect dynamically whether this event instance can
-        be [canceled](#canceled) by calling
-       
-        ```lua
-        event.canceled = true
-        ```
+        be [canceled](#canceled).
        
         In general, this is determined by the event class.
        
         For instance, a [BlockPlaceEvent](/modules/BlockPlaceEvent) is *cancelable*, but a
         [SwingArmEvent](/modules/SwingArmEvent) is not.
-       
-        If *cancelable* is <span class="notranslate">*false*</span>, then setting
-        [canceled](#canceled) results in an error.
-       
-        Please note, an event can only be canceled during [event
-        interception](/modules/Events#intercept).
   - name: canceled
     type: 'boolean'
     access: r/w
     description: |
-        The 'canceled' property can be used to define whether this event should be canceled.
+        The 'canceled' property can be used to define that this event should be canceled.
        
         If *cancelable* is <span class="notranslate">*false*</span>, then setting
         [canceled](#canceled) results in an error.
