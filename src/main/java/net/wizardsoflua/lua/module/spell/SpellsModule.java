@@ -18,6 +18,10 @@ import net.wizardsoflua.lua.function.NamedFunction1;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellRegistry;
 
+/**
+ *
+ */
+// TODO convert this to a SpellExtension
 public class SpellsModule {
   public static SpellsModule installInto(Table env, Converters converters,
       SpellRegistry spellRegistry, SpellEntity spellEntity) {
