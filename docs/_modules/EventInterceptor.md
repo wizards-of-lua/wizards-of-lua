@@ -7,7 +7,7 @@ extends: Object
 layout: module
 properties:
 functions:
-  - name: stop
+  - name: 'stop'
     parameters: 
     results: 'nil'
     description: |
@@ -22,7 +22,7 @@ functions:
         local i
         i = Events.on('ChatEvent'):call(function(event)
           print(event.player.name, event.message)
-          i:unsubscribe()
+          i:stop()
         end)
         ```
 ---

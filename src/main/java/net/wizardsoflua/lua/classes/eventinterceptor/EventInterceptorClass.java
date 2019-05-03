@@ -63,7 +63,7 @@ public final class EventInterceptorClass
      * local i
      * i = Events.on('ChatEvent'):call(function(event)
      *   print(event.player.name, event.message)
-     *   i:unsubscribe()
+     *   i:stop()
      * end)
      * </code>
      */
