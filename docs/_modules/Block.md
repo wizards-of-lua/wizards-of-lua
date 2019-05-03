@@ -141,12 +141,13 @@ The <span class="notranslate">Block</span> class is a basic unit of structure in
 
 An instance of this class represents either one of the following types:
 
-1. a live block reference that represents a block at a specific world position. It can be
-accessed by [spell.block](/modules/Spell/#block). 'Live' means, that whenever the block at that
-position changes, the internal state of this object will change to.
+1. A live block reference - that is a block at a specific world position. It can be accessed by
+[spell.block](/modules/Spell/#block). 'Live' means that whenever the block at that position
+changes, the internal state of this object will change as well.
 
-2. an immutable block value that can exists independent of the world. It can be created by
-calling [Blocks.get()](/modules/Blocks/#get) or [Block:copy()](/modules/Block/#copy).
+2. An immutable block value - it's a block that exists independently of the world. It can be
+created, e.g. by calling [Blocks.get()](/modules/Blocks/#get) or
+[Block:copy()](/modules/Block/#copy).
 
 Both types are 'unmodifiable', meaning that you can't change their internal states directly.
 Instead, if you want to change a block in the world, you will need to assign a new value to the
