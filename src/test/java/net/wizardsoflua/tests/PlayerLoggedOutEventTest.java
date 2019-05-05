@@ -14,7 +14,6 @@ public class PlayerLoggedOutEventTest extends WolTestBase {
 
   @AfterEach
   public void resetPlayerPosition() {
-    mc().player().waitForPlayer(30000);
     mc().player().setPosition(playerPos);
   }
 

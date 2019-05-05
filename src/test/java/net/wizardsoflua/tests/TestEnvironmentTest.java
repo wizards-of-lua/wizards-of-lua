@@ -39,7 +39,7 @@ public class TestEnvironmentTest extends WolTestBase {
     String message = "hello";
 
     // When:
-    mc().post(newServerChatEvent(mc().player().getDelegate(), message));
+    mc().post(newServerChatEvent(mc().player().getTestPlayer(), message));
 
     // Then:
     ServerChatEvent act = mc().waitFor(ServerChatEvent.class);
@@ -53,7 +53,7 @@ public class TestEnvironmentTest extends WolTestBase {
     BlockPos pos = BlockPos.ORIGIN;
 
     // When:
-    mc().post(newRightClickBlockEvent(mc().player().getDelegate(), pos));
+    mc().post(newRightClickBlockEvent(mc().player().getTestPlayer(), pos));
 
     // Then:
     RightClickBlock act = mc().waitFor(RightClickBlock.class);
@@ -67,7 +67,7 @@ public class TestEnvironmentTest extends WolTestBase {
     String message = "hello";
 
     // When:
-    mc().player().getDelegate().sendMessage(new TextComponentString(message));
+    mc().player().getTestPlayer().sendMessage(new TextComponentString(message));
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
@@ -84,7 +84,7 @@ public class TestEnvironmentTest extends WolTestBase {
     mc().player().setPosition(pos);
 
     // Then
-    BlockPos act = mc().player().getDelegate().getPosition();
+    BlockPos act = mc().player().getTestPlayer().getPosition();
     assertThat(act).isEqualTo(pos);
   }
 

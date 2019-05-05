@@ -6,7 +6,7 @@ import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class EntityJoinWorldEventTest extends WolTestBase {
-  BlockPos itemPos = mc().player().getBlockPos().east(5);
+  BlockPos itemPos = mc().player().getPosition().east(5);
 
   // /test net.wizardsoflua.tests.EntityJoinWorldEventTest test
   @Test
