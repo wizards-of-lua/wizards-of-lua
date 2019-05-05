@@ -1,9 +1,11 @@
 package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
+import net.minecraftforge.api.distmarker.Dist;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+import net.wizardsoflua.testenv.junit.DisabledOnDist;
 
 public class CommandsTest extends WolTestBase {
 
@@ -11,7 +13,6 @@ public class CommandsTest extends WolTestBase {
   @Test
   public void test_register_command() throws Exception {
     // Given:
-
     mc().executeCommand("/lua Commands.register('dummy',[[ print('hello') ]])");
     mc().clearEvents();
 
@@ -27,7 +28,6 @@ public class CommandsTest extends WolTestBase {
   @Test
   public void test_deregister_command() throws Exception {
     // Given:
-
     mc().executeCommand("/lua Commands.register('dummy',[[ print('hello') ]])");
     mc().clearEvents();
 
@@ -44,7 +44,6 @@ public class CommandsTest extends WolTestBase {
   @Test
   public void test_register_command_with_arguments() throws Exception {
     // Given:
-
     mc().executeCommand(
         "/lua Commands.register('dummy',[[ a=select(1,...); b=select(2,...); print(a,b);]])");
     mc().clearEvents();
@@ -73,9 +72,12 @@ public class CommandsTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("hello");
   }
 
-  // /test net.wizardsoflua.tests.CommandsTest
-  // test_use_command_with_permission_level_not_as_operator
+  // @formatter:off
+  // /test net.wizardsoflua.tests.CommandsTest test_use_command_with_permission_level_not_as_operator
+  // @formatter:on
   @Test
+  @DisabledOnDist(value = Dist.CLIENT,
+      reason = "In single player you don't have to be op to execute commands")
   public void test_use_command_with_permission_level_not_as_operator() throws Exception {
     // Given:
     mc().player().setOperator(false);
@@ -89,5 +91,4 @@ public class CommandsTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("You do not have permission to use this command");
   }
-
 }

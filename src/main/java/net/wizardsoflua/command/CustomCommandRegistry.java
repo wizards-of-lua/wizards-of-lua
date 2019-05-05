@@ -1,13 +1,19 @@
 package net.wizardsoflua.command;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
@@ -22,6 +28,7 @@ import net.wizardsoflua.spell.SpellEntityFactory;
 
 @ServerScoped
 public class CustomCommandRegistry {
+  private static final String ARGUMENTS_ARGUMENT = "arguments";
   @Resource
   private MinecraftServer server;
   @Inject
@@ -33,25 +40,35 @@ public class CustomCommandRegistry {
     // FIXME how to implement the "usage"?
     // FIXME register command !!
     dispatcher.register(literal(name)
-        .requires(src -> permissionLevel == null || src.hasPermissionLevel(permissionLevel))//
-        .executes(context -> {
-          CommandSource source = context.getSource();
-
-          PrintReceiver printReceiver = new PrintReceiver() {
-            @Override
-            public void send(String message) {
-              TextComponentString txt = new TextComponentString(message);
-              source.sendFeedback(txt, true);
-            }
-          };
-
-          // FIXME catch exceptions here? show them as error feedback?
-          // return 0 on exception?
-          spellEntityFactory.create(source, printReceiver, code);
-          return Command.SINGLE_SUCCESS;
-        }));
+        .requires(src -> permissionLevel == null || src.hasPermissionLevel(permissionLevel)) //
+        .executes(context -> run(context, code)) //
+        .then(argument(ARGUMENTS_ARGUMENT, greedyString()) //
+            .executes(context -> {
+              String arguments = StringArgumentType.getString(context, ARGUMENTS_ARGUMENT);
+              Iterable<String> iterable = Splitter.on(' ').split(arguments);
+              String[] args = Iterables.toArray(iterable, String.class);
+              return run(context, code, args);
+            }) //
+        ));
     registeredNames.add(name);
     refreshCommands();
+  }
+
+  private int run(CommandContext<CommandSource> context, String code, String... arguments) {
+    CommandSource source = context.getSource();
+
+    PrintReceiver printReceiver = new PrintReceiver() {
+      @Override
+      public void send(String message) {
+        TextComponentString txt = new TextComponentString(message);
+        source.sendFeedback(txt, true);
+      }
+    };
+
+    // FIXME catch exceptions here? show them as error feedback?
+    // return 0 on exception?
+    spellEntityFactory.create(source, printReceiver, code, arguments);
+    return Command.SINGLE_SUCCESS;
   }
 
   public boolean isCustomCommand(String name) {
