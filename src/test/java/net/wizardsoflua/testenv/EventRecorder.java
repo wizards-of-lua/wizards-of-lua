@@ -9,7 +9,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
-import net.wizardsoflua.testenv.event.TestPlayerPreparedForTestEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 /**
@@ -93,11 +92,6 @@ public class EventRecorder {
 
   @SubscribeEvent
   public void onEvent(ServerLog4jEvent evt) {
-    addEvent(evt);
-  }
-
-  @SubscribeEvent
-  public void onEvent(TestPlayerPreparedForTestEvent evt) {
     addEvent(evt);
   }
 
