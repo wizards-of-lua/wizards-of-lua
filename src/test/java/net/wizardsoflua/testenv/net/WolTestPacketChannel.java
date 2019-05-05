@@ -17,24 +17,25 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.extension.ServiceLoader;
 
 public class WolTestPacketChannel {
-  private final ResourceLocation name = new ResourceLocation(WizardsOfLua.MODID, "channel/test");
-  private final SimpleChannel channel =
-      NetworkRegistry.newSimpleChannel(name, this::getNetworkProtocolVersion,
-          this::clientAcceptsServerVersion, this::serverAcceptsClientVersion);
+  private static final ResourceLocation NAME =
+      new ResourceLocation(WizardsOfLua.MODID, "channel/test");
+  private static final SimpleChannel CHANNEL =
+      NetworkRegistry.newSimpleChannel(NAME, () -> getNetworkProtocolVersion(),
+          it -> clientAcceptsServerVersion(it), it -> serverAcceptsClientVersion(it));
 
-  private String getNetworkProtocolVersion() {
+  private static String getNetworkProtocolVersion() {
     return "1";
   }
 
-  private boolean clientAcceptsServerVersion(String serverVersion) {
+  private static boolean clientAcceptsServerVersion(String serverVersion) {
     return true;
   }
 
-  private boolean serverAcceptsClientVersion(String clientVersion) {
+  private static boolean serverAcceptsClientVersion(String clientVersion) {
     return true;
   }
 
-  public WolTestPacketChannel() {
+  public static void initialize() {
     int index = 0;
     Set<Class<? extends NetworkMessage>> messageTypes =
         new TreeSet<>((o1, o2) -> o1.getName().compareTo(o2.getName()));
@@ -44,7 +45,8 @@ public class WolTestPacketChannel {
     }
   }
 
-  private <M extends NetworkMessage> void registerNetworkMessage(int index, Class<M> messageType) {
+  private static <M extends NetworkMessage> void registerNetworkMessage(int index,
+      Class<M> messageType) {
     registerNetworkMessage(index, messageType, () -> {
       try {
         return messageType.newInstance();
@@ -55,19 +57,23 @@ public class WolTestPacketChannel {
     });
   }
 
-  private <M extends NetworkMessage> void registerNetworkMessage(int index, Class<M> messageType,
-      Supplier<? extends M> constructor) {
+  private static <M extends NetworkMessage> void registerNetworkMessage(int index,
+      Class<M> messageType, Supplier<? extends M> constructor) {
     BiConsumer<M, PacketBuffer> encoder = NetworkMessage::encode;
     Function<PacketBuffer, M> decoder = buffer -> NetworkMessage.decode(constructor, buffer);
     BiConsumer<M, Supplier<Context>> messageConsumer = NetworkMessage::handle;
-    channel.registerMessage(index, messageType, encoder, decoder, messageConsumer);
+    CHANNEL.registerMessage(index, messageType, encoder, decoder, messageConsumer);
   }
 
-  public void sendTo(EntityPlayerMP player, NetworkMessage message) {
-    channel.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+  public static void sendTo(EntityPlayerMP player, NetworkMessage message) {
+    CHANNEL.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
   }
 
-  public void sendToServer(NetworkMessage message) {
-    channel.sendToServer(message);
+  public static void sendToServer(NetworkMessage message) {
+    CHANNEL.sendToServer(message);
+  }
+
+  public static void reply(NetworkMessage reply, Context context) {
+    CHANNEL.reply(reply, context);
   }
 }

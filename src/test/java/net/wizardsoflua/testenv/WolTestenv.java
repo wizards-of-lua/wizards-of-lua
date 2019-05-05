@@ -275,7 +275,6 @@ public final class WolTestenv implements AutoCloseable {
    */
   public void sendTo(EntityPlayerMP player, NetworkMessage message) {
     waitForSyncedClient();
-    WolTestPacketChannel channel = mod.getPacketChannel();
-    channel.sendTo(player, message);
+    WolTestPacketChannel.sendTo(player, message);
   }
 }
