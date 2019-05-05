@@ -5,14 +5,15 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import com.google.auto.service.AutoService;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketPlayerPosLook.EnumFlags;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -32,7 +33,6 @@ import net.wizardsoflua.extension.spell.spi.LuaConverter;
 import net.wizardsoflua.lua.classes.BasicLuaClass;
 import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
-import net.wizardsoflua.permissions.Permissions;
 
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerClass.NAME, superClass = EntityClass.class)
@@ -89,9 +89,6 @@ public final class PlayerClass
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends EntityPlayerMP> extends EntityLivingBaseClass.Instance<D> {
-    @Inject
-    private Permissions permissions;
-
     public Instance(D delegate, Injector injector) {
       super(delegate, injector);
     }
@@ -118,7 +115,9 @@ public final class PlayerClass
 
     @LuaProperty
     public boolean isOperator() {
-      return permissions.hasOperatorPrivileges(delegate.getUniqueID());
+      MinecraftServer server = delegate.getServer();
+      GameProfile gameProfile = delegate.getGameProfile();
+      return server.getPlayerList().canSendCommands(gameProfile);
     }
 
     // TODO: isn't team supported for entities?

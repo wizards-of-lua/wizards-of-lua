@@ -12,14 +12,18 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import com.google.common.io.Files;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
+import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.spell.SpellUtil;
 import net.wizardsoflua.testenv.MinecraftBackdoor;
 import net.wizardsoflua.testenv.WolTestenv;
@@ -142,24 +146,34 @@ public class PlayerBackdoor {
 
   public void changeDimension(DimensionType dim) {
     getTestenv().runChangeOnMainThread(() -> {
-      getTestenv().getServer().getPlayerList().changePlayerDimension(getTestPlayer(), dim);
+      EntityPlayerMP player = getTestPlayer();
+      MinecraftServer server = player.getServer();
+      server.getPlayerList().changePlayerDimension(player, dim);
     });
-  }
-
-  public void setOperator(boolean value) {
-    if (isOperator() == value) {
-      return;
-    }
-    if (value) {
-      minecraftBackdoor.executeCommand("/op " + getName());
-    } else {
-      minecraftBackdoor.executeCommand("/deop " + getName());
-    }
   }
 
   public boolean isOperator() {
     return getTestenv().callOnMainThread(() -> {
-      return getTestenv().getPermissions().hasOperatorPrivileges(getTestPlayer().getUniqueID());
+      EntityPlayerMP player = getTestPlayer();
+      MinecraftServer server = player.getServer();
+      GameProfile gameProfile = player.getGameProfile();
+      return server.getPlayerList().canSendCommands(gameProfile);
+    });
+  }
+
+  public void setOperator(boolean operator) {
+    getTestenv().runChangeOnMainThread(() -> {
+      EntityPlayerMP player = getTestPlayer();
+      PlayerList playerList = player.getServer().getPlayerList();
+      GameProfile gameProfile = player.getGameProfile();
+      if (operator == playerList.canSendCommands(gameProfile)) {
+        return;
+      }
+      if (operator) {
+        playerList.addOp(gameProfile);
+      } else {
+        playerList.removeOp(gameProfile);
+      }
     });
   }
 
@@ -209,9 +223,9 @@ public class PlayerBackdoor {
   }
 
   private File getModuleFile(String moduleName) {
+    WolConfig config = getTestenv().getConfig();
+    EntityPlayerMP player = getTestPlayer();
     String path = moduleName.replace(".", File.separator) + ".lua";
-    return new File(
-        getTestenv().getConfig().getOrCreateWizardConfig(getTestPlayer().getUniqueID()).getLibDir(),
-        path);
+    return new File(config.getOrCreateWizardConfig(player.getUniqueID()).getLibDir(), path);
   }
 }
