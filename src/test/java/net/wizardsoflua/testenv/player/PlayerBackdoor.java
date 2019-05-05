@@ -10,8 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
 import com.google.common.io.Files;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -49,50 +51,62 @@ public class PlayerBackdoor {
     return getTestenv().getTestPlayer();
   }
 
+  private ListenableFuture<Object> runChangeOnMainThread(Runnable task) {
+    return getTestenv().runChangeOnMainThread(task);
+  }
+
+  private ListenableFuture<Object> runOnMainThread(Runnable task) {
+    return getTestenv().runOnMainThread(task);
+  }
+
+  private <V> V callOnMainThread(Callable<V> task) {
+    return getTestenv().callOnMainThread(task);
+  }
+
   public String getName() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return getTestPlayer().getName().getString();
     });
   }
 
   public float getHealth() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return getTestPlayer().getHealth();
     });
   }
 
   public void setHealth(float value) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       getTestPlayer().setHealth(value);
     });
   }
 
   public BlockPos getPosition() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return getTestPlayer().getPosition();
     });
   }
 
   public void setPosition(BlockPos pos) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       getTestPlayer().setPositionAndUpdate(pos.getX(), pos.getY(), pos.getZ());
     });
   }
 
   public EnumFacing getFacing() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return getTestPlayer().getHorizontalFacing();
     });
   }
 
   public Vec3d getPositionLookingAt() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return SpellUtil.getPositionLookingAt(getTestPlayer());
     });
   }
 
   public void setRotationYaw(float yaw) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       player.setRotationYawHead(yaw);
       player.setRenderYawOffset(yaw);
@@ -102,14 +116,14 @@ public class PlayerBackdoor {
   }
 
   public @Nullable String getTeam() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       return Optional.ofNullable(player.getTeam()).map(it -> it.getName()).orElse(null);
     });
   }
 
   public void setTeam(String teamName) {
-    getTestenv().runOnMainThread(() -> {
+    runOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       Scoreboard scoreboard = player.getWorldScoreboard();
       ScorePlayerTeam team = scoreboard.getTeam(teamName);
@@ -118,26 +132,26 @@ public class PlayerBackdoor {
   }
 
   public ItemStack getMainHandItem() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return getTestPlayer().getHeldItemMainhand();
     });
   }
 
   public void setMainHandItem(ItemStack item) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       getTestPlayer().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
       getTestPlayer().inventoryContainer.detectAndSendChanges();
     });
   }
 
   public ItemStack getOffHandItem() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       return getTestPlayer().getHeldItemOffhand();
     });
   }
 
   public void setOffHandItem(ItemStack item) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       player.setItemStackToSlot(OFFHAND, ofNullable(item).orElse(EMPTY));
       player.inventoryContainer.detectAndSendChanges();
@@ -145,7 +159,7 @@ public class PlayerBackdoor {
   }
 
   public void changeDimension(DimensionType dim) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       MinecraftServer server = player.getServer();
       server.getPlayerList().changePlayerDimension(player, dim);
@@ -153,7 +167,7 @@ public class PlayerBackdoor {
   }
 
   public boolean isOperator() {
-    return getTestenv().callOnMainThread(() -> {
+    return callOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       MinecraftServer server = player.getServer();
       GameProfile gameProfile = player.getGameProfile();
@@ -162,7 +176,7 @@ public class PlayerBackdoor {
   }
 
   public void setOperator(boolean operator) {
-    getTestenv().runChangeOnMainThread(() -> {
+    runChangeOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
       PlayerList playerList = player.getServer().getPlayerList();
       GameProfile gameProfile = player.getGameProfile();
