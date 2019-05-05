@@ -110,7 +110,7 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
      *
      * #### Example
      *
-     * Printing an error message into the server's log file, prefixed with the category label
+     * Printing a warning message into the server's log file, prefixed with the category label
      * "my-logger".
      *
      * <code>
@@ -187,7 +187,7 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
      *
      * #### Example
      *
-     * Printing an debug message into the server's log file, prefixed with the category label
+     * Printing a debug message into the server's log file, prefixed with the category label
      * "my-logger".
      *
      * <code>
@@ -225,7 +225,7 @@ public final class LoggerClass extends BasicLuaClass<WolLogger, LoggerClass.Inst
      *
      * #### Example
      *
-     * Printing an tracing message into the server's log file, prefixed with the category label
+     * Printing a tracing message into the server's log file, prefixed with the category label
      * "my-logger".
      *
      * <code>
