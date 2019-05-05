@@ -1,9 +1,7 @@
 package net.wizardsoflua.lua.module.items;
 
 import javax.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -63,7 +61,7 @@ public class ItemsModule extends LuaTableExtension {
   @LuaFunction
   public ItemStack get(String name, @Nullable Integer amount) {
     amount = amount != null ? amount : 1;
-    Item item = IRegistry.field_212630_s.get(new ResourceLocation(name));
+    Item item = IRegistry.field_212630_s.func_212608_b(new ResourceLocation(name));
     return new ItemStack(item, amount);
   }
 }

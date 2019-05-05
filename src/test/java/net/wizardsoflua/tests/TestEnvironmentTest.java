@@ -16,9 +16,9 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
-import net.wizardsoflua.testenv.log4j.Log4j2ForgeEventBridge;
 
 public class TestEnvironmentTest extends WolTestBase {
+  private final Logger logger = LogManager.getLogger();
 
   BlockPos playerPos = new BlockPos(0, 4, 0);
   BlockPos clickPos = new BlockPos(2, 5, 0);
@@ -179,7 +179,6 @@ public class TestEnvironmentTest extends WolTestBase {
   @Test
   public void test_can_receive_log4j_event() {
     // Given:
-    Logger logger = LogManager.getLogger(Log4j2ForgeEventBridge.NET_MINECRAFT_LOGGER);
     String message = "hello";
 
     // When:

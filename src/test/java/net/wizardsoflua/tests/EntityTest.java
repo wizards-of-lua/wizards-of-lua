@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
-import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 public class EntityTest extends WolTestBase {
 
@@ -29,8 +28,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.nbt~=nil)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_nbt_pos_is_readable
@@ -48,8 +46,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(str(p.nbt.Pos))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_nbt_is_not_writable
@@ -66,8 +63,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p.nbt = {};");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage())
+    assertThat(mc().nextServerMessage())
         .startsWith("Error during spell execution: attempt to modify read-only table index");
   }
 
@@ -89,8 +85,7 @@ public class EntityTest extends WolTestBase {
         posB.x, posB.y, posB.z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_facing_is_readable
@@ -147,19 +142,16 @@ public class EntityTest extends WolTestBase {
   public void test_lookVec_is_writable() throws Exception {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
-    String expected = "true";
-
     mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],NoAI:1,Rotation:[45f,45f]}",
         pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
     mc().executeCommand(
-        "/lua p=Entities.find('@e[tag=testpig]')[1]; v=Vec3(1,0,0); p.lookVec=v; print(p.lookVec==v)");
+        "/lua p=Entities.find('@e[tag=testpig]')[1]; v=Vec3(-1,0,0); p.lookVec=v; print(p.lookVec==v)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_rotationYaw_is_readable
@@ -200,8 +192,7 @@ public class EntityTest extends WolTestBase {
         expectedRotationYaw);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     float actualRotationYaw = ((EntityPig) actEntities.get(0)).rotationYaw;
@@ -247,8 +238,7 @@ public class EntityTest extends WolTestBase {
         expectedRotationPitch);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     float actualRotationPitch = ((EntityPig) actEntities.get(0)).rotationPitch;
@@ -292,8 +282,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; m=p.motion; print(m.y<0)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_motion_is_writable
@@ -311,8 +300,7 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; p.motion=Vec3(0,10,0); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     double actualMotion = ((EntityPig) actEntities.get(0)).motionY;
@@ -326,16 +314,18 @@ public class EntityTest extends WolTestBase {
     String tag = "demotag";
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],Tags:[\"%s\"]}", pos.getX(),
-        pos.getY(), pos.getZ(), tag);
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[" + tag + "]}", pos.getX(),
+        pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(str(p.tags))");
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[type=pig]')[1];\n" //
+        + "print(str(p.tags))\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{ \"" + tag + "\" }");
+    assertThat(mc().nextServerMessage()).isEqualTo("{ \"" + tag + "\" }");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_tags_is_writable
@@ -347,19 +337,20 @@ public class EntityTest extends WolTestBase {
     String newTag2 = "newtag2";
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],Tags:[\"%s\"]}", pos.getX(),
-        pos.getY(), pos.getZ(), initialTag);
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[" + initialTag + "]}", pos.getX(),
+        pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand(
-        "/lua p=Entities.find('@e[tag=testpig]')[1]; p.tags={'%s','%s'}; print('ok')", newTag1,
-        newTag2);
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[type=pig]')[1];\n" //
+        + "p.tags={'" + newTag1 + "','" + newTag2 + "'};\n" //
+        + "print('ok')\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
-    List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
+    List<? extends Entity> actEntities = mc().findEntities("@e[type=pig]");
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).containsOnly(newTag1, newTag2);
@@ -374,18 +365,20 @@ public class EntityTest extends WolTestBase {
 
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],Tags:[\"%s\"]}", pos.getX(),
-        pos.getY(), pos.getZ(), initialTag);
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[" + initialTag + "]}", pos.getX(),
+        pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p:addTag('%s'); print('ok')",
-        newTag);
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[type=pig]')[1];\n" //
+        + "p:addTag('" + newTag + "');\n" //
+        + "print('ok')\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
-    List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
+    List<? extends Entity> actEntities = mc().findEntities("@e[type=pig]");
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).containsOnly(initialTag, newTag);
@@ -399,18 +392,20 @@ public class EntityTest extends WolTestBase {
 
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],Tags:[\"%s\"]}", pos.getX(),
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[" + initialTag + "]}", pos.getX(),
         pos.getY(), pos.getZ(), initialTag);
     mc().clearEvents();
 
     // When:
-    mc().executeCommand(
-        "/lua p=Entities.find('@e[tag=testpig]')[1]; p:removeTag('%s'); print('ok')", initialTag);
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[type=pig]')[1];\n" //
+        + "p:removeTag('" + initialTag + "');\n" //
+        + "print('ok')\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
-    List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
+    List<? extends Entity> actEntities = mc().findEntities("@e[type=pig]");
     assertThat(actEntities).hasSize(1);
     Set<String> actualTags = ((EntityPig) actEntities.get(0)).getTags();
     assertThat(actualTags).isEmpty();
@@ -433,8 +428,7 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; p:move('forward'); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
@@ -457,8 +451,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p:move('back'); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
@@ -481,8 +474,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p:move('left'); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
@@ -505,8 +497,7 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p:move('right'); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     BlockPos actPos = ((EntityPig) actEntities.get(0)).getPosition();
@@ -532,8 +523,7 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; v=Vec3(0,0,1); p.lookVec=v; h=p:scanView(10); spell.pos=h.pos; print(spell.block.name)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_dropItem
@@ -543,19 +533,20 @@ public class EntityTest extends WolTestBase {
     BlockPos pigpos = mc().getWorldSpawnPoint();
     BlockPos targetPos = pigpos.south(5);
     mc().setBlock(targetPos, Blocks.ANVIL);
-    String expected = "wheat,5";
-
     mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],NoAI:1}", pigpos.getX(),
         pigpos.getY(), pigpos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand(
-        "/lua p=Entities.find('@e[tag=testpig]')[1]; i=Items.get('wheat',5); p:dropItem(i); drop=Entities.find('@e[name=item.item.wheat]')[1]; print(drop.item.id..','..drop.item.count)");
+    mc().executeCommand("/lua \n" //
+        + "p=Entities.find('@e[tag=testpig]')[1];\n" //
+        + "i=Items.get('wheat',5);\n" //
+        + "p:dropItem(i);\n" //
+        + "drop=Entities.find('@e[name=Wheat]')[1];\n" //
+        + "print(drop.item.id..','..drop.item.count)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo("wheat,5");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_dropItem_result
@@ -576,8 +567,7 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; drop=p:dropItem(Items.get('wheat',5)); print(drop.item.id..','..drop.item.count)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_alive_is_readable
@@ -591,12 +581,16 @@ public class EntityTest extends WolTestBase {
     mc().clearEvents();
 
     // When:
-    mc().executeCommand(
-        "/lua p=Entities.find('@e[tag=testpig]')[1]; p:kill(); sleep(1); print(p.alive)");
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[tag=testpig]')[1];\n" //
+        + "print(p.alive)\n" //
+        + "p:kill();\n" //
+        + "print(p.alive)\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("false");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_kill
@@ -607,15 +601,14 @@ public class EntityTest extends WolTestBase {
 
     mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],NoAI:1}", pos.getX(),
         pos.getY(), pos.getZ());
+    mc().clearEvents();
 
     // When:
     mc().executeCommand(
         "/lua p=Entities.find('@e[tag=testpig]')[1]; p:kill(); sleep(1); print('ok')");
-    mc().clearEvents();
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(0);
   }
@@ -628,13 +621,16 @@ public class EntityTest extends WolTestBase {
 
     mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],NoAI:1}", pos.getX(),
         pos.getY(), pos.getZ());
+    mc().clearEvents();
 
     // When:
-    mc().player().chat("/lua p=Entities.find('@e[tag=testpig]')[1] print(p.entityType)");
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[tag=testpig]')[1]\n" //
+        + "print(p.entityType)\n" //
+    );
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("pig");
+    assertThat(mc().nextServerMessage()).isEqualTo("pig");
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_world_is_readable
@@ -652,7 +648,6 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; w=p.world; print(w.name)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 }

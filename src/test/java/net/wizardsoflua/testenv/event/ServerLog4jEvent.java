@@ -18,4 +18,8 @@ public class ServerLog4jEvent extends Event {
     return message;
   }
 
+  @Override
+  public String toString() {
+    return "ServerLog4jEvent [message=" + message + "]";
+  }
 }

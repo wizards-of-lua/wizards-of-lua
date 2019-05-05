@@ -49,7 +49,7 @@ public class WolTestMod {
 
     MinecraftForge.EVENT_BUS.register(new MainForgeEventBusListener());
 
-    log4jEventBridge = new Log4j2ForgeEventBridge(Log4j2ForgeEventBridge.NET_MINECRAFT_LOGGER);
+    log4jEventBridge = new Log4j2ForgeEventBridge();
     log4jEventBridge.activate();
   }
 
