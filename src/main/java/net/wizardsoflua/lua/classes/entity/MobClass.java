@@ -52,9 +52,9 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     }
 
     /**
-     * The 'ai' property defines if this mobile creature is currently controlled by its artificial
-     * intelligence (AI). If set to false this creature becomes dumb and just stands around. It even
-     * won't react to physical forces. Default is true.
+     * The 'ai' property defines whether this mobile creature is currently controlled by its
+     * artificial intelligence (AI). If set to false this creature becomes dumb and just stands
+     * around. It even won't react to physical forces. Default is true.
      */
     @LuaProperty
     public boolean getAi() {

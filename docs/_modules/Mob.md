@@ -10,9 +10,9 @@ properties:
     type: 'boolean'
     access: r/w
     description: |
-        The 'ai' property defines if this mobile creature is currently controlled by its artificial
-        intelligence (AI). If set to false this creature becomes dumb and just stands around. It even
-        won't react to physical forces. Default is true.
+        The 'ai' property defines whether this mobile creature is currently controlled by its
+        artificial intelligence (AI). If set to false this creature becomes dumb and just stands
+        around. It even won't react to physical forces. Default is true.
   - name: 'health'
     type: 'number (float)'
     access: r/w
