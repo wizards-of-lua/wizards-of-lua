@@ -45,7 +45,6 @@ import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.wizardsoflua.TimeService;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -63,10 +62,6 @@ public class MinecraftBackdoor {
 
   public WolTestenv getTestenv() {
     return testenv;
-  }
-
-  private WizardsOfLua getWol() {
-    return testenv.getWol();
   }
 
   private EventRecorder getEventRecorder() {
@@ -333,10 +328,6 @@ public class MinecraftBackdoor {
     FileSystem fs = testenv.getWorldFileSystem();
     Path p = fs.getPath(path);
     return java.nio.file.Files.exists(p);
-  }
-
-  public void clearLuaFunctionCache() {
-    getWol().clearLuaFunctionCache();
   }
 
   public void bar(BlockPos startPos, EnumFacing direction, int meter, Block blockType) {

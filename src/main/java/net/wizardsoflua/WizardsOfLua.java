@@ -13,7 +13,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.imc.TypedImc;
 import net.wizardsoflua.imc.WizardsOfLuaConsumer;
-import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 
 @Mod(WizardsOfLua.MODID)
 public class WizardsOfLua {
@@ -61,11 +60,5 @@ public class WizardsOfLua {
   @VisibleForTesting
   public InjectionScope provideServerScope(MinecraftServer server) {
     return serverScopeManager.provideServerScope(server);
-  }
-
-  @VisibleForTesting
-  public void clearLuaFunctionCache() {
-    LuaFunctionBinaryCache cache = rootScope.getInstance(LuaFunctionBinaryCache.class);
-    cache.clear();
   }
 }

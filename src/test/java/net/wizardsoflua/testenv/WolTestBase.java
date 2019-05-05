@@ -25,7 +25,7 @@ public class WolTestBase extends TestDataFactory {
   @BeforeEach
   void beforeEach() throws Exception {
     mc().breakAllSpells();
-    mc().clearLuaFunctionCache();
+    testenv.getLuaFunctionBinaryCache().clear();
     mc().clearWizardConfigs();
 
     mc().resetClock();

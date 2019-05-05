@@ -17,10 +17,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.wizardsoflua.TimeService;
-import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.filesystem.WolServerFileSystem;
+import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.testenv.junit.AbortExtension;
 import net.wizardsoflua.testenv.net.NetworkMessage;
@@ -102,10 +102,6 @@ public final class WolTestenv implements AutoCloseable {
     return abortExtension;
   }
 
-  public WizardsOfLua getWol() {
-    return mod.getWol();
-  }
-
   public EventRecorder getEventRecorder() {
     return mod.getEventRecorder();
   }
@@ -114,20 +110,24 @@ public final class WolTestenv implements AutoCloseable {
     return serverScope.getResource(MinecraftServer.class);
   }
 
-  public SpellRegistry getSpellRegistry() {
-    return serverScope.getInstance(SpellRegistry.class);
-  }
-
   public WolConfig getConfig() {
     return serverScope.getInstance(WolConfig.class);
   }
 
-  public FileSystem getWorldFileSystem() {
-    return serverScope.getInstance(WolServerFileSystem.class);
+  public LuaFunctionBinaryCache getLuaFunctionBinaryCache() {
+    return serverScope.getInstance(LuaFunctionBinaryCache.class);
+  }
+
+  public SpellRegistry getSpellRegistry() {
+    return serverScope.getInstance(SpellRegistry.class);
   }
 
   public TimeService getTimeService() {
     return serverScope.getInstance(TimeService.class);
+  }
+
+  public FileSystem getWorldFileSystem() {
+    return serverScope.getInstance(WolServerFileSystem.class);
   }
 
   @SubscribeEvent

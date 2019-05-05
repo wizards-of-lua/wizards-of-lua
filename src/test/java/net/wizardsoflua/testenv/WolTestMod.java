@@ -72,10 +72,6 @@ public class WolTestMod {
     TypedImc.sendTo(WizardsOfLua.MODID, WizardsOfLuaConsumer.class, it -> wol = it);
   }
 
-  public WizardsOfLua getWol() {
-    return wol;
-  }
-
   public EventRecorder getEventRecorder() {
     return eventRecorder;
   }
