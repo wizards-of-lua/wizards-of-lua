@@ -110,7 +110,7 @@ functions:
         caused by [autosleep](/modules/Time#autosleep).
        
         ```lua
-        lua local abc = 'abc'
+        local abc = 'abc'
         local interceptor = Events.intercept({'my-event'}, function(event)
           abc = nil
         end)

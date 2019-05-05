@@ -295,7 +295,7 @@ public class EventsModule extends LuaTableExtension {
    * caused by [autosleep](/modules/Time#autosleep).
    *
    * <code>
-   * lua local abc = 'abc'
+   * local abc = 'abc'
    * local interceptor = Events.intercept({'my-event'}, function(event)
    *   abc = nil
    * end)
