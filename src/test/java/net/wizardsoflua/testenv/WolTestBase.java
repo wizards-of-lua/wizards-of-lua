@@ -108,4 +108,8 @@ public class WolTestBase extends TestDataFactory {
   protected String toJsonString(String text) {
     return "{\"text\":\"" + text + "\"}";
   }
+
+  protected String quoteJson(String text) {
+    return "\"" + text.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+  }
 }
