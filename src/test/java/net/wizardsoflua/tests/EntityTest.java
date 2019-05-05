@@ -272,17 +272,21 @@ public class EntityTest extends WolTestBase {
   @Test
   public void test_motion_is_readable() throws Exception {
     // Given:
+    String motion = "0.0,-1.0,0.0";
     BlockPos pos = mc().getWorldSpawnPoint();
-
-    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig]}", pos.getX(),
-        pos.getY() + 10, pos.getZ());
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],Motion:[" + motion + "]}",
+        pos.getX(), pos.getY() + 10, pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; m=p.motion; print(m.y<0)");
+    mc().executeCommand("/lua " //
+        + "p = Entities.find('@e[tag=testpig]')[1];\n" //
+        + "m = p.motion;\n" //
+        + "print(m.x..','..m.y..','..m.z);\n" //
+    );
 
     // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo(motion);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_motion_is_writable
@@ -296,8 +300,11 @@ public class EntityTest extends WolTestBase {
     mc().clearEvents();
 
     // When:
-    mc().executeCommand(
-        "/lua p=Entities.find('@e[tag=testpig]')[1]; p.motion=Vec3(0,10,0); print('ok')");
+    mc().executeCommand("/lua " //
+        + "p=Entities.find('@e[tag=testpig]')[1];\n" //
+        + "p.motion=Vec3(0,10,0);\n" //
+        + "print('ok');\n" //
+    );
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo("ok");
