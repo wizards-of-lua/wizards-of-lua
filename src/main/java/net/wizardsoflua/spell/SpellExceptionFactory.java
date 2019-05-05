@@ -1,7 +1,7 @@
 package net.wizardsoflua.spell;
 
-import net.sandius.rembulan.exec.CallException;
-import net.sandius.rembulan.load.LoaderException;
+import java.util.Optional;
+import com.google.common.base.Throwables;
 import net.wizardsoflua.lua.SpellProgram;
 
 public class SpellExceptionFactory {
@@ -12,24 +12,15 @@ public class SpellExceptionFactory {
   }
 
   private static String getMessage(Throwable throwable) {
-    if (throwable instanceof LoaderException || throwable instanceof CallException) {
-      throwable = throwable.getCause();
-    }
-    String message = throwable.getMessage();
-    if (message != null) {
-      return message;
-    } else {
-      return "Unknown error";
-    }
+    Throwable rootCause = Throwables.getRootCause(throwable);
+    String message = rootCause.getMessage();
+    return Optional.ofNullable(message).orElse("Unknown error");
   }
 
   private static CharSequence getLuaStackTrace(Throwable throwable) {
-    Throwable deepestCause = null;
-    for (Throwable t = throwable; t != null; t = t.getCause()) {
-      deepestCause = t;
-    }
+    Throwable rootCause = Throwables.getRootCause(throwable);
     StringBuilder luaStackTrace = new StringBuilder();
-    StackTraceElement[] stackTrace = deepestCause.getStackTrace();
+    StackTraceElement[] stackTrace = rootCause.getStackTrace();
     for (StackTraceElement stackTraceElement : stackTrace) {
       String className = stackTraceElement.getClassName();
       int lineNumber = stackTraceElement.getLineNumber();
@@ -40,5 +31,4 @@ public class SpellExceptionFactory {
     }
     return luaStackTrace;
   }
-
 }
