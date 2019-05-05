@@ -105,4 +105,7 @@ public class WolTestBase extends TestDataFactory {
     }
   }
 
+  protected String toJsonString(String text) {
+    return "{\"text\":\"" + text + "\"}";
+  }
 }

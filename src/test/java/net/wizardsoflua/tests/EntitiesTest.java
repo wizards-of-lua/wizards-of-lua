@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class EntitiesTest extends WolTestBase {
 
@@ -14,16 +13,17 @@ public class EntitiesTest extends WolTestBase {
   public void test_find_pigs() throws Exception {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
-
     mc().executeCommand("/summon minecraft:pig %s %s %s", pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua pigs=Entities.find('@e[type=Pig]'); print(#pigs, pigs[1].name)");
+    mc().executeCommand("/lua " //
+        + "pigs=Entities.find('@e[type=pig]');\n" //
+        + "print(#pigs, pigs[1].name);\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("1   Pig");
+    assertThat(mc().nextServerMessage()).isEqualTo("1   Pig");
   }
 
   // /test net.wizardsoflua.tests.EntitiesTest test_find_pig_by_uuid
@@ -47,8 +47,7 @@ public class EntitiesTest extends WolTestBase {
         "/lua pigs=Entities.find('" + pig.getUniqueID() + "'); print(#pigs, pigs[1].name)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("1   Pig");
+    assertThat(mc().nextServerMessage()).isEqualTo("1   Pig");
   }
 
   // /test net.wizardsoflua.tests.EntitiesTest test_find_player_by_name
@@ -62,19 +61,20 @@ public class EntitiesTest extends WolTestBase {
         "/lua players=Entities.find('" + name + "'); print(#players, players[1].name)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("1   " + name);
+    assertThat(mc().nextServerMessage()).isEqualTo("1   " + name);
   }
 
   // /test net.wizardsoflua.tests.EntitiesTest test_summon_pig
   @Test
   public void test_summon_pig() throws Exception {
     // When:
-    mc().executeCommand("/lua pig=Entities.summon('pig'); print(pig.name)");
+    mc().executeCommand("/lua " //
+        + "pig=Entities.summon('pig');\n" //
+        + "print(pig.name);\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("Pig");
+    assertThat(mc().nextServerMessage()).isEqualTo("Pig");
   }
 
   // /test net.wizardsoflua.tests.EntitiesTest test_summon_pig_with_nbt
@@ -84,12 +84,12 @@ public class EntitiesTest extends WolTestBase {
     String expected = "some-test-pig";
 
     // When:
-    mc().executeCommand("/lua pig=Entities.summon('pig',{CustomName='%s'}); print(pig.name)",
-        expected);
+    mc().executeCommand("/lua " //
+        + "pig=Entities.summon('pig', {CustomName='" + toJsonString(expected) + "'});\n" //
+        + "print(pig.name);\n" //
+    );
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
-
 }
