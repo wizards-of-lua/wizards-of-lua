@@ -16,23 +16,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.crypto.BadPaddingException;
 import javax.inject.Inject;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerProfileCache;
 import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.Resource;
 import net.wizardsoflua.extension.server.api.ServerScoped;
-import net.wizardsoflua.permissions.Permissions;
 
 // FIXME Adrodoc 28.04.2019: This class seems to implement multiple unrelated features
 @ServerScoped
 public class LuaFileRepository {
   @Resource
   private WizardsOfLua wol;
+  @Resource
+  private MinecraftServer server;
   @Inject
   private WolConfig config;
-  @Inject
-  private Permissions permissions;
 
   private final Crypto crypto = new Crypto();
   private SpellPackFactory spellPackFactory;
@@ -337,10 +339,10 @@ public class LuaFileRepository {
   }
 
   public boolean isValidLoginToken(UUID playerId, String token) {
-    int index = token.indexOf('/');
-    if (!permissions.hasOperatorPrivileges(playerId)) {
+    if (!hasOperatorPrivileges(playerId)) {
       return false;
     }
+    int index = token.indexOf('/');
     String encryptedPlayerPassword = token.substring(index + 1);
     String serverPassword = config.getRestApiConfig().getApiKey();
 
@@ -351,6 +353,12 @@ public class LuaFileRepository {
     } catch (BadPaddingException e) {
       return false;
     }
+  }
+
+  private boolean hasOperatorPrivileges(UUID playerId) {
+    PlayerProfileCache cache = server.getPlayerProfileCache();
+    GameProfile gameProfile = cache.getProfileByUUID(playerId);
+    return server.getPlayerList().canSendCommands(gameProfile);
   }
 
   private String getLoginToken(EntityPlayer player) {

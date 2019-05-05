@@ -21,7 +21,6 @@ import net.wizardsoflua.WizardsOfLua;
 import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.filesystem.WolServerFileSystem;
-import net.wizardsoflua.permissions.Permissions;
 import net.wizardsoflua.spell.SpellRegistry;
 import net.wizardsoflua.testenv.junit.AbortExtension;
 import net.wizardsoflua.testenv.net.NetworkMessage;
@@ -125,10 +124,6 @@ public final class WolTestenv implements AutoCloseable {
 
   public FileSystem getWorldFileSystem() {
     return serverScope.getInstance(WolServerFileSystem.class);
-  }
-
-  public Permissions getPermissions() {
-    return serverScope.getInstance(Permissions.class);
   }
 
   public TimeService getTimeService() {
