@@ -96,8 +96,28 @@ properties:
     type: '[Entity](/modules/Entity)'
     access: r
     description: |
-        The entity that has casted this spell. Normally this is a [player](/modules/Player), or nil
-        if the spell has been casted by a command block.
+        The 'owner' is a reference to the [entity](/modules/entity) that owns this spell.
+       
+        In general, the owner is the same entity that has casted this spell directly using the
+        [/lua](/lua-command) command.
+       
+        In most circumstances this will be a [player](/modules/Player). But it can be any other
+        entity if the spell has been casted using the "/execute" command.
+       
+        For example, the following command
+       
+        <pre>
+        /execute @e[type=pig] ~ ~ ~ /lua spell.visible=true; sleep(20)
+        </pre>
+       
+        will cast a new spell on behalf of the next pig around. In this case that pig will be the
+        spell's owner.
+       
+        The onwer can also be <span class="notranslate">nil</span>. That's the case if the spell has
+        been casted from a command block or from the server console.
+       
+        If a spell casts another spell using [spell:execute()](/modules/Spell/#execute), then the
+        owner is inherited by the new spell.
        
         #### Example
        
@@ -166,17 +186,18 @@ functions:
         be present in the command string. See
         [`string.format()`](http://lua-users.org/wiki/StringLibraryTutorial) for more information.
        
-        The current spell will be treated as the new command's sender. The new command will be
-        executed at the current spell's position.
+        The command will be effective from this spell's position since this spell is the command's
+        source.
        
-        If the new command is a "lua" command, then the new spell inherits the current spell's owner.
+        If a [/lua](/lua-command) command is executed, then the new spell inherits this spell's
+        [owner](/modules/Spell#owner).
        
         #### Example
        
-        Setting the game time to 'day'.
+        Setting the game time to "day".
        
         ```lua
-        spell:execute("time set day")
+        spell:execute("/time set day")
         ```
        
         #### Example
@@ -184,7 +205,7 @@ functions:
         Letting the current spell say "hello".
        
         ```lua
-        spell:execute([[/say hello]])
+        spell:execute("/say hello")
         ```
        
         #### Example
@@ -192,7 +213,7 @@ functions:
         Letting the player "mickkay" say "hello":
        
         ```lua
-        spell:execute([[/execute mickkay ~ ~ ~ say hello]])
+        spell:execute("/execute mickkay ~ ~ ~ say hello")
         ```
        
         #### Example
@@ -200,25 +221,25 @@ functions:
         Spawning a zombie at the spell's current location.
        
         ```lua
-        spell:execute("summon zombie ~ ~ ~")
+        spell:execute("/summon zombie ~ ~ ~")
         ```
        
         #### Example
        
-        Spawning some smoke particles at the spell's current location.
+        Spawning some smoke particles at the spell's current location using a command placeholder.
        
         ```lua
         local particle = "smoke"
-        spell:execute("particle %s ~ ~ ~ 0 0 0 0 0", particle)
+        spell:execute("/particle %s ~ ~ ~ 0 0 0 0 0", particle)
         ```
        
         #### Example
        
-        Building a wall by casting some parallel spells each building a pillar.
+        Building a wall by concurrently casting serveral spells, each building a pillar.
        
         ```lua
         for x=1,20 do
-          spell:execute([[lua
+          spell:execute([[/lua
             for i=1,5 do
               spell.block = Blocks.get("stone")
               sleep(1)
@@ -231,7 +252,7 @@ functions:
        
         #### Example
        
-        Drawing a circle of black smoke with a radius of 1.4 meters around the spell's position.
+        Drawing a circle of black smoke around the spell's position with a radius of 1.4 meters
        
         ```lua
         start = spell.pos
@@ -241,7 +262,7 @@ functions:
           y = 0.6
           r = 1.4
           spell.pos = start + Vec3(x,y,z) * r
-          spell:execute("particle largesmoke ~ ~ ~ 0 0 0 0 1")
+          spell:execute("/particle largesmoke ~ ~ ~ 0 0 0 0 1")
         end
         ```
 ---
