@@ -14,6 +14,7 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.wizardsoflua.WizardsOfLua;
@@ -48,9 +49,6 @@ public class WolEventHandler {
     if (EffectiveSide.get() != LogicalSide.SERVER) {
       return; // This early exit is just to improve performance
     }
-    if (event instanceof ServerTickEvent) {
-      onServerTickEvent((ServerTickEvent) event);
-    }
     if (Converters.isSupported(event.getClass())) {
       for (SpellEntity spellEntity : registry.getAll()) {
         String eventName = getEventName(event, spellEntity);
@@ -74,12 +72,13 @@ public class WolEventHandler {
     return null;
   }
 
-  // FIXME Adrodoc 24.04.2019: ServerTickEvent happens twice per tick,
-  // once with Phase.START and once with Phase.END
-  private void onServerTickEvent(ServerTickEvent event) {
-    for (SpellEntity spellEntity : registry.getAll()) {
-      if (spellEntity.isAlive()) {
-        spellEntity.onUpdate();
+  @SubscribeEvent
+  public void onServerTick(ServerTickEvent event) {
+    if (event.phase == Phase.START) {
+      for (SpellEntity spellEntity : registry.getAll()) {
+        if (spellEntity.isAlive()) {
+          spellEntity.onUpdate();
+        }
       }
     }
   }

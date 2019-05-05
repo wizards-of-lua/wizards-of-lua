@@ -44,6 +44,7 @@ public class SpellEntityFactory {
     SpellEntity result = new SpellEntity(world, program, pos, nextSid, chunkForceManager);
     program.setSpellEntity(result);
     spellRegistry.add(result);
+    result.onUpdate();
     return result;
   }
 
