@@ -8,10 +8,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -36,40 +36,40 @@ public class WolTestMod {
   public WolTestMod() {
     IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
     bus.addListener(this::setup);
+    bus.addListener(this::setupClient);
     bus.addListener(this::enqueueImcMessages);
   }
 
-  public void setup(FMLCommonSetupEvent event) {
+  private void setup(FMLCommonSetupEvent event) {
     WolTestPacketChannel.initialize();
     MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
 
     eventRecorder = new EventRecorder();
     MinecraftForge.EVENT_BUS.register(getEventRecorder());
 
-    MinecraftForge.EVENT_BUS.register(new MainForgeEventBusListener());
-
     log4jEventBridge = new Log4j2ForgeEventBridge();
     log4jEventBridge.activate();
   }
 
-  public void enqueueImcMessages(InterModEnqueueEvent event) {
-    TypedImc.sendTo(WizardsOfLua.MODID, WizardsOfLuaConsumer.class, it -> wol = it);
-  }
-
-  public void onServerStarting(FMLServerStartingEvent event) {
+  private void onServerStarting(FMLServerStartingEvent event) {
     MinecraftServer server = event.getServer();
     InjectionScope serverScope = wol.provideServerScope(server);
     CommandDispatcher<CommandSource> dispatcher = event.getCommandDispatcher();
     new TestCommand(this, serverScope).register(dispatcher);
   }
 
-  private class MainForgeEventBusListener {
-    @SubscribeEvent
-    public void onEvent(ClientChatReceivedEvent evt) {
-      ITextComponent message = evt.getMessage();
-      String txt = ofNullable(message).map(it -> it.getString()).orElse(null);
-      WolTestPacketChannel.sendToServer(new ClientChatReceivedMessage(txt));
-    }
+  private void setupClient(FMLClientSetupEvent event) {
+    MinecraftForge.EVENT_BUS.addListener(this::onClientChatReceived);
+  }
+
+  private void onClientChatReceived(ClientChatReceivedEvent evt) {
+    ITextComponent message = evt.getMessage();
+    String txt = ofNullable(message).map(it -> it.getString()).orElse(null);
+    WolTestPacketChannel.sendToServer(new ClientChatReceivedMessage(txt));
+  }
+
+  private void enqueueImcMessages(InterModEnqueueEvent event) {
+    TypedImc.sendTo(WizardsOfLua.MODID, WizardsOfLuaConsumer.class, it -> wol = it);
   }
 
   public WizardsOfLua getWol() {
