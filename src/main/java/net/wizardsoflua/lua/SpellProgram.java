@@ -3,6 +3,7 @@ package net.wizardsoflua.lua;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
+import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -428,9 +429,9 @@ public class SpellProgram {
   private void handleException(String contextMessage, Throwable t) {
     terminate();
     SpellException s = exceptionFactory.create(t);
-    s.printStackTrace();
+    String message = String.format("%s: %s", contextMessage, s.getMessage());
+    LOGGER.error(message, s);
     if (owner != null) {
-      String message = String.format("%s: %s", contextMessage, s.getMessage());
       TextComponentString txt = new TextComponentString(message);
       txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
       owner.sendMessage(txt);
