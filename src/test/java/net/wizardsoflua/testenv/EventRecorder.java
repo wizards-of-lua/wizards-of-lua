@@ -1,10 +1,8 @@
 package net.wizardsoflua.testenv;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
@@ -19,29 +17,22 @@ import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
  * provides an API to wait for a specific event.
  */
 public class EventRecorder {
-  private final List<Event> events = new ArrayList<>();
-  private final Object eventsSync = new Object();
+  private final BlockingQueue<Event> events = new LinkedBlockingQueue<>();
   private volatile boolean enabled = false;
 
   /**
    * Clears all recorded events.
    */
   public void clear() {
-    synchronized (eventsSync) {
-      events.clear();
-    }
+    events.clear();
   }
 
   public void setEnabled(boolean enabled) {
-    synchronized (eventsSync) {
-      this.enabled = enabled;
-    }
+    this.enabled = enabled;
   }
 
   public boolean isEnabled() {
-    synchronized (eventsSync) {
-      return enabled;
-    }
+    return enabled;
   }
 
   /**
@@ -52,35 +43,22 @@ public class EventRecorder {
    * @return the first event of the specified type
    * @throws InterruptedException
    */
-  public <E extends Event> E waitFor(Class<E> eventType, long duration, TimeUnit timeUnit)
+  public <E extends Event> E waitFor(Class<E> eventType, long timeout, TimeUnit unit)
       throws InterruptedException {
-    long startTimeMs = System.currentTimeMillis();
+    if (!isEnabled()) {
+      throw new IllegalStateException(EventRecorder.class.getSimpleName() + " is not enabled!");
+    }
+    long timeoutNanos = unit.toNanos(timeout);
+    long startNanos = System.nanoTime();
     while (true) {
-      synchronized (eventsSync) {
-        if (!isEnabled()) {
-          throw new IllegalStateException(EventRecorder.class.getSimpleName() + " is not enabled!");
-        }
-        while (true) {
-          long now = System.currentTimeMillis();
-          long durationLeft = timeUnit.toMillis(duration) - (now - startTimeMs);
-          if (durationLeft <= 0) {
-            throw new RuntimeException("Timeout! Event " + eventType.getSimpleName()
-                + " not occured within " + duration + " " + timeUnit);
-          }
-          if (events.isEmpty()) {
-            eventsSync.wait(durationLeft);
-          } else {
-            break;
-          }
-        }
-        Iterator<Event> it = events.iterator();
-        while (it.hasNext()) {
-          Event event = it.next();
-          it.remove();
-          if (eventType.isInstance(event)) {
-            return eventType.cast(event);
-          }
-        }
+      long nanosLeft = timeoutNanos - (System.nanoTime() - startNanos);
+      Event event = events.poll(nanosLeft, TimeUnit.NANOSECONDS);
+      if (event == null) {
+        throw new RuntimeException("Timeout! Event " + eventType.getSimpleName()
+            + " not occured within " + timeout + " " + unit);
+      }
+      if (eventType.isInstance(event)) {
+        return eventType.cast(event);
       }
     }
   }
@@ -124,11 +102,8 @@ public class EventRecorder {
   }
 
   private void addEvent(Event evt) {
-    synchronized (eventsSync) {
-      if (isEnabled()) {
-        events.add(evt);
-        eventsSync.notify();
-      }
+    if (isEnabled()) {
+      events.add(evt);
     }
   }
 }
