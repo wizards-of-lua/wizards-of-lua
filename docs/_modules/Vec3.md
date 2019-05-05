@@ -56,7 +56,7 @@ functions:
   - name: scale
     parameters: factor
     results: Vec3
-    description: Returns a scaled version of the current vector by the given factor.
+    description: Returns a copy of current vector, scaled by the given factor.
     examples:
       - url: Vec3/scale.md
   - name: invert
@@ -68,7 +68,7 @@ functions:
   - name: normalize
     parameters:
     results: Vec3
-    description: "Returns a normalize version of the current vector, which means
+    description: "Returns a normalized version of the current vector, which means
     a vector with a magnitude of 1 meter and pointing
     into the same direction as the original vector.
     "
@@ -90,14 +90,15 @@ functions:
 ---
 
 An instance of the <span class="notranslate">Vec3</span> class represents a '3-dimensional Vector'.
+
 Mostly a 3-dimensional vector is used to denote a position in the
-3-dimensional world space. And sometimes it is used to denote a constant velocity
-of an object inside that space.
-Actually a vector can be used for many other 'things' that can be described by
+3-dimensional world space or a constant velocity of an object inside that space.
+
+However, a vector can be used for many other 'things' that can be described by
 3 independent numerical values.
 
 To create a vector you can call the <span class="notranslate">Vec3</span> function:
 ```lua
-/lua myvec = Vec3( 1, 2, 3)
+myvec = Vec3( 1, 2, 3)
 ```
 This creates a vector called 'myvec' with the component values x=1, y=2, z=3.
