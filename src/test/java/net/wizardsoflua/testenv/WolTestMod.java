@@ -30,7 +30,6 @@ public class WolTestMod {
   public static final String MODID = "wol-test";
 
   private WizardsOfLua wol;
-  private WolTestPacketChannel packetChannel;
   private EventRecorder eventRecorder;
   private Log4j2ForgeEventBridge log4jEventBridge;
 
@@ -41,7 +40,7 @@ public class WolTestMod {
   }
 
   public void setup(FMLCommonSetupEvent event) {
-    packetChannel = new WolTestPacketChannel();
+    WolTestPacketChannel.initialize();
     MinecraftForge.EVENT_BUS.addListener(this::onServerStarting);
 
     eventRecorder = new EventRecorder();
@@ -69,16 +68,12 @@ public class WolTestMod {
     public void onEvent(ClientChatReceivedEvent evt) {
       ITextComponent message = evt.getMessage();
       String txt = ofNullable(message).map(it -> it.getString()).orElse(null);
-      packetChannel.sendToServer(new ClientChatReceivedMessage(txt));
+      WolTestPacketChannel.sendToServer(new ClientChatReceivedMessage(txt));
     }
   }
 
   public WizardsOfLua getWol() {
     return wol;
-  }
-
-  public WolTestPacketChannel getPacketChannel() {
-    return packetChannel;
   }
 
   public EventRecorder getEventRecorder() {
