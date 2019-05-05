@@ -18,45 +18,50 @@ public class WolTestBase extends TestDataFactory {
   private final EventRecorder eventRecorder = testenv.getEventRecorder();
   private final MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testenv);
   private boolean wasOperator;
-  private long oldDayTime;
+  private long oldGameTime;
   @RegisterExtension
   AbortExtension abortExtension = testenv.getAbortExtension();
 
   @BeforeEach
-  public void beforeTest() throws Exception {
-    testenv.runOnMainThread(() -> eventRecorder.setEnabled(true));
-
-    mc().resetClock();
+  void beforeEach() throws Exception {
     mc().breakAllSpells();
-
+    mc().clearLuaFunctionCache();
     mc().clearWizardConfigs();
 
-    mc().gameRules().saveState();
-    mc().gameRules().setDoMobSpawning(false);
-    mc().gameRules().setLogAdminCommands(false);
-    mc().gameRules().setSendCommandFeedback(true);
+    mc().resetClock();
+    oldGameTime = mc().getGameTime();
 
-    mc().executeCommand("/kill @e[type=!player]");
-    mc().executeCommand("/wol spell break all");
-    mc().clearEvents();
-    mc().clearLuaFunctionCache();
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
     mc().player().clearInventory();
     wasOperator = mc().player().isOperator();
-    oldDayTime = mc().getWorldtime();
+
+    mc().gameRules().saveState();
+    mc().gameRules().setDoMobLoot(false);
+    mc().gameRules().setDoMobSpawning(false);
+    mc().gameRules().setLogAdminCommands(false);
+
+    mc().gameRules().setSendCommandFeedback(false);
+    mc().executeCommand("kill @e[type=!player]");
+    testenv.waitForPendingActions();
+    mc().gameRules().setSendCommandFeedback(true);
+
+    eventRecorder.clear();
+    eventRecorder.setEnabled(true);
   }
 
   @AfterEach
-  public void afterTest() throws Exception {
-    testenv.runOnMainThread(() -> eventRecorder.setEnabled(false));
-    mc().player().setOperator(wasOperator);
-    mc().clearEvents();
+  void afterEach() throws Exception {
+    eventRecorder.setEnabled(false);
+    eventRecorder.clear();
+
     mc().breakAllSpells();
 
     mc().gameRules().restoreState();
-    mc().setWorldTime(oldDayTime);
 
+    mc().player().setOperator(wasOperator);
+
+    mc().setGameTime(oldGameTime);
     mc().resetClock();
   }
 

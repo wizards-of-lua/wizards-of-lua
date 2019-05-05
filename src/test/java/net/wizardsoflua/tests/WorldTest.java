@@ -239,7 +239,7 @@ public class WorldTest extends WolTestBase {
     // Given:
     mc().gameRules().setDoDaylightCycle(false);
     long expected = 1999;
-    mc().setWorldTime(expected);
+    mc().setGameTime(expected);
 
     // When:
     mc().executeCommand("/lua print(spell.world.time)");
@@ -262,7 +262,7 @@ public class WorldTest extends WolTestBase {
     assertThat(act.getMessage()).isEqualTo("ok");
 
     // Then:
-    long actual = mc().getWorldtime();
+    long actual = mc().getGameTime();
     assertThat(actual).isEqualTo(expected);
   }
 
@@ -272,7 +272,7 @@ public class WorldTest extends WolTestBase {
     // Given:
     mc().gameRules().setDoDaylightCycle(false);
     long expected = 3939;
-    mc().setWorldTime(24000 + expected);
+    mc().setGameTime(24000 + expected);
 
     // When:
     mc().executeCommand("/lua print(spell.world.daytime)");

@@ -2,6 +2,7 @@ package net.wizardsoflua.testenv;
 
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.testenv.GameRuleDsl.BooleanRule.doDaylightCycle;
+import static net.wizardsoflua.testenv.GameRuleDsl.BooleanRule.doMobLoot;
 import static net.wizardsoflua.testenv.GameRuleDsl.BooleanRule.doMobSpawning;
 import static net.wizardsoflua.testenv.GameRuleDsl.BooleanRule.logAdminCommands;
 import static net.wizardsoflua.testenv.GameRuleDsl.BooleanRule.sendCommandFeedback;
@@ -12,6 +13,7 @@ import net.minecraft.world.GameRules;
 public class GameRuleDsl {
   public enum BooleanRule {
     doDaylightCycle, //
+    doMobLoot, //
     doMobSpawning, //
     logAdminCommands, //
     sendCommandFeedback, //
@@ -59,6 +61,14 @@ public class GameRuleDsl {
 
   public void setDoDaylightCycle(boolean value) {
     setBoolean(doDaylightCycle, value);
+  }
+
+  public boolean getDoMobLoot() {
+    return getBoolean(doMobLoot);
+  }
+
+  public void setDoMobLoot(boolean value) {
+    setBoolean(doMobLoot, value);
   }
 
   public boolean getDoMobSpawning() {
