@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 import java.nio.file.FileSystem;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -156,14 +154,16 @@ public final class WolTestenv implements AutoCloseable {
    * that not only are there no pending changes, but all finished changes were synced to the client.
    */
   private final AtomicInteger pendingChangeCount = new AtomicInteger();
-  private final Object lock = new Object();
+  private final Object changeLock = new Object();
+  private final AtomicInteger pendingTaskCount = new AtomicInteger();
+  private final Object taskLock = new Object();
 
   @SubscribeEvent
   public void onTick(ServerTickEvent event) {
     if (event.phase == Phase.END) {
       if (pendingChangeCount.compareAndSet(0, SYNCED)) {
-        synchronized (lock) {
-          lock.notifyAll();
+        synchronized (changeLock) {
+          changeLock.notifyAll();
         }
       }
     }
@@ -179,13 +179,93 @@ public final class WolTestenv implements AutoCloseable {
    * tick has ended.
    */
   public void waitForSyncedClient() {
-    synchronized (lock) {
+    synchronized (changeLock) {
       while (pendingChangeCount.get() != SYNCED) {
         try {
-          lock.wait();
+          changeLock.wait();
         } catch (InterruptedException ignore) {
         }
       }
+    }
+  }
+
+  /**
+   * Waits until all actions submitted via {@link #callOnMainThread(Callable)},
+   * {@link #runOnMainThread(Runnable)} or {@link #runChangeOnMainThread(Runnable)} are executed.
+   */
+  public void waitForPendingActions() {
+    synchronized (taskLock) {
+      while (pendingTaskCount.get() != 0) {
+        try {
+          taskLock.wait();
+        } catch (InterruptedException ignore) {
+        }
+      }
+    }
+  }
+
+  private void whenTaskSubmitted() {
+    pendingTaskCount.incrementAndGet();
+  }
+
+  private void whenTaskFinished() {
+    if (pendingTaskCount.decrementAndGet() == 0) {
+      synchronized (taskLock) {
+        taskLock.notifyAll();
+      }
+    }
+  }
+
+  /**
+   * Runs the specified {@link Runnable} on the main server thread and causes future calls to
+   * {@link #sendTo(EntityPlayerMP, NetworkMessage)} to block until the changes made by the
+   * specified {@link Runnable} were synced to the client.
+   *
+   * @param task the {@link Runnable} to run on the main server thread
+   * @return a future representing pending completion of the task
+   */
+  public ListenableFuture<Object> runChangeOnMainThread(Runnable task) {
+    pendingChangeCount.updateAndGet(it -> it == SYNCED ? 1 : it + 1);
+    return runOnMainThread(() -> {
+      try {
+        task.run();
+      } finally {
+        pendingChangeCount.decrementAndGet();
+      }
+    });
+  }
+
+  /**
+   * Runs the specified {@link Runnable} on the main server thread. If you intend to make changes to
+   * the world consider using {@link #runChangeOnMainThread(Runnable)}.
+   *
+   * @param task the {@link Runnable} to run on the main server thread
+   * @return a future representing pending completion of the task
+   */
+  public ListenableFuture<Object> runOnMainThread(Runnable task) {
+    whenTaskSubmitted();
+    return getServer().addScheduledTask(() -> {
+      try {
+        task.run();
+      } finally {
+        whenTaskFinished();
+      }
+    });
+  }
+
+  public <V> V callOnMainThread(Callable<V> task) {
+    whenTaskSubmitted();
+    ListenableFuture<V> future = getServer().callFromMainThread(() -> {
+      try {
+        return task.call();
+      } finally {
+        whenTaskFinished();
+      }
+    });
+    try {
+      return future.get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -202,63 +282,5 @@ public final class WolTestenv implements AutoCloseable {
     waitForSyncedClient();
     WolTestPacketChannel channel = mod.getPacketChannel();
     channel.sendTo(player, message);
-  }
-
-  /**
-   * Runs the specified {@link Runnable} on the main server thread and causes future calls to
-   * {@link #sendTo(EntityPlayerMP, NetworkMessage)} to block until the changes made by the
-   * specified {@link Runnable} were synced to the client.
-   *
-   * @param task the {@link Runnable} to run on the main server thread
-   * @return a future representing pending completion of the task
-   */
-  public ListenableFuture<Object> runChangeOnMainThread(Runnable task) {
-    MinecraftServer server = getServer();
-    pendingChangeCount.updateAndGet(it -> it == SYNCED ? 1 : it + 1);
-    return server.addScheduledTask(() -> {
-      try {
-        task.run();
-      } finally {
-        pendingChangeCount.decrementAndGet();
-      }
-    });
-  }
-
-  /**
-   * Runs the specified {@link Runnable} on the main server thread. If you intend to make changes to
-   * the world consider using {@link #runChangeOnMainThread(Runnable)}.
-   *
-   * @param task the {@link Runnable} to run on the main server thread
-   * @return a future representing pending completion of the task
-   */
-  public ListenableFuture<Object> runOnMainThread(Runnable runnable) {
-    return getServer().addScheduledTask(runnable);
-  }
-
-  public <V> V callOnMainThread(Callable<V> callable) {
-    ListenableFuture<V> future = getServer().callFromMainThread(callable);
-    try {
-      return future.get();
-    } catch (InterruptedException | ExecutionException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * @deprecated There is no good reason to wait for the execution of the {@link Runnable} unless
-   *             you need a result, in which case you should use
-   *             {@link #callOnMainThread(Callable)}. In other cases use
-   *             {@link #runChangeOnMainThread(Runnable)} or {@link #runOnMainThread(Runnable)}.
-   *
-   * @param runnable
-   */
-  @Deprecated
-  public void runOnMainThreadAndWait(Runnable runnable) {
-    ListenableFuture<Object> future = getServer().addScheduledTask(runnable);
-    try {
-      future.get(30, TimeUnit.SECONDS);
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      throw new RuntimeException(e);
-    }
   }
 }

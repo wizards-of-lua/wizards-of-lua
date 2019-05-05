@@ -19,7 +19,7 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
   @BeforeEach
   public void before() {
     sleep(1000);
-    if (mc().player().getDelegate().dimension != DimensionType.OVERWORLD) {
+    if (mc().player().getTestPlayer().dimension != DimensionType.OVERWORLD) {
       mc().player().changeDimension(DimensionType.OVERWORLD);
     }
     mc().player().setPosition(playerPos);

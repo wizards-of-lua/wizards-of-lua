@@ -132,7 +132,7 @@ public class SpellTest extends WolTestBase {
   @Test
   public void test_spell_owner_uuid_is_current_player_uuid() throws Exception {
     // Given:
-    String expected = mc().player().getDelegate().getUniqueID().toString();
+    String expected = mc().player().getTestPlayer().getUniqueID().toString();
 
     // When:
     mc().player().chat("/lua print(spell.owner.uuid)");
@@ -146,7 +146,7 @@ public class SpellTest extends WolTestBase {
   @Test
   public void test_spell_owner_name_is_current_player_name() throws Exception {
     // Given:
-    String expected = mc().player().getDelegate().getName().getString();
+    String expected = mc().player().getTestPlayer().getName().getString();
 
     // When:
     mc().player().chat("/lua print(spell.owner.name)");

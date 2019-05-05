@@ -123,6 +123,7 @@ public class MinecraftBackdoor {
 
   public <E extends Event> E waitFor(Class<E> eventType) {
     try {
+      testenv.waitForPendingActions();
       return getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
@@ -144,9 +145,11 @@ public class MinecraftBackdoor {
     } else {
       command = format;
     }
-    MinecraftServer server = getServer();
-    CommandSource source = server.getCommandSource();
-    testenv.runOnMainThreadAndWait(() -> server.getCommandManager().handleCommand(source, command));
+    testenv.runChangeOnMainThread(() -> {
+      MinecraftServer server = getServer();
+      CommandSource source = server.getCommandSource();
+      server.getCommandManager().handleCommand(source, command);
+    });
   }
 
   public void freezeClock(long millis) {
@@ -167,7 +170,7 @@ public class MinecraftBackdoor {
   }
 
   public void breakAllSpells() {
-    testenv.runOnMainThreadAndWait(() -> {
+    testenv.runOnMainThread(() -> {
       Collection<SpellEntity> spells = testenv.getSpellRegistry().getAll();
       for (SpellEntity spell : spells) {
         spell.setDead();
@@ -189,8 +192,8 @@ public class MinecraftBackdoor {
   }
 
   public void setChest(BlockPos pos, ItemStack itemStack) {
-    World world = getTestPlayer().getEntityWorld();
-    testenv.runOnMainThreadAndWait(() -> {
+    testenv.runChangeOnMainThread(() -> {
+      World world = getTestPlayer().getEntityWorld();
       world.setBlockState(pos, Blocks.CHEST.getDefaultState());
       TileEntityChest chest = (TileEntityChest) world.getTileEntity(pos);
       chest.setInventorySlotContents(0, itemStack);
@@ -218,7 +221,7 @@ public class MinecraftBackdoor {
   }
 
   public void setLuaTicksLimit(long luaTicksLimit) {
-    testenv.runOnMainThreadAndWait(
+    testenv.runOnMainThread(
         () -> testenv.getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
@@ -227,7 +230,7 @@ public class MinecraftBackdoor {
   }
 
   public void setEventListenerLuaTicksLimit(long eventListenerluaTicksLimit) {
-    testenv.runOnMainThreadAndWait(() -> testenv.getConfig().getGeneralConfig()
+    testenv.runOnMainThread(() -> testenv.getConfig().getGeneralConfig()
         .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }
 
