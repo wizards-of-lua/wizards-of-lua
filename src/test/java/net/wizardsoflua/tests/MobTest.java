@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class MobTest extends WolTestBase {
 
@@ -24,8 +23,7 @@ public class MobTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(instanceOf(Mob,p))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.MobTest test_ai_is_true
@@ -42,8 +40,7 @@ public class MobTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.ai)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.MobTest test_ai_is_false
@@ -60,8 +57,7 @@ public class MobTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.ai)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("false");
+    assertThat(mc().nextServerMessage()).isEqualTo("false");
   }
 
   // /test net.wizardsoflua.tests.MobTest test_ai_is_writable
@@ -78,8 +74,7 @@ public class MobTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p.ai=true; print(p.ai)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     assertThat(((EntityLiving) actEntities.get(0)).isAIDisabled()).as("isAIDisabled()").isFalse();
@@ -99,8 +94,7 @@ public class MobTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.health)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("10.0");
+    assertThat(mc().nextServerMessage()).isEqualTo("10.0");
   }
 
   // /test net.wizardsoflua.tests.MobTest test_health_is_readable
@@ -118,8 +112,7 @@ public class MobTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; p.health=5.5; print(p.health)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("5.5");
+    assertThat(mc().nextServerMessage()).isEqualTo("5.5");
   }
 
 }

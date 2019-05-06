@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class PlayerItemPickupEventTest extends WolTestBase {
   BlockPos itemPos = mc().getWorldSpawnPoint();
@@ -32,8 +31,7 @@ public class PlayerItemPickupEventTest extends WolTestBase {
     mc().player().setPosition(itemPos);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
 }

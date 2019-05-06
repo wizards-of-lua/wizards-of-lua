@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 /**
  * Testing the Inspect Lua module
@@ -20,8 +19,7 @@ public class InspectTest extends WolTestBase {
     mc().executeCommand("/lua print(inspect(%s))", n);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.InspectTest test_inspect_string
@@ -35,8 +33,7 @@ public class InspectTest extends WolTestBase {
     mc().executeCommand("/lua print(inspect('%s'))", str);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.InspectTest test_inspect_table
@@ -48,8 +45,7 @@ public class InspectTest extends WolTestBase {
     mc().executeCommand("/lua t={a=1,b='hello'}; print(inspect(t))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{\n  [\"a\"] = 1,\n  [\"b\"] = \"hello\"\n}");
+    assertThat(mc().nextServerMessage()).isEqualTo("{\n  [\"a\"] = 1,\n  [\"b\"] = \"hello\"\n}");
   }
 
 }

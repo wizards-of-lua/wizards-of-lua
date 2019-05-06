@@ -4,7 +4,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 public class LuaCommandTest extends WolTestBase {
@@ -69,8 +68,7 @@ public class LuaCommandTest extends WolTestBase {
     mc().executeCommand("/lua print('%s')", text);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(text);
+    assertThat(mc().nextServerMessage()).isEqualTo(text);
   }
 
   // /test net.wizardsoflua.tests.LuaCommandTest test_cast_spell_with_shared_profile
@@ -83,8 +81,7 @@ public class LuaCommandTest extends WolTestBase {
     mc().executeCommand("/lua shareddummy();");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("world!");
+    assertThat(mc().nextServerMessage()).isEqualTo("world!");
   }
 
 }

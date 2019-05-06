@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class AddPathTest extends WolTestBase {
 
@@ -25,8 +24,7 @@ public class AddPathTest extends WolTestBase {
         DEMOMODULE);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello");
+    assertThat(mc().nextServerMessage()).isEqualTo("hello");
   }
 
 }

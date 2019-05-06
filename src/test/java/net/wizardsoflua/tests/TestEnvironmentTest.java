@@ -14,7 +14,6 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 public class TestEnvironmentTest extends WolTestBase {
@@ -185,8 +184,7 @@ public class TestEnvironmentTest extends WolTestBase {
     logger.info(message);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(message);
+    assertThat(mc().nextServerMessage()).isEqualTo(message);
   }
 
   // /test net.wizardsoflua.tests.TestEnvironmentTest test_can_set_block

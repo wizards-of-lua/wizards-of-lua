@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class ChatEventTest extends WolTestBase {
 
@@ -20,10 +19,8 @@ public class ChatEventTest extends WolTestBase {
     mc().player().chat(message);
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo(expected1);
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo(expected2);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected1);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected2);
   }
 
 }

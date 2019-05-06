@@ -30,8 +30,7 @@ public class SpellTest extends WolTestBase {
     mc().executeCommand("/lua print(spell~=nil)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_pos_is_world_spawn_point_casted_by_server
@@ -45,8 +44,7 @@ public class SpellTest extends WolTestBase {
     mc().executeCommand("/lua p=spell.pos; print(p)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_facing_casted_by_server
@@ -60,14 +58,14 @@ public class SpellTest extends WolTestBase {
     mc().executeCommand("/setblock %s %s %s minecraft:command_block %s replace {Command:\"%s\"}",
         posP1.getX(), posP1.getY(), posP1.getZ(), facing, command);
     mc().waitFor(ServerLog4jEvent.class);
+
     // When:
     mc().executeCommand("/setblock %s %s %s minecraft:redstone_block", posP2.getX(), posP2.getY(),
         posP2.getZ());
     mc().waitFor(ServerLog4jEvent.class);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).contains(expected);
+    assertThat(mc().nextServerMessage()).contains(expected);
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_pos_when_casted_by_player
@@ -124,8 +122,7 @@ public class SpellTest extends WolTestBase {
     mc().executeCommand("/lua print(spell.owner==nil)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_owner_uuid_is_current_player_uuid
@@ -179,8 +176,7 @@ public class SpellTest extends WolTestBase {
     mc().executeCommand("/lua spell:execute('/say hi')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).matches("\\[Spell-\\d+\\] hi");
+    assertThat(mc().nextServerMessage()).matches("\\[Spell-\\d+\\] hi");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_execute_command_casted_by_player
@@ -208,8 +204,7 @@ public class SpellTest extends WolTestBase {
     mc().executeCommand("/wol spell break byName runner");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("Gotcha");
+    assertThat(mc().nextServerMessage()).isEqualTo("Gotcha");
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_forceChunk_is_true_by_default

@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class LoggersTest extends WolTestBase {
 
@@ -15,8 +14,7 @@ public class LoggersTest extends WolTestBase {
     mc().executeCommand("/lua l=Loggers.get('net.minecraft'); l:info('hello')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello");
+    assertThat(mc().nextServerMessage()).isEqualTo("hello");
   }
 
   // /test net.wizardsoflua.tests.LoggersTest
@@ -29,8 +27,7 @@ public class LoggersTest extends WolTestBase {
     mc().executeCommand("/lua l=Loggers.get('net.minecraft'); l:info('hello %s %s',1,2)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello 1 2");
+    assertThat(mc().nextServerMessage()).isEqualTo("hello 1 2");
   }
 
   // /test net.wizardsoflua.tests.LoggersTest test_can_write_error_message_to_minecraft_logger
@@ -42,8 +39,7 @@ public class LoggersTest extends WolTestBase {
     mc().executeCommand("/lua l=Loggers.get('net.minecraft'); l:error('hello')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello");
+    assertThat(mc().nextServerMessage()).isEqualTo("hello");
   }
 
 }

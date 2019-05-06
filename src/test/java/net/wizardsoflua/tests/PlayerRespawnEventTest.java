@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class PlayerRespawnEventTest extends WolTestBase {
   BlockPos playerPos = new BlockPos(0, 4, 0);
@@ -28,10 +27,8 @@ public class PlayerRespawnEventTest extends WolTestBase {
     mc().player().respawn();
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).startsWith(expected1);
-    ServerLog4jEvent act5 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act5.getMessage()).isEqualTo(expected5);
+    assertThat(mc().nextServerMessage()).startsWith(expected1);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected5);
   }
 
 }

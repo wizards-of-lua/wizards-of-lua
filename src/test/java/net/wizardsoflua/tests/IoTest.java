@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class IoTest extends WolTestBase {
 
@@ -28,8 +27,7 @@ public class IoTest extends WolTestBase {
     mc().executeCommand("/lua f,err=io.open('%s','r'); print(f~=nil); f:close()", filename);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.IoTest test_open_for_read_and_read_all
@@ -45,8 +43,7 @@ public class IoTest extends WolTestBase {
         filename);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(content);
+    assertThat(mc().nextServerMessage()).isEqualTo(content);
   }
 
   // /test net.wizardsoflua.tests.IoTest test_open_for_write
@@ -59,8 +56,7 @@ public class IoTest extends WolTestBase {
     mc().executeCommand("/lua f,err=io.open('%s','w'); print(f~=nil); f:close()", filename);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.IoTest test_open_for_write_and_write_text
@@ -75,8 +71,7 @@ public class IoTest extends WolTestBase {
         filename, content);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
     String actual = mc().readWorldFile(SOME_TEST_TXT);
     assertThat(actual).isEqualTo(content);
   }

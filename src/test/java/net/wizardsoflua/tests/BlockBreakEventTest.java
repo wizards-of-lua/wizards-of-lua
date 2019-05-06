@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class BlockBreakEventTest extends WolTestBase {
 
@@ -40,8 +39,7 @@ public class BlockBreakEventTest extends WolTestBase {
     mc().player().leftclick(blockPos, UP);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
 }

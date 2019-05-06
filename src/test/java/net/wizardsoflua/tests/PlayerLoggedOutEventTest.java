@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.junit.DisabledOnDist;
 
 @DisabledOnDist(CLIENT)
@@ -31,12 +30,9 @@ public class PlayerLoggedOutEventTest extends WolTestBase {
     mc().player().reconnect();
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).startsWith(expected1);
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo(expected2);
-    ServerLog4jEvent act3 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act3.getMessage()).isEqualTo(expected3);
+    assertThat(mc().nextServerMessage()).startsWith(expected1);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected2);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected3);
   }
 
 }

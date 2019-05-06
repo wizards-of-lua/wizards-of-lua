@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 public class PlayerTest extends WolTestBase {
@@ -364,8 +363,7 @@ public class PlayerTest extends WolTestBase {
         mc().player().getName());
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("false");
+    assertThat(mc().nextServerMessage()).isEqualTo("false");
   }
 
 }

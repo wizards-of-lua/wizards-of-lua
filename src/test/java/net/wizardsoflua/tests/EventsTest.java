@@ -5,7 +5,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class EventsTest extends WolTestBase {
 
@@ -27,8 +26,7 @@ public class EventsTest extends WolTestBase {
     mc().player().leftclick(clickPos, facing);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.EventsTest test_on_Event_call__Two_custom_Events
@@ -43,10 +41,8 @@ public class EventsTest extends WolTestBase {
     mc().executeCommand("lua Events.fire('custom-event', 2)");
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo("1");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo("2");
+    assertThat(mc().nextServerMessage()).isEqualTo("1");
+    assertThat(mc().nextServerMessage()).isEqualTo("2");
   }
 
 }

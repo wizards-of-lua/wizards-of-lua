@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class EventInterceptorTest extends WolTestBase {
 
@@ -21,10 +20,8 @@ public class EventInterceptorTest extends WolTestBase {
     mc().executeCommand("lua print(3)");
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo("1");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo("3");
+    assertThat(mc().nextServerMessage()).isEqualTo("1");
+    assertThat(mc().nextServerMessage()).isEqualTo("3");
   }
 
   // /test net.wizardsoflua.tests.EventInterceptorTest
@@ -49,12 +46,9 @@ public class EventInterceptorTest extends WolTestBase {
     mc().executeCommand("wol spell list all");
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).contains("interceptor1 = Events.on('stop-1')");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).contains("interceptor1 = Events.on('stop-1')");
-    ServerLog4jEvent act3 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act3.getMessage()).isEqualTo("[WoL] Active spells:\n");
+    assertThat(mc().nextServerMessage()).contains("interceptor1 = Events.on('stop-1')");
+    assertThat(mc().nextServerMessage()).contains("interceptor1 = Events.on('stop-1')");
+    assertThat(mc().nextServerMessage()).isEqualTo("[WoL] Active spells:\n");
   }
 
 }

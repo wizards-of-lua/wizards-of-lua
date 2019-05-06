@@ -26,15 +26,12 @@ public class WolLuaTicksLimitTest extends WolTestBase {
     mc().executeCommand("/wol luaTicksLimit");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WolLuaTicksLimitTest test_luatickslimit_returns_current_value
   @Test
   public void test_luatickslimit_set_modifies_value() throws Exception {
-    // Given:
-
     // When:
     mc().executeCommand("/wol luaTicksLimit set 5555");
 

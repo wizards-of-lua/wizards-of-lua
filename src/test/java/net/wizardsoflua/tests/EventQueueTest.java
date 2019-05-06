@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class EventQueueTest extends WolTestBase {
 
@@ -21,10 +20,8 @@ public class EventQueueTest extends WolTestBase {
     mc().executeCommand("lua Events.fire('continue')");
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo("2");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("2");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.EventQueueTest test_latest__No_event
@@ -35,8 +32,7 @@ public class EventQueueTest extends WolTestBase {
         "/lua q=Events.collect('LeftClickBlockEvent'); sleep(20); e=q:latest(); print(str(e == nil))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.EventQueueTest test_next_with_timeout_of_zero_does_not_wait
@@ -49,8 +45,7 @@ public class EventQueueTest extends WolTestBase {
         "/lua q=Events.collect('ChatEvent'); t1=Time.gametime; e=q:next(0); t2=Time.gametime; print(t2-t1)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("0");
+    assertThat(mc().nextServerMessage()).isEqualTo("0");
   }
 
   // /test net.wizardsoflua.tests.EventQueueTest
@@ -64,8 +59,7 @@ public class EventQueueTest extends WolTestBase {
         "/lua q=Events.collect('ChatEvent'); t1=Time.gametime; e=q:next(1); t2=Time.gametime; print(t2-t1)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("1");
+    assertThat(mc().nextServerMessage()).isEqualTo("1");
   }
 
   // /test net.wizardsoflua.tests.EventQueueTest
@@ -81,8 +75,7 @@ public class EventQueueTest extends WolTestBase {
     mc().executeCommand("/lua for i=1,5 do Events.fire('DummyEvent'); end");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("0");
+    assertThat(mc().nextServerMessage()).isEqualTo("0");
   }
 
   // /test net.wizardsoflua.tests.EventQueueTest
@@ -98,8 +91,7 @@ public class EventQueueTest extends WolTestBase {
     mc().executeCommand("/lua for i=1,5 do Events.fire('DummyEvent'); end");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("0");
+    assertThat(mc().nextServerMessage()).isEqualTo("0");
   }
 
 }

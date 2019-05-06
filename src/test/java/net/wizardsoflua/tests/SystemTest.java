@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class SystemTest extends WolTestBase {
 
@@ -28,8 +27,7 @@ public class SystemTest extends WolTestBase {
 
     // When:
     mc().executeCommand("/lua System.delete('%s'); print('ok')", filename);
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
 
     // Then:
     assertThat(mc().readWorldFile(filename)).isNull();
@@ -43,8 +41,7 @@ public class SystemTest extends WolTestBase {
 
     // When:
     mc().executeCommand("/lua System.makeDir('%s'); print('ok')", filename);
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
 
     // Then:
     assertThat(mc().existsWorldFile(filename)).isTrue();
@@ -62,8 +59,7 @@ public class SystemTest extends WolTestBase {
     mc().executeCommand("/lua v=System.isFile('%s'); print(v)", filename);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.SystemTest test_isDir
@@ -77,8 +73,7 @@ public class SystemTest extends WolTestBase {
         filename);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.SystemTest test_listFiles
@@ -95,10 +90,8 @@ public class SystemTest extends WolTestBase {
         SOME_DIR);
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo("1.txt");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo("2.txt");
+    assertThat(mc().nextServerMessage()).isEqualTo("1.txt");
+    assertThat(mc().nextServerMessage()).isEqualTo("2.txt");
   }
 
   // /test net.wizardsoflua.tests.SystemTest test_move
@@ -112,8 +105,7 @@ public class SystemTest extends WolTestBase {
 
     // When:
     mc().executeCommand("/lua System.move('%s','%s'); print('ok')", filename1, filename2);
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
 
     // Then:
     assertThat(mc().readWorldFile(filename1)).isNull();
