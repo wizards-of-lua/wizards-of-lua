@@ -11,16 +11,21 @@ public class LivingDeathEventTest extends WolTestBase {
   public void test_cause_is_outOfWorld() throws Exception {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
-        pos.getY(), pos.getZ());
+    String customName = "testpig";
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:"
+        + quoteJson(toJsonString(customName)) + ",NoAI:1}", pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua q=Events.collect('LivingDeathEvent'); e=q:next(); print(e.cause)");
-    mc().executeCommand("/kill @e[type=pig,name=testpig]");
+    mc().executeCommand("/lua " //
+        + "q=Events.collect('LivingDeathEvent');\n" //
+        + "e=q:next();\n" //
+        + "print(e.cause);\n" //
+    );
+    mc().executeCommand("/kill @e[type=pig,name=" + customName + "]");
 
     // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo("Killed testpig");
+    assertThat(mc().nextServerMessage()).isEqualTo("Killed " + customName);
     assertThat(mc().nextServerMessage()).isEqualTo("outOfWorld");
   }
 
@@ -29,18 +34,22 @@ public class LivingDeathEventTest extends WolTestBase {
   public void test_entity_is_testpig() throws Exception {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
-        pos.getY(), pos.getZ());
+    String customName = "testpig";
+    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:"
+        + quoteJson(toJsonString(customName)) + ",NoAI:1}", pos.getX(), pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand(
-        "/lua q=Events.collect('LivingDeathEvent'); e=q:next(); print(e.entity.name)");
-    mc().executeCommand("/kill @e[type=pig,name=testpig]");
+    mc().executeCommand("/lua " //
+        + "q=Events.collect('LivingDeathEvent');\n" //
+        + "e=q:next();\n" //
+        + "print(e.entity.name);\n" //
+    );
+    mc().executeCommand("/kill @e[type=pig,name=" + customName + "]");
 
     // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo("Killed testpig");
-    assertThat(mc().nextServerMessage()).isEqualTo("testpig");
+    assertThat(mc().nextServerMessage()).isEqualTo("Killed " + customName);
+    assertThat(mc().nextServerMessage()).isEqualTo(customName);
   }
 
   // /test net.wizardsoflua.tests.LivingDeathEventTest test_entity_is_player
@@ -51,8 +60,11 @@ public class LivingDeathEventTest extends WolTestBase {
 
     // When:
     try {
-      mc().executeCommand(
-          "/lua q=Events.collect('LivingDeathEvent'); e=q:next(); print(e.entity.name)");
+      mc().executeCommand("/lua " //
+          + "q=Events.collect('LivingDeathEvent');\n" //
+          + "e=q:next();\n" //
+          + "print(e.entity.name);\n" //
+      );
       mc().executeCommand("/kill @a[name=%s]", playerName);
 
       // Then:
