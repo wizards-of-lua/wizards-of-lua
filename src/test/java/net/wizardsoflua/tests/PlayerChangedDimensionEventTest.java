@@ -9,7 +9,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class PlayerChangedDimensionEventTest extends WolTestBase {
 
@@ -50,11 +49,11 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
     mc().player().setPosition(portalPos.up().north());
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    if (act.getMessage().startsWith(sometimesExpected)) {
-      act = mc().waitFor(ServerLog4jEvent.class);
+    String actual = mc().nextServerMessage();
+    if (actual.startsWith(sometimesExpected)) {
+      actual = mc().nextServerMessage();
     }
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(actual).isEqualTo(expected);
   }
 
   private void createPortal(BlockPos startPos) {

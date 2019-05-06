@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class LivingDeathEventTest extends WolTestBase {
 
@@ -21,10 +20,8 @@ public class LivingDeathEventTest extends WolTestBase {
     mc().executeCommand("/kill @e[type=pig,name=testpig]");
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo("Killed testpig");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo("outOfWorld");
+    assertThat(mc().nextServerMessage()).isEqualTo("Killed testpig");
+    assertThat(mc().nextServerMessage()).isEqualTo("outOfWorld");
   }
 
   // /test net.wizardsoflua.tests.LivingDeathEventTest test_entity_is_testpig
@@ -42,10 +39,8 @@ public class LivingDeathEventTest extends WolTestBase {
     mc().executeCommand("/kill @e[type=pig,name=testpig]");
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo("Killed testpig");
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo("testpig");
+    assertThat(mc().nextServerMessage()).isEqualTo("Killed testpig");
+    assertThat(mc().nextServerMessage()).isEqualTo("testpig");
   }
 
   // /test net.wizardsoflua.tests.LivingDeathEventTest test_entity_is_player
@@ -61,12 +56,9 @@ public class LivingDeathEventTest extends WolTestBase {
       mc().executeCommand("/kill @a[name=%s]", playerName);
 
       // Then:
-      ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-      assertThat(act1.getMessage()).startsWith(playerName + " fell out of the world");
-      ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-      assertThat(act2.getMessage()).startsWith("Killed " + playerName);
-      ServerLog4jEvent act3 = mc().waitFor(ServerLog4jEvent.class);
-      assertThat(act3.getMessage()).isEqualTo(playerName);
+      assertThat(mc().nextServerMessage()).startsWith(playerName + " fell out of the world");
+      assertThat(mc().nextServerMessage()).startsWith("Killed " + playerName);
+      assertThat(mc().nextServerMessage()).isEqualTo(playerName);
 
     } finally {
       mc().player().respawn();

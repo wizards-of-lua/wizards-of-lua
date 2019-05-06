@@ -8,7 +8,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.state.properties.DoubleBlockHalf;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 public class Spell_block_Test extends WolTestBase {
@@ -103,8 +102,7 @@ public class Spell_block_Test extends WolTestBase {
         posP1.getX(), posP1.getY(), posP1.getZ());
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
 
     IBlockState actLower = mc().getBlock(lowerDoorPos);
     assertThat(actLower).isA(Blocks.OAK_DOOR).property(BlockDoor.HALF)

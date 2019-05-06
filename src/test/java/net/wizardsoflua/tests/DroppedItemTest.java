@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class DroppedItemTest extends WolTestBase {
 
@@ -22,8 +21,7 @@ public class DroppedItemTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testitem]')[1]; print(instanceOf(DroppedItem,p))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextServerMessage()).isEqualTo("true");
   }
 
 }

@@ -10,7 +10,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class EntityTest extends WolTestBase {
 
@@ -102,11 +101,11 @@ public class EntityTest extends WolTestBase {
     mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.facing)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    String actual = mc().nextServerMessage();
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     EnumFacing expectedFacing = actEntities.get(0).getHorizontalFacing();
-    assertThat(act.getMessage()).isEqualTo(expectedFacing.getName());
+    assertThat(actual).isEqualTo(expectedFacing.getName());
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_lookVec_is_readable
@@ -124,17 +123,17 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; v=p.lookVec; print(string.format('%.5f',v.x)); print(string.format('%.5f',v.y)); print(string.format('%.5f',v.z))");
 
     // Then:
-    ServerLog4jEvent actX = mc().waitFor(ServerLog4jEvent.class);
-    ServerLog4jEvent actY = mc().waitFor(ServerLog4jEvent.class);
-    ServerLog4jEvent actZ = mc().waitFor(ServerLog4jEvent.class);
+    String actualX = mc().nextServerMessage();
+    String actualY = mc().nextServerMessage();
+    String actualZ = mc().nextServerMessage();
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedX = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().x);
     String expectedY = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().y);
     String expectedZ = String.format("%.5f", ((EntityPig) actEntities.get(0)).getLookVec().z);
-    assertThat(actX.getMessage()).isEqualTo(expectedX);
-    assertThat(actY.getMessage()).isEqualTo(expectedY);
-    assertThat(actZ.getMessage()).isEqualTo(expectedZ);
+    assertThat(actualX).isEqualTo(expectedX);
+    assertThat(actualY).isEqualTo(expectedY);
+    assertThat(actualZ).isEqualTo(expectedZ);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_lookVec_is_writable
@@ -169,12 +168,12 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; print(string.format('%.5f',p.rotationYaw))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    String actual = mc().nextServerMessage();
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedRotationYaw =
         String.format("%.5f", ((EntityPig) actEntities.get(0)).renderYawOffset);
-    assertThat(act.getMessage()).isEqualTo(expectedRotationYaw);
+    assertThat(actual).isEqualTo(expectedRotationYaw);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_rotationYaw_is_writable
@@ -214,12 +213,12 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; print(string.format('%.5f',p.rotationPitch))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    String actual = mc().nextServerMessage();
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedRotationPitch =
         String.format("%.5f", ((EntityPig) actEntities.get(0)).rotationPitch);
-    assertThat(act.getMessage()).isEqualTo(expectedRotationPitch);
+    assertThat(actual).isEqualTo(expectedRotationPitch);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_rotationPitch_is_writable
@@ -260,12 +259,12 @@ public class EntityTest extends WolTestBase {
         "/lua p=Entities.find('@e[tag=testpig]')[1]; print(string.format('%.5f',p.eyeHeight))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
+    String actual = mc().nextServerMessage();
     List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     String expectedEyeHeight =
         String.format("%.5f", ((EntityPig) actEntities.get(0)).getEyeHeight());
-    assertThat(act.getMessage()).isEqualTo(expectedEyeHeight);
+    assertThat(actual).isEqualTo(expectedEyeHeight);
   }
 
   // /test net.wizardsoflua.tests.EntityTest test_motion_is_readable

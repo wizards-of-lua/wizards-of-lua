@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 /**
@@ -20,9 +19,9 @@ public class WolPackExportTest extends WolTestBase {
     mc().executeCommand("/wol pack export dummy-module");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).startsWith("[WoL] Click here to download:");
-    assertThat(act.getMessage()).contains("dummy-module.jar");
+    String actual = mc().nextServerMessage();
+    assertThat(actual).startsWith("[WoL] Click here to download:");
+    assertThat(actual).contains("dummy-module.jar");
   }
 
   // /test net.wizardsoflua.tests.WolPackExportTest test_pack_export__Executed_by_player

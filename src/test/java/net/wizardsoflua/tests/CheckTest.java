@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 /**
  * Testing the Check Lua module
@@ -18,8 +17,7 @@ public class CheckTest extends WolTestBase {
     mc().executeCommand("/lua Check.isNumber(1); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
   }
 
   // /test net.wizardsoflua.tests.CheckTest test_check_number_with_not_a_number
@@ -31,8 +29,7 @@ public class CheckTest extends WolTestBase {
     mc().executeCommand("/lua Check.isNumber('xxx')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).contains("number expected");
+    assertThat(mc().nextServerMessage()).contains("number expected");
   }
 
   // /test net.wizardsoflua.tests.CheckTest test_check_string_with_string
@@ -44,8 +41,7 @@ public class CheckTest extends WolTestBase {
     mc().executeCommand("/lua Check.isString('abc'); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
   }
 
   // /test net.wizardsoflua.tests.CheckTest test_check_string_with_not_a_string
@@ -57,8 +53,7 @@ public class CheckTest extends WolTestBase {
     mc().executeCommand("/lua Check.isString({})");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).contains("string expected");
+    assertThat(mc().nextServerMessage()).contains("string expected");
   }
 
 }

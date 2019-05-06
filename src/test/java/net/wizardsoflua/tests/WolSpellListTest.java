@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 /**
@@ -26,10 +25,10 @@ public class WolSpellListTest extends WolTestBase {
     mc().executeCommand("/wol spell list");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).startsWith("[WoL] Your active spells:\n");
-    assertThat(act.getMessage()).doesNotContain(clientCode.substring(0, MAX_LENGTH));
-    assertThat(act.getMessage()).contains(serverCode.substring(0, MAX_LENGTH));
+    String actual = mc().nextServerMessage();
+    assertThat(actual).startsWith("[WoL] Your active spells:\n");
+    assertThat(actual).doesNotContain(clientCode.substring(0, MAX_LENGTH));
+    assertThat(actual).contains(serverCode.substring(0, MAX_LENGTH));
   }
 
   // /test net.wizardsoflua.tests.WolSpellListTest test_spell_list__Executed_by_Player
@@ -88,10 +87,10 @@ public class WolSpellListTest extends WolTestBase {
     mc().executeCommand("/wol spell list all");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).startsWith("[WoL] Active spells:\n");
-    assertThat(act.getMessage()).contains(clientCode.substring(0, MAX_LENGTH));
-    assertThat(act.getMessage()).contains(serverCode.substring(0, MAX_LENGTH));
+    String actual = mc().nextServerMessage();
+    assertThat(actual).startsWith("[WoL] Active spells:\n");
+    assertThat(actual).contains(clientCode.substring(0, MAX_LENGTH));
+    assertThat(actual).contains(serverCode.substring(0, MAX_LENGTH));
   }
 
   // /test net.wizardsoflua.tests.WolSpellListTest test_spell_list_by_sid
@@ -109,10 +108,10 @@ public class WolSpellListTest extends WolTestBase {
     mc().executeCommand("/wol spell list bySid %s", sid);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).startsWith("[WoL] Active spells with sid " + sid + ":\n");
-    assertThat(act.getMessage()).contains(clientCode.substring(0, MAX_LENGTH));
-    assertThat(act.getMessage()).doesNotContain(serverCode.substring(0, MAX_LENGTH));
+    String actual = mc().nextServerMessage();
+    assertThat(actual).startsWith("[WoL] Active spells with sid " + sid + ":\n");
+    assertThat(actual).contains(clientCode.substring(0, MAX_LENGTH));
+    assertThat(actual).doesNotContain(serverCode.substring(0, MAX_LENGTH));
   }
 
   // /test net.wizardsoflua.tests.WolSpellListTest test_spell_list_by_name
@@ -130,10 +129,10 @@ public class WolSpellListTest extends WolTestBase {
     mc().executeCommand("/wol spell list byName %s", name);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).startsWith("[WoL] Active spells with name '" + name + "':\n");
-    assertThat(act.getMessage()).contains(clientCode.substring(0, MAX_LENGTH));
-    assertThat(act.getMessage()).doesNotContain(serverCode.substring(0, MAX_LENGTH));
+    String actual = mc().nextServerMessage();
+    assertThat(actual).startsWith("[WoL] Active spells with name '" + name + "':\n");
+    assertThat(actual).contains(clientCode.substring(0, MAX_LENGTH));
+    assertThat(actual).doesNotContain(serverCode.substring(0, MAX_LENGTH));
   }
 
 }

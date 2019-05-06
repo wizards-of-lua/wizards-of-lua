@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 /**
  * Testing the Vec3 Lua module
@@ -19,8 +18,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(1,1,1); Check.isVec3(v); print('ok')");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_from_creates_new_Vec3
@@ -36,8 +34,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v)", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_Vec3_creates_new_Vec3
@@ -53,8 +50,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3(%s,%s,%s); print(v)", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_new_creates_new_Vec3
@@ -70,8 +66,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.new({x=%s,y=%s,z=%s}); print(v)", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_tostring
@@ -87,8 +82,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:tostring())", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_add
@@ -108,8 +102,7 @@ public class Vec3Test extends WolTestBase {
         ay, az, bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_add_meta
@@ -129,8 +122,7 @@ public class Vec3Test extends WolTestBase {
         bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_substract
@@ -150,8 +142,7 @@ public class Vec3Test extends WolTestBase {
         ax, ay, az, bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_substract_meta
@@ -171,8 +162,7 @@ public class Vec3Test extends WolTestBase {
         bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_sqrMagnitude
@@ -188,8 +178,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:sqrMagnitude())", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_magnitude
@@ -205,9 +194,9 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:magnitude())", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    double actValue = Double.parseDouble(act.getMessage());
-    assertThat(actValue).isEqualTo(expected, Offset.offset(0.01));
+    String actual = mc().nextServerMessage();
+    double actualDouble = Double.parseDouble(actual);
+    assertThat(actualDouble).isEqualTo(expected, Offset.offset(0.01));
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_normalize
@@ -224,9 +213,7 @@ public class Vec3Test extends WolTestBase {
         y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    String actValue = act.getMessage();
-    assertThat(actValue).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_dotProduct
@@ -246,8 +233,7 @@ public class Vec3Test extends WolTestBase {
         ax, ay, az, bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_dotProduct_meta
@@ -267,8 +253,7 @@ public class Vec3Test extends WolTestBase {
         bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_scale
@@ -285,8 +270,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:scale(%s))", x, y, z, f);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_scale_meta_1
@@ -303,8 +287,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); f=%s; print(v*f)", x, y, z, f);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_scale_meta_2
@@ -321,8 +304,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); f=%s; print(f*v)", x, y, z, f);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_invert
@@ -338,8 +320,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(v:invert())", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_invert_meta
@@ -355,8 +336,7 @@ public class Vec3Test extends WolTestBase {
     mc().executeCommand("/lua v=Vec3.from(%s,%s,%s); print(-v)", x, y, z);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.Vec3Test test_concat_meta
@@ -376,8 +356,7 @@ public class Vec3Test extends WolTestBase {
         az, bx, by, bz);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
 }

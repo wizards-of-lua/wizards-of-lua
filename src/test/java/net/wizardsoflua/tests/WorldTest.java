@@ -8,7 +8,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 public class WorldTest extends WolTestBase {
@@ -41,8 +40,7 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua w=spell.world; print(w.name)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_world_dimension_is_readable
@@ -55,8 +53,7 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua w=spell.world; print(w.dimension)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_world_difficulty_is_readable
@@ -69,8 +66,7 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua w=spell.world; print(w.difficulty)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_world_difficulty_is_writable
@@ -84,8 +80,7 @@ public class WorldTest extends WolTestBase {
         expected.name());
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected.name());
+    assertThat(mc().nextServerMessage()).isEqualTo(expected.name());
     assertThat(mc().getDifficulty()).isEqualTo(expected);
   }
 
@@ -99,8 +94,7 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua w=spell.world; print(w.spawnPoint)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_world_canSeeSky_in_open_air
@@ -113,8 +107,7 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua v=spell.pos; v.y=256; w=spell.world; b=w:canSeeSky(v); print(b)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_world_canSeeSky_beyond_solid_block
@@ -128,8 +121,7 @@ public class WorldTest extends WolTestBase {
         "/lua v=spell.pos; v.y=250; spell.pos=v+Vec3(0,2,0); spell.block=Blocks.get('dirt'); ; w=spell.world; b=w:canSeeSky(v); print(b)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_getNearestVillage
@@ -157,8 +149,7 @@ public class WorldTest extends WolTestBase {
         pos.getX(), pos.getY(), pos.getZ());
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_world_isLoadedAt_returns_true_at_player_location
@@ -231,8 +222,7 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua print(spell.world.time)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(valueOf(expected));
+    assertThat(mc().nextServerMessage()).isEqualTo(valueOf(expected));
   }
 
   // /test net.wizardsoflua.tests.WorldTest test_time_is_writable
@@ -244,8 +234,7 @@ public class WorldTest extends WolTestBase {
 
     // When:
     mc().executeCommand("/lua spell.world.time=%s; print('ok')", expected);
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
 
     // Then:
     long actual = mc().getGameTime();
@@ -264,7 +253,6 @@ public class WorldTest extends WolTestBase {
     mc().executeCommand("/lua print(spell.world.daytime)");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(valueOf(expected));
+    assertThat(mc().nextServerMessage()).isEqualTo(valueOf(expected));
   }
 }

@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
 /**
@@ -107,8 +106,7 @@ public class WolSpellBreakTest extends WolTestBase {
     mc().executeCommand("/wol spell break bySid %s", sid);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("[WoL] Broke 1 spell");
+    assertThat(mc().nextServerMessage()).isEqualTo("[WoL] Broke 1 spell");
     assertThat(mc().spells()).hasSize(1);
   }
 
@@ -126,8 +124,7 @@ public class WolSpellBreakTest extends WolTestBase {
     mc().executeCommand("/wol spell break byName %s", name);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("[WoL] Broke 1 spell");
+    assertThat(mc().nextServerMessage()).isEqualTo("[WoL] Broke 1 spell");
     assertThat(mc().spells()).hasSize(1);
   }
 

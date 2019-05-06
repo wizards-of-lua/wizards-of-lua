@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.Test;
 import net.minecraftforge.api.distmarker.Dist;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.junit.DisabledOnDist;
 
@@ -20,8 +19,7 @@ public class CommandsTest extends WolTestBase {
     mc().executeCommand("/dummy");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello");
+    assertThat(mc().nextServerMessage()).isEqualTo("hello");
   }
 
   // /test net.wizardsoflua.tests.CommandsTest test_deregister_command
@@ -36,8 +34,7 @@ public class CommandsTest extends WolTestBase {
     mc().executeCommand("/dummy");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).contains("Unknown command");
+    assertThat(mc().nextServerMessage()).contains("Unknown command");
   }
 
   // /test net.wizardsoflua.tests.CommandsTest test_register_command_with_arguments
@@ -52,8 +49,7 @@ public class CommandsTest extends WolTestBase {
     mc().executeCommand("/dummy x y");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("x   y");
+    assertThat(mc().nextServerMessage()).isEqualTo("x   y");
   }
 
   // /test net.wizardsoflua.tests.CommandsTest test_use_command_with_permission_level_as_operator

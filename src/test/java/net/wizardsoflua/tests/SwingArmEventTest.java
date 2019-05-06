@@ -10,7 +10,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class SwingArmEventTest extends WolTestBase {
   BlockPos playerPos = new BlockPos(0, 4, 0);
@@ -44,8 +43,7 @@ public class SwingArmEventTest extends WolTestBase {
     // Then:
     RightClickBlock act1 = mc().waitFor(RightClickBlock.class);
     assertThat(act1.getPos()).isEqualTo(clickPos);
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.SwingArmEventTest test_rightclick_OFF_HAND
@@ -67,8 +65,7 @@ public class SwingArmEventTest extends WolTestBase {
     // Then:
     RightClickBlock act1 = mc().waitFor(RightClickBlock.class);
     assertThat(act1.getPos()).isEqualTo(clickPos);
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.SwingArmEventTest test_leftclick
@@ -87,8 +84,7 @@ public class SwingArmEventTest extends WolTestBase {
     mc().player().leftclick(clickPos, facing);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
 }

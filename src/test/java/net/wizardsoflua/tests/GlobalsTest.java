@@ -2,7 +2,6 @@ package net.wizardsoflua.tests;
 
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class GlobalsTest extends WolTestBase {
 
@@ -15,8 +14,7 @@ public class GlobalsTest extends WolTestBase {
     mc().executeCommand("/lua t={a=1,b='hello'}; print(str(t))");
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("{\n  [\"a\"] = 1,\n  [\"b\"] = \"hello\"\n}");
+    assertThat(mc().nextServerMessage()).isEqualTo("{\n  [\"a\"] = 1,\n  [\"b\"] = \"hello\"\n}");
   }
 
   // /test net.wizardsoflua.tests.GlobalsTest test_sleep
@@ -28,9 +26,9 @@ public class GlobalsTest extends WolTestBase {
     mc().executeCommand("/lua print(Time.gametime); sleep(%s); print(Time.gametime)", sleepTime);
 
     // Then:
-    ServerLog4jEvent message1 = mc().waitFor(ServerLog4jEvent.class);
-    ServerLog4jEvent message2 = mc().waitFor(ServerLog4jEvent.class);
-    long actual = Long.parseLong(message2.getMessage()) - Long.parseLong(message1.getMessage());
+    String message1 = mc().nextServerMessage();
+    String message2 = mc().nextServerMessage();
+    long actual = Long.parseLong(message2) - Long.parseLong(message1);
     assertThat(actual).isEqualTo(sleepTime);
   }
 

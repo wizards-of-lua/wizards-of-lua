@@ -3,7 +3,6 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.Test;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 
 public class CustomEventTest extends WolTestBase {
 
@@ -22,8 +21,7 @@ public class CustomEventTest extends WolTestBase {
     mc().executeCommand("/lua Events.fire('%s','%s')", eventName, message);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.CustomEventTest test_with_complex_data
@@ -46,10 +44,8 @@ public class CustomEventTest extends WolTestBase {
         message, posP.getX(), posP.getY(), posP.getZ());
 
     // Then:
-    ServerLog4jEvent act1 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act1.getMessage()).isEqualTo(expected1);
-    ServerLog4jEvent act2 = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act2.getMessage()).isEqualTo(expected2);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected1);
+    assertThat(mc().nextServerMessage()).isEqualTo(expected2);
   }
 
   // /test net.wizardsoflua.tests.CustomEventTest test_complex_data_preserves_order
@@ -67,8 +63,7 @@ public class CustomEventTest extends WolTestBase {
         eventName);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextServerMessage()).isEqualTo("ok");
   }
 
   // /test net.wizardsoflua.tests.CustomEventTest test_complex_data_is_writable
@@ -84,8 +79,7 @@ public class CustomEventTest extends WolTestBase {
     mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("2345");
+    assertThat(mc().nextServerMessage()).isEqualTo("2345");
   }
 
   // /test net.wizardsoflua.tests.CustomEventTest test_forward_event_with_modified_complex_data
@@ -106,8 +100,7 @@ public class CustomEventTest extends WolTestBase {
     mc().executeCommand("/lua data={key=1234}; Events.fire('%s',data)", eventName1);
 
     // Then:
-    ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
-    assertThat(act.getMessage()).isEqualTo("2345");
+    assertThat(mc().nextServerMessage()).isEqualTo("2345");
   }
 
 }
