@@ -2,11 +2,8 @@ package net.wizardsoflua.lua.classes.block;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.sandius.rembulan.Table;
@@ -36,41 +33,44 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
   private static final Map<Material, String> NAMES = new IdentityHashMap<>();
   static {
     NAMES.put(Material.AIR, "AIR");
+    NAMES.put(Material.ANVIL, "ANVIL");
+    NAMES.put(Material.BARRIER, "BARRIER");
+    NAMES.put(Material.BUBBLE_COLUMN, "BUBBLE_COLUMN");
+    NAMES.put(Material.CACTUS, "CACTUS");
+    NAMES.put(Material.CAKE, "CAKE");
+    NAMES.put(Material.CARPET, "CARPET");
+    NAMES.put(Material.CIRCUITS, "CIRCUITS");
+    NAMES.put(Material.CLAY, "CLAY");
+    NAMES.put(Material.CLOTH, "CLOTH");
+    NAMES.put(Material.CORAL, "CORAL");
+    NAMES.put(Material.CRAFTED_SNOW, "CRAFTED_SNOW");
+    NAMES.put(Material.DRAGON_EGG, "DRAGON_EGG");
+    NAMES.put(Material.FIRE, "FIRE");
+    NAMES.put(Material.GLASS, "GLASS");
+    NAMES.put(Material.GOURD, "GOURD");
     NAMES.put(Material.GRASS, "GRASS");
     NAMES.put(Material.GROUND, "GROUND");
-    NAMES.put(Material.WOOD, "WOOD");
-    NAMES.put(Material.ROCK, "ROCK");
+    NAMES.put(Material.ICE, "ICE");
     NAMES.put(Material.IRON, "IRON");
-    NAMES.put(Material.ANVIL, "ANVIL");
-    NAMES.put(Material.WATER, "WATER");
     NAMES.put(Material.LAVA, "LAVA");
     NAMES.put(Material.LEAVES, "LEAVES");
-    NAMES.put(Material.PLANTS, "PLANTS");
-    NAMES.put(Material.VINE, "VINE");
-    NAMES.put(Material.SPONGE, "SPONGE");
-    NAMES.put(Material.CLOTH, "CLOTH");
-    NAMES.put(Material.FIRE, "FIRE");
-    NAMES.put(Material.SAND, "SAND");
-    NAMES.put(Material.CIRCUITS, "CIRCUITS");
-    NAMES.put(Material.CARPET, "CARPET");
-    NAMES.put(Material.GLASS, "GLASS");
-    NAMES.put(Material.REDSTONE_LIGHT, "REDSTONE_LIGHT");
-    NAMES.put(Material.TNT, "TNT");
-    NAMES.put(Material.CORAL, "CORAL");
-    NAMES.put(Material.ICE, "ICE");
+    NAMES.put(Material.OCEAN_PLANT, "OCEAN_PLANT");
     NAMES.put(Material.PACKED_ICE, "PACKED_ICE");
-    NAMES.put(Material.SNOW, "SNOW");
-    NAMES.put(Material.CRAFTED_SNOW, "CRAFTED_SNOW");
-    NAMES.put(Material.CACTUS, "CACTUS");
-    NAMES.put(Material.CLAY, "CLAY");
-    NAMES.put(Material.GOURD, "GOURD");
-    NAMES.put(Material.DRAGON_EGG, "DRAGON_EGG");
-    NAMES.put(Material.PORTAL, "PORTAL");
-    NAMES.put(Material.CAKE, "CAKE");
-    NAMES.put(Material.WEB, "WEB");
     NAMES.put(Material.PISTON, "PISTON");
-    NAMES.put(Material.BARRIER, "BARRIER");
+    NAMES.put(Material.PLANTS, "PLANTS");
+    NAMES.put(Material.PORTAL, "PORTAL");
+    NAMES.put(Material.REDSTONE_LIGHT, "REDSTONE_LIGHT");
+    NAMES.put(Material.ROCK, "ROCK");
+    NAMES.put(Material.SAND, "SAND");
+    NAMES.put(Material.SEA_GRASS, "SEA_GRASS");
+    NAMES.put(Material.SNOW, "SNOW");
+    NAMES.put(Material.SPONGE, "SPONGE");
     NAMES.put(Material.STRUCTURE_VOID, "STRUCTURE_VOID");
+    NAMES.put(Material.TNT, "TNT");
+    NAMES.put(Material.VINE, "VINE");
+    NAMES.put(Material.WATER, "WATER");
+    NAMES.put(Material.WEB, "WEB");
+    NAMES.put(Material.WOOD, "WOOD");
   }
 
   public static @Nullable String getName(Material material) {
