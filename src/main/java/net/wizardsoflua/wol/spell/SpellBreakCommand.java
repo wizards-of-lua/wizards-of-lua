@@ -106,10 +106,10 @@ public class SpellBreakCommand implements CommandRegisterer, Command<CommandSour
     }
     if (count == 1) {
       // TODO I18n
-      source.sendFeedback(new WolAnnouncementMessage("Broke 1 spell"), true);
+      source.sendFeedback(new WolAnnouncementMessage("Broke 1 spell"), false);
     } else if (count > 1) {
       // TODO I18n
-      source.sendFeedback(new WolAnnouncementMessage("Broke " + count + " spells"), true);
+      source.sendFeedback(new WolAnnouncementMessage("Broke " + count + " spells"), false);
     }
     return count;
   }

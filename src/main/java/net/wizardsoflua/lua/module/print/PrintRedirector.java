@@ -3,13 +3,11 @@ package net.wizardsoflua.lua.module.print;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.lib.BasicLib;
 import net.sandius.rembulan.runtime.LuaFunction;
 
 public class PrintRedirector {
-
   public interface PrintReceiver {
     void send(String message);
   }
@@ -18,10 +16,10 @@ public class PrintRedirector {
     return new PrintRedirector(env, printReceiver);
   }
 
-  private final PrintReceiver context;
+  private final PrintReceiver printReceiver;
 
   public PrintRedirector(Table env, PrintReceiver printReceiver) {
-    this.context = printReceiver;
+    this.printReceiver = printReceiver;
     OutputStream out = new ChatOutputStream();
     LuaFunction printFunc = BasicLib.print(out, env);
     env.rawset("print", printFunc);
@@ -41,6 +39,6 @@ public class PrintRedirector {
   }
 
   private void print(String message) {
-    context.send(TabEncoder.encode(message));
+    printReceiver.send(TabEncoder.encode(message));
   }
 }

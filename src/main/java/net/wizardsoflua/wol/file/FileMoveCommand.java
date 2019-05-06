@@ -76,12 +76,12 @@ public class FileMoveCommand implements CommandRegisterer, Command<CommandSource
         throw newCommandException(e.getMessage());
       }
       WolAnnouncementMessage message = new WolAnnouncementMessage(name + " moved to " + newName);
-      source.sendFeedback(message, true);
+      source.sendFeedback(message, false);
       return Command.SINGLE_SUCCESS;
     } else {
       WolAnnouncementMessage message = new WolAnnouncementMessage(
           "Error - Can't move! To move a file please specify old name and new name");
-      source.sendFeedback(message, true);
+      source.sendErrorMessage(message);
       return 0; // no success
     }
   }

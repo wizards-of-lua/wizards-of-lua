@@ -57,12 +57,8 @@ public class CustomCommandRegistry {
   private int run(CommandContext<CommandSource> context, String code, String... arguments) {
     CommandSource source = context.getSource();
 
-    PrintReceiver printReceiver = new PrintReceiver() {
-      @Override
-      public void send(String message) {
-        TextComponentString txt = new TextComponentString(message);
-        source.sendFeedback(txt, true);
-      }
+    PrintReceiver printReceiver = message -> {
+      source.sendFeedback(new TextComponentString(message), false);
     };
 
     // FIXME catch exceptions here? show them as error feedback?

@@ -43,7 +43,7 @@ public class LoginCommand implements CommandRegisterer, Command<CommandSource> {
       WolAnnouncementMessage message =
           new WolAnnouncementMessage("Click here to log in with your web browser: ");
       message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
-      source.sendFeedback(message, true);
+      source.sendFeedback(message, false);
     }
     return Command.SINGLE_SUCCESS;
   }

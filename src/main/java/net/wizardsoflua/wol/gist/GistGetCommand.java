@@ -98,7 +98,7 @@ public class GistGetCommand implements CommandRegisterer, Command<CommandSource>
         String action = existed ? "updated" : "created";
         WolAnnouncementMessage message =
             new WolAnnouncementMessage(fileReference.localPath + " " + action + ".");
-        source.sendFeedback(message, true);
+        source.sendFeedback(message, false);
       }
       if (accessToken == null) {
         RateLimit rateLimit = gistRepo.getRateLimitRemaining(accessToken);

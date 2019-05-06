@@ -74,7 +74,7 @@ public class FileEditCommand implements CommandRegisterer, Command<CommandSource
     }
     WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to edit: ");
     message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
-    source.sendFeedback(message, true);
+    source.sendFeedback(message, false);
     return Command.SINGLE_SUCCESS;
   }
 
