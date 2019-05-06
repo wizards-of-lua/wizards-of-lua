@@ -16,12 +16,12 @@ public class MobTest extends WolTestBase {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
-        pos.getY(), pos.getZ());
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig]}", pos.getX(), pos.getY(),
+        pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(instanceOf(Mob,p))");
+    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(instanceOf(Mob,p))");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -34,12 +34,12 @@ public class MobTest extends WolTestBase {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
-        pos.getY(), pos.getZ());
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig]}", pos.getX(), pos.getY(),
+        pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.ai)");
+    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.ai)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -52,12 +52,12 @@ public class MobTest extends WolTestBase {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],NoAI:1}", pos.getX(),
         pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.ai)");
+    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.ai)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -70,17 +70,17 @@ public class MobTest extends WolTestBase {
     // Given:
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig,NoAI:1}", pos.getX(),
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig],NoAI:1}", pos.getX(),
         pos.getY(), pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; p.ai=true; print(p.ai)");
+    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; p.ai=true; print(p.ai)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
-    List<? extends Entity> actEntities = mc().findEntities("@e[name=testpig]");
+    List<? extends Entity> actEntities = mc().findEntities("@e[tag=testpig]");
     assertThat(actEntities).hasSize(1);
     assertThat(((EntityLiving) actEntities.get(0)).isAIDisabled()).as("isAIDisabled()").isFalse();
   }
@@ -91,12 +91,12 @@ public class MobTest extends WolTestBase {
     // Given
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
-        pos.getY(), pos.getZ());
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig]}", pos.getX(), pos.getY(),
+        pos.getZ());
     mc().clearEvents();
 
     // When:
-    mc().executeCommand("/lua p=Entities.find('@e[name=testpig]')[1]; print(p.health)");
+    mc().executeCommand("/lua p=Entities.find('@e[tag=testpig]')[1]; print(p.health)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
@@ -109,13 +109,13 @@ public class MobTest extends WolTestBase {
     // Given
     BlockPos pos = mc().getWorldSpawnPoint();
 
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pos.getX(),
-        pos.getY(), pos.getZ());
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig]}", pos.getX(), pos.getY(),
+        pos.getZ());
     mc().clearEvents();
 
     // When:
     mc().executeCommand(
-        "/lua p=Entities.find('@e[name=testpig]')[1]; p.health=5.5; print(p.health)");
+        "/lua p=Entities.find('@e[tag=testpig]')[1]; p.health=5.5; print(p.health)");
 
     // Then:
     ServerLog4jEvent act = mc().waitFor(ServerLog4jEvent.class);
