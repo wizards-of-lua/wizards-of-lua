@@ -39,7 +39,7 @@ public class LogoutCommand implements CommandRegisterer, Command<CommandSource> 
       config.getOrCreateWizardConfig(player.getUniqueID()).setRestApiKey(password);
       WolAnnouncementMessage message =
           new WolAnnouncementMessage("Your web browser is logged out.");
-      source.sendFeedback(message, true);
+      source.sendFeedback(message, false);
     }
     return Command.SINGLE_SUCCESS;
   }

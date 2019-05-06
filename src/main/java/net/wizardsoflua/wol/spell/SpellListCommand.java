@@ -115,7 +115,7 @@ public class SpellListCommand implements CommandRegisterer, Command<CommandSourc
   }
 
   private int listSpells(CommandSource source, String message, Iterable<SpellEntity> spells) {
-    source.sendFeedback(format(message, spells), true);
+    source.sendFeedback(format(message, spells), false);
     return Command.SINGLE_SUCCESS; // FIXME: Return number of spells
   }
 

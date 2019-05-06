@@ -69,7 +69,7 @@ public class FileDeleteCommand implements Command<CommandSource>, CommandRegiste
       throw new CommandSyntaxException(null, new LiteralMessage(e.getMessage()));
     }
     WolAnnouncementMessage message = new WolAnnouncementMessage(file + " deleted.");
-    source.sendFeedback(message, true);
+    source.sendFeedback(message, false);
     return Command.SINGLE_SUCCESS;
   }
 

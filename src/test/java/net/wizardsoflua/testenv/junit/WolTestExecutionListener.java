@@ -4,22 +4,20 @@ import static java.util.Objects.requireNonNull;
 import static net.minecraft.util.text.TextFormatting.GREEN;
 import static net.minecraft.util.text.TextFormatting.RED;
 import static net.minecraft.util.text.TextFormatting.YELLOW;
+import static net.wizardsoflua.CommandSourceUtils.sendAndLogErrorMessage;
+import static net.wizardsoflua.CommandSourceUtils.sendAndLogFeedback;
 import static net.wizardsoflua.WolAnnouncementMessage.createAnnouncement;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.CustomBossEvent;
 import net.minecraft.server.CustomBossEvents;
@@ -72,7 +70,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
     testsFound.addAndGet(testCount);
     updateProgressBar();
 
-    sendFeedback(createAnnouncement("Found " + testCount + " tests..."));
+    sendAndLogFeedback(source, createAnnouncement("Found " + testCount + " tests..."));
   }
 
   @Override
@@ -81,7 +79,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
     ITextComponent message = new TextComponentString("Finished " + testsFound + " ");
     appendDetailedTestCount(message);
     message.appendText(" tests in " + duration.getSeconds() + " seconds");
-    sendFeedback(createAnnouncement(message));
+    sendAndLogFeedback(source, createAnnouncement(message));
     removeProgressBar();
   }
 
@@ -98,7 +96,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
   public void onAbort() {
     ITextComponent announcement = createAnnouncement("Aborting test run...");
     announcement.applyTextStyle(YELLOW);
-    sendFeedback(announcement);
+    sendAndLogFeedback(source, announcement);
     abort = true;
   }
 
@@ -119,7 +117,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
       ITextComponent announcement =
           createAnnouncement("Skipped " + displayName + " because:\n" + reason);
       announcement.applyTextStyle(YELLOW);
-      sendFeedback(announcement);
+      sendAndLogFeedback(source, announcement);
     }
   }
 
@@ -127,7 +125,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
   public void executionStarted(TestIdentifier testIdentifier) {
     if (testIdentifier.isTest()) {
       String displayName = testIdentifier.getDisplayName();
-      sendFeedback(createAnnouncement("Started " + displayName));
+      sendAndLogFeedback(source, createAnnouncement("Started " + displayName));
     }
   }
 
@@ -147,7 +145,8 @@ public class WolTestExecutionListener implements TestExecutionListener {
 
           testExecutionResult.getThrowable().ifPresent(it -> {
             String displayName = testIdentifier.getDisplayName();
-            sendErrorMessage(createAnnouncement(displayName + " failed:\n" + it.toString()));
+            ITextComponent message = createAnnouncement(displayName + " failed:\n" + it.toString());
+            sendAndLogErrorMessage(source, message);
           });
           break;
       }
@@ -211,21 +210,5 @@ public class WolTestExecutionListener implements TestExecutionListener {
       progressBar.removeAllPlayers();
       source.getServer().getCustomBossEvents().remove(progressBar);
     }
-  }
-
-  private void sendFeedback(ITextComponent message) {
-    Entity entity = source.getEntity();
-    if (entity instanceof EntityPlayer) {
-      source.getServer().sendMessage(message);
-    }
-    source.sendFeedback(message, true);
-  }
-
-  private void sendErrorMessage(ITextComponent message) {
-    Entity entity = source.getEntity();
-    if (entity instanceof EntityPlayer) {
-      source.getServer().sendMessage(message);
-    }
-    source.sendErrorMessage(message);
   }
 }

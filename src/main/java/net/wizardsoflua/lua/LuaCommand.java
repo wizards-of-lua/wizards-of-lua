@@ -4,6 +4,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
+import static net.wizardsoflua.WolAnnouncementMessage.createAnnouncement;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.inject.Inject;
@@ -14,10 +15,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.lua.module.print.PrintRedirector.PrintReceiver;
 import net.wizardsoflua.spell.SpellEntityFactory;
@@ -40,13 +38,10 @@ public class LuaCommand implements CommandRegisterer, Command<CommandSource> {
     CommandSource source = context.getSource();
     try {
       String luaCode = StringArgumentType.getString(context, "code");
-      PrintReceiver printReceiver = new PrintReceiver() {
-        @Override
-        public void send(String message) {
-          TextComponentString txt = new TextComponentString(message);
-          source.sendFeedback(txt, true);
-        }
+      PrintReceiver printReceiver = message -> {
+        source.sendFeedback(new TextComponentString(message), false);
       };
+
       factory.create(source, printReceiver, luaCode);
       return Command.SINGLE_SUCCESS;
     } catch (Throwable t) {
@@ -56,17 +51,12 @@ public class LuaCommand implements CommandRegisterer, Command<CommandSource> {
     }
   }
 
-
   private void handleException(Throwable t, CommandSource source) {
     String message = String.format("An unexpected error occured during lua command execution: %s",
         t.getMessage());
     LOGGER.error(message, t);
     String stackTrace = getStackTrace(t);
-    WolAnnouncementMessage txt = new WolAnnouncementMessage(message);
-    TextComponentString details = new TextComponentString(stackTrace);
-    txt.setStyle(new Style().setColor(TextFormatting.RED).setBold(Boolean.valueOf(true)));
-    txt.appendSibling(details);
-    source.sendFeedback(txt, true);
+    source.sendErrorMessage(createAnnouncement(message).appendText(stackTrace));
   }
 
   private String getStackTrace(Throwable throwable) {
@@ -78,5 +68,4 @@ public class LuaCommand implements CommandRegisterer, Command<CommandSource> {
     }
     return result;
   }
-
 }

@@ -2,6 +2,7 @@ package net.wizardsoflua.startup;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
+import static net.wizardsoflua.CommandSourceUtils.sendAndLogFeedback;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -103,14 +104,10 @@ public class Startup {
     sendMessage(format("Launching module '%s'", module), source);
     String code = format("require('%s')", module);
 
-    PrintReceiver printReceiver = new PrintReceiver() {
-      @Override
-      public void send(String message) {
-        TextComponentString txt = new TextComponentString(message);
-        source.sendFeedback(txt, false);
-        LOGGER.info(message);
-      }
+    PrintReceiver printReceiver = message -> {
+      sendAndLogFeedback(source, new TextComponentString(message));
     };
+
     spellEntityFactory.create(source, printReceiver, code);
   }
 
