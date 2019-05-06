@@ -8,8 +8,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
 import net.wizardsoflua.testenv.WolTestBase;
-import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+import net.wizardsoflua.testenv.junit.DisabledOnDist;
 
 public class PlayerTest extends WolTestBase {
   private static final String DEMOMODULE = "my.demomodule";
@@ -47,8 +48,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua spell.owner:putNbt({})");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).contains("Error").contains("not supported");
+    assertThat(mc().nextClientMessage()).contains("Error").contains("not supported");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_team_is_readable
@@ -63,8 +63,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.team)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo(team);
+    assertThat(mc().nextClientMessage()).isEqualTo(team);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_team_is_writable
@@ -78,8 +77,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; p.team='%s'; print('ok')", team);
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextClientMessage()).isEqualTo("ok");
     assertThat(mc().player().getTeam()).isEqualTo(team);
   }
 
@@ -93,8 +91,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua require('%s'); dummy();", DEMOMODULE);
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello");
+    assertThat(mc().nextClientMessage()).isEqualTo("hello");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_require_shared_module
@@ -107,8 +104,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua require('%s'); shareddummy();", SHAREDMODULE);
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("world!");
+    assertThat(mc().nextClientMessage()).isEqualTo("world!");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_profile
@@ -121,8 +117,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua dummy();");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("hello");
+    assertThat(mc().nextClientMessage()).isEqualTo("hello");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_cast_spell_with_shared_profile
@@ -135,8 +130,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua shareddummy();");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("world!");
+    assertThat(mc().nextClientMessage()).isEqualTo("world!");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_mainhand_is_readable
@@ -151,8 +145,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.mainhand.displayName)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_mainhand_is_writable
@@ -165,8 +158,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.mainhand=i; print('ok')");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextClientMessage()).isEqualTo("ok");
     assertThat(mc().player().getMainHandItem().getItem().getRegistryName()).isEqualTo(expected);
   }
 
@@ -182,8 +174,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.offhand.displayName)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_offhand_is_writable
@@ -196,8 +187,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; i=Items.get('diamond_axe'); p.offhand=i; print('ok')");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextClientMessage()).isEqualTo("ok");
     assertThat(mc().player().getOffHandItem().getItem().getRegistryName()).isEqualTo(expected);
   }
 
@@ -210,8 +200,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.sneaking)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("false");
+    assertThat(mc().nextClientMessage()).isEqualTo("false");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_can_set_rotationYaw_to_float_value
@@ -223,8 +212,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua spell.owner.rotationYaw = 180.1; print('ok')");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("ok");
+    assertThat(mc().nextClientMessage()).isEqualTo("ok");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_entityType_is_player
@@ -236,8 +224,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.entityType)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("player");
+    assertThat(mc().nextClientMessage()).isEqualTo("player");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_invisible_is_false
@@ -249,24 +236,24 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.invisible)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("false");
+    assertThat(mc().nextClientMessage()).isEqualTo("false");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_invisible_is_true
   @Test
   public void test_invisible_is_true() throws Exception {
     // Given:
+    String playerName = mc().player().getName();
+    mc().player().chat("/effect give %s minecraft:invisibility 10 1", playerName);
+    assertThat(mc().nextClientMessage()).isEqualTo("Applied effect Invisibility to " + playerName);
 
     // When:
-    mc().player().chat("/effect %s minecraft:invisibility 10 1", mc().player().getName());
     mc().player().chat("/lua p=spell.owner; print(p.invisible)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextClientMessage()).isEqualTo("true");
 
-    mc().player().chat("/effect %s clear", mc().player().getName());
+    mc().player().chat("/effect clear %s", playerName);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_health_is_readable
@@ -279,8 +266,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.health)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo(expected);
+    assertThat(mc().nextClientMessage()).isEqualTo(expected);
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_health_is_readable
@@ -292,8 +278,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; p.health=5.5; print(p.health)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("5.5");
+    assertThat(mc().nextClientMessage()).isEqualTo("5.5");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_sprinting_is_readable
@@ -305,8 +290,7 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.sprinting)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("false");
+    assertThat(mc().nextClientMessage()).isEqualTo("false");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_operator_returns_true
@@ -319,12 +303,13 @@ public class PlayerTest extends WolTestBase {
     mc().player().chat("/lua p=spell.owner; print(p.operator)");
 
     // Then:
-    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("true");
+    assertThat(mc().nextClientMessage()).isEqualTo("true");
   }
 
   // /test net.wizardsoflua.tests.PlayerTest test_operator_returns_false
   @Test
+  @DisabledOnDist(value = Dist.CLIENT,
+      reason = "In single player you don't have to be op to execute commands")
   public void test_operator_returns_false() throws Exception {
     // Given:
     mc().player().setOperator(false);
