@@ -1,15 +1,9 @@
 package net.wizardsoflua.tests;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.wizardsoflua.lua.classes.block.MaterialClass;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
@@ -43,7 +37,6 @@ public class MaterialTest extends WolTestBase {
     // Given:
     mc().setBlock(posP, Blocks.OAK_PLANKS);
     String expected = "{\n" //
-        + "  blocksLight = true,\n" //
         + "  blocksMovement = true,\n" //
         + "  canBurn = true,\n" //
         + "  liquid = false,\n" //
@@ -77,31 +70,4 @@ public class MaterialTest extends WolTestBase {
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
     assertThat(act.getMessage()).isEqualTo("true");
   }
-
-  // /test net.wizardsoflua.tests.MaterialTest test_all_material_names_are_mapped
-  @Test
-  public void test_all_material_names_are_mapped() throws Exception {
-    // Given:
-    Map<Material, String> expectedNames = new HashMap<>();
-    Field[] fields = Material.class.getFields();
-    for (Field field : fields) {
-      int modifiers = field.getModifiers();
-      if (Material.class.isAssignableFrom(field.getType())//
-          && Modifier.isPublic(modifiers)//
-          && Modifier.isStatic(modifiers)//
-          && Modifier.isFinal(modifiers)//
-      ) {
-        Material material = (Material) field.get(null);
-        String name = field.getName();
-        expectedNames.put(material, name);
-      }
-    }
-    // When:
-    for (Map.Entry<Material, String> entry : expectedNames.entrySet()) {
-      String act = MaterialClass.getName(entry.getKey());
-      // Then
-      assertThat(act).isEqualTo(entry.getValue());
-    }
-  }
-
 }
