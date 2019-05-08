@@ -51,11 +51,12 @@ public class SpellTest extends WolTestBase {
   @Test
   public void test_spell_facing_casted_by_server() throws Exception {
     // Given:
-    String facing = EnumFacing.WEST.getName();
-    String command = "/lua spell:execute('say '..spell.facing)";
+    EnumFacing facing = EnumFacing.WEST;
+    String command = "/execute rotated 0 " + facing.getHorizontalAngle()
+        + " run lua spell:execute('say '..spell.facing)";
 
-    mc().executeCommand("/setblock %s %s %s minecraft:command_block[facing=%s]{Command:\"%s\"}",
-        posP1.getX(), posP1.getY(), posP1.getZ(), facing, command);
+    mc().executeCommand("/setblock %s %s %s minecraft:command_block{Command:\"%s\"}", posP1.getX(),
+        posP1.getY(), posP1.getZ(), command);
     mc().waitFor(ServerLog4jEvent.class);
 
     // When:
@@ -64,7 +65,7 @@ public class SpellTest extends WolTestBase {
     mc().waitFor(ServerLog4jEvent.class);
 
     // Then:
-    assertThat(mc().nextServerMessage()).contains(facing);
+    assertThat(mc().nextServerMessage()).contains(facing.getName());
   }
 
   // /test net.wizardsoflua.tests.SpellTest test_spell_pos_when_casted_by_player
