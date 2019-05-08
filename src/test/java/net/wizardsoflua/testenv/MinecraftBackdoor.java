@@ -174,7 +174,7 @@ public class MinecraftBackdoor {
   }
 
   public Iterable<SpellEntity> spells() {
-    return testenv.getSpellRegistry().getAll();
+    return testenv.callOnMainThread(() -> testenv.getSpellRegistry().getAll());
   }
 
   public void setBlock(BlockPos pos, Block blockType) {
