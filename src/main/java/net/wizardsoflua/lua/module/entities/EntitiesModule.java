@@ -2,16 +2,14 @@ package net.wizardsoflua.lua.module.entities;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.EntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
@@ -67,13 +65,13 @@ public class EntitiesModule extends LuaTableExtension {
    * found = Entities.find("@a")
    * print(#found)
    * </code>
-   * 
+   *
    * #### Example
    *
    * Printing the position of player mickkay.
    *
    * <code>
-   * found = Entities.find("@a[name=mickkay]")[1]
+   * found = Entities.find("mickkay")[1]
    * print(found.pos)
    * </code>
    *
@@ -103,7 +101,8 @@ public class EntitiesModule extends LuaTableExtension {
   @LuaFunction
   public List<Entity> find(String selector) {
     try {
-      List<Entity> list = EntitySelector.<Entity>matchEntities(spellEntity, selector, Entity.class);
+      MinecraftServer server = spellEntity.getServer();
+      List<Entity> list = CommandBase.getEntityList(server, spellEntity, selector);
       return list;
     } catch (CommandException e) {
       throw new UndeclaredThrowableException(e);
@@ -122,7 +121,7 @@ public class EntitiesModule extends LuaTableExtension {
    * pig = Entities.summon("pig")
    * pig:move("up",0.5)
    * </code>
-   * 
+   *
    * #### Example
    *
    * Creating a creeper with no AI.
