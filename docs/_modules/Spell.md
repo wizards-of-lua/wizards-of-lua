@@ -113,7 +113,7 @@ properties:
         will cast a new spell on behalf of the next pig around. In this case that pig will be the
         spell's owner.
        
-        The onwer can also be <span class="notranslate">nil</span>. That's the case if the spell has
+        The owner can also be <span class="notranslate">nil</span>. That's the case if the spell has
         been casted from a command block or from the server console.
        
         If a spell casts another spell using [spell:execute()](/modules/Spell/#execute), then the
@@ -121,7 +121,7 @@ properties:
        
         #### Example
        
-        Printing the name of this spell's onwer.
+        Printing the name of this spell's owner.
        
         ```lua
         if spell.owner then

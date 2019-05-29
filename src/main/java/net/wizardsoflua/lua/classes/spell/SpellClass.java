@@ -1,14 +1,10 @@
 package net.wizardsoflua.lua.classes.spell;
 
 import static java.util.Objects.requireNonNull;
-
 import java.util.Arrays;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -192,7 +188,7 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
      * will cast a new spell on behalf of the next pig around. In this case that pig will be the
      * spell's owner.
      *
-     * The onwer can also be <span class="notranslate">nil</span>. That's the case if the spell has
+     * The owner can also be <span class="notranslate">nil</span>. That's the case if the spell has
      * been casted from a command block or from the server console.
      *
      * If a spell casts another spell using [spell:execute()](/modules/Spell/#execute), then the
@@ -200,7 +196,7 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
      *
      * #### Example
      *
-     * Printing the name of this spell's onwer.
+     * Printing the name of this spell's owner.
      *
      * <code>
      * if spell.owner then
