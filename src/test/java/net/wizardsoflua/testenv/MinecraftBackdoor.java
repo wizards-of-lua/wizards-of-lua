@@ -333,12 +333,12 @@ public class MinecraftBackdoor {
     }
   }
 
-  public void setGameTime(long gameTime) {
-    getWorldInfo().setWorldTotalTime(gameTime);
+  public void setDayTime(long gameTime) {
+    getOverworld().setDayTime(gameTime);
   }
 
-  public long getGameTime() {
-    return getWorldInfo().getGameTime();
+  public long getDayTime() {
+    return getOverworld().getDayTime();
   }
 
   private @Nullable GameRuleDsl gameRules;

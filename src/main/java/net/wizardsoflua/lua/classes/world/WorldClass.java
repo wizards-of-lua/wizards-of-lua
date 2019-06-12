@@ -1,11 +1,8 @@
 package net.wizardsoflua.lua.classes.world;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import javax.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -109,7 +106,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
      */
     @LuaProperty
     public long getDaytime() {
-      return delegate.getDayTime();
+      return delegate.getDayTime() % 24000;
     }
 
     /**
@@ -131,12 +128,12 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
      */
     @LuaProperty
     public long getTime() {
-      return delegate.getGameTime();
+      return delegate.getDayTime();
     }
 
     @LuaProperty
     public void setTime(long time) {
-      delegate.getWorldInfo().setWorldTotalTime(time);
+      delegate.getWorldInfo().setDayTime(time);
     }
 
     /**
