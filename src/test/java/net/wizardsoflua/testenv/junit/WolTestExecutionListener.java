@@ -16,7 +16,6 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-import com.google.common.base.Throwables;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -146,14 +145,9 @@ public class WolTestExecutionListener implements TestExecutionListener {
 
           testExecutionResult.getThrowable().ifPresent(it -> {
             String displayName = testIdentifier.getDisplayName();
-            String string;
-            if (it instanceof AssertionError) {
-              string = it.toString();
-            } else {
-              string = Throwables.getStackTraceAsString(it);
-            }
-            ITextComponent message = createAnnouncement(displayName + " failed: " + string);
+            ITextComponent message = createAnnouncement(displayName + " failed: " + it.toString());
             sendAndLogErrorMessage(source, message);
+            it.printStackTrace();
           });
           break;
       }
