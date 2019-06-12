@@ -284,6 +284,16 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
      * If a [/lua](/lua-command) command is executed, then the new spell inherits this spell's
      * [owner](/modules/Spell#owner).
      *
+     * This function returns a value greater 0 if it was successful, or 0 if it wasn't.
+     *
+     * The actual return value is command specific. For example:
+     *
+     * *the "give" command will return the number of items that have been given to the recipient
+     *
+     * *the "fill" command will return the number of blocks that have been actually changed
+     *
+     * *the "execute" command will return the number of successful invocations on its targets
+     *
      * #### Example
      *
      * Setting the game time to "day".
@@ -358,6 +368,15 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
      * end
      * </code>
      *
+     * #### Example
+     *
+     * Removing every diamond axe from all players, then printing the number of removed items.
+     *
+     * <code>
+     * local r=spell:execute([[ /clear @a minecraft:diamond_axe ]])
+     * print(r)
+     * </code>
+     *
      */
     @LuaFunction(name = ExecuteFunction.NAME)
     @LuaFunctionDoc(returnType = LuaTypes.NUMBER, args = {"command", "..."})
@@ -397,8 +416,7 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
     }
 
     public int execute(String command) {
-      World world = delegate.getEntityWorld();
-      return world.getMinecraftServer().getCommandManager().executeCommand(delegate, command);
+      return delegate.execute(command);
     }
   }
 }

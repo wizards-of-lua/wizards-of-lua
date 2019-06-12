@@ -406,6 +406,16 @@ public class Converters implements LuaConverters {
       }
       return result;
     }
+    if (javaObject instanceof Map<?, ?>) {
+      Map<?, ?> map = (Map<?, ?>) javaObject;
+      DefaultTable result = new DefaultTable();
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object key = entry.getKey();
+        Object value = entry.getValue();
+        result.rawset(toLua(key), toLua(value));
+      }
+      return result;
+    }
     if (javaObject instanceof IStringSerializable) {
       return ByteString.of(((IStringSerializable) javaObject).getName());
     }

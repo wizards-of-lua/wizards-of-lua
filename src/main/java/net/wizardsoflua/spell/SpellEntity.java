@@ -1,6 +1,11 @@
 package net.wizardsoflua.spell;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +27,7 @@ public class SpellEntity extends VirtualEntity {
 
   private boolean visible = false;
   private Table data = new DefaultTable();
+  private Map<CommandResultStats.Type, Integer> lastCommandResults = new HashMap<>();
 
   public SpellEntity(World world, ICommandSender owner, SpellProgram program,
       PositionAndRotation posRot, long sid) {
@@ -32,6 +38,15 @@ public class SpellEntity extends VirtualEntity {
     setPositionAndRotation(posRot);
     String name = SpellEntity.NAME + "-" + sid;
     setName(name);
+  }
+
+  @Override
+  public void setCommandStat(CommandResultStats.Type resultType, int amount) {
+    Integer old = lastCommandResults.get(resultType);
+    if (old == null) {
+      old = 0;
+    }
+    lastCommandResults.put(resultType, amount + old);
   }
 
   // @Override
@@ -45,16 +60,12 @@ public class SpellEntity extends VirtualEntity {
     return new PositionAndRotation(getPositionVector(), rotationYaw, rotationPitch);
   }
 
-
-
   private void setPositionAndRotation(PositionAndRotation posRot) {
     Vec3d pos = posRot.getPos();
     float yaw = posRot.getRotationYaw();
     float pitch = posRot.getRotationPitch();
     setPositionAndRotation(pos.x, pos.y, pos.z, yaw, pitch);
   }
-
-
 
   public ICommandSender getOwner() {
     return owner;
@@ -123,6 +134,47 @@ public class SpellEntity extends VirtualEntity {
       }
     }
     getProgram().replacePlayerInstance(player);
+  }
+
+  /**
+   * Example:
+   *
+   * /lua r=spell:execute([[ /fill -43 100 312 -40 210 333 minecraft:stone ]])
+   *
+   * r is 9768
+   */
+  public int execute(String command) {
+    lastCommandResults.clear();
+    boolean isExecute =
+        command.trim().startsWith("execute") || command.trim().startsWith("/execute");
+    getEntityWorld().getMinecraftServer().getCommandManager().executeCommand(this, command);
+
+    Integer result = null;
+    Integer successCount = lastCommandResults.get(CommandResultStats.Type.SUCCESS_COUNT);
+    if (isExecute) {
+      result = successCount;
+    } else {
+      if (result == null) {
+        result = lastCommandResults.get(CommandResultStats.Type.QUERY_RESULT);
+      }
+      if (result == null) {
+        result = lastCommandResults.get(CommandResultStats.Type.AFFECTED_BLOCKS);
+      }
+      if (result == null) {
+        result = lastCommandResults.get(CommandResultStats.Type.AFFECTED_ITEMS);
+      }
+      if (result == null) {
+        result = lastCommandResults.get(CommandResultStats.Type.AFFECTED_ENTITIES);
+      }
+      if (result == null) {
+        result = lastCommandResults.get(CommandResultStats.Type.SUCCESS_COUNT);
+      }
+    }
+    if (result == null) {
+      result = 0;
+    }
+    // System.out.println("lastCommandResults=" + lastCommandResults);
+    return result;
   }
 
 }
