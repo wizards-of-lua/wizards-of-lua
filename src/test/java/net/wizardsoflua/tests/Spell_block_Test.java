@@ -97,9 +97,13 @@ public class Spell_block_Test extends WolTestBase {
     mc().setBlock(upperDoorPos, Blocks.AIR);
 
     // When:
-    mc().executeCommand(
-        "/lua spell.pos = Vec3.from(%s,%s,%s); spell.block=Blocks.get('wooden_door'):withData({half='lower'}); spell:move('up'); spell.block=Blocks.get('wooden_door'):withData({half='upper'}); print('ok')",
-        posP1.getX(), posP1.getY(), posP1.getZ());
+    mc().executeCommand("/lua " //
+        + "spell.pos = Vec3.from(%s,%s,%s);\n" //
+        + "spell.block=Blocks.get('oak_door'):withData({half='lower'});\n" //
+        + "spell:move('up');\n" //
+        + "spell.block=Blocks.get('oak_door'):withData({half='upper'});\n" //
+        + "print('ok');\n" //
+        , posP1.getX(), posP1.getY(), posP1.getZ());
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo("ok");
@@ -117,15 +121,21 @@ public class Spell_block_Test extends WolTestBase {
   public void test_block_withNbt() throws Exception {
     // Given:
     mc().setBlock(posP1, Blocks.FURNACE);
+    String expected = Blocks.OAK_PLANKS.getRegistryName().toString();
 
     // When:
-    mc().player().chat(
-        "/lua b=Blocks.get('furnace'):withNbt({ Items={ {Count=1, Slot=1, Damage=2, id='minecraft:planks' } } }); spell.pos=Vec3.from(%s,%s,%s); spell.block=b; print(spell.block.nbt.Items[1].id)",
-        posP1.getX(), posP1.getY(), posP1.getZ());
+    mc().player().chat("/lua " //
+        + "b=Blocks.get('furnace'):withNbt({ Items={ \n" //
+        + "  {Count=1, Slot=1, Damage=2, id='" + expected + "' }\n" //
+        + "} });\n" //
+        + "spell.pos=Vec3.from(%s,%s,%s);\n" //
+        + "spell.block=b;\n" //
+        + "print(spell.block.nbt.Items[1].id);\n" //
+        , posP1.getX(), posP1.getY(), posP1.getZ());
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("minecraft:planks");
+    assertThat(act.getMessage()).isEqualTo(expected);
   }
 
 
