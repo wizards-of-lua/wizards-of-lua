@@ -18,7 +18,7 @@ public class WolTestBase extends TestDataFactory {
   private final EventRecorder eventRecorder = testenv.getEventRecorder();
   private final MinecraftBackdoor mcBackdoor = new MinecraftBackdoor(testenv);
   private boolean wasOperator;
-  private long oldGameTime;
+  private long oldDayTime;
   @RegisterExtension
   AbortExtension abortExtension = testenv.getAbortExtension();
 
@@ -29,7 +29,7 @@ public class WolTestBase extends TestDataFactory {
     mc().clearWizardConfigs();
 
     mc().resetClock();
-    oldGameTime = mc().getGameTime();
+    oldDayTime = mc().getDayTime();
 
     mc().player().setMainHandItem(null);
     mc().player().setOffHandItem(null);
@@ -60,7 +60,7 @@ public class WolTestBase extends TestDataFactory {
 
     mc().player().setOperator(wasOperator);
 
-    mc().setGameTime(oldGameTime);
+    mc().setDayTime(oldDayTime);
     mc().resetClock();
   }
 
