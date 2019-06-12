@@ -26,7 +26,7 @@ functions:
         Printing the position of player mickkay.
        
         ```lua
-        found = Entities.find("@a[name=mickkay]")[1]
+        found = Entities.find("mickkay")[1]
         print(found.pos)
         ```
        
