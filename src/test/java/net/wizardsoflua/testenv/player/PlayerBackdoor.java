@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import javax.annotation.Nullable;
 import com.google.common.io.Files;
@@ -63,28 +64,24 @@ public class PlayerBackdoor {
     return getTestenv().callOnMainThread(task);
   }
 
+  public UUID getUniqueID() {
+    return callOnMainThread(() -> getTestPlayer().getUniqueID());
+  }
+
   public String getName() {
-    return callOnMainThread(() -> {
-      return getTestPlayer().getName().getString();
-    });
+    return callOnMainThread(() -> getTestPlayer().getName().getString());
   }
 
   public float getHealth() {
-    return callOnMainThread(() -> {
-      return getTestPlayer().getHealth();
-    });
+    return callOnMainThread(() -> getTestPlayer().getHealth());
   }
 
   public void setHealth(float value) {
-    runChangeOnMainThread(() -> {
-      getTestPlayer().setHealth(value);
-    });
+    runChangeOnMainThread(() -> getTestPlayer().setHealth(value));
   }
 
   public BlockPos getPosition() {
-    return callOnMainThread(() -> {
-      return getTestPlayer().getPosition();
-    });
+    return callOnMainThread(() -> getTestPlayer().getPosition());
   }
 
   public void setPosition(BlockPos pos) {
@@ -94,15 +91,11 @@ public class PlayerBackdoor {
   }
 
   public EnumFacing getFacing() {
-    return callOnMainThread(() -> {
-      return getTestPlayer().getHorizontalFacing();
-    });
+    return callOnMainThread(() -> getTestPlayer().getHorizontalFacing());
   }
 
   public Vec3d getPositionLookingAt() {
-    return callOnMainThread(() -> {
-      return SpellUtil.getPositionLookingAt(getTestPlayer());
-    });
+    return callOnMainThread(() -> SpellUtil.getPositionLookingAt(getTestPlayer()));
   }
 
   public void setRotationYaw(float yaw) {
@@ -132,22 +125,19 @@ public class PlayerBackdoor {
   }
 
   public ItemStack getMainHandItem() {
-    return callOnMainThread(() -> {
-      return getTestPlayer().getHeldItemMainhand();
-    });
+    return callOnMainThread(() -> getTestPlayer().getHeldItemMainhand());
   }
 
-  public void setMainHandItem(ItemStack item) {
+  public void setMainHandItem(@Nullable ItemStack item) {
     runChangeOnMainThread(() -> {
-      getTestPlayer().setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
-      getTestPlayer().inventoryContainer.detectAndSendChanges();
+      EntityPlayerMP player = getTestPlayer();
+      player.setItemStackToSlot(MAINHAND, ofNullable(item).orElse(EMPTY));
+      player.inventoryContainer.detectAndSendChanges();
     });
   }
 
   public ItemStack getOffHandItem() {
-    return callOnMainThread(() -> {
-      return getTestPlayer().getHeldItemOffhand();
-    });
+    return callOnMainThread(() -> getTestPlayer().getHeldItemOffhand());
   }
 
   public void setOffHandItem(ItemStack item) {
