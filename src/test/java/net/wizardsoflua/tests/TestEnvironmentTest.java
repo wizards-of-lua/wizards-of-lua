@@ -82,8 +82,8 @@ public class TestEnvironmentTest extends WolTestBase {
     // When:
     mc().player().setPosition(pos);
 
-    // Then
-    BlockPos act = mc().player().getTestPlayer().getPosition();
+    // Then:
+    BlockPos act = mc().player().getPosition();
     assertThat(act).isEqualTo(pos);
   }
 
