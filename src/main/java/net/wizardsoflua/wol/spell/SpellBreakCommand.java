@@ -5,12 +5,12 @@ import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
+import java.util.Objects;
 import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -61,12 +61,7 @@ public class SpellBreakCommand implements CommandRegisterer, Command<CommandSour
   public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
     Entity entity = source.getEntity();
-    if (entity == null) {
-      // TODO I18n
-      throw new CommandSyntaxException(null, new LiteralMessage(
-          "Without further arguments this command can only be executed by an entity"));
-    }
-    return breakSpells(source, spell -> entity.equals(spell.getOwner()));
+    return breakSpells(source, spell -> Objects.equals(entity, spell.getOwner()));
   }
 
   public int breakAll(CommandContext<CommandSource> context) throws CommandSyntaxException {

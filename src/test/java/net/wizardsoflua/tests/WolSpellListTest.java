@@ -3,12 +3,16 @@ package net.wizardsoflua.tests;
 import org.junit.jupiter.api.Test;
 import net.wizardsoflua.testenv.WolTestBase;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
+import net.wizardsoflua.wol.spell.SpellListCommand;
 
 /**
  * Testing the "/wol spell list" command
  */
 public class WolSpellListTest extends WolTestBase {
-  private static final int MAX_LENGTH = 40;
+  private static final int MAX_LENGTH = SpellListCommand.MAX_LINE_LENGTH //
+      - 10 // prefix including "Spell-" literal
+      - 2 * 5 // 2 * expected maximal spell id length (5 = 99999)
+      - SpellListCommand.ELLIPSIS.length();
 
   // /test net.wizardsoflua.tests.WolSpellListTest test_spell_list__Executed_by_Server
   @Test

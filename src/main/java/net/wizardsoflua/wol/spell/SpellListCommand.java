@@ -7,12 +7,12 @@ import static net.minecraft.command.Commands.literal;
 import static net.minecraft.command.arguments.EntityArgument.singlePlayer;
 import static net.minecraft.util.text.TextFormatting.AQUA;
 import static net.minecraft.util.text.TextFormatting.YELLOW;
+import java.util.Objects;
 import javax.inject.Inject;
 import com.google.auto.service.AutoService;
 import com.google.common.base.Predicate;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -30,8 +30,8 @@ import net.wizardsoflua.spell.SpellRegistry;
 
 @AutoService(CommandRegisterer.class)
 public class SpellListCommand implements CommandRegisterer, Command<CommandSource> {
-  private static final int MAX_LINE_LENGTH = 55;
-  private static final String ELLIPSIS = "\u2026";
+  public static final int MAX_LINE_LENGTH = 55;
+  public static final String ELLIPSIS = "\u2026";
   private static final String SID_ARGUMENT = "sid";
   private static final String NAME_ARGUMENT = "name";
   private static final String OWNER_ARGUMENT = "owner";
@@ -67,14 +67,9 @@ public class SpellListCommand implements CommandRegisterer, Command<CommandSourc
   public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
     CommandSource source = context.getSource();
     Entity entity = source.getEntity();
-    if (entity == null) {
-      // TODO I18n
-      throw new CommandSyntaxException(null, new LiteralMessage(
-          "Without further arguments this command can only be executed by an entity"));
-    }
     // TODO I18n
     String message = "Your active spells";
-    return listSpells(source, message, spell -> entity.equals(spell.getOwner()));
+    return listSpells(source, message, spell -> Objects.equals(entity, spell.getOwner()));
   }
 
   public int listAll(CommandContext<CommandSource> context) throws CommandSyntaxException {
