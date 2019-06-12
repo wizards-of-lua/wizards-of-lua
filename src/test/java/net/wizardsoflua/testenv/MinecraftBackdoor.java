@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -45,6 +44,7 @@ import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.wizardsoflua.TimeService;
+import net.wizardsoflua.file.FileUtils;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
@@ -309,19 +309,10 @@ public class MinecraftBackdoor {
   public void deleteWorldFile(String path) {
     try {
       FileSystem fs = testenv.getWorldFileSystem();
-      delete(fs.getPath(path));
+      FileUtils.deleteRecursivelyIfExists(fs.getPath(path));
     } catch (IOException e) {
       throw new UndeclaredThrowableException(e);
     }
-  }
-
-  private void delete(Path path) throws IOException {
-    if (java.nio.file.Files.isDirectory(path)) {
-      for (Path child : java.nio.file.Files.list(path).collect(Collectors.toList())) {
-        delete(child);
-      }
-    }
-    java.nio.file.Files.deleteIfExists(path);
   }
 
   public boolean existsWorldFile(String path) {

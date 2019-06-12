@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
@@ -113,9 +114,9 @@ public class SystemModule extends LuaTableExtension {
       if (!Files.isDirectory(pathObj)) {
         throw new LuaRuntimeException(String.format("%s is not a directory!", path));
       } else {
-        List<String> list = Files.list(pathObj).map(p -> p.getFileName().toString()).sorted()
-            .collect(Collectors.toList());
-        return list;
+        try (Stream<Path> stream = Files.list(pathObj)) {
+          return stream.map(p -> p.getFileName().toString()).sorted().collect(Collectors.toList());
+        }
       }
     } catch (IOException e) {
       throw new LuaRuntimeException(e);
