@@ -1,19 +1,15 @@
 package net.wizardsoflua.lua;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-
 import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.cache.Cache;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,10 +56,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.entity.PlayerClass;
 import net.wizardsoflua.lua.classes.entity.PlayerClass.Instance;
 import net.wizardsoflua.lua.compiler.PatchedCompilerChunkLoader;
-import net.wizardsoflua.lua.dependency.ModuleDependencies;
 import net.wizardsoflua.lua.extension.InjectionScope;
 import net.wizardsoflua.lua.extension.SpellScope;
-import net.wizardsoflua.lua.module.entities.EntitiesModule;
 import net.wizardsoflua.lua.module.events.EventsModule;
 import net.wizardsoflua.lua.module.luapath.AddPathFunction;
 import net.wizardsoflua.lua.module.print.PrintRedirector;
@@ -76,6 +70,7 @@ import net.wizardsoflua.lua.module.types.Types;
 import net.wizardsoflua.lua.scheduling.CallFellAsleepException;
 import net.wizardsoflua.lua.scheduling.LuaScheduler;
 import net.wizardsoflua.lua.view.ViewFactory;
+import net.wizardsoflua.profiles.Profiles;
 import net.wizardsoflua.spell.SpellEntity;
 import net.wizardsoflua.spell.SpellException;
 import net.wizardsoflua.spell.SpellExceptionFactory;
@@ -108,11 +103,11 @@ public class SpellProgram {
 
     FileSystem getWorldFileSystem();
 
+    Profiles getProfiles();
   }
 
   public static final String ROOT_CLASS_PREFIX = "SpellByteCode";
   private final String code;
-  private final ModuleDependencies dependencies;
   private final LuaScheduler scheduler;
   private final StateContext stateContext;
   private final Table env;
@@ -137,12 +132,10 @@ public class SpellProgram {
   private final String[] arguments;
 
   SpellProgram(ICommandSender owner, String code, @Nullable String[] arguments,
-      ModuleDependencies dependencies, String defaultLuaPath, World world, Context context,
-      Logger logger) {
+      String defaultLuaPath, World world, Context context, Logger logger) {
     this.owner = checkNotNull(owner, "owner==null!");
     this.code = checkNotNull(code, "code==null!");
     this.arguments = arguments;
-    this.dependencies = checkNotNull(dependencies, "dependencies==null!");
     this.defaultLuaPath = checkNotNull(defaultLuaPath, "defaultLuaPath==null!");
     this.world = checkNotNull(world, "world == null!");
     this.context = checkNotNull(context, "context==null!");
@@ -280,7 +273,7 @@ public class SpellProgram {
 
   public void setSpellEntity(SpellEntity spellEntity) {
     this.spellEntity = checkNotNull(spellEntity, "spellEntity==null!");
-    injectionScope.registerResource(SpellEntity.class, spellEntity);    
+    injectionScope.registerResource(SpellEntity.class, spellEntity);
     loadExtensions();
   }
 
@@ -357,8 +350,24 @@ public class SpellProgram {
     SpellModule.installInto(env, getConverters(), spellEntity);
     SpellsModule.installInto(env, getConverters(), context.getSpellRegistry(), spellEntity);
 
-    dependencies.installModules(env, scheduler, luaTickLimit);
+    LuaFunction requireFunction =
+        checkNotNull((LuaFunction) env.rawget("require"), "Missing require function!");
+    for (String module : Arrays.asList( //
+        "wol.Globals", //
+        "wol.inspect", //
+        "wol.Check", //
+        "wol.Object", //
+        "wol.Vec3", //
+        "wol.Material", //
+        "wol.Block", //
+        "wol.Entity", //
+        "wol.Spell", //
+        "wol.Player" //
+    )) {
+      scheduler.callUnpausable(Long.MAX_VALUE, requireFunction, module);
+    }
 
+    String code = getProfileRequireCalls() + this.code;
     LuaFunction commandLineFunc = loader.loadTextChunk(new Variable(env), "command-line", code);
     if (arguments != null) {
       Object[] luaArgs = new Object[arguments.length];
@@ -368,6 +377,24 @@ public class SpellProgram {
     } else {
       scheduler.call(luaTickLimit, commandLineFunc);
     }
+  }
+
+  private CharSequence getProfileRequireCalls() {
+    StringBuilder result = new StringBuilder();
+    String sharedProfile = context.getProfiles().getSharedProfile();
+    if (sharedProfile != null) {
+      result.append("require('" + sharedProfile + "');");
+    }
+
+    Entity entity = owner.getCommandSenderEntity();
+    if (entity instanceof EntityPlayer) {
+      EntityPlayer player = (EntityPlayer) entity;
+      String playerProfile = context.getProfiles().getProfile(player);
+      if (playerProfile != null) {
+        result.append("require('" + playerProfile + "');");
+      }
+    }
+    return result;
   }
 
   private void installSystemLibraries() {
