@@ -1,12 +1,10 @@
 package net.wizardsoflua.tests;
 
 import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -139,6 +137,34 @@ public class PlayerTest extends WolTestBase {
 
     // When:
     mc().player().chat("/lua shareddummy();");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("world!");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_can_sleep_in_profile
+  @Test
+  public void test_can_sleep_in_profile() throws Exception {
+    // Given:
+    mc().player().createModule(PROFILE, "sleep(1)");
+
+    // When:
+    mc().player().chat("/lua print('hello')");
+
+    // Then:
+    TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
+    assertThat(act.getMessage()).isEqualTo("hello");
+  }
+
+  // /test net.wizardsoflua.tests.PlayerTest test_can_sleep_in_shared_profile
+  @Test
+  public void test_can_sleep_in_shared_profile() throws Exception {
+    // Given:
+    mc().createSharedModule(SHARED_PROFILE, "sleep(1)");
+
+    // When:
+    mc().player().chat("/lua print('world!')");
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
