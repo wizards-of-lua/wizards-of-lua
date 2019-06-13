@@ -3,9 +3,7 @@ package net.wizardsoflua.wol.luatickslimit;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-
-import com.google.common.primitives.Ints;
-
+import com.google.common.primitives.Longs;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -35,9 +33,9 @@ public class SetEventListenerLuaTicksLimitAction extends MenuEntry implements Co
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
     String limit = argList.poll();
     if (limit != null) {
-      Integer eventListenerLuaTicksLimit = Ints.tryParse(limit);
+      Long eventListenerLuaTicksLimit = Longs.tryParse(limit);
       if (eventListenerLuaTicksLimit != null) {
-        eventListenerLuaTicksLimit = wol.getConfig().getGeneralConfig()
+        wol.getConfig().getGeneralConfig()
             .setEventListenerLuaTicksLimit(eventListenerLuaTicksLimit);
         // TODO I18n
         WolAnnouncementMessage message = new WolAnnouncementMessage(

@@ -367,7 +367,6 @@ and
 ```
 /wol eventListenerLuaTicksLimit set 100000
 ```
-Allowed are values between 1000 and 10000000.
 Default is 50000.
 
 The new value will also stored into the config file at <tt>config/wizards-of-lua/wizards-of-lua.luacfg</tt>, which means that it survives a server restart.

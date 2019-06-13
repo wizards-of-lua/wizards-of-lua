@@ -1,7 +1,6 @@
 package net.wizardsoflua.testenv;
 
 import static com.google.common.base.Preconditions.checkArgument;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -16,12 +15,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -188,20 +184,20 @@ public class MinecraftBackdoor {
     return v.getCenter();
   }
 
-  public int getLuaTicksLimit() {
+  public long getLuaTicksLimit() {
     return testEnv.getWol().getConfig().getGeneralConfig().getLuaTicksLimit();
   }
 
-  public void setLuaTicksLimit(int luaTicksLimit) {
+  public void setLuaTicksLimit(long luaTicksLimit) {
     testEnv.runAndWait(
         () -> testEnv.getWol().getConfig().getGeneralConfig().setLuaTicksLimit(luaTicksLimit));
   }
 
-  public int getEventListenerLuaTicksLimit() {
+  public long getEventListenerLuaTicksLimit() {
     return testEnv.getWol().getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
   }
 
-  public void setEventListenerLuaTicksLimit(int eventListenerluaTicksLimit) {
+  public void setEventListenerLuaTicksLimit(long eventListenerluaTicksLimit) {
     testEnv.runAndWait(() -> testEnv.getWol().getConfig().getGeneralConfig()
         .setEventListenerLuaTicksLimit(eventListenerluaTicksLimit));
   }

@@ -3,11 +3,8 @@ package net.wizardsoflua.config;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
-
 import java.io.File;
-
 import javax.annotation.Nullable;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.WizardsOfLua;
 
@@ -20,13 +17,13 @@ public class GeneralConfig {
   }
 
   /**
-   * Max. number of Lua ticks a spell can run per game tick [range: 1000 ~ 10000000, default: 50000]
+   * Max. number of Lua ticks a spell can run per game tick [default: 50000]
    */
-  private int luaTicksLimit = 50000;
+  private long luaTicksLimit = 50000;
   /**
-   * Max. number of Lua ticks a event listener can run per event [range: 1000 ~ 10000000, default: 50000]
+   * Max. number of Lua ticks a event listener can run per event [default: 50000]
    */
-  private int eventListenerLuaTicksLimit = 50000;
+  private long eventListenerLuaTicksLimit = 50000;
   /**
    * Shows the about message to the player at first login [default: true]
    */
@@ -48,11 +45,11 @@ public class GeneralConfig {
 
   public GeneralConfig(Table table, Context context) {
     this.context = checkNotNull(context, "context==null!");
-    setLuaTicksLimit(
-        getAsOptional(Integer.class, table, "luaTicksLimit").orElse(luaTicksLimit).intValue(),
-        false);
-    showAboutMessage = getAsOptional(Boolean.class, table, "showAboutMessage")
-        .orElse(showAboutMessage).booleanValue();
+    luaTicksLimit = getAsOptional(Long.class, table, "luaTicksLimit").orElse(luaTicksLimit);
+    eventListenerLuaTicksLimit = getAsOptional(Long.class, table, "eventListenerLuaTicksLimit")
+        .orElse(eventListenerLuaTicksLimit);
+    showAboutMessage =
+        getAsOptional(Boolean.class, table, "showAboutMessage").orElse(showAboutMessage);
     luaLibDirHome = getAsOptional(String.class, table, "luaLibDirHome").orElse(luaLibDirHome);
     sharedLibDir = getAsOptional(String.class, table, "sharedLibDir").orElse(sharedLibDir);
     luaLibDirHomeFile = tryToCreateDir(new File(context.getWolConfigDir(), luaLibDirHome));
@@ -71,40 +68,22 @@ public class GeneralConfig {
     return table;
   }
 
-  public int getLuaTicksLimit() {
+  public long getLuaTicksLimit() {
     return luaTicksLimit;
   }
 
-  public int setLuaTicksLimit(int luaTicksLimit) {
-    return setLuaTicksLimit(luaTicksLimit, true);
+  public void setLuaTicksLimit(long luaTicksLimit) {
+    this.luaTicksLimit = luaTicksLimit;
+    context.save();
   }
 
-  private int setLuaTicksLimit(int luaTicksLimit, boolean save) {
-    this.luaTicksLimit = clamp(luaTicksLimit, 1000, 10000000);
-    if (save) {
-      context.save();
-    }
-    return this.luaTicksLimit;
-  }
-
-  public int getEventListenerLuaTicksLimit() {
+  public long getEventListenerLuaTicksLimit() {
     return eventListenerLuaTicksLimit;
   }
 
-  public int setEventListenerLuaTicksLimit(int eventListenerLuaTicksLimit) {
-    return setEventListenerLuaTicksLimit(eventListenerLuaTicksLimit, true);
-  }
-
-  private int setEventListenerLuaTicksLimit(int eventListenerLuaTicksLimit, boolean save) {
-    this.eventListenerLuaTicksLimit = clamp(eventListenerLuaTicksLimit, 1000, 10000000);
-    if (save) {
-      context.save();
-    }
-    return this.eventListenerLuaTicksLimit;
-  }
-
-  private int clamp(int value, int min, int max) {
-    return Math.min(max, Math.max(min, value));
+  public void setEventListenerLuaTicksLimit(long eventListenerLuaTicksLimit) {
+    this.eventListenerLuaTicksLimit = eventListenerLuaTicksLimit;
+    context.save();
   }
 
   public boolean isShowAboutMessage() {
