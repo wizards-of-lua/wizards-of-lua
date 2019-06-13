@@ -3,7 +3,6 @@ package net.wizardsoflua.wol.luatickslimit;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +27,7 @@ public class PrintEventListenerLuaTicksLimitAction extends MenuEntry implements 
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    int eventListenerLuaTicksLimit =
+    long eventListenerLuaTicksLimit =
         wol.getConfig().getGeneralConfig().getEventListenerLuaTicksLimit();
     WolAnnouncementMessage message =
         new WolAnnouncementMessage("eventListenerLuaTicksLimit = " + eventListenerLuaTicksLimit);

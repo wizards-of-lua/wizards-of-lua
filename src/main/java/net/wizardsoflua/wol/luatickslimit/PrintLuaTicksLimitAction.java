@@ -3,7 +3,6 @@ package net.wizardsoflua.wol.luatickslimit;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +27,7 @@ public class PrintLuaTicksLimitAction extends MenuEntry implements CommandAction
 
   @Override
   public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-    int luaTicksLimit = wol.getConfig().getGeneralConfig().getLuaTicksLimit();
+    long luaTicksLimit = wol.getConfig().getGeneralConfig().getLuaTicksLimit();
     WolAnnouncementMessage message = new WolAnnouncementMessage("luaTicksLimit = " + luaTicksLimit);
     sender.sendMessage(message);
   }

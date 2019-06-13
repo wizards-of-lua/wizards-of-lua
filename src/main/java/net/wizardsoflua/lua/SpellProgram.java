@@ -87,9 +87,9 @@ public class SpellProgram {
 
     Clock getClock();
 
-    int getLuaTicksLimit();
+    long getLuaTicksLimit();
 
-    int getEventListenerLuaTicksLimit();
+    long getEventListenerLuaTicksLimit();
 
     boolean isScriptGatewayEnabled();
 
