@@ -2,9 +2,7 @@ package net.wizardsoflua.annotation.processor.doc.generator;
 
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAllSuperTypes;
-
 import java.util.Map;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
@@ -15,10 +13,8 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.processor.ProcessingException;
 import net.wizardsoflua.annotation.processor.doc.model.FunctionDocModel;

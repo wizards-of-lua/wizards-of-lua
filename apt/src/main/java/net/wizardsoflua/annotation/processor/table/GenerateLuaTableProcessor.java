@@ -11,8 +11,6 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.AnnotationSpec;
@@ -47,12 +45,10 @@ public class GenerateLuaTableProcessor extends ExceptionHandlingProcessor {
   }
 
   @Override
-  protected void doProcess(TypeElement annotation, Element annotatedElement,
+  protected void doProcess(TypeElement annotation, TypeElement annotatedElement,
       RoundEnvironment roundEnv) throws ProcessingException, MultipleProcessingExceptions {
-    if (annotatedElement.getKind() == ElementKind.CLASS) {
-      LuaTableModel model = analyze((TypeElement) annotatedElement);
-      generate(model);
-    }
+    LuaTableModel model = analyze(annotatedElement);
+    generate(model);
   }
 
   private LuaTableModel analyze(TypeElement annotatedElement) throws ProcessingException {
