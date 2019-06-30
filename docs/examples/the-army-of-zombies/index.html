@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/examples/the-army-of-zombies/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+        <h1>The Army of Zombies</h1>
+        <p>A wizard who knows not only Lua but also vanilla Minecraft commands, can combine
+both to very powerful spells. An example is the “Army of Zombies” spell.
+<!--more--></p>
+
+<p><img src="/images/army-of-zombies.jpg" alt="Army of Zombies" />
+Aren’t they nice?</p>
+
+<p>To create an army of zombies you should be familiar with the Minecraft
+<tt>/summon</tt> command and the possibilities of the entity data tag.
+But well, even experienced wizards have to cheat from time to time.
+There are plenty of websites out there where you can do a quick lookup.
+For example, you could use the <a href="http://www.minecraftupdates.com/summon-command">Summon Command generator from minecraftupdates.com</a>
+to get the following summon command for a single zombie soldier:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/summon Zombie ~0 ~0 ~0 {HandItems:[{Count:1,id:diamond_sword},
+{Count:1,id:shield}],ArmorItems:[{Count:1,id:leather_boots},{},
+{Count:1,id:iron_chestplate},{Count:1,id:iron_helmet}],
+CustomName:soldier,CustomNameVisible:0,NoAI:1}
+</code></pre></div></div>
+
+<p>Armed with this command you can start to create a new Lua spell.
+If you are familliar with the books found in the <a href="/spellbooklibrary">Spell Book Library</a>
+you already know the powerful <a href="/modules/Spell/#execute">Spell’s execute</a> function.
+If not, well, here is what it does.</p>
+
+<p>The Spell’s execute function can execute any Minecraft command.
+For example, you could write this:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="s2">"/say hi"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>This will make your spell say “hi”.</p>
+
+<p>The next step is to write a Lua spell that creates this neatly arranged
+rows of soldiers.
+This is really easy.
+You just have to enclose the execute statement in a double for-loop.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">summon</span><span class="o">=</span><span class="s2">"/summon Zombie ~0 ~0 ~0 {HandItems:[
+{Count:1,id:diamond_sword},{Count:1,id:shield}],
+ArmorItems:[{Count:1,id:leather_boots},{},
+{Count:1,id:iron_chestplate},{Count:1,id:iron_helmet}],
+CustomName:soldier,CustomNameVisible:0,NoAI:1}"</span><span class="p">;</span>
+<span class="n">s</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="p">;</span>
+<span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span> <span class="k">do</span>
+  <span class="k">for</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span> <span class="k">do</span>
+    <span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="o">=</span><span class="n">s</span><span class="o">+</span><span class="n">Vec3</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">z</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
+    <span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="n">summon</span><span class="p">);</span>
+  <span class="k">end</span><span class="p">;</span>
+<span class="k">end</span><span class="p">;</span>
+</code></pre></div></div>
+<p>As you can see I stored the summon command into a variable so that I could use
+it later as a parameter for the execute function.
+This is very helpful since it increases the readability of the spell’s code.</p>
+
+<p>On a side note: I created brainless zombies, because I
+needed them to stand still for my little photo session.
+However, if you want them to walk around again you can ‘brainify’ them any time later with the following command:
+<code class="highlighter-rouge">/entitydata @e[name=soldier] {NoAI:0}</code></p>
+
+        <div id="naviLeft">
+<h2>Examples</h2>
+<ul>
+
+  <li>
+    <a href="/examples/how-to-create-a-multicolor-floor-of-wool/">How to Create a Multicolored Floor of Wool</a>
+  </li>
+
+  <li>
+    <a href="/examples/random-walk/">Random Walking Grass</a>
+  </li>
+
+  <li>
+    <a href="/examples/the-army-of-zombies/">The Army of Zombies</a>
+  </li>
+
+  <li>
+    <a href="/examples/the-door/">The Door</a>
+  </li>
+
+  <li>
+    <a href="/examples/vertical-rails/">The Vertical Rails Spell</a>
+  </li>
+
+  <li>
+    <a href="/examples/rocket-thrower/">The Rocket Thrower</a>
+  </li>
+
+<li><a href="/examples.html">See All Examples...</a></li>
+</ul>
+</div>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+
+    
+  </body>
+</html>

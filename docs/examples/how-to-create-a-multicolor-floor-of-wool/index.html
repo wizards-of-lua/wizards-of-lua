@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/examples/how-to-create-a-multicolor-floor-of-wool/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+        <h1>How to Create a Multicolored Floor of Wool</h1>
+        <p>To illustrate the power of spells I like to show you a small one that creates a floor of colored wool blocks.
+<!--more--></p>
+
+<p><img src="/images/multicolor-floor-of-wool.jpg" alt="Multicolored Floor of Wool" /></p>
+
+<p>At the time of writing, the alpha version (1.0.0-alpha) is somewhat limited since its only strengths are</p>
+<ul>
+  <li>the manipulation of the blocky aspects of the world</li>
+  <li>and the execution of commands within spells.</li>
+</ul>
+
+<p>However, this is quite something, since a smart wizard already can do things that are otherwise difficult to achieve.</p>
+
+<p>For now, let’s concentrate on the manipulation of blocks.
+For example, the following spell can create a big multicolored floor of wool in seconds.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">w</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
+<span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
+<span class="n">colors</span><span class="o">=</span><span class="p">{</span><span class="s2">"white"</span><span class="p">,</span><span class="s2">"orange"</span><span class="p">,</span><span class="s2">"magenta"</span><span class="p">,</span><span class="s2">"light_blue"</span><span class="p">,</span>
+<span class="s2">"yellow"</span><span class="p">,</span><span class="s2">"lime"</span><span class="p">,</span><span class="s2">"pink"</span><span class="p">,</span><span class="s2">"gray"</span><span class="p">,</span><span class="s2">"silver"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">,</span>
+<span class="s2">"purple"</span><span class="p">,</span><span class="s2">"blue"</span><span class="p">,</span><span class="s2">"brown"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">,</span><span class="s2">"red"</span><span class="p">,</span><span class="s2">"black"</span>
+<span class="p">};</span>
+<span class="n">start</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="p">;</span>
+<span class="n">y</span><span class="o">=-</span><span class="mi">1</span><span class="p">;</span>
+<span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span> <span class="k">do</span>
+  <span class="k">for</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span> <span class="k">do</span>
+    <span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="o">=</span><span class="n">start</span><span class="o">+</span><span class="n">Vec3</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">);</span>
+    <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">math.random</span><span class="p">(</span><span class="o">#</span><span class="n">colors</span><span class="p">)];</span>
+    <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="o">=</span><span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"wool"</span><span class="p">):</span><span class="n">withData</span><span class="p">({</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">});</span>
+  <span class="k">end</span><span class="p">;</span>
+<span class="k">end</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Please note that almost all statements are terminated with the semicolon character <tt>’;’</tt>.</p>
+
+<p>For normal Lua programs this is actually not necessary.
+But due the fact that the current version of WoL (1.0.0-alpha) has no support for
+<a href="/tutorials/importing_lua_files">importing Lua files</a>, we have to insert the whole program into the single line of the chat or a command block.
+Here we need the semicolons, so that Lua can separate the statements from each other.
+Actually, I had to execute this spell using a command block since it is a little bit longer than the character limit of the chat (wich is 256).</p>
+
+<p>The variables <tt>w</tt> and <tt>l</tt> stand for “width” and “length”.
+For the screenshot above I set them both to a value of 20.</p>
+
+<p>You can easily modify the above spell to create a whole box of wool.
+Do you see the line where the <tt>y</tt> is?
+Instead of assigning a constant value we can use it as the loop variable in another loop.</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">w</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
+<span class="n">l</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
+<span class="n">h</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
+<span class="n">colors</span><span class="o">=</span><span class="p">{</span><span class="s2">"white"</span><span class="p">,</span><span class="s2">"orange"</span><span class="p">,</span><span class="s2">"magenta"</span><span class="p">,</span><span class="s2">"light_blue"</span><span class="p">,</span>
+<span class="s2">"yellow"</span><span class="p">,</span><span class="s2">"lime"</span><span class="p">,</span><span class="s2">"pink"</span><span class="p">,</span><span class="s2">"gray"</span><span class="p">,</span><span class="s2">"silver"</span><span class="p">,</span><span class="s2">"cyan"</span><span class="p">,</span>
+<span class="s2">"purple"</span><span class="p">,</span><span class="s2">"blue"</span><span class="p">,</span><span class="s2">"brown"</span><span class="p">,</span><span class="s2">"green"</span><span class="p">,</span><span class="s2">"red"</span><span class="p">,</span><span class="s2">"black"</span>
+<span class="p">};</span>
+<span class="n">start</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="p">;</span>
+<span class="k">for</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">h</span><span class="o">-</span><span class="mi">1</span> <span class="k">do</span>
+  <span class="k">for</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">w</span> <span class="k">do</span>
+    <span class="k">for</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span> <span class="k">do</span>
+      <span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="o">=</span><span class="n">start</span><span class="o">+</span><span class="n">Vec3</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">);</span>
+      <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">math.random</span><span class="p">(</span><span class="o">#</span><span class="n">colors</span><span class="p">)];</span>
+      <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="o">=</span><span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"wool"</span><span class="p">):</span><span class="n">withData</span><span class="p">({</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">});</span>
+    <span class="k">end</span><span class="p">;</span>
+  <span class="k">end</span><span class="p">;</span>
+<span class="k">end</span><span class="p">;</span>
+</code></pre></div></div>
+<p>The height of the box is defined by <tt>h</tt>.</p>
+
+<p>Again I set the width, length, and height to 20 and casted the spell. Look at the results:</p>
+
+<p><img src="/images/multicolor-box-of-wool.jpg" alt="Multicolored Box of Wool" /></p>
+
+<p>Just imagine how long it would take to build this box by hand…</p>
+
+        <div id="naviLeft">
+<h2>Examples</h2>
+<ul>
+
+  <li>
+    <a href="/examples/how-to-create-a-multicolor-floor-of-wool/">How to Create a Multicolored Floor of Wool</a>
+  </li>
+
+  <li>
+    <a href="/examples/random-walk/">Random Walking Grass</a>
+  </li>
+
+  <li>
+    <a href="/examples/the-army-of-zombies/">The Army of Zombies</a>
+  </li>
+
+  <li>
+    <a href="/examples/the-door/">The Door</a>
+  </li>
+
+  <li>
+    <a href="/examples/vertical-rails/">The Vertical Rails Spell</a>
+  </li>
+
+  <li>
+    <a href="/examples/rocket-thrower/">The Rocket Thrower</a>
+  </li>
+
+<li><a href="/examples.html">See All Examples...</a></li>
+</ul>
+</div>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+
+    
+  </body>
+</html>

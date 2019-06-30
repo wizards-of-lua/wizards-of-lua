@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/installation.html" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+
+        <h1>Installation</h1>
+        <p><em>Wizards of Lua is a modification of Minecraft.
+In order to use it, you have to modify an existing Minecraft installation.
+This short description shows you how this is done.</em></p>
+
+<p>Since the Wizards of Lua is a <u>server-side modification</u>
+only the server part of Minecraft must be modded.
+For clients no modification is required.
+However, if you want to play Wizards of Lua in singleplayer, you need to modify
+the client as well.</p>
+
+<h3 id="requirements">Requirements</h3>
+<ul>
+  <li>The Wizards of Lua modification requires Minecraft 1.12.2 (Java Edition)</li>
+  <li>and Forge 14.23.n.n</li>
+</ul>
+
+<h3 id="download">Download</h3>
+<ul>
+  <li><a href="https://minecraft.curseforge.com/projects/wizards-of-lua/files">Wizards of Lua from Curse Forge</a></li>
+</ul>
+
+<h3 id="installing-wizards-of-lua-on-a-server">Installing Wizards of Lua on a Server</h3>
+<ul>
+  <li><a href="http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html">Download Forge Installer</a> 14.23.3.2655 (or later)</li>
+  <li>Copy <tt>forge-1.12.2-14.23.3.2655-installer.jar</tt> into a new and empty directory
+where you want to run the server from</li>
+  <li>Change into that directory and run
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> forge-1.12.2-14.23.3.2655-installer.jar <span class="nt">--installServer</span>
+</code></pre></div>    </div>
+    <p>This will download additional files from the internet and create the server jar file</p>
+  </li>
+  <li>Run vanilla Minecraft with
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-Xms1024M</span> <span class="nt">-jar</span> minecraft_server.1.12.2.jar nogui
+</code></pre></div>    </div>
+    <p>This will try to start the server.
+But since you need to sign the eula, the program aborts shorty afterwards with something like this:</p>
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[17:04:47] [Server thread/INFO]: You need to agree to the EULA in order to run the server. Go to eula.txt for more info.
+[17:04:47] [Server thread/INFO]: Stopping server
+[17:04:47] [Server thread/INFO]: Saving worlds
+[17:04:47] [Server thread/WARN] [FML]: Can't revert to frozen GameData state without freezing first.
+[17:04:47] [Server thread/INFO] [FML]: The state engine was in incorrect state POSTINITIALIZATION and forced into state SERVER_STOPPED. Errors may have been discarded.
+[17:04:47] [Server Shutdown Thread/INFO]: Stopping server
+[17:04:47] [Server Shutdown Thread/INFO]: Saving worlds
+</code></pre></div>    </div>
+  </li>
+  <li>Now open the file <tt>eula.txt</tt> and change the following line:
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>eula=false
+</code></pre></div>    </div>
+    <p>to</p>
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>eula=true
+</code></pre></div>    </div>
+    <p>and save the file.</p>
+  </li>
+  <li>Create the mods directory
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir </span>mods
+</code></pre></div>    </div>
+  </li>
+  <li>Now download the <a href="https://minecraft.curseforge.com/projects/wizards-of-lua/files">latest version of Wizards of Lua</a> and copy it into the <tt>mods</tt>
+directory of your server directory.</li>
+  <li>Now run Minecraft Forge with
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-Xms1024M</span> <span class="nt">-jar</span> forge-1.12.2-14.23.3.2655-universal.jar nogui
+</code></pre></div>    </div>
+    <p>This will start the modded version of Minecraft with Forge and Wizards Of Lua activated.
+Now you can execute Lua commands.
+Let’s give it a try:</p>
+  </li>
+  <li>Type the following line into the command-line:
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/lua print<span class="o">(</span>1+1<span class="o">)</span>
+</code></pre></div>    </div>
+    <p>If everything works fine you should receive something like the following output:</p>
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[17:06:13] [Server thread/INFO]: 2
+</code></pre></div>    </div>
+  </li>
+  <li>Now start you Minecraft client and log into your new server</li>
+  <li>Don’t forget to give yourself operator priviliges</li>
+</ul>
+
+<p>If you plan to allow public access to your server, you may want to secure the built-in
+web-based Lua editor by using SSL and a <a href="/creating-a-self-signed-ssl-certificate.html">self-signed certificate</a>.</p>
+
+<h3 id="installing-wizards-of-lua-on-a-client">Installing Wizards of Lua on a Client</h3>
+<p>Please note that installing Wizards of Lua on the client is <strong>not</strong> required if
+you only plan to play it on the server.
+However, if you want to play Wizards of Lua in singleplayer, you need to modify
+the client.
+This procedure assumes that you have a copy of Minecraft installed.
+Also you must have a working Java Runtime Environment (Version 1.8).
+If not, <a href="https://minecraft.net/">get Minecraft</a>,
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html">get Java</a>,
+install both and come back here.</p>
+
+<ul>
+  <li><a href="http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html">Download Forge Installer</a> 14.23.3.2655 (or later)</li>
+  <li>Start the Forge Installer by double-clicking on the file</li>
+  <li>Choose “Install client” option and click “OK”</li>
+  <li>Now download the <a href="https://minecraft.curseforge.com/projects/wizards-of-lua/files">latest version of Wizards of Lua</a></li>
+  <li>Copy the mod into the <tt>mods</tt> folder of your Minecraft installation</li>
+  <li>Run the Minecraft Launcher</li>
+  <li>On right side of the “Play” button click on the small green triangle pointing upwards</li>
+  <li>Choose the “forge” profile</li>
+  <li>Click “Play”</li>
+</ul>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>
