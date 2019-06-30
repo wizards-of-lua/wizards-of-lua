@@ -1,5 +1,6 @@
 ---
 title: The Art of Spell Crafting
+layout: default
 ---
 # Welcome to the Home of the Wizards of Lua
 

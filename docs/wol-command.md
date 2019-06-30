@@ -1,5 +1,6 @@
 ---
 title: The Wol Command
+layout: default
 ---
 *The <tt>/wol</tt> command (wol is short for Wizards Of Lua) gives you some
 control over the Winzards of Lua mod.*
