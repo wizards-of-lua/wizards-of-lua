@@ -158,14 +158,33 @@ dependencies {
   jrubyExec 'rubygems:jekyll-theme-midnight:0.1.1'
 }
 
-File jekyllSrcDir = file("docs")
+File jekyllSrcDir = file("src/docs/jekyll")
+File jekyllBuildDir = new File(buildDir, 'jekyll')
 
-task 'jekyll-build'(type: com.github.jrubygradle.JRubyExec) {
-  script 'jekyll-build'
-  scriptArgs 'b', '-s', jekyllSrcDir.absolutePath, '-d', new File(buildDir, 'jekyll').absolutePath
+task copyJekyllFiles(type: Copy) {
+  from jekyllSrcDir
+  into jekyllBuildDir
 }
 
-task 'jekyll-server'(type: com.github.jrubygradle.JRubyExec) {
+task copyModulesDocumentation(type: Copy) {
+  dependsOn compileJava
+  from compileJava.options.annotationProcessorGeneratedSourcesDirectory ?: sourceSets.main.java.outputDir
+  into new File(jekyllBuildDir, '_modules')
+  include '**/*.md'
+  includeEmptyDirs false
+}
+
+task updateWebsite(type: com.github.jrubygradle.JRubyExec) {
+  dependsOn copyJekyllFiles
+  dependsOn copyModulesDocumentation
+
   script 'jekyll'
-  scriptArgs 's', '-s', jekyllSrcDir.absolutePath
+  workingDir temporaryDir
+  scriptArgs 'build', '-s', jekyllBuildDir.absolutePath, '-d', file('docs').absolutePath
+}
+
+task jekyllServe(type: com.github.jrubygradle.JRubyExec) {
+  script 'jekyll'
+  workingDir temporaryDir
+  scriptArgs 'serve', '-s', file('docs').absolutePath
 }
