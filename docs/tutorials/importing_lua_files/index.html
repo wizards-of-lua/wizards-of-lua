@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/tutorials/importing_lua_files/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+        <h1>Importing Lua Files from the File System</h1>
+        <p>This tutorial shows how you can import external Lua files into your spells.
+<!--more--></p>
+
+<p>Writing programs into the command line or a command block is inconvenient for programs with more the a few statements.
+It is far better to use an text editor to edit Lua files, and then import them into your spells using the <tt>require</tt> function.</p>
+
+<p>To support this, the Wizards of Lua mod provides for each player a personal directory in the server’s file system, that is automatically added to the player’s Lua search path.</p>
+
+<p>To edit files in you personal directory you could use any external text editor, provided that you have direct access to the server’s file system.</p>
+
+<p>But it’s more convenient to use the built-in Lua editor, which can be lauched with the <a href="/wol-command.html#File-Edit">/wol file edit</a> command.</p>
+
+<h3 id="creating-a-lua-module-with-the-built-in-lua-editor">Creating a Lua Module with the Built-In Lua Editor</h3>
+<p>Let’s assume you want to create a new Lua module called “utilities” and store it into your personal directory.</p>
+
+<p>To do that, you first have to make sure that your web browser is allowed to access your files.
+Type in the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol browser login
+</code></pre></div></div>
+<p>and then click on the new link that appears in the chat (you must press ‘T’ before you can click on the link).</p>
+
+<p>This will open your web browser and grant access to your personal files.</p>
+
+<p>Next, create the module with the built-in editor by typing:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file edit utilities.lua
+</code></pre></div></div>
+<p>and again click on the new link.</p>
+
+<p>This will open a new browser tab with the Lua editor for your new file.</p>
+
+<p>Now copy and paste the source code shown below into the editor and save it using CRTL-S.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">particle</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+  <span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="s2">"particle "</span><span class="o">..</span><span class="n">name</span><span class="o">..</span><span class="s2">" ~ ~ ~ 0 0 0 0 1"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p><img src="/images/wol-file-editor-with-utilities-module.jpg" alt="Built-In Editor" /></p>
+
+<h3 id="importing-a-personal-module">Importing a Personal Module</h3>
+<p>Since your personal directory is automatically added to the Lua search path, you can import any file by using <tt>require</tt>
+function.</p>
+
+<p>For example, if you want to use the <tt>particle</tt> function from the “utilities” module in your current spell, you can include the module like this:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"utilities"</span><span class="p">);</span> <span class="n">particle</span><span class="p">(</span><span class="s2">"smoke"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Please note that you must omit the module’s file extension “.lua”.</p>
+
+<p>If you want to always import a specific module for any of your spells, you might want to add it to your personal profile.</p>
+
+<h3 id="using-a-personal-profile">Using a Personal Profile</h3>
+<p>A personal profile is an special Lua file with the name “profile.lua” inside your directory.
+If it exists, it is automatically required by any of your spells.</p>
+
+<h4 id="example">Example</h4>
+<p>Let’s assume there is a file called “<tt>profile.lua</tt>” inside your directory with the following contents:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- this is my profile</span>
+<span class="nb">require</span> <span class="s2">"utilities"</span>
+</code></pre></div></div>
+<p>Here this profile “requires” the “utilities” module from the above example.</p>
+
+<p>Now you can call your <tt>particle</tt> function directly from any of your spells without the need to “require” it explicitly:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">particle</span><span class="p">(</span><span class="s2">"smoke"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="location-of-your-personal-directory">Location of your Personal Directory</h2>
+<p>By default your personal directory is found inside the Wol configuration directory at
+    <minecraft>/config/wizards-of-lua/libs/<uuid></uuid></minecraft></p>
+
+<p>where <em>&lt;minecraft&gt;</em> is the location of your Minecraft installation, and <em>&lt;uuid&gt;</em> is the UUID of the player.
+You can change this location by editing the <a href="/configuration-file.html">configuration file</a>.</p>
+
+<p>For example, on my Linux server the path to my player-specific Lua library is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/home/minecraftserver/config/wizards-of-lua/libs/0c77f1a8-943b-4f7b-aa09-f2b1737d4f03/
+</code></pre></div></div>
+
+<p>Or, when playing single-player on my Mac, the path is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>~/Library/Application Support/minecraft/config/
+wizards-of-lua/libs/0c77f1a8-943b-4f7b-aa09-f2b1737d4f03/
+</code></pre></div></div>
+
+        <div id="naviLeft">
+<h2>Tutorials</h2>
+<ul>
+
+
+  <li>
+    <a href="/tutorials/using_str/">Using the str() function</a>
+  </li>
+
+  <li>
+    <a href="/tutorials/importing_lua_files/">Importing Lua Files from the File System</a>
+  </li>
+
+  <li>
+    <a href="/tutorials/bind-a-spell-to-a-magic-wand/">Binding a Spell to a Magic Wand</a>
+  </li>
+
+<li><a href="/tutorials.html">See All Tutorials...</a></li>
+</ul>
+</div>
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+
+    
+  </body>
+</html>

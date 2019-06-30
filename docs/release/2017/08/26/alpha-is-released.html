@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/release/2017/08/26/alpha-is-released.html" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+        <h1>Alpha 1.0.0 is Released!</h1>
+        <p>Today we proudly present the very first alpha release of “Wizards of Lua”.
+If you are interested into this mod at this early stage, please feel free to
+<a href="/installation.html">download and install</a> it.
+<!--more-->
+Make sure to read the <a href="/introduction.html">introduction</a> in order to get some hints
+about how to use this mod.
+If you have some feedback or a self-made spell you want to share with us please post it on the <a href="http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2855015">forum thread for the alpha release</a>.
+For bug reports please use our <a href="https://github.com/wizards-of-lua/wizards-of-lua/issues">issues tracker at GitHub</a>.</p>
+
+<p>The following features are implemented so far.</p>
+<h3 id="implemented-features">Implemented Features</h3>
+<ul>
+  <li>Wizards can cast spells using the <a href="/lua-command.html">/lua command</a>.</li>
+  <li>Wizards can list all active spells using the <a href="/wol-command.html">/wol command</a>.</li>
+  <li>Wizards can break all active spells using the <a href="/wol-command.html">/wol command</a>.</li>
+  <li>Spells can be casted by command blocks.</li>
+  <li>Spells can create any available block using the <a href="/modules/Blocks/">Blocks module</a>.</li>
+  <li>Spells can read and modify all block properties using the <a href="/modules/Block/">Block class</a>.</li>
+  <li>Spells can copy and paste blocks using the <a href="/modules/Spell/#block">Spell.block property</a>.</li>
+  <li>Spells can read and modify a small amount of entity properties using the <a href="/modules/Entity/">Entity class</a>.</li>
+  <li>Spells (in fact all entities) can be <a href="/modules/Entity/#move">moved</a> around.</li>
+  <li>Spells can be made <a href="/modules/Spell/#visible">visible</a>.</li>
+  <li>Spells can <a href="/modules/Spell/#execute">execute</a> any Minecraft command. This includes casting other spells.</li>
+  <li>Spells can be sent to <a href="/modules/Time/#sleep">sleep</a> for a certain amount of game ticks.</li>
+</ul>
+
+<p>However, this version is marked as <em>Alpha</em>, which means that there are still
+important features missing.</p>
+
+<p>The following features are planned to be implemented before we make the final release.</p>
+<h3 id="planned-features">Planned Features</h3>
+<ul>
+  <li>Spells can read and write more entity properties.</li>
+  <li>Spells can read and write entity NBT data.</li>
+  <li>Spells can query for entities.</li>
+  <li>Spells can receive in-game events, e.g. Left-Click, Right-Click, Player-Logged-In, …</li>
+  <li>Spells can send and receive custom events.</li>
+  <li>Spells can import Lua files from the server’s file system using Lua’s <code class="highlighter-rouge">require</code> function.</li>
+  <li>Spells can import Lua files from GitHub Gists.</li>
+  <li>Spells can share data using a player-specific clipboard.</li>
+  <li>Wizards can define a player-specific profile to configure default includes.</li>
+  <li>Wizards can list their own active spells.</li>
+  <li>Wizards can break specific spells.</li>
+  <li>Wizards can define event handlers that cast spells automatically.</li>
+  <li>Operators can define permissions required for casting a spell.</li>
+  <li>Operators can configure the maximum number of Lua ticks a spell can use per game tick.</li>
+</ul>
+
+        <div id="naviLeft">
+<h2>News</h2>
+<ul>
+
+  <li>
+    <a href="/release/2018/11/01/2-10-0-is-released.html">01 November 2018 -<br/>  WoL 2.10.0 is Released</a>
+  </li>
+
+  <li>
+    <a href="/release/2018/10/31/2-9-0-is-released.html">31 October 2018 -<br/>  WoL 2.9.0 is Released</a>
+  </li>
+
+  <li>
+    <a href="/release/2018/10/20/2-8-0-is-released.html">20 October 2018 -<br/>  WoL 2.8.0 is Released</a>
+  </li>
+
+  <li>
+    <a href="/release/2018/10/19/2-7-0-is-released.html">19 October 2018 -<br/>  WoL 2.7.0 is Released</a>
+  </li>
+
+  <li>
+    <a href="/release/2018/10/12/2-6-0-is-released.html">12 October 2018 -<br/>  WoL 2.6.0 is Released</a>
+  </li>
+
+  <li>
+    <a href="/release/2018/10/04/2-5-0-is-released.html">04 October 2018 -<br/>  WoL 2.5.0 is Released</a>
+  </li>
+
+  <li>
+    <a href="/release/2018/10/04/2-4-0-is-released.html">04 October 2018 -<br/>  WoL 2.4.0 is Released</a>
+  </li>
+
+<li><a href="/news.html">Read All News...</a></li>
+</ul>
+</div>
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>
