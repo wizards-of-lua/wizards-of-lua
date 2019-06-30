@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/creating-a-self-signed-ssl-certificate.html" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+
+        <h1>Creating a Self-Signed SSL Certificate</h1>
+        <p><em>You can use a self-signed SSL certificate to make the Lua file editor secure.</em></p>
+
+<p>It you want the internal web server to use HTTPS instead of HTTP, you can easily
+create your own self-signed SSL certificate and add it to the configuration.
+Of course, when used for securing HTTPS connections, this requires to be accepted
+manually by the browser’s user.
+But fortunately this is only necessary once.</p>
+
+<p>Here is a brief description how you can create your own self-signed SSL certificate,
+and how you add it to the WoL configuration.</p>
+
+<h3 id="generating-a-self-signed-ssl-certificate-using-javas-keytool">Generating a Self-Signed SSL Certificate using Java’s Keytool</h3>
+<p>This requires, that Java is installed on your machine, and that it is accessible
+from the command line.</p>
+
+<ul>
+  <li>Open the command line on your computer.</li>
+  <li>Execute the following command (but replace the values for CN and OU with whatever you like):
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>keytool <span class="nt">-genkey</span> <span class="nt">-keystore</span> server-keystore.jks <span class="nt">-alias</span> server_alias <span class="se">\</span>
+      <span class="nt">-dname</span> <span class="s2">"CN=127.0.0.1,OU=whateveryoulike"</span> <span class="se">\</span>
+      <span class="nt">-keyalg</span> RSA <span class="nt">-sigalg</span> SHA256withRSA <span class="nt">-keysize</span> 2048 <span class="nt">-validity</span> 365 <span class="se">\</span>
+      <span class="nt">-storetype</span> pkcs12
+</code></pre></div>    </div>
+  </li>
+  <li>When prompted for a password, just choose one and store it properly in your mind.
+You will need to write it into the server’s config later on.
+Please note that different store and key passwords are not supported for PKCS12 keystores.
+So you will use the same password for both.</li>
+  <li>This will generate a new file called <code class="highlighter-rouge">server-keystore.jks</code> in the current directory.</li>
+</ul>
+
+<h3 id="adding-the-ssl-certificate-to-your-minecraft-server">Adding the SSL-Certificate to your Minecraft Server</h3>
+<ul>
+  <li>Copy the file <code class="highlighter-rouge">server-keystore.jks</code> into your Minecraft server’s directory,
+next to the <code class="highlighter-rouge">server.properties</code> file.</li>
+  <li>Now edit the WoL configuration file at <code class="highlighter-rouge">config/wizards-of-lua/wizards-of-lua.luacfg</code>.</li>
+  <li>Scroll down to the <em>RestApi</em> section and change the values for <em>hostname, secure, keystore,
+keystorePassword</em>, and <em>keyPassword</em>, for example like this:</li>
+</ul>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">RestApi</span> <span class="p">{</span>
+  <span class="n">hostname</span><span class="o">=</span><span class="s2">"example.com"</span><span class="p">,</span>
+  <span class="n">port</span><span class="o">=</span><span class="mi">60080</span><span class="p">,</span>
+  <span class="n">secure</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+  <span class="n">keystore</span><span class="o">=</span><span class="s2">"ssl-keystore.jks"</span><span class="p">,</span>
+  <span class="n">keystorePassword</span><span class="o">=</span><span class="s2">"123456"</span><span class="p">,</span>
+  <span class="n">keyPassword</span><span class="o">=</span><span class="s2">"123456"</span><span class="p">,</span>
+  <span class="o">...</span>
+</code></pre></div></div>
+<p>Please replace <em>example.com</em> with the hostname or the numerical IP address of your server.
+And replace the values for <em>keystorePassword</em> and <em>keyPassword</em> with the value you chose when
+you used the keytool.</p>
+
+<ul>
+  <li>Now restart the Minecraft server</li>
+  <li>Now start a Minecraft client and log into your Minecraft server</li>
+  <li>Type in <code class="highlighter-rouge">/wol browser login</code> to authenticate your browser for HTTPS.</li>
+  <li>And then use <code class="highlighter-rouge">/wol file edit &lt;filename&gt;</code> or <code class="highlighter-rouge">/wol shared-file edit &lt;filename&gt;</code> to edit your files.</li>
+</ul>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

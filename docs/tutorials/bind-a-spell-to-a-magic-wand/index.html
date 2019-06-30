@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/tutorials/bind-a-spell-to-a-magic-wand/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+        <h1>Binding a Spell to a Magic Wand</h1>
+        <p>What is a wizard without a collection of magic wands?</p>
+
+<p>It is nice to have a collection, where every wand is bound to a unique spell.
+But writing an observer spell for every type of magic wand is cumbersome.
+Instead, it would be nice to have only one single observer spell
+that can handle all magic wands. To achive this, you just need to store the
+magic spell into the item itself.
+<!--more--></p>
+
+<p>This tutorial shows</p>
+<ul>
+  <li>how to bind an individual spell into an arbitrary item</li>
+  <li>and how to create an observer spell that activates it.</li>
+</ul>
+
+<p>Please note, that this tutorial assumes that you are familiar with
+<a href="/tutorials/importing_lua_files">importing Lua files</a> into your spells.</p>
+
+<p>Normally, if you have three different magic wands, for example, the wand of feather-light flight,
+the <a href="/examples/rocket-thrower">rocket thrower</a>, and the smoking stick, you also need
+three distinct observer spells, each observing the event source for the <a href="/modules/SwingArmEvent">swing arm events</a>,
+and if that event occurs, then casting the appropriate spell.
+But creating an observer spell for each type of magic wand is cumbersome.
+Instead, we want to have one single observer spell for all kind of wands.</p>
+
+<p>But first, let’s understand, what a typical observer spell is doing,
+for example, by looking at the rocket thrower observer:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">rocketThrowerObserver</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">q</span> <span class="o">=</span> <span class="n">Events</span><span class="p">.</span><span class="n">collect</span><span class="p">(</span><span class="s2">"SwingArmEvent"</span><span class="p">)</span>
+  <span class="k">while</span> <span class="kc">true</span> <span class="k">do</span>
+    <span class="kd">local</span> <span class="n">e</span> <span class="o">=</span> <span class="n">q</span><span class="p">:</span><span class="nb">next</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">e</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">displayName</span> <span class="o">==</span> <span class="s2">"Rocket Thrower"</span> <span class="k">then</span>
+      <span class="kd">local</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s2">"/lua p=Entities.find('@p[name=%s]')[1]; rocket(p)"</span>
+      <span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>As you can see, whenever a SwingArmEvent occurs, this observer checks if the item’s name is
+correct (here: Rocket Thrower), and if so, it will call the corresponding function (here:
+<a href="/examples/rocket-thrower#rocket">rocket()</a> ) with the player object passed in as argument.</p>
+
+<p>Now that we know what the observer spell is doing, we want to disassemble it into two parts.
+Part one will be responsible for providing the wand-specific command.
+And part two will become the new, centralized observer spell, that can handle all magic
+wands together in one place.</p>
+
+<p>To make it work, we need a place where we can look up the wand-specific command, as
+we want to cast different spells for different wands.
+A very nice solution is to store the wand’s specific spell into the wand itself,
+or more precisely the wand’s nbt data.</p>
+
+<h2 id="how-to-bind-a-command-to-an-item">How To Bind a Command to an Item</h2>
+<p>Luckily, this is really easy.
+Let’s thank the great Adrodoc55, who has discovered this smart solution.
+The following function stores the given command into the given item.</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- This binds the given command to the given item</span>
+<span class="k">function</span> <span class="nf">bind</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+  <span class="n">item</span> <span class="o">=</span> <span class="n">item</span> <span class="ow">or</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">mainhand</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="n">instanceOf</span><span class="p">(</span><span class="n">Item</span><span class="p">,</span><span class="n">item</span><span class="p">)</span> <span class="k">then</span>
+    <span class="nb">error</span><span class="p">(</span><span class="s2">"Expected Item, but got %s"</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+  <span class="k">end</span>
+  <span class="n">item</span><span class="p">:</span><span class="n">putNbt</span><span class="p">(</span> <span class="p">{</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="n">OnSwingArmEvent</span> <span class="o">=</span> <span class="n">command</span>
+    <span class="p">}</span>
+  <span class="p">})</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>Essentially, this spell adds a custom named attribute called “OnSwingArmEvent”
+to the item’s tag list, with the given command as its value.</p>
+
+<p>For example, to bind the rocket spell to an item, we just need to take
+that item into our main hand and call:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">bind</span><span class="p">(</span><span class="s2">"/lua rocket()"</span><span class="p">,</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">mainhand</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>We have just defined what should be done when the
+<a href="/modules/SwingArmEvent">SwingArmEvent</a> occurs.
+But this is not enough.
+We still need another spell that observes the events and handles them by
+executing the commands.</p>
+
+<h2 id="a-centralized-observer-spell-for-magic-wands">A Centralized Observer Spell for Magic Wands</h2>
+<p>The centralized observer spell is responsible for handling all
+swing arm events by calling the item-specific command that has been stored inside
+the item.</p>
+
+<p>It looks like this:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">magicWandObserver</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">q</span><span class="o">=</span><span class="n">Events</span><span class="p">.</span><span class="n">collect</span><span class="p">(</span><span class="s2">"SwingArmEvent"</span><span class="p">)</span>
+  <span class="k">while</span> <span class="kc">true</span> <span class="k">do</span>
+    <span class="kd">local</span>   <span class="n">e</span> <span class="o">=</span> <span class="n">q</span><span class="p">:</span><span class="nb">next</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">nbt</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">nbt</span>
+    <span class="k">if</span> <span class="n">nbt</span> <span class="ow">and</span> <span class="n">nbt</span><span class="p">.</span><span class="n">tag</span> <span class="ow">and</span> <span class="n">nbt</span><span class="p">.</span><span class="n">tag</span><span class="p">.</span><span class="n">OnSwingArmEvent</span> <span class="k">then</span>
+      <span class="kd">local</span> <span class="n">pname</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">player</span><span class="p">.</span><span class="n">name</span>
+      <span class="kd">local</span> <span class="n">itemCommand</span> <span class="o">=</span> <span class="n">nbt</span><span class="p">.</span><span class="n">tag</span><span class="p">.</span><span class="n">OnSwingArmEvent</span>
+      <span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="s2">"/execute %s ~ ~ ~ %s"</span><span class="p">,</span> <span class="n">pname</span><span class="p">,</span> <span class="n">itemCommand</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>As you can see, this spell extracts the item-specific command from the item’s
+nbt data and passes it into the <a href="https://minecraft.gamepedia.com/Commands/execute">“/execute” command</a>,
+which is part of vanilla Minecraft.
+This ensures that the new spell will be casted in behalf of the player who just waved the magic wand.</p>
+
+<p>That’s about all. To cast your centralized observer spell, just type this:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">magicWandObserver</span><span class="p">()</span>
+</code></pre></div></div>
+
+        <div id="naviLeft">
+<h2>Tutorials</h2>
+<ul>
+
+
+  <li>
+    <a href="/tutorials/using_str/">Using the str() function</a>
+  </li>
+
+  <li>
+    <a href="/tutorials/importing_lua_files/">Importing Lua Files from the File System</a>
+  </li>
+
+  <li>
+    <a href="/tutorials/bind-a-spell-to-a-magic-wand/">Binding a Spell to a Magic Wand</a>
+  </li>
+
+<li><a href="/tutorials.html">See All Tutorials...</a></li>
+</ul>
+</div>
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+
+    
+  </body>
+</html>

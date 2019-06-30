@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/tutorials/using_str/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+        <h1>Using the str() function</h1>
+        <p>This tutorial shows how you can use the <tt>str()</tt> function to get
+a glance of the internal structure of an object.
+This is especially useful when you don’t know how this object is structured.
+<!--more--></p>
+
+<p>For example, let’s pretend you are looking at the trunk of a birch tree.</p>
+
+<p><img src="/images/looking-at-a-birch.jpg" alt="Looking at a Birch" /></p>
+
+<p>You wonder, how this nice block is called in Minecraft.
+But sad to say, you don’t know how to get the name of a block using Lua.</p>
+
+<p>When you execute a spell like this:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">print</span><span class="p">(</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">)</span>
+</code></pre></div></div>
+<p>you just get something like the following not very meaningful output:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">table</span><span class="p">:</span> <span class="mh">0x0626bef0</span>
+</code></pre></div></div>
+<p>What you see is the standard output format of a table in Lua.
+This is because the underlying representation of a <a href="/modules/Block/">Block</a> in Lua is a table.</p>
+
+<p>So this is not helpful.
+But we can do better.
+By using the <tt>str()</tt> function you can get a string with the table’s contents
+in a human readable way.</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">print</span><span class="p">(</span> <span class="n">str</span><span class="p">(</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">))</span>
+</code></pre></div></div>
+<p>Now you get this:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="s2">"y"</span><span class="p">,</span>
+    <span class="n">variant</span> <span class="o">=</span> <span class="s2">"birch"</span>
+  <span class="p">},</span>
+  <span class="n">material</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">blocksLight</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="n">blocksMovement</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="n">canBurn</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="n">liquid</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="n">mobility</span> <span class="o">=</span> <span class="s2">"NORMAL"</span><span class="p">,</span>
+    <span class="n">opaque</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="n">replaceable</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="n">requiresNoTool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="n">solid</span> <span class="o">=</span> <span class="kc">true</span>
+  <span class="p">},</span>
+  <span class="n">name</span> <span class="o">=</span> <span class="s2">"log"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Now you can see the internal structure of the table, which is just a list of properties.
+The properties are enclosed in curly braces and separated by commas.
+Each property consists of a key-value pair.
+For example, at the very bottom there is the “name” property.
+Its key is “name” and its value is “log”.
+You may have noticed that the value is enclosed in quotation marks, while for the key the quotation marks are omitted.
+Because of this the output of the str() function is very handy, since it forms valid Lua code when used in an assignment.</p>
+
+<p>You can also see that the properties have a tree-like structure.
+For example, the “data” property has a value that itself is a table.</p>
+
+<p>Now that you know the internal structure of the Block, you can rewrite the spell
+so that it only prints the part you are interested in, e.g. its name and its variant.</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">print</span><span class="p">(</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">variant</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Which gives you:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">log</span> <span class="n">birch</span>
+</code></pre></div></div>
+
+<p>Btw. instead of <tt>str()</tt> you could alternativly use the <tt>inspect()</tt> function, which will also give you the contents of the table’s metatable.</p>
+
+        <div id="naviLeft">
+<h2>Tutorials</h2>
+<ul>
+
+
+  <li>
+    <a href="/tutorials/using_str/">Using the str() function</a>
+  </li>
+
+  <li>
+    <a href="/tutorials/importing_lua_files/">Importing Lua Files from the File System</a>
+  </li>
+
+  <li>
+    <a href="/tutorials/bind-a-spell-to-a-magic-wand/">Binding a Spell to a Magic Wand</a>
+  </li>
+
+<li><a href="/tutorials.html">See All Tutorials...</a></li>
+</ul>
+</div>
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+
+    
+  </body>
+</html>

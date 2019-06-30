@@ -1,0 +1,663 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/modules/net/wizardsoflua/lua/classes/entity/Entity/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+        
+
+        <h1><span class="notranslate">Entity</span> - The Base Class of all Organic or Inorganic Entities</h1>
+        
+        
+
+
+
+        <p>The Entity class is the base class of all entities that populate the world.</p>
+
+
+        
+        
+<p>The Entity class is a subtype of the <a href="/modules/net/wizardsoflua/lua/classes/Object/">Object</a> class and inherits all its properties and functions.</p>
+
+<p>Here is an overview of the Entity <em>properties</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th style="text-align: center">read / write</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="#alive"><span class="notranslate">alive</span></a></td>
+      <td><span class="notranslate">boolean</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#dimension"><span class="notranslate">dimension</span></a></td>
+      <td><span class="notranslate">number (int)</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#entityType"><span class="notranslate">entityType</span></a></td>
+      <td><span class="notranslate">string</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#eyeHeight"><span class="notranslate">eyeHeight</span></a></td>
+      <td><span class="notranslate">number (float)</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#facing"><span class="notranslate">facing</span></a></td>
+      <td><span class="notranslate">string</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#invisible"><span class="notranslate">invisible</span></a></td>
+      <td><span class="notranslate">boolean</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#lookVec"><span class="notranslate">lookVec</span></a></td>
+      <td><span class="notranslate"><a href="/modules/Vec3">Vec3</a></span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#motion"><span class="notranslate">motion</span></a></td>
+      <td><span class="notranslate"><a href="/modules/Vec3">Vec3</a></span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#name"><span class="notranslate">name</span></a></td>
+      <td><span class="notranslate">string</span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#nbt"><span class="notranslate">nbt</span></a></td>
+      <td><span class="notranslate"><a href="/modules/table">table</a></span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#pos"><span class="notranslate">pos</span></a></td>
+      <td><span class="notranslate"><a href="/modules/Vec3">Vec3</a></span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#rotationPitch"><span class="notranslate">rotationPitch</span></a></td>
+      <td><span class="notranslate">number (float)</span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#rotationYaw"><span class="notranslate">rotationYaw</span></a></td>
+      <td><span class="notranslate">number (float)</span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#sneaking"><span class="notranslate">sneaking</span></a></td>
+      <td><span class="notranslate">boolean</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#sprinting"><span class="notranslate">sprinting</span></a></td>
+      <td><span class="notranslate">boolean</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#tags"><span class="notranslate">tags</span></a></td>
+      <td><span class="notranslate">table</span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+    <tr>
+      <td><a href="#uuid"><span class="notranslate">uuid</span></a></td>
+      <td><span class="notranslate">string</span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+    <tr>
+      <td><a href="#world"><span class="notranslate">world</span></a></td>
+      <td><span class="notranslate"><a href="/modules/World">World</a></span></td>
+      <td style="text-align: center">r</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Here is an overview of the Entity <em>functions</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Function</th>
+      <th>Parameters</th>
+      <th style="text-align: center">Results</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="#addTag"> <span class="notranslate">addTag</span> </a></td>
+      <td><span class="notranslate">tag</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+    <tr>
+      <td><a href="#dropItem"> <span class="notranslate">dropItem</span> </a></td>
+      <td><span class="notranslate">item, offsetY</span></td>
+      <td style="text-align: center"><span class="notranslate"><a href="/modules/Entity">Entity</a></span></td>
+    </tr>
+    <tr>
+      <td><a href="#kill"> <span class="notranslate">kill</span> </a></td>
+      <td><span class="notranslate"></span></td>
+      <td style="text-align: center"><span class="notranslate">nil</span></td>
+    </tr>
+    <tr>
+      <td><a href="#move"> <span class="notranslate">move</span> </a></td>
+      <td><span class="notranslate">directionName, distance</span></td>
+      <td style="text-align: center"><span class="notranslate">nil</span></td>
+    </tr>
+    <tr>
+      <td><a href="#putNbt"> <span class="notranslate">putNbt</span> </a></td>
+      <td><span class="notranslate">nbt</span></td>
+      <td style="text-align: center"><span class="notranslate">nil</span></td>
+    </tr>
+    <tr>
+      <td><a href="#removeTag"> <span class="notranslate">removeTag</span> </a></td>
+      <td><span class="notranslate">tag</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+    <tr>
+      <td><a href="#scanView"> <span class="notranslate">scanView</span> </a></td>
+      <td><span class="notranslate">distance</span></td>
+      <td style="text-align: center"><span class="notranslate"><a href="/modules/BlockHit">BlockHit</a></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="properties">Properties</h2>
+
+<p>Below you find short descriptions about each of the properties
+and some examples about how to use them in your spells.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="alive"></a></p>
+<h3 id="alive--boolean"><span class="notranslate">alive : boolean</span></h3>
+
+<p>This is true, if this entity is alive, false otherwise.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="dimension"></a></p>
+<h3 id="dimension--number-int"><span class="notranslate">dimension : number (int)</span></h3>
+
+<p>The ‘dimension’ is a magic number that tells us something about the world where this entity
+currently is living in. 0 means the Overworld. -1 is the Nether, and 1 is the End.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="entityType"></a></p>
+<h3 id="entitytype--string"><span class="notranslate">entityType : string</span></h3>
+
+<p>The ‘entity type’ of this entity is something like ‘pig’ or ‘creeper’. For a player this is
+“player”. This is nil if the entity type isn’t known.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="eyeHeight"></a></p>
+<h3 id="eyeheight--number-float"><span class="notranslate">eyeHeight : number (float)</span></h3>
+
+<p>The ‘eyeHeight’ is the distance from this entity’s feet to its eyes in Y direction.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="facing"></a></p>
+<h3 id="facing--string"><span class="notranslate">facing : string</span></h3>
+
+<p>The ‘facing’ is the compass direction this entity is facing. This is one of ‘north’, ‘east’,
+‘south’, and ‘west’.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="invisible"></a></p>
+<h3 id="invisible--boolean"><span class="notranslate">invisible : boolean</span></h3>
+
+<p>The ‘invisible’ property is true if this entity can not be seen by others.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="lookVec"></a></p>
+<h3 id="lookvec--vec3"><span class="notranslate">lookVec : <a href="/modules/Vec3">Vec3</a></span></h3>
+
+<p>The ‘lookVec’ is a 3-dimensional vector that points into the direction this entity is looking
+at, or nil, if it is not looking anywhere, for example, if it has no eyes.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="motion"></a></p>
+<h3 id="motion--vec3"><span class="notranslate">motion : <a href="/modules/Vec3">Vec3</a></span></h3>
+
+<p>The ‘motion’ is a 3-dimensional vector that represents the velocity of this entity when it is
+moved by some external force, e.g. when it is falling or when it is pushed by an explosion.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="name"></a></p>
+<h3 id="name--string"><span class="notranslate">name : string</span></h3>
+
+<p>The ‘name’ of this entity is unlike the UUID not unique in the world. For most entities it is
+just something like ‘Pig’ or ‘Zombie’. For player entities it is the nickkname of the
+character, like ‘mickkay’ or ‘bytemage’.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="nbt"></a></p>
+<h3 id="nbt--table"><span class="notranslate">nbt : <a href="/modules/table">table</a></span></h3>
+
+<p>The ‘nbt’ value (short for Named Binary Tag) is a table of entity-specifc key-value pairs
+also called <a href="https://minecraft.gamepedia.com/Commands#Data_tags">data tags</a>. The nbt property
+is readonly but gives you a modifiable copy of the internal value. You can change the
+contents, but to activate them you have to assign the modified table to the entity by using
+the <a href="/modules/Entity/#putNbt">putNbt()</a> function.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="pos"></a></p>
+<h3 id="pos--vec3"><span class="notranslate">pos : <a href="/modules/Vec3">Vec3</a></span></h3>
+
+<p>The ‘pos’ is short for ‘position’. It is a 3-dimensional vector containing the location of
+the entity inside the world it is living in.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="rotationPitch"></a></p>
+<h3 id="rotationpitch--number-float"><span class="notranslate">rotationPitch : number (float)</span></h3>
+
+<p>The ‘rotationPitch’ is the rotation of this entity’s head around its X axis in degrees. A
+value of -90 means the entity is looking straight up. A value of 90 means it is looking
+straight down.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="rotationYaw"></a></p>
+<h3 id="rotationyaw--number-float"><span class="notranslate">rotationYaw : number (float)</span></h3>
+
+<p>The ‘rotationYaw’ is the rotation of this entity around its Y axis in degrees. For example, a
+value of 0 means the entity is facing south. 90 corresponds to west, and 45 to south-west.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="sneaking"></a></p>
+<h3 id="sneaking--boolean"><span class="notranslate">sneaking : boolean</span></h3>
+
+<p>This is true, if this entity is currently sneaking, false otherwise.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="sprinting"></a></p>
+<h3 id="sprinting--boolean"><span class="notranslate">sprinting : boolean</span></h3>
+
+<p>The ‘sprinting’ property is true whenever this entity is running fast.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="tags"></a></p>
+<h3 id="tags--table"><span class="notranslate">tags : table</span></h3>
+
+<p>The ‘tags’ value is a list of strings that have been assigned to this entity.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="uuid"></a></p>
+<h3 id="uuid--string"><span class="notranslate">uuid : string</span></h3>
+
+<p>The ‘uuid’ is a string of 36 characters forming an immutable universally unique identifier
+that identifies this entity inside the world. This means if entities have the same ID they
+are actually the same object.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="world"></a></p>
+<h3 id="world--world"><span class="notranslate">world : <a href="/modules/World">World</a></span></h3>
+
+<p>The world the the space this entity is living in.</p>
+
+<hr />
+
+<h2 id="functions">Functions</h2>
+
+<p>Below you find short descriptions about each of the functions
+and some examples about how to use them in your spells.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="addTag"></a></p>
+<h3 id="addtag-tag---boolean"><span class="notranslate">addTag (tag) -&gt; boolean</span></h3>
+
+<p>The ‘addTag’ function adds the given tag to the set of <a href="/modules/Entity/#tags">tags</a> of this
+entity. This function returns true if the tag was added successfully.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="dropItem"></a></p>
+<h3 id="dropitem-item-offsety---entity"><span class="notranslate">dropItem (item, offsetY) -&gt; <a href="/modules/Entity">Entity</a></span></h3>
+
+<p>The ‘dropItem’ function drops the given item at this entity’s position modified by the
+optionally given vertical offset.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="kill"></a></p>
+<h3 id="kill----nil"><span class="notranslate">kill () -&gt; nil</span></h3>
+
+<p>The ‘kill’ function kills this entity during the next game tick.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="move"></a></p>
+<h3 id="move-directionname-distance---nil"><span class="notranslate">move (directionName, distance) -&gt; nil</span></h3>
+
+<p>The ‘move’ function teleports this entity instantly to the position relative to its current
+position specified by the given direction and distance. If no distance is specified, 1 meter
+is taken as default distance. Valid direction values are absolute directions (‘up’, ‘down’,
+‘north’, ‘east’, ‘south’, and ‘west’), as well as relative directions (‘forward’, ‘back’,
+‘left’, and ‘right’). Relative directions are interpreted relative to the direction the
+entity is <a href="/modules/Entity/#facing">facing</a>.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="putNbt"></a></p>
+<h3 id="putnbt-nbt---nil"><span class="notranslate">putNbt (nbt) -&gt; nil</span></h3>
+
+<p>The ‘putNbt’ function inserts the given table entries into the <a href="/modules/Entity/#nbt">nbt</a>
+property of this entity. Please note that this function is not supported for
+<a href="/modules/Player/">Player</a> objects.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="removeTag"></a></p>
+<h3 id="removetag-tag---boolean"><span class="notranslate">removeTag (tag) -&gt; boolean</span></h3>
+
+<p>The ‘removeTag’ function removes the given tag from the set of <a href="/modules/Entity/#tags">tags</a>
+of this entity. This function returns true if the tag has been removed successfully, and
+false if there was no such tag.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="scanView"></a></p>
+<h3 id="scanview-distance---blockhit"><span class="notranslate">scanView (distance) -&gt; <a href="/modules/BlockHit">BlockHit</a></span></h3>
+
+<p>The ‘scanView’ function scans the view of this entity for the next (non-liquid) block. On
+success it returns a <a href="/modules/BlockHit/">BlockHit</a>, otherwise nil. It scans the view with a
+line-of-sight-range of up to the given distance (meter).</p>
+
+<hr />
+
+
+
+        <div id="naviLeft">
+<h2>Modules</h2>
+<ul>
+   
+   
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/blocks/Blocks/" alt="Blocks"><u><span class="notranslate">Blocks</span></u><i> - The Building Blocks Directory</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/command/Commands/" alt="Commands"><u><span class="notranslate">Commands</span></u><i> - Managing Custom Commands</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/entities/Entities/" alt="Entities"><u><span class="notranslate">Entities</span></u><i> - Finding Entities</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/events/Events/" alt="Events"><u><span class="notranslate">Events</span></u><i> - Knowing What Happened</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/items/Items/" alt="Items"><u><span class="notranslate">Items</span></u><i> - Creating Items</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/loggers/Loggers/" alt="Loggers"><u><span class="notranslate">Loggers</span></u><i> - Accessing Loggers</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/system/System/" alt="System"><u><span class="notranslate">System</span></u><i> - Interacting with the Server's OS</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/time/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/types/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/module/wol/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
+   
+</ul>
+<h2>General Classes</h2>
+<ul>
+   
+   
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/block/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/scan/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What Lies in View</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/entity/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/entity/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/eventinterceptor/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/eventqueue/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/item/Item/" alt="Item"><u><span class="notranslate">Item</span></u><i> - Things You can Carry Around</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/logger/Logger/" alt="Logger"><u><span class="notranslate">Logger</span></u><i> - Logging Messages</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/block/Material/" alt="Material"><u><span class="notranslate">Material</span></u><i> - Physical Properties of Blocks</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/entity/Mob/" alt="Mob"><u><span class="notranslate">Mob</span></u><i> - Mobile Creatures</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/Object/" alt="Object"><u><span class="notranslate">Object</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/entity/Player/" alt="Player"><u><span class="notranslate">Player</span></u><i> - Controlling the Player</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/spell/Spell/" alt="Spell"><u><span class="notranslate">Spell</span></u><i> - Aspects of an Active Spell</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/vec3/Vec3/" alt="Vec3"><u><span class="notranslate">Vec3</span></u><i> - Manipulating Location and Motion</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/spell/VirtualEntity/" alt="VirtualEntity"><u><span class="notranslate">VirtualEntity</span></u><i> - The Base Class of all Virtual Entities</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/world/World/" alt="World"><u><span class="notranslate">World</span></u><i> - Where All Exists</i></a></li>
+   
+</ul>
+<h2>Events</h2>
+<ul>
+   
+   
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/ChunkLoadEvent/" alt="ChunkLoadEvent"><u><span class="notranslate">ChunkLoadEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/ChunkUnloadEvent/" alt="ChunkUnloadEvent"><u><span class="notranslate">ChunkUnloadEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/CustomEvent/" alt="CustomEvent"><u><span class="notranslate">CustomEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/EntityEvent/" alt="EntityEvent"><u><span class="notranslate">EntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/EntityJoinWorldEvent/" alt="EntityJoinWorldEvent"><u><span class="notranslate">EntityJoinWorldEvent</span></u><i> - When an Entity Enters the World</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity uses an Item</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity starts using an Item</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity stops using an Item</i></a></li>
+   
+   
+   <li><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity uses an Item</i></a></li>
+   
+</ul>
+
+</div>
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks.html" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples.html" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials.html" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>
