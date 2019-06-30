@@ -4,21 +4,17 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
 import static net.wizardsoflua.annotation.processor.doc.model.PropertyAccess.READWRITE;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.annotation.processor.LuaPropertyUtils;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
@@ -94,6 +90,7 @@ public class PropertyDocModel {
           "The description on the getter differs from the description on the setter", elements);
     }
     PropertyAccess access = READWRITE;
+    String description = !this.description.isEmpty() ? this.description : other.description;
     return new PropertyDocModel(name, type, access, description, elements);
   }
 
