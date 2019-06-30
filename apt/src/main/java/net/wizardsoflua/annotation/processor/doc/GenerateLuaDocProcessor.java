@@ -6,7 +6,6 @@ import static net.wizardsoflua.annotation.processor.Constants.LUA_CONVERTER_ATTR
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getTypeParameter;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getUpperBound;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,23 +16,18 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-
 import javax.annotation.Nullable;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.StandardLocation;
-
 import com.google.auto.service.AutoService;
 import com.google.common.collect.Maps;
-
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.processor.ExceptionHandlingProcessor;
 import net.wizardsoflua.annotation.processor.MultipleProcessingExceptions;
@@ -74,19 +68,15 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
   }
 
   @Override
-  protected void doProcess(TypeElement annotation, Element annotatedElement,
+  protected void doProcess(TypeElement annotation, TypeElement annotatedElement,
       RoundEnvironment roundEnv)
       throws ProcessingException, MultipleProcessingExceptions, IOException {
-    if (annotation.getQualifiedName().contentEquals(GenerateLuaDoc.class.getName())
-        && annotatedElement.getKind() == ElementKind.CLASS) {
-      TypeElement typeElement = (TypeElement) annotatedElement;
-      registerLuaType(typeElement);
-      LuaDocModel module = LuaDocModel.of(typeElement, getLuaTypeNames(), processingEnv);
+    if (annotation.getQualifiedName().contentEquals(GenerateLuaDoc.class.getName())) {
+      registerLuaType(annotatedElement);
+      LuaDocModel module = LuaDocModel.of(annotatedElement, getLuaTypeNames(), processingEnv);
       generate(module);
-    } else if (annotation.getQualifiedName().contentEquals(LUA_CONVERTER_ATTRIBUTES)
-        && annotatedElement.getKind() == ElementKind.CLASS) {
-      TypeElement typeElement = (TypeElement) annotatedElement;
-      registerLuaType(typeElement);
+    } else if (annotation.getQualifiedName().contentEquals(LUA_CONVERTER_ATTRIBUTES)) {
+      registerLuaType(annotatedElement);
     }
   }
 
