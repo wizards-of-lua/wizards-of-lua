@@ -1,5 +1,6 @@
 ---
 title: Examples
+layout: default
 ---
 *This section is dedicated to spells we want to share with you.*
 

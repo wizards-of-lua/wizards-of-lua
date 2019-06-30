@@ -1,5 +1,6 @@
 ---
 title: Welcome to the Home of the Wizards of Lua
+layout: default
 ---
 The Wizards of Lua are a [community of programmers and their friends](/members.html)
 who want to spread the knowledge of programming to kids.

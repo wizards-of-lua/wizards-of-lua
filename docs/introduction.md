@@ -1,5 +1,6 @@
 ---
 title: Introduction
+layout: default
 ---
 *The Wizards of Lua modification adds the Lua programming language to the Minecraft game.
 By using it you can change the nature of the game.*

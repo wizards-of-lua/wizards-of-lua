@@ -1,5 +1,6 @@
 ---
 title: Features
+layout: default
 ---
 *The Wizards of Lua modification adds the /lua command to Minecraft, which
 gives you the power to cast magical spells in Minecraft.*

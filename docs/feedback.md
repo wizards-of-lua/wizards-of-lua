@@ -1,5 +1,6 @@
 ---
 title: Feedback
+layout: default
 ---
 *The Wizards of Lua modification gives you the power to easily add new contents into your game.
 To continuously improve this power we are heavily dependent on your feedback.*

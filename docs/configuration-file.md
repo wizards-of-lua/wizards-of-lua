@@ -1,5 +1,6 @@
 ---
 title: The Wizards of Lua Configuration File
+layout: default
 ---
 *The Wizards of Lua Mod can be configured by editing its configuration file.*
 
