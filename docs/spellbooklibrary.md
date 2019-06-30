@@ -1,6 +1,6 @@
 ---
 title: The Spell Book Library
-
+layout: default
 ---
 *To interact with the Minecraft world, a spell can make use of a special application
 programming interface (API).

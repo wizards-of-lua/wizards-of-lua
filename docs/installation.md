@@ -1,5 +1,6 @@
 ---
 title: Installation
+layout: default
 ---
 *Wizards of Lua is a modification of Minecraft.
 In order to use it, you have to modify an existing Minecraft installation.

@@ -1,5 +1,6 @@
 ---
 title: Creating a Self-Signed SSL Certificate
+layout: default
 ---
 *You can use a self-signed SSL certificate to make the Lua file editor secure.*
 

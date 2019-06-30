@@ -1,5 +1,6 @@
 ---
 title: Tutorials
+layout: default
 ---
 <ul>
 {% assign tutorials = site.tutorials | sort: 'level' %}

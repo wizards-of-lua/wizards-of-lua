@@ -1,5 +1,6 @@
 ---
 title: Spell Packs
+layout: default
 ---
 
 A spell pack is a convenient way of sharing spells between wizards and server owners.

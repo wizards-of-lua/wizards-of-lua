@@ -1,5 +1,6 @@
 ---
 title: The Creators
+layout: default
 ---
 {% assign foundingMembers = site.data.members | where_exp:"m", "m.category=='founding-member'" %}
 {% if foundingMembers != empty %}

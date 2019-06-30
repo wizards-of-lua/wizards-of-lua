@@ -1,5 +1,6 @@
 ---
 title: The Lua Command
+layout: default
 ---
 *The <tt>/lua</tt>&nbsp;command is used to cast a [spell](/introduction) entity in Minecraft.
 This command can be executed from the in-game chat and from any command block.*
