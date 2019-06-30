@@ -6,7 +6,7 @@ excerpt_separator: <!--more-->
 author: mickkay
 layout: post
 ---
-The new 1.2.1-alpha release contains bug fixes.
+The new 1.2.1-alpha release contains bugfixes.
 <!--more-->
 
 * Fixed [#50](https://github.com/wizards-of-lua/wizards-of-lua/issues/50) - Placing a door using spell.block is not working
