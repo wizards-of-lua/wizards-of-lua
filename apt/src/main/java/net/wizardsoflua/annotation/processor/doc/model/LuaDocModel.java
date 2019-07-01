@@ -5,10 +5,8 @@ import static net.wizardsoflua.annotation.processor.Constants.LUA_CLASS_ATTRIBUT
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.checkAnnotated;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationMirror;
 import static net.wizardsoflua.annotation.processor.ProcessorUtils.getAnnotationValue;
-
 import java.util.Map;
 import java.util.TreeMap;
-
 import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -17,12 +15,9 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.util.Elements;
-
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaModuleTable;
@@ -39,8 +34,6 @@ public class LuaDocModel {
   public static LuaDocModel of(TypeElement annotatedElement, Map<String, String> luaTypeNames,
       ProcessingEnvironment env) throws ProcessingException, MultipleProcessingExceptions {
     GenerateLuaDoc annotation = checkAnnotated(annotatedElement, GenerateLuaDoc.class);
-    Elements elements = env.getElementUtils();
-    CharSequence packageName = elements.getPackageOf(annotatedElement).getQualifiedName();
     String name = getName(annotatedElement, env);
     String title = getTitle(annotatedElement, env);
     String subtitle = annotation.subtitle();
@@ -80,7 +73,7 @@ public class LuaDocModel {
         }
       }
     }
-    return new LuaDocModel(packageName, name, title, subtitle, type, superClass, description,
+    return new LuaDocModel(name, title, subtitle, type, superClass, description,
         properties.values(), functions.values());
   }
 
@@ -139,7 +132,6 @@ public class LuaDocModel {
     return null;
   }
 
-  private final CharSequence packageName;
   private final String name;
   private final @Nullable String superClass;
   private final String title;
@@ -149,10 +141,9 @@ public class LuaDocModel {
   private final ImmutableSet<PropertyDocModel> properties;
   private final ImmutableSet<FunctionDocModel> functions;
 
-  public LuaDocModel(CharSequence packageName, String name, String title, String subtitle,
-      String type, @Nullable String superClass, String description,
-      Iterable<PropertyDocModel> properties, Iterable<FunctionDocModel> functions) {
-    this.packageName = requireNonNull(packageName, "packageName == null!");
+  public LuaDocModel(String name, String title, String subtitle, String type,
+      @Nullable String superClass, String description, Iterable<PropertyDocModel> properties,
+      Iterable<FunctionDocModel> functions) {
     this.name = requireNonNull(name, "name == null!");
     this.title = requireNonNull(title, "title == null!");
     this.subtitle = requireNonNull(subtitle, "subtitle == null!");
@@ -161,10 +152,6 @@ public class LuaDocModel {
     this.description = requireNonNull(description, "description == null!");
     this.properties = ImmutableSet.copyOf(properties);
     this.functions = ImmutableSet.copyOf(functions);
-  }
-
-  public CharSequence getPackageName() {
-    return packageName;
   }
 
   public String getName() {

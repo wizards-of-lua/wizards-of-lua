@@ -25,12 +25,12 @@
 
           
             <li class="translate">
-              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/spellbooklibrary.html" alt="Translate this page"></a>
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/modules/UseItemFinishEvent/" alt="Translate this page"></a>
             </li>
           
           <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
           <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
-
+          
           
         </nav>
       </div><!-- end header -->
@@ -48,38 +48,102 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
           -->
         </div>
+        
+
+        <h1><span class="notranslate">UseItemFinishEvent</span> - When an Entity finishes using an Item</h1>
+        
+        
 
 
-        <h1>The Spell Book Library</h1>
-        <p><em>To interact with the Minecraft world, a spell can make use of a special application
-programming interface (API).
-This API is documentend by a bunch of small books which are collected inside
-this Spell Book Library.</em></p>
 
-<p>The Wizards of Lua use magic words as ingredients to craft powerful spells.
-This library contains a collection of books that list all basic
-magic words that have been discovered, or invented, by the very first members,
-called archmages, so far.
-There are a lot of different categories of magic words:
-keywords, modules, classes, properties, and functions.
-The books listed below cover all those categories, but not all words completely.
-There are, almost certainly, more words out there, but to begin with, this library
-is a good starting point.</p>
+        <p>The <span class="notranslate">UseItemFinishEvent</span> class is fired after a
+<a href="/modules/Mob">Mob</a> or <a href="/modules/Player">Player</a> finishes using an <a href="/modules/Item">Item</a>. The
+<a href="/modules/UseItemEvent#item">item</a> and <a href="#resultItem">resultItem</a> reflect the state after item
+use. If the item in use had a <a href="/modules/Item#count">count</a> of 1 then the item in this event is
+air.</p>
 
-<p><img src="images/library-of-lua.jpg" alt="Library of Lua" /></p>
+<h4 id="example">Example</h4>
 
-<p>On this page you find a list of books that are organized by classes and modules.
-Every class and module is documented within its own book.
-Inside each book you will find sections about properties and functions.
-In each of those there is a brief description about their nature, their effects,
-and, if available, about the options you have to influence these effects.</p>
+<p>Print a message when the player finishes eating a golden apple.</p>
 
-<p>To make it easy for the reader, the authors have added some small examples to
-each section, that can be used as recipes for crafting spells.</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">itemsInUse</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'UseItemStartEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">id</span>
+<span class="k">end</span><span class="p">)</span>
+<span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'UseItemStopEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="k">end</span><span class="p">)</span>
+<span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'UseItemFinishEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">itemInUse</span> <span class="o">=</span> <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span>
+  <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">nil</span>
+  <span class="k">if</span> <span class="n">itemInUse</span> <span class="o">==</span> <span class="s1">'golden_apple'</span> <span class="k">then</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'That was delicious!'</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
 
-<p>This list is sorted alphabetically.</p>
 
-<div id="naviLeft">
+        
+        
+<p>The UseItemFinishEvent class is a subtype of the <a href="/modules/UseItemEvent/">UseItemEvent</a> class and inherits all its properties and functions.</p>
+
+<p>Here is an overview of the UseItemFinishEvent <em>properties</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th style="text-align: center">read / write</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="#resultItem"><span class="notranslate">resultItem</span></a></td>
+      <td><span class="notranslate"><a href="/modules/Item">Item</a></span></td>
+      <td style="text-align: center">r/w</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="properties">Properties</h2>
+
+<p>Below you find short descriptions about each of the properties
+and some examples about how to use them in your spells.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="resultItem"></a></p>
+<h3 id="resultitem--item"><span class="notranslate">resultItem : <a href="/modules/Item">Item</a></span></h3>
+
+<p>This item is placed in the players inventory in replacement of the item that is currently
+used.</p>
+
+<h4 id="example">Example</h4>
+
+<p>Print a message when the player finishes eating a golden apple.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">itemsInUse</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'UseItemStartEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="n">item</span><span class="p">.</span><span class="n">id</span>
+<span class="k">end</span><span class="p">)</span>
+<span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'UseItemStopEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">nil</span>
+<span class="k">end</span><span class="p">)</span>
+<span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'UseItemFinishEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="kd">local</span> <span class="n">itemInUse</span> <span class="o">=</span> <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span>
+  <span class="n">itemsInUse</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">entity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">nil</span>
+  <span class="k">if</span> <span class="n">itemInUse</span> <span class="o">==</span> <span class="s1">'golden_apple'</span> <span class="k">then</span>
+    <span class="n">event</span><span class="p">.</span><span class="n">resultItem</span> <span class="o">=</span> <span class="n">Items</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'apple'</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+
+
+        <div id="naviLeft">
 <h2>Modules</h2>
 <ul>
    
@@ -263,8 +327,6 @@ each section, that can be used as recipes for crafting spells.</p>
 
 </div>
 
-
-
         <div id="naviRight">
 <h2>Navigation</h2>
 <ul>
@@ -297,6 +359,7 @@ each section, that can be used as recipes for crafting spells.</p>
    
 </ul>
 </div>
+
       </section>
 
     </div>
