@@ -124,8 +124,8 @@ public class GenerateLuaDocProcessor extends ExceptionHandlingProcessor {
     String luaDoc = new LuaDocGenerator(model).generate();
 
     Filer filer = processingEnv.getFiler();
-    try (Writer docWriter = filer.createResource(StandardLocation.SOURCE_OUTPUT,
-        model.getPackageName(), model.getName() + ".md").openWriter()) {
+    try (Writer docWriter = filer
+        .createResource(StandardLocation.SOURCE_OUTPUT, "", model.getName() + ".md").openWriter()) {
       docWriter.write(luaDoc);
     } catch (IOException ex) {
       throw new UndeclaredThrowableException(ex);

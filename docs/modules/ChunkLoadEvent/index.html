@@ -25,12 +25,12 @@
 
           
             <li class="translate">
-              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/spellbooklibrary.html" alt="Translate this page"></a>
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/modules/ChunkLoadEvent/" alt="Translate this page"></a>
             </li>
           
           <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
           <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
-
+          
           
         </nav>
       </div><!-- end header -->
@@ -48,38 +48,34 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
           -->
         </div>
+        
+
+        <h1><span class="notranslate">ChunkLoadEvent</span></h1>
+        
+        
 
 
-        <h1>The Spell Book Library</h1>
-        <p><em>To interact with the Minecraft world, a spell can make use of a special application
-programming interface (API).
-This API is documentend by a bunch of small books which are collected inside
-this Spell Book Library.</em></p>
 
-<p>The Wizards of Lua use magic words as ingredients to craft powerful spells.
-This library contains a collection of books that list all basic
-magic words that have been discovered, or invented, by the very first members,
-called archmages, so far.
-There are a lot of different categories of magic words:
-keywords, modules, classes, properties, and functions.
-The books listed below cover all those categories, but not all words completely.
-There are, almost certainly, more words out there, but to begin with, this library
-is a good starting point.</p>
+        <p>The <span class="notranslate">ChunkLoadEvent</span> occurs when a world chunk is loaded into the
+server’s memory.</p>
 
-<p><img src="images/library-of-lua.jpg" alt="Library of Lua" /></p>
+<h4 id="example">Example</h4>
 
-<p>On this page you find a list of books that are organized by classes and modules.
-Every class and module is documented within its own book.
-Inside each book you will find sections about properties and functions.
-In each of those there is a brief description about their nature, their effects,
-and, if available, about the options you have to influence these effects.</p>
+<p>Printing all <tt>ChunkLoadEvent</tt>s when they occur.</p>
 
-<p>To make it easy for the reader, the authors have added some small examples to
-each section, that can be used as recipes for crafting spells.</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Events</span><span class="p">.</span><span class="n">on</span><span class="p">(</span><span class="s1">'ChunkLoadEvent'</span><span class="p">):</span><span class="n">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s2">"Loaded world chunk at %s,%s"</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">chunkX</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">chunkZ</span><span class="p">))</span>
+<span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
 
-<p>This list is sorted alphabetically.</p>
 
-<div id="naviLeft">
+        
+        
+<p>The ChunkLoadEvent class is a subtype of the <a href="/modules/ChunkEvent/">ChunkEvent</a> class and inherits all its properties and functions.</p>
+
+
+
+        <div id="naviLeft">
 <h2>Modules</h2>
 <ul>
    
@@ -263,8 +259,6 @@ each section, that can be used as recipes for crafting spells.</p>
 
 </div>
 
-
-
         <div id="naviRight">
 <h2>Navigation</h2>
 <ul>
@@ -297,6 +291,7 @@ each section, that can be used as recipes for crafting spells.</p>
    
 </ul>
 </div>
+
       </section>
 
     </div>

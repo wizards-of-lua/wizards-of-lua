@@ -523,9 +523,7 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h1 id="lua-modules-api">Lua Modules API</h1>
 
-<h2 id="object"><a href="/modules/net/wizardsoflua/lua/classes/Object/">Object</a></h2>
-
-<h2 id="block"><a href="/modules/net/wizardsoflua/lua/classes/block/Block/">Block</a></h2>
+<h2 id="block"><a href="/modules/Block/">Block</a></h2>
 
 <h3 id="data--table">data : <a href="/modules/table">table</a></h3>
 
@@ -535,31 +533,69 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h3 id="nbt--table">nbt : <a href="/modules/table">table</a></h3>
 
-<h2 id="material"><a href="/modules/net/wizardsoflua/lua/classes/block/Material/">Material</a></h2>
+<h2 id="blockbreakevent"><a href="/modules/BlockBreakEvent/">BlockBreakEvent</a></h2>
 
-<h3 id="blocksmovement--boolean">blocksMovement : boolean</h3>
+<h3 id="experience--number-int">experience : number (int)</h3>
 
-<h3 id="canburn--boolean">canBurn : boolean</h3>
+<h3 id="player--player">player : <a href="/modules/Player">Player</a></h3>
 
-<h3 id="liquid--boolean">liquid : boolean</h3>
+<h2 id="blockevent"><a href="/modules/BlockEvent/">BlockEvent</a></h2>
 
-<h3 id="mobility--string">mobility : string</h3>
+<h3 id="block--block">block : <a href="/modules/Block">Block</a></h3>
 
-<h3 id="name--string-1">name : string</h3>
+<h3 id="pos--vec3">pos : <a href="/modules/Vec3">Vec3</a></h3>
 
-<h3 id="opaque--boolean">opaque : boolean</h3>
+<h2 id="blockhit"><a href="/modules/BlockHit/">BlockHit</a></h2>
 
-<h3 id="replaceable--boolean">replaceable : boolean</h3>
+<h3 id="hitvec--vec3">hitVec : <a href="/modules/Vec3">Vec3</a></h3>
 
-<h3 id="requiresnotool--boolean">requiresNoTool : boolean</h3>
+<h3 id="pos--vec3-1">pos : <a href="/modules/Vec3">Vec3</a></h3>
 
-<h3 id="solid--boolean">solid : boolean</h3>
+<h3 id="sidehit--string">sideHit : string</h3>
 
-<h2 id="droppeditem"><a href="/modules/net/wizardsoflua/lua/classes/entity/DroppedItem/">DroppedItem</a></h2>
+<h2 id="blockplaceevent"><a href="/modules/BlockPlaceEvent/">BlockPlaceEvent</a></h2>
+
+<h3 id="hand--string">hand : string</h3>
+
+<h3 id="placedagainst--block">placedAgainst : <a href="/modules/Block">Block</a></h3>
+
+<h3 id="player--player-1">player : <a href="/modules/Player">Player</a></h3>
+
+<h3 id="replacedblock--block">replacedBlock : <a href="/modules/Block">Block</a></h3>
+
+<h2 id="blocks"><a href="/modules/Blocks/">Blocks</a></h2>
+
+<h2 id="chatevent"><a href="/modules/ChatEvent/">ChatEvent</a></h2>
+
+<h3 id="message--string">message : string</h3>
+
+<h3 id="player--entity">player : <a href="/modules/Entity">Entity</a></h3>
+
+<h2 id="chunkevent"><a href="/modules/ChunkEvent/">ChunkEvent</a></h2>
+
+<h3 id="chunkx--number-int">chunkX : number (int)</h3>
+
+<h3 id="chunkz--number-int">chunkZ : number (int)</h3>
+
+<h3 id="world--world">world : <a href="/modules/World">World</a></h3>
+
+<h2 id="chunkloadevent"><a href="/modules/ChunkLoadEvent/">ChunkLoadEvent</a></h2>
+
+<h2 id="chunkunloadevent"><a href="/modules/ChunkUnloadEvent/">ChunkUnloadEvent</a></h2>
+
+<h2 id="commands"><a href="/modules/Commands/">Commands</a></h2>
+
+<h2 id="customevent"><a href="/modules/CustomEvent/">CustomEvent</a></h2>
+
+<h3 id="data--any">data : <a href="/modules/any">any</a></h3>
+
+<h2 id="droppeditem"><a href="/modules/DroppedItem/">DroppedItem</a></h2>
 
 <h3 id="item--item">item : <a href="/modules/Item">Item</a></h3>
 
-<h2 id="entity"><a href="/modules/net/wizardsoflua/lua/classes/entity/Entity/">Entity</a></h2>
+<h2 id="entities"><a href="/modules/Entities/">Entities</a></h2>
+
+<h2 id="entity"><a href="/modules/Entity/">Entity</a></h2>
 
 <h3 id="alive--boolean">alive : boolean</h3>
 
@@ -577,11 +613,11 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h3 id="motion--vec3">motion : <a href="/modules/Vec3">Vec3</a></h3>
 
-<h3 id="name--string-2">name : string</h3>
+<h3 id="name--string-1">name : string</h3>
 
 <h3 id="nbt--table-1">nbt : <a href="/modules/table">table</a></h3>
 
-<h3 id="pos--vec3">pos : <a href="/modules/Vec3">Vec3</a></h3>
+<h3 id="pos--vec3-2">pos : <a href="/modules/Vec3">Vec3</a></h3>
 
 <h3 id="rotationpitch--number-float">rotationPitch : number (float)</h3>
 
@@ -595,171 +631,33 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h3 id="uuid--string">uuid : string</h3>
 
-<h3 id="world--world">world : <a href="/modules/World">World</a></h3>
-
-<h2 id="mob"><a href="/modules/net/wizardsoflua/lua/classes/entity/Mob/">Mob</a></h2>
-
-<h3 id="ai--boolean">ai : boolean</h3>
-
-<h2 id="player"><a href="/modules/net/wizardsoflua/lua/classes/entity/Player/">Player</a></h2>
-
-<h3 id="gamemode--string">gamemode : string</h3>
-
-<h3 id="operator--boolean">operator : boolean</h3>
-
-<h3 id="team--string">team : string</h3>
-
-<h2 id="blockbreakevent"><a href="/modules/net/wizardsoflua/lua/classes/event/BlockBreakEvent/">BlockBreakEvent</a></h2>
-
-<h3 id="experience--number-int">experience : number (int)</h3>
-
-<h3 id="player--entity">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="blockevent"><a href="/modules/net/wizardsoflua/lua/classes/event/BlockEvent/">BlockEvent</a></h2>
-
-<h3 id="block--block">block : <a href="/modules/Block">Block</a></h3>
-
-<h3 id="pos--vec3-1">pos : <a href="/modules/Vec3">Vec3</a></h3>
-
-<h2 id="blockplaceevent"><a href="/modules/net/wizardsoflua/lua/classes/event/BlockPlaceEvent/">BlockPlaceEvent</a></h2>
-
-<h3 id="hand--string">hand : string</h3>
-
-<h3 id="placedagainst--block">placedAgainst : <a href="/modules/Block">Block</a></h3>
-
-<h3 id="player--entity-1">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h3 id="replacedblock--block">replacedBlock : <a href="/modules/Block">Block</a></h3>
-
-<h2 id="chatevent"><a href="/modules/net/wizardsoflua/lua/classes/event/ChatEvent/">ChatEvent</a></h2>
-
-<h3 id="message--string">message : string</h3>
-
-<h3 id="player--player">player : <a href="/modules/Player">Player</a></h3>
-
-<h2 id="chunkevent"><a href="/modules/net/wizardsoflua/lua/classes/event/ChunkEvent/">ChunkEvent</a></h2>
-
-<h3 id="chunkx--number-int">chunkX : number (int)</h3>
-
-<h3 id="chunkz--number-int">chunkZ : number (int)</h3>
-
 <h3 id="world--world-1">world : <a href="/modules/World">World</a></h3>
 
-<h2 id="chunkloadevent"><a href="/modules/net/wizardsoflua/lua/classes/event/ChunkLoadEvent/">ChunkLoadEvent</a></h2>
-
-<h2 id="chunkunloadevent"><a href="/modules/net/wizardsoflua/lua/classes/event/ChunkUnloadEvent/">ChunkUnloadEvent</a></h2>
-
-<h2 id="customevent"><a href="/modules/net/wizardsoflua/lua/classes/event/CustomEvent/">CustomEvent</a></h2>
-
-<h3 id="data--any">data : <a href="/modules/any">any</a></h3>
-
-<h2 id="entityevent"><a href="/modules/net/wizardsoflua/lua/classes/event/EntityEvent/">EntityEvent</a></h2>
+<h2 id="entityevent"><a href="/modules/EntityEvent/">EntityEvent</a></h2>
 
 <h3 id="entity--entity">entity : <a href="/modules/Entity">Entity</a></h3>
 
-<h2 id="entityjoinworldevent"><a href="/modules/net/wizardsoflua/lua/classes/event/EntityJoinWorldEvent/">EntityJoinWorldEvent</a></h2>
+<h2 id="entityjoinworldevent"><a href="/modules/EntityJoinWorldEvent/">EntityJoinWorldEvent</a></h2>
 
 <h3 id="world--world-2">world : <a href="/modules/World">World</a></h3>
 
-<h2 id="event"><a href="/modules/net/wizardsoflua/lua/classes/event/Event/">Event</a></h2>
+<h2 id="event"><a href="/modules/Event/">Event</a></h2>
 
 <h3 id="cancelable--boolean">cancelable : boolean</h3>
 
 <h3 id="canceled--boolean">canceled : boolean</h3>
 
-<h3 id="name--string-3">name : string</h3>
+<h3 id="name--string-2">name : string</h3>
 
-<h2 id="leftclickblockevent"><a href="/modules/net/wizardsoflua/lua/classes/event/LeftClickBlockEvent/">LeftClickBlockEvent</a></h2>
+<h2 id="eventinterceptor"><a href="/modules/EventInterceptor/">EventInterceptor</a></h2>
 
-<h3 id="hitvec--vec3">hitVec : <a href="/modules/Vec3">Vec3</a></h3>
-
-<h2 id="livingdeathevent"><a href="/modules/net/wizardsoflua/lua/classes/event/LivingDeathEvent/">LivingDeathEvent</a></h2>
-
-<h3 id="cause--string">cause : string</h3>
-
-<h2 id="livingevent"><a href="/modules/net/wizardsoflua/lua/classes/event/LivingEvent/">LivingEvent</a></h2>
-
-<h3 id="entity--entity-1">entity : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="playerchangeddimensionevent"><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerChangedDimensionEvent/">PlayerChangedDimensionEvent</a></h2>
-
-<h3 id="from--number-int">from : number (int)</h3>
-
-<h3 id="player--entity-2">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h3 id="to--number-int">to : number (int)</h3>
-
-<h2 id="playerinteractevent"><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerInteractEvent/">PlayerInteractEvent</a></h2>
-
-<h3 id="face--string">face : string</h3>
-
-<h3 id="hand--string-1">hand : string</h3>
-
-<h3 id="item--item-1">item : <a href="/modules/Item">Item</a></h3>
-
-<h3 id="player--entity-3">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h3 id="pos--vec3-2">pos : <a href="/modules/Vec3">Vec3</a></h3>
-
-<h2 id="playeritempickupevent"><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerItemPickupEvent/">PlayerItemPickupEvent</a></h2>
-
-<h3 id="item--entity">item : <a href="/modules/Entity">Entity</a></h3>
-
-<h3 id="player--entity-4">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="playerloggedinevent"><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerLoggedInEvent/">PlayerLoggedInEvent</a></h2>
-
-<h3 id="player--entity-5">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="playerloggedoutevent"><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerLoggedOutEvent/">PlayerLoggedOutEvent</a></h2>
-
-<h3 id="player--entity-6">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="playerrespawnevent"><a href="/modules/net/wizardsoflua/lua/classes/event/PlayerRespawnEvent/">PlayerRespawnEvent</a></h2>
-
-<h3 id="endconquered--boolean">endConquered : boolean</h3>
-
-<h3 id="player--entity-7">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="rightclickblockevent"><a href="/modules/net/wizardsoflua/lua/classes/event/RightClickBlockEvent/">RightClickBlockEvent</a></h2>
-
-<h3 id="hitvec--vec3-1">hitVec : <a href="/modules/Vec3">Vec3</a></h3>
-
-<h2 id="spellbreakevent"><a href="/modules/net/wizardsoflua/lua/classes/event/SpellBreakEvent/">SpellBreakEvent</a></h2>
-
-<h3 id="spell--virtualentity">spell : <a href="/modules/VirtualEntity">VirtualEntity</a></h3>
-
-<h2 id="swingarmevent"><a href="/modules/net/wizardsoflua/lua/classes/event/SwingArmEvent/">SwingArmEvent</a></h2>
-
-<h3 id="hand--string-2">hand : string</h3>
-
-<h3 id="item--item-2">item : <a href="/modules/Item">Item</a></h3>
-
-<h3 id="player--entity-8">player : <a href="/modules/Entity">Entity</a></h3>
-
-<h2 id="useitemevent"><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemEvent/">UseItemEvent</a></h2>
-
-<h3 id="duration--number-int">duration : number (int)</h3>
-
-<h3 id="item--item-3">item : <a href="/modules/Item">Item</a></h3>
-
-<h2 id="useitemfinishevent"><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemFinishEvent/">UseItemFinishEvent</a></h2>
-
-<h3 id="resultitem--item">resultItem : <a href="/modules/Item">Item</a></h3>
-
-<h2 id="useitemstartevent"><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemStartEvent/">UseItemStartEvent</a></h2>
-
-<h2 id="useitemstopevent"><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemStopEvent/">UseItemStopEvent</a></h2>
-
-<h2 id="useitemtickevent"><a href="/modules/net/wizardsoflua/lua/classes/event/UseItemTickEvent/">UseItemTickEvent</a></h2>
-
-<h2 id="eventinterceptor"><a href="/modules/net/wizardsoflua/lua/classes/eventinterceptor/EventInterceptor/">EventInterceptor</a></h2>
-
-<h2 id="eventqueue"><a href="/modules/net/wizardsoflua/lua/classes/eventqueue/EventQueue/">EventQueue</a></h2>
+<h2 id="eventqueue"><a href="/modules/EventQueue/">EventQueue</a></h2>
 
 <h3 id="names--table">names : table</h3>
 
-<h2 id="item"><a href="/modules/net/wizardsoflua/lua/classes/item/Item/">Item</a></h2>
+<h2 id="events"><a href="/modules/Events/">Events</a></h2>
+
+<h2 id="item"><a href="/modules/Item/">Item</a></h2>
 
 <h3 id="count--number-int">count : number (int)</h3>
 
@@ -773,17 +671,103 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h3 id="repaircost--number-int">repairCost : number (int)</h3>
 
-<h2 id="logger"><a href="/modules/net/wizardsoflua/lua/classes/logger/Logger/">Logger</a></h2>
+<h2 id="items"><a href="/modules/Items/">Items</a></h2>
 
-<h2 id="blockhit"><a href="/modules/net/wizardsoflua/lua/classes/scan/BlockHit/">BlockHit</a></h2>
+<h2 id="leftclickblockevent"><a href="/modules/LeftClickBlockEvent/">LeftClickBlockEvent</a></h2>
 
-<h3 id="hitvec--vec3-2">hitVec : <a href="/modules/Vec3">Vec3</a></h3>
+<h3 id="hitvec--vec3-1">hitVec : <a href="/modules/Vec3">Vec3</a></h3>
+
+<h2 id="livingdeathevent"><a href="/modules/LivingDeathEvent/">LivingDeathEvent</a></h2>
+
+<h3 id="cause--string">cause : string</h3>
+
+<h2 id="livingevent"><a href="/modules/LivingEvent/">LivingEvent</a></h2>
+
+<h3 id="entity--entity-1">entity : <a href="/modules/Entity">Entity</a></h3>
+
+<h2 id="logger"><a href="/modules/Logger/">Logger</a></h2>
+
+<h2 id="loggers"><a href="/modules/Loggers/">Loggers</a></h2>
+
+<h2 id="material"><a href="/modules/Material/">Material</a></h2>
+
+<h3 id="blocksmovement--boolean">blocksMovement : boolean</h3>
+
+<h3 id="canburn--boolean">canBurn : boolean</h3>
+
+<h3 id="liquid--boolean">liquid : boolean</h3>
+
+<h3 id="mobility--string">mobility : string</h3>
+
+<h3 id="name--string-3">name : string</h3>
+
+<h3 id="opaque--boolean">opaque : boolean</h3>
+
+<h3 id="replaceable--boolean">replaceable : boolean</h3>
+
+<h3 id="requiresnotool--boolean">requiresNoTool : boolean</h3>
+
+<h3 id="solid--boolean">solid : boolean</h3>
+
+<h2 id="mob"><a href="/modules/Mob/">Mob</a></h2>
+
+<h3 id="ai--boolean">ai : boolean</h3>
+
+<h2 id="object"><a href="/modules/Object/">Object</a></h2>
+
+<h2 id="player"><a href="/modules/Player/">Player</a></h2>
+
+<h3 id="gamemode--string">gamemode : string</h3>
+
+<h3 id="operator--boolean">operator : boolean</h3>
+
+<h3 id="team--string">team : string</h3>
+
+<h2 id="playerchangeddimensionevent"><a href="/modules/PlayerChangedDimensionEvent/">PlayerChangedDimensionEvent</a></h2>
+
+<h3 id="from--number-int">from : number (int)</h3>
+
+<h3 id="player--player-2">player : <a href="/modules/Player">Player</a></h3>
+
+<h3 id="to--number-int">to : number (int)</h3>
+
+<h2 id="playerinteractevent"><a href="/modules/PlayerInteractEvent/">PlayerInteractEvent</a></h2>
+
+<h3 id="face--string">face : string</h3>
+
+<h3 id="hand--string-1">hand : string</h3>
+
+<h3 id="item--item-1">item : <a href="/modules/Item">Item</a></h3>
+
+<h3 id="player--player-3">player : <a href="/modules/Player">Player</a></h3>
 
 <h3 id="pos--vec3-3">pos : <a href="/modules/Vec3">Vec3</a></h3>
 
-<h3 id="sidehit--string">sideHit : string</h3>
+<h2 id="playeritempickupevent"><a href="/modules/PlayerItemPickupEvent/">PlayerItemPickupEvent</a></h2>
 
-<h2 id="spell"><a href="/modules/net/wizardsoflua/lua/classes/spell/Spell/">Spell</a></h2>
+<h3 id="item--droppeditem">item : <a href="/modules/DroppedItem">DroppedItem</a></h3>
+
+<h3 id="player--player-4">player : <a href="/modules/Player">Player</a></h3>
+
+<h2 id="playerloggedinevent"><a href="/modules/PlayerLoggedInEvent/">PlayerLoggedInEvent</a></h2>
+
+<h3 id="player--player-5">player : <a href="/modules/Player">Player</a></h3>
+
+<h2 id="playerloggedoutevent"><a href="/modules/PlayerLoggedOutEvent/">PlayerLoggedOutEvent</a></h2>
+
+<h3 id="player--player-6">player : <a href="/modules/Player">Player</a></h3>
+
+<h2 id="playerrespawnevent"><a href="/modules/PlayerRespawnEvent/">PlayerRespawnEvent</a></h2>
+
+<h3 id="endconquered--boolean">endConquered : boolean</h3>
+
+<h3 id="player--player-7">player : <a href="/modules/Player">Player</a></h3>
+
+<h2 id="rightclickblockevent"><a href="/modules/RightClickBlockEvent/">RightClickBlockEvent</a></h2>
+
+<h3 id="hitvec--vec3-2">hitVec : <a href="/modules/Vec3">Vec3</a></h3>
+
+<h2 id="spell"><a href="/modules/Spell/">Spell</a></h2>
 
 <h3 id="block--block-1">block : <a href="/modules/Block">Block</a></h3>
 
@@ -795,7 +779,53 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h3 id="visible--boolean">visible : boolean</h3>
 
-<h2 id="virtualentity"><a href="/modules/net/wizardsoflua/lua/classes/spell/VirtualEntity/">VirtualEntity</a></h2>
+<h2 id="spellbreakevent"><a href="/modules/SpellBreakEvent/">SpellBreakEvent</a></h2>
+
+<h3 id="spell--virtualentity">spell : <a href="/modules/VirtualEntity">VirtualEntity</a></h3>
+
+<h2 id="swingarmevent"><a href="/modules/SwingArmEvent/">SwingArmEvent</a></h2>
+
+<h3 id="hand--string-2">hand : string</h3>
+
+<h3 id="item--item-2">item : <a href="/modules/Item">Item</a></h3>
+
+<h3 id="player--player-8">player : <a href="/modules/Player">Player</a></h3>
+
+<h2 id="system"><a href="/modules/System/">System</a></h2>
+
+<h2 id="time"><a href="/modules/Time/">Time</a></h2>
+
+<h3 id="allowance--number-long">allowance : number (long)</h3>
+
+<h3 id="autosleep--boolean">autosleep : boolean</h3>
+
+<h3 id="gametime--number-long">gametime : number (long)</h3>
+
+<h3 id="luatime--number-long">luatime : number (long)</h3>
+
+<h3 id="realtime--number-long">realtime : number (long)</h3>
+
+<h2 id="types"><a href="/modules/Types/">Types</a></h2>
+
+<h2 id="useitemevent"><a href="/modules/UseItemEvent/">UseItemEvent</a></h2>
+
+<h3 id="duration--number-int">duration : number (int)</h3>
+
+<h3 id="item--item-3">item : <a href="/modules/Item">Item</a></h3>
+
+<h2 id="useitemfinishevent"><a href="/modules/UseItemFinishEvent/">UseItemFinishEvent</a></h2>
+
+<h3 id="resultitem--item">resultItem : <a href="/modules/Item">Item</a></h3>
+
+<h2 id="useitemstartevent"><a href="/modules/UseItemStartEvent/">UseItemStartEvent</a></h2>
+
+<h2 id="useitemstopevent"><a href="/modules/UseItemStopEvent/">UseItemStopEvent</a></h2>
+
+<h2 id="useitemtickevent"><a href="/modules/UseItemTickEvent/">UseItemTickEvent</a></h2>
+
+<h2 id="vec3"><a href="/modules/Vec3/">Vec3</a></h2>
+
+<h2 id="virtualentity"><a href="/modules/VirtualEntity/">VirtualEntity</a></h2>
 
 <h3 id="alive--boolean-1">alive : boolean</h3>
 
@@ -823,9 +853,11 @@ If you are interested into this mod at this early stage, please feel free to
 
 <h3 id="world--world-3">world : <a href="/modules/World">World</a></h3>
 
-<h2 id="vec3"><a href="/modules/net/wizardsoflua/lua/classes/vec3/Vec3/">Vec3</a></h2>
+<h2 id="wol"><a href="/modules/Wol/">Wol</a></h2>
 
-<h2 id="world"><a href="/modules/net/wizardsoflua/lua/classes/world/World/">World</a></h2>
+<h3 id="version--string">version : string</h3>
+
+<h2 id="world"><a href="/modules/World/">World</a></h2>
 
 <h3 id="daytime--number-long">daytime : number (long)</h3>
 
@@ -838,38 +870,6 @@ If you are interested into this mod at this early stage, please feel free to
 <h3 id="spawnpoint--vec3">spawnPoint : <a href="/modules/Vec3">Vec3</a></h3>
 
 <h3 id="time--number-long">time : number (long)</h3>
-
-<h2 id="blocks"><a href="/modules/net/wizardsoflua/lua/module/blocks/Blocks/">Blocks</a></h2>
-
-<h2 id="commands"><a href="/modules/net/wizardsoflua/lua/module/command/Commands/">Commands</a></h2>
-
-<h2 id="entities"><a href="/modules/net/wizardsoflua/lua/module/entities/Entities/">Entities</a></h2>
-
-<h2 id="events"><a href="/modules/net/wizardsoflua/lua/module/events/Events/">Events</a></h2>
-
-<h2 id="items"><a href="/modules/net/wizardsoflua/lua/module/items/Items/">Items</a></h2>
-
-<h2 id="loggers"><a href="/modules/net/wizardsoflua/lua/module/loggers/Loggers/">Loggers</a></h2>
-
-<h2 id="system"><a href="/modules/net/wizardsoflua/lua/module/system/System/">System</a></h2>
-
-<h2 id="time"><a href="/modules/net/wizardsoflua/lua/module/time/Time/">Time</a></h2>
-
-<h3 id="allowance--number-long">allowance : number (long)</h3>
-
-<h3 id="autosleep--boolean">autosleep : boolean</h3>
-
-<h3 id="gametime--number-long">gametime : number (long)</h3>
-
-<h3 id="luatime--number-long">luatime : number (long)</h3>
-
-<h3 id="realtime--number-long">realtime : number (long)</h3>
-
-<h2 id="types"><a href="/modules/net/wizardsoflua/lua/module/types/Types/">Types</a></h2>
-
-<h2 id="wol"><a href="/modules/net/wizardsoflua/lua/module/wol/Wol/">Wol</a></h2>
-
-<h3 id="version--string">version : string</h3>
 
 
 
