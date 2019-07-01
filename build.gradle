@@ -184,6 +184,7 @@ task updateWebsite(type: com.github.jrubygradle.JRubyExec) {
 }
 
 task jekyllServe(type: com.github.jrubygradle.JRubyExec) {
+  dependsOn updateWebsite
   script 'jekyll'
   workingDir temporaryDir
   scriptArgs 'serve', '-s', file('docs').absolutePath
