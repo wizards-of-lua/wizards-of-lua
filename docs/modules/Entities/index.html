@@ -25,12 +25,12 @@
 
           
             <li class="translate">
-              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/spellbooklibrary.html" alt="Translate this page"></a>
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/modules/Entities/" alt="Translate this page"></a>
             </li>
           
           <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
           <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
-
+          
           
         </nav>
       </div><!-- end header -->
@@ -48,38 +48,131 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
           -->
         </div>
+        
+
+        <h1><span class="notranslate">Entities</span> - Finding Entities</h1>
+        
+        
 
 
-        <h1>The Spell Book Library</h1>
-        <p><em>To interact with the Minecraft world, a spell can make use of a special application
-programming interface (API).
-This API is documentend by a bunch of small books which are collected inside
-this Spell Book Library.</em></p>
 
-<p>The Wizards of Lua use magic words as ingredients to craft powerful spells.
-This library contains a collection of books that list all basic
-magic words that have been discovered, or invented, by the very first members,
-called archmages, so far.
-There are a lot of different categories of magic words:
-keywords, modules, classes, properties, and functions.
-The books listed below cover all those categories, but not all words completely.
-There are, almost certainly, more words out there, but to begin with, this library
-is a good starting point.</p>
+        <p>The <span class="notranslate">Entities</span> module provides access to all
+<a href="/module/Entity">Entity</a> objects currently loaded.</p>
 
-<p><img src="images/library-of-lua.jpg" alt="Library of Lua" /></p>
 
-<p>On this page you find a list of books that are organized by classes and modules.
-Every class and module is documented within its own book.
-Inside each book you will find sections about properties and functions.
-In each of those there is a brief description about their nature, their effects,
-and, if available, about the options you have to influence these effects.</p>
+        
+        
+<p>Here is an overview of the Entities <em>functions</em>:</p>
 
-<p>To make it easy for the reader, the authors have added some small examples to
-each section, that can be used as recipes for crafting spells.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Function</th>
+      <th>Parameters</th>
+      <th style="text-align: center">Results</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="#find"> <span class="notranslate">find</span> </a></td>
+      <td><span class="notranslate">selector</span></td>
+      <td style="text-align: center"><span class="notranslate">table</span></td>
+    </tr>
+    <tr>
+      <td><a href="#summon"> <span class="notranslate">summon</span> </a></td>
+      <td><span class="notranslate">nbt</span></td>
+      <td style="text-align: center"><span class="notranslate"><a href="/modules/Entity">Entity</a></span></td>
+    </tr>
+  </tbody>
+</table>
 
-<p>This list is sorted alphabetically.</p>
+<h2 id="functions">Functions</h2>
 
-<div id="naviLeft">
+<p>Below you find short descriptions about each of the functions
+and some examples about how to use them in your spells.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="find"></a></p>
+<h3 id="find-selector---table"><span class="notranslate">find (selector) -&gt; table</span></h3>
+
+<p>The ‘find’ function returns a table of Entity objects that match the given selector.</p>
+
+<h4 id="example">Example</h4>
+
+<p>Printing the number of all players currently logged in.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">found</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@a"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="n">found</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-1">Example</h4>
+
+<p>Printing the position of player mickkay.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">found</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@a[name=mickkay]"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">found</span><span class="p">.</span><span class="n">pos</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-2">Example</h4>
+
+<p>Printing the positions of all cows in the (loaded part of the) world.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">found</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@e[type=cow]"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">cow</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">cow</span><span class="p">.</span><span class="n">pos</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h4 id="example-3">Example</h4>
+
+<p>Printing the names of all dropped items in the (loaded part of the) world.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">found</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@e[type=item]"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">e</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="summon"></a></p>
+<h3 id="summon-nbt---entity"><span class="notranslate">summon (nbt) -&gt; <a href="/modules/Entity">Entity</a></span></h3>
+
+<p>The ‘summon’ function returns a freshly created entity of the given type, having the optionally
+given Nbt values.</p>
+
+<h4 id="example-4">Example</h4>
+
+<p>Creating a pig and moving it half a meter upwards.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pig</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">summon</span><span class="p">(</span><span class="s2">"pig"</span><span class="p">)</span>
+<span class="n">pig</span><span class="p">:</span><span class="n">move</span><span class="p">(</span><span class="s2">"up"</span><span class="p">,</span><span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-5">Example</h4>
+
+<p>Creating a creeper with no AI.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Entities</span><span class="p">.</span><span class="n">summon</span><span class="p">(</span><span class="s2">"creeper"</span><span class="p">,</span> <span class="p">{</span><span class="n">NoAI</span><span class="o">=</span><span class="mi">1</span><span class="p">})</span>
+</code></pre></div></div>
+
+<h4 id="example-6">Example</h4>
+
+<p>Creating a zombie with no AI that is spinning around.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">z</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">summon</span><span class="p">(</span><span class="s2">"zombie"</span><span class="p">,</span> <span class="p">{</span><span class="n">NoAI</span><span class="o">=</span><span class="mi">1</span><span class="p">})</span>
+<span class="k">while</span> <span class="kc">true</span> <span class="k">do</span>
+  <span class="n">z</span><span class="p">.</span><span class="n">rotationYaw</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">rotationYaw</span> <span class="o">+</span> <span class="mi">10</span>
+  <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<hr />
+
+
+
+        <div id="naviLeft">
 <h2>Modules</h2>
 <ul>
    
@@ -263,8 +356,6 @@ each section, that can be used as recipes for crafting spells.</p>
 
 </div>
 
-
-
         <div id="naviRight">
 <h2>Navigation</h2>
 <ul>
@@ -297,6 +388,7 @@ each section, that can be used as recipes for crafting spells.</p>
    
 </ul>
 </div>
+
       </section>
 
     </div>

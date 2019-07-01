@@ -175,12 +175,17 @@ task copyModulesDocumentation(type: Copy) {
 }
 
 task updateWebsite(type: com.github.jrubygradle.JRubyExec) {
+  dependsOn cleanCopyJekyllFiles
   dependsOn copyJekyllFiles
   dependsOn copyModulesDocumentation
 
   script 'jekyll'
   workingDir temporaryDir
   scriptArgs 'build', '-s', jekyllBuildDir.absolutePath, '-d', file('docs').absolutePath
+
+  doFirst {
+    delete file('docs')
+  }
 }
 
 task jekyllServe(type: com.github.jrubygradle.JRubyExec) {
