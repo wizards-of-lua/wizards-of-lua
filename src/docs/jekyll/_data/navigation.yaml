@@ -17,25 +17,25 @@ docs:
   url: /installation
 
 - title: Configuration
-  url: /configuration-file
+  url: /versions/current/configuration-file
 
 - title: The /lua Command
-  url: /lua-command
+  url: /versions/current/lua-command
 
 - title: The /wol Command
-  url: /wol-command
+  url: /versions/current/wol-command
 
 - title: Spell Book Library
-  url: /spellbooklibrary
+  url: /versions/current/spellbooklibrary
 
 - title: Spell Packs
-  url: /spellpacks.html
+  url: /spellpacks
 
 - title: Examples
-  url: /examples.html
+  url: /examples
 
 - title: Tutorials
-  url: /tutorials.html
+  url: /tutorials
 
 - title: Feedback
   url: /feedback

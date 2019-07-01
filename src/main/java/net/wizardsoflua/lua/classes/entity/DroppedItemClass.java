@@ -49,7 +49,7 @@ public final class DroppedItemClass extends BasicLuaClass<EntityItem, DroppedIte
     }
 
     /**
-     * This is the [item](/modules/Item/) that has been dropped.
+     * This is the [item](../Item/) that has been dropped.
      */
     @LuaProperty
     public ItemStack getItem() {

@@ -16,8 +16,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">UseItemTickEvent</span> class is fired every gametick while a
- * [Mob](/modules/Mob) uses an [Item](/modules/Item). Setting the
- * [duration](/modules/UseItemEvent#duration) to zero or less cancels this event.
+ * [Mob](../Mob) uses an [Item](../Item). Setting the
+ * [duration](../UseItemEvent#duration) to zero or less cancels this event.
  *
  * #### Example
  *

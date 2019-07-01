@@ -26,7 +26,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 import net.wizardsoflua.lua.classes.event.EventClass;
 
 /**
- * The <span class="notranslate">EventQueue</span> class collects [events](/modules/Event) when it
+ * The <span class="notranslate">EventQueue</span> class collects [events](../Event) when it
  * is connected to the event source.
  */
 @AutoService(LuaConverter.class)
@@ -58,8 +58,8 @@ public final class EventQueueClass
     }
 
     /**
-     * These are the [names](/modules/Event#name) of all events this queue is
-     * [collecting](/modules/Events#collect).
+     * These are the [names](../Event#name) of all events this queue is
+     * [collecting](../Events#collect).
      */
     @LuaProperty
     public ImmutableSet<String> getNames() {
@@ -109,7 +109,7 @@ public final class EventQueueClass
 
     /**
      * The 'latest' function returns the newest event in this queue and discards all older events.
-     * If the queue [is empty](/modules/EventQueue#isEmpty) then nil is returned. This is useful for
+     * If the queue [is empty](../EventQueue#isEmpty) then nil is returned. This is useful for
      * update events where you are only interested in the most recent change.
      *
      * #### Example

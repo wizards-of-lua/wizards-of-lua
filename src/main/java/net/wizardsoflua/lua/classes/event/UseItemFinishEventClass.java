@@ -18,9 +18,9 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">UseItemFinishEvent</span> class is fired after a
- * [Mob](/modules/Mob) or [Player](/modules/Player) finishes using an [Item](/modules/Item). The
- * [item](/modules/UseItemEvent#item) and [resultItem](#resultItem) reflect the state after item
- * use. If the item in use had a [count](/modules/Item#count) of 1 then the item in this event is
+ * [Mob](../Mob) or [Player](../Player) finishes using an [Item](../Item). The
+ * [item](../UseItemEvent#item) and [resultItem](#resultItem) reflect the state after item
+ * use. If the item in use had a [count](../Item#count) of 1 then the item in this event is
  * air.
  *
  * #### Example

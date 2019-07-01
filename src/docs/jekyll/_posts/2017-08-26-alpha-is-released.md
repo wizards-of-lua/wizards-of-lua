@@ -17,18 +17,18 @@ For bug reports please use our [issues tracker at GitHub](https://github.com/wiz
 
 The following features are implemented so far.
 ### Implemented Features
-* Wizards can cast spells using the [/lua command](/lua-command.html).
-* Wizards can list all active spells using the [/wol command](/wol-command.html).
-* Wizards can break all active spells using the [/wol command](/wol-command.html).
+* Wizards can cast spells using the [/lua command](/versions/current/lua-command).
+* Wizards can list all active spells using the [/wol command](/versions/current/wol-command).
+* Wizards can break all active spells using the [/wol command](/versions/current/wol-command).
 * Spells can be casted by command blocks.
-* Spells can create any available block using the [Blocks module](/modules/Blocks/).
-* Spells can read and modify all block properties using the [Block class](/modules/Block/).
-* Spells can copy and paste blocks using the [Spell.block property](/modules/Spell/#block).
-* Spells can read and modify a small amount of entity properties using the [Entity class](/modules/Entity/).
-* Spells (in fact all entities) can be [moved](/modules/Entity/#move ) around.
-* Spells can be made [visible](/modules/Spell/#visible).
-* Spells can [execute](/modules/Spell/#execute) any Minecraft command. This includes casting other spells.
-* Spells can be sent to [sleep](/modules/Time/#sleep) for a certain amount of game ticks.
+* Spells can create any available block using the [Blocks module](/versions/current/modules/Blocks/).
+* Spells can read and modify all block properties using the [Block class](/versions/current/modules/Block/).
+* Spells can copy and paste blocks using the [Spell.block property](/versions/current/modules/Spell/#block).
+* Spells can read and modify a small amount of entity properties using the [Entity class](/versions/current/modules/Entity/).
+* Spells (in fact all entities) can be [moved](/versions/current/modules/Entity/#move ) around.
+* Spells can be made [visible](/versions/current/modules/Spell/#visible).
+* Spells can [execute](/versions/current/modules/Spell/#execute) any Minecraft command. This includes casting other spells.
+* Spells can be sent to [sleep](/versions/current/modules/Time/#sleep) for a certain amount of game ticks.
 
 However, this version is marked as *Alpha*, which means that there are still
 important features missing.

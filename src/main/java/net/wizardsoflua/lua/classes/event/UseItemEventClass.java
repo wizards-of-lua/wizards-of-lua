@@ -18,7 +18,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">UseItemEvent</span> class is the base class of events about
- * [Item](/modules/Item) usage. Typical scenarios are:
+ * [Item](../Item) usage. Typical scenarios are:
  * <ul>
  * <li>Drawing a bow</li>
  * <li>Eating food</li>
@@ -57,7 +57,7 @@ public final class UseItemEventClass extends BasicLuaClass<LivingEntityUseItemEv
     }
 
     /**
-     * This is the used [item](/modules/Item).
+     * This is the used [item](../Item).
      */
     @LuaProperty
     public ItemStack getItem() {

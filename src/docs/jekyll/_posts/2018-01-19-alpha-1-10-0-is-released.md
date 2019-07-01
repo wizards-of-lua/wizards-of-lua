@@ -9,7 +9,7 @@ layout: post
 The 1.10.0 alpha is a huge feature release. Please note that the new version is not completely backwards compatible.
 <!--more-->
 
-Most notably is the new web interface for [editing Lua files](/wol-command.html#File-Edit) directly from within your web browser.
+Most notably is the new web interface for [editing Lua files](/versions/current/wol-command#File-Edit) directly from within your web browser.
 
 ![Built-In Editor](/images/wol-file-editor.jpg)
 

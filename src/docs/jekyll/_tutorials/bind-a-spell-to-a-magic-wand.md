@@ -23,7 +23,7 @@ Please note, that this tutorial assumes that you are familiar with
 
 Normally, if you have three different magic wands, for example, the wand of feather-light flight,
 the [rocket thrower](/examples/rocket-thrower), and the smoking stick, you also need
-three distinct observer spells, each observing the event source for the [swing arm events](/modules/SwingArmEvent),
+three distinct observer spells, each observing the event source for the [swing arm events](/versions/current/modules/SwingArmEvent),
 and if that event occurs, then casting the appropriate spell.
 But creating an observer spell for each type of magic wand is cumbersome.
 Instead, we want to have one single observer spell for all kind of wands.
@@ -84,7 +84,7 @@ that item into our main hand and call:
 ```
 
 We have just defined what should be done when the
-[SwingArmEvent](/modules/SwingArmEvent) occurs.
+[SwingArmEvent](/versions/current/modules/SwingArmEvent) occurs.
 But this is not enough.
 We still need another spell that observes the events and handles them by
 executing the commands.

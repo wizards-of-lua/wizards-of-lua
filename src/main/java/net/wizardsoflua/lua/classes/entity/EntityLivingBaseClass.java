@@ -30,7 +30,7 @@ public class EntityLivingBaseClass {
     }
 
     /**
-     * This is the [item](/modules/Item) this entity is holding in its main hand.
+     * This is the [item](../Item) this entity is holding in its main hand.
      */
     @LuaProperty
     public @Nullable ItemStack getMainhand() {
@@ -50,7 +50,7 @@ public class EntityLivingBaseClass {
     }
 
     /**
-     * This is the [item](/modules/Item) this entity is holding in his off hand.
+     * This is the [item](../Item) this entity is holding in his off hand.
      */
     @LuaProperty
     public @Nullable ItemStack getOffhand() {
