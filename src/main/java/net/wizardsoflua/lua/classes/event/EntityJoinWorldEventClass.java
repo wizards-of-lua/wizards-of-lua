@@ -54,7 +54,7 @@ public final class EntityJoinWorldEventClass extends
     }
 
     /**
-     * This is the [world](/modules/World) in which this entity is going to join.
+     * This is the [world](../World) in which this entity is going to join.
      */
     @LuaProperty
     public World getWorld() {

@@ -19,7 +19,7 @@ import net.wizardsoflua.spell.SpellBreakEvent;
 
 /**
  * The <span class="notranslate">SpellBreakEvent</span> class informs about the termination of a
- * [Spell](/modules/Spell).
+ * [Spell](../Spell).
  * 
  * A spell can intercept its own break event and do some clean-up before it is finally terminated.
  *
@@ -61,7 +61,7 @@ public final class SpellBreakEventClass
     }
 
     /**
-     * The [Spell](/modules/Spell) that is being terminated.
+     * The [Spell](../Spell) that is being terminated.
      */
     @LuaProperty
     public SpellEntity getSpell() {

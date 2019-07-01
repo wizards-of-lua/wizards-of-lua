@@ -19,7 +19,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">ChunkEvent</span> is the common base class of
- * [ChunkLoadEvent](/modules/ChunkLoadEvent) and [ChunkUnloadEvent](/modules/ChunkUnloadEvent).
+ * [ChunkLoadEvent](../ChunkLoadEvent) and [ChunkUnloadEvent](../ChunkUnloadEvent).
  *
  * Please note that instances of this event could occur asynchronously to the game loop. Hence, if
  * you use an event interceptor to handle them, make sure that your code is thread safe.

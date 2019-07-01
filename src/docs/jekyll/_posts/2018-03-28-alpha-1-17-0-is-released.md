@@ -9,4 +9,4 @@ layout: post
 The 1.17.0 alpha is feature release that introduces the spell's data property that can be used to share data between spells.
 <!--more-->
 
-* Fixed [#42](https://github.com/wizards-of-lua/wizards-of-lua/issues/42) - Spells should support sharing data using a [spell-specific clipboard](/modules/Spell/#data). 
+* Fixed [#42](https://github.com/wizards-of-lua/wizards-of-lua/issues/42) - Spells should support sharing data using a [spell-specific clipboard](/versions/current/modules/Spell/#data). 

@@ -31,10 +31,15 @@ defaults:
       type: spellpacks
     values:
       layout: spellpack
+  - scope:
+      path: versioned
+      type: pages
+    values:
+      permalink: /versions/current/:basename
 collections:
   modules:
     output: true
-    permalink: /modules/:path/
+    permalink: /versions/current/modules/:path/
   tutorials:
     output: true
     permalink: /tutorials/:path/

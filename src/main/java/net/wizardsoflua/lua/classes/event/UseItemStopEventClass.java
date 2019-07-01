@@ -15,9 +15,9 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
- * The <span class="notranslate">UseItemStopEvent</span> class is fired when a [Mob](/modules/Mob)
- * or [Player](/modules/Player) stops using an [Item](/modules/Item) without
- * [finishing](/modules/UseItemStopEvent) it. Currently the only vanilla item that is affected by
+ * The <span class="notranslate">UseItemStopEvent</span> class is fired when a [Mob](../Mob)
+ * or [Player](../Player) stops using an [Item](../Item) without
+ * [finishing](../UseItemStopEvent) it. Currently the only vanilla item that is affected by
  * canceling this event is the bow. If this event is canceled the bow does not shoot an arrow.
  *
  * #### Example

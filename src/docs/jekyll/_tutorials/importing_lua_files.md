@@ -14,7 +14,7 @@ To support this, the Wizards of Lua mod provides for each player a personal dire
 
 To edit files in you personal directory you could use any external text editor, provided that you have direct access to the server's file system.
 
-But it's more convenient to use the built-in Lua editor, which can be lauched with the [/wol file edit](/wol-command.html#File-Edit) command.
+But it's more convenient to use the built-in Lua editor, which can be lauched with the [/wol file edit](/versions/current/wol-command#File-Edit) command.
 
 ### Creating a Lua Module with the Built-In Lua Editor
 Let's assume you want to create a new Lua module called "utilities" and store it into your personal directory.
@@ -82,7 +82,7 @@ By default your personal directory is found inside the Wol configuration directo
     <minecraft>/config/wizards-of-lua/libs/<uuid>
 
 where *&lt;minecraft&gt;* is the location of your Minecraft installation, and *&lt;uuid&gt;* is the UUID of the player.
-You can change this location by editing the [configuration file](/configuration-file.html).
+You can change this location by editing the [configuration file](/versions/current/configuration-file).
 
 For example, on my Linux server the path to my player-specific Lua library is:
 

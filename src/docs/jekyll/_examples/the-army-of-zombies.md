@@ -27,8 +27,8 @@ CustomName:soldier,CustomNameVisible:0,NoAI:1}
 ```
 
 Armed with this command you can start to create a new Lua spell.
-If you are familliar with the books found in the [Spell Book Library](/spellbooklibrary)
-you already know the powerful [Spell's execute](/modules/Spell/#execute) function.
+If you are familliar with the books found in the [Spell Book Library](/versions/current/spellbooklibrary)
+you already know the powerful [Spell's execute](/versions/current/modules/Spell/#execute) function.
 If not, well, here is what it does.
 
 The Spell's execute function can execute any Minecraft command.

@@ -204,7 +204,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      * also called [data tags](https://minecraft.gamepedia.com/Commands#Data_tags). The nbt property
      * is readonly but gives you a modifiable copy of the internal value. You can change the
      * contents, but to activate them you have to assign the modified table to the entity by using
-     * the [putNbt()](/modules/Entity/#putNbt) function.
+     * the [putNbt()](../Entity/#putNbt) function.
      */
     @LuaProperty
     public NBTTagCompound getNbt() {
@@ -323,7 +323,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     }
 
     /**
-     * The 'addTag' function adds the given tag to the set of [tags](/modules/Entity/#tags) of this
+     * The 'addTag' function adds the given tag to the set of [tags](../Entity/#tags) of this
      * entity. This function returns true if the tag was added successfully.
      */
     @LuaFunction
@@ -358,7 +358,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
      * is taken as default distance. Valid direction values are absolute directions ('up', 'down',
      * 'north', 'east', 'south', and 'west'), as well as relative directions ('forward', 'back',
      * 'left', and 'right'). Relative directions are interpreted relative to the direction the
-     * entity is [facing](/modules/Entity/#facing).
+     * entity is [facing](../Entity/#facing).
      */
     @LuaFunction
     public void move(String directionName, @Nullable Double distance) {
@@ -375,9 +375,9 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     }
 
     /**
-     * The 'putNbt' function inserts the given table entries into the [nbt](/modules/Entity/#nbt)
+     * The 'putNbt' function inserts the given table entries into the [nbt](../Entity/#nbt)
      * property of this entity. Please note that this function is not supported for
-     * [Player](/modules/Player/) objects.
+     * [Player](../Player/) objects.
      */
     @LuaFunction
     public void putNbt(Table nbt) {
@@ -387,7 +387,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
     }
 
     /**
-     * The 'removeTag' function removes the given tag from the set of [tags](/modules/Entity/#tags)
+     * The 'removeTag' function removes the given tag from the set of [tags](../Entity/#tags)
      * of this entity. This function returns true if the tag has been removed successfully, and
      * false if there was no such tag.
      */
@@ -398,7 +398,7 @@ public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instanc
 
     /**
      * The 'scanView' function scans the view of this entity for the next (non-liquid) block. On
-     * success it returns a [BlockHit](/modules/BlockHit/), otherwise nil. It scans the view with a
+     * success it returns a [BlockHit](../BlockHit/), otherwise nil. It scans the view with a
      * line-of-sight-range of up to the given distance (meter).
      */
     @LuaFunction

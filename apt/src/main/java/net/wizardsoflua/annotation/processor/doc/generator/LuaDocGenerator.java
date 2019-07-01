@@ -188,6 +188,6 @@ public class LuaDocGenerator {
   }
 
   private static String toReference(CharSequence simpleName) {
-    return simpleName.length() == 0 ? "" : "[" + simpleName + "](/modules/" + simpleName + ")";
+    return simpleName.length() == 0 ? "" : "[" + simpleName + "](../" + simpleName + ")";
   }
 }
