@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +21,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">BlockEvent</span> is the base class of
- * [BlockBreakEvent](/modules/BlockBreakEvent/) and [BlockPlaceEvent](/modules/BlockPlaceEvent/).
+ * [BlockBreakEvent](../BlockBreakEvent/) and [BlockPlaceEvent](../BlockPlaceEvent/).
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = BlockEventClass.NAME, superClass = EventClass.class)

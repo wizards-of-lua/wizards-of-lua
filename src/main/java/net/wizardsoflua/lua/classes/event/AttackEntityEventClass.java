@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -19,8 +18,8 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
- * The <span class="notranslate">AttackEntityEvent</span> is fired when a [player](/modules/Player)
- * attacks an [Entity](/modules/Entity).
+ * The <span class="notranslate">AttackEntityEvent</span> is fired when a [player](../Player)
+ * attacks an [Entity](../Entity).
  *
  */
 @AutoService(LuaConverter.class)
@@ -53,7 +52,7 @@ public final class AttackEntityEventClass
     }
 
     /**
-     * This is the [player](/modules/Player) that attacks the entity.
+     * This is the [player](../Player) that attacks the entity.
      *
      * #### Example
      *
@@ -73,7 +72,7 @@ public final class AttackEntityEventClass
     }
 
     /**
-     * This is the [entity](/modules/Entity) that is attacked.
+     * This is the [entity](../Entity) that is attacked.
      *
      * #### Example
      *

@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,7 +23,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">BlockPlaceEvent</span> class is fired when a player places a
- * [block](/modules/Block).
+ * [block](../Block).
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = BlockPlaceEventClass.NAME, superClass = BlockEventClass.class)

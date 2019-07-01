@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.eventinterceptor;
 
 import com.google.auto.service.AutoService;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -18,11 +17,11 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 /**
  * An <span class="notranslate">EventInterceptor</span> represents an interceptor of events.
  *
- * An interceptor can be obtained through [Events.intercept()](/modules/Events#intercept) and
- * [Events.on(...):call()](/modules/Events#on).
+ * An interceptor can be obtained through [Events.intercept()](../Events#intercept) and
+ * [Events.on(...):call()](../Events#on).
  *
- * In contrast to an [EventQueue](/modules/EventQueue), an event interceptor is capable of event
- * mutation and event cancellation since it is called 'in-line' with the event occurrence.
+ * In contrast to an [EventQueue](../EventQueue), an event interceptor is capable of event mutation
+ * and event cancellation since it is called 'in-line' with the event occurrence.
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = EventInterceptorClass.NAME)

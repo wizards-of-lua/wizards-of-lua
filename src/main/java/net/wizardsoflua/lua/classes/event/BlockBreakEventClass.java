@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.sandius.rembulan.Table;
@@ -97,7 +96,7 @@ public final class BlockBreakEventClass extends
     }
 
     /**
-     * This is the [player](/modules/Player) who broke the block.
+     * This is the [player](../Player) who broke the block.
      */
     @LuaProperty
     public EntityPlayer getPlayer() {

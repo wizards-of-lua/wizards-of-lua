@@ -144,8 +144,8 @@ public final class ItemClass extends BasicLuaClass<ItemStack, ItemClass.Instance
     }
 
     /**
-     * The 'putNbt' function inserts the given table entries into this item's
-     * [nbt](/modules/Item/#nbt) property.
+     * The 'putNbt' function inserts the given table entries into this item's [nbt](../Item/#nbt)
+     * property.
      *
      * #### Example
      *

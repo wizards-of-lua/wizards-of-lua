@@ -2,9 +2,7 @@ package net.wizardsoflua.lua.classes.event;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
@@ -23,7 +21,7 @@ import net.wizardsoflua.lua.view.ViewFactory;
 
 /**
  * The <span class="notranslate">CustomEvent</span> represents any event that has been fired from
- * some Lua code using [Events.fire()](/modules/Events/#fire), for example:
+ * some Lua code using [Events.fire()](../Events/#fire), for example:
  *
  * <code>
  * Events.fire("my-event", {someKey="some data"})
@@ -70,8 +68,8 @@ public final class CustomEventClass
     }
 
     /**
-     * The data value that has been sent with this event. See [Events.fire()](/modules/Events/#fire)
-     * for more details on this.
+     * The data value that has been sent with this event. See [Events.fire()](../Events/#fire) for
+     * more details on this.
      *
      * #### Example
      *

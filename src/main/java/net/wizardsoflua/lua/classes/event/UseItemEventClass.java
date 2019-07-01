@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
@@ -19,10 +18,10 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">UseItemEvent</span> class is the base class of events about
- * [Item](/modules/Item) usage.
+ * [Item](../Item) usage.
  *
- * The <span class="notranslate">UseItemEvent</span> is fired when a [Mob](/modules/Mob) or
- * [Player](/modules/Player) uses an [Item](/modules/Item).
+ * The <span class="notranslate">UseItemEvent</span> is fired when a [Mob](../Mob) or
+ * [Player](../Player) uses an [Item](../Item).
  *
  * Typical scenarios are:
  * <ul>
@@ -32,7 +31,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
  * <li>Guarding with a shield</li>
  * </ul>
  *
- * Setting the [duration](/modules/UseItemEvent#duration) to zero or less cancels this event.
+ * Setting the [duration](../UseItemEvent#duration) to zero or less cancels this event.
  *
  */
 @AutoService(LuaConverter.class)
@@ -67,7 +66,7 @@ public final class UseItemEventClass extends
     }
 
     /**
-     * This is the used [item](/modules/Item).
+     * This is the used [item](../Item).
      */
     @LuaProperty
     public ItemStack getItem() {

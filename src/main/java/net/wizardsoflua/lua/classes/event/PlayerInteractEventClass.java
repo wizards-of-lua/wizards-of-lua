@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -23,8 +22,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">PlayerInteractEvent</span> is the base class of
- * [LeftClickBlockEvent](/modules/LeftClickBlockEvent/) and
- * [RightClickBlockEvent](/modules/RightClickBlockEvent/).
+ * [LeftClickBlockEvent](../LeftClickBlockEvent/) and
+ * [RightClickBlockEvent](../RightClickBlockEvent/).
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerInteractEventClass.NAME, superClass = EventClass.class)

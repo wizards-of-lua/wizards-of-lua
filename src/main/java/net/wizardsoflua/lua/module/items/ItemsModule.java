@@ -16,8 +16,8 @@ import net.wizardsoflua.extension.spell.spi.SpellExtension;
 import net.wizardsoflua.lua.extension.LuaTableExtension;
 
 /**
- * The <span class="notranslate">Items</span> module can be used to create an [item](/modules/Item/)
- * of any type.
+ * The <span class="notranslate">Items</span> module can be used to create an [item](../Item/) of
+ * any type.
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
@@ -38,7 +38,7 @@ public class ItemsModule extends LuaTableExtension {
   }
 
   /**
-   * The 'get' function returns a new [item](/modules/Item/) of the given type and amount.
+   * The 'get' function returns a new [item](../Item/) of the given type and amount.
    *
    * #### Example
    *

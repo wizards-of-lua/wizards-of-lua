@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -20,7 +19,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">PlayerItemPickupEvent</span> is fired whenever a
- * [Player](/modules/Player) picks up an [DroppedItem](/modules/DroppedItem).
+ * [Player](../Player) picks up an [DroppedItem](../DroppedItem).
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerItemPickupEventClass.NAME, superClass = EventClass.class)

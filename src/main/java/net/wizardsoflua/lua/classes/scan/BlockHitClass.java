@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.scan;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -21,7 +20,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">BlockHit</span> class contains the results of a call to the
- * entity's [scanView()](/modules/Entity/#scanView) function.
+ * entity's [scanView()](../Entity/#scanView) function.
  *
  */
 @AutoService(LuaConverter.class)

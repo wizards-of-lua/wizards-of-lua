@@ -7,9 +7,9 @@ By using it you can change the nature of the game.*
 
 The Wizards of Lua modification adds a new entity, called the Spell entity, to Minecraft.
 A spell is a virtual entity that can be cast by any player with operator privileges using the
-[/lua command](/lua-command).
+[/lua command](/versions/current/lua-command).
 Like any other entity each spell exists at a certain location
-(defined by a 3-dimensional [vector](/modules/Vec3/)) inside a specific dimension
+(defined by a 3-dimensional [vector](/versions/current/modules/Vec3/)) inside a specific dimension
 (like the Overworld or the Nether).
 The special thing about a spell is that it is constructed from a sequence of magic words which
 define exactly how this spell behaves inside the world.
@@ -22,14 +22,14 @@ developer.)
 To interact with the Minecraft world, a spell can make use of a specific application
 programming interface (API).
 This API is documentend by a bunch of small books which are collected inside the
-[spell book library](/spellbooklibrary).
+[spell book library](/versions/current/spellbooklibrary).
 
 By studying the [examples](/examples.html) and [tutorials](/tutorials.html),
 players can gain a deep knowledge about how the linuga magica works and become
 great wizards themselves.
 
 ## Casting a Spell
-A wizard can cast a spell using the [/lua command](/lua-command).
+A wizard can cast a spell using the [/lua command](/versions/current/lua-command).
 As any other Minecraft command it can be executed directly from the chat
 window (or from within a command block).
 
@@ -57,7 +57,7 @@ submitted the command.
 
 But changing the world by adding (or removing) blocks is not the only thing
 you can do with Lua.
-To find out what can be done just have a look at the [Lua Spell Book Library](/spellbooklibrary),
+To find out what can be done just have a look at the [Lua Spell Book Library](/versions/current/spellbooklibrary),
 the [tutorials](/tutorials.html), and our [list of examples](/examples.html).
 
 <a name="Editor" style="position:relative; top:-70px; display:block;"></a>
@@ -67,4 +67,4 @@ Typing spells into the command line is inconvenient for spells with more the a f
 It is far better to use the built-in editor to edit Lua files. This is, how it looks like:
 ![Built-In Editor](/images/wol-file-editor.jpg)
 
-To open the editor, you can use the [/wol file edit](/wol-command.html#Personal-Files) command.
+To open the editor, you can use the [/wol file edit](/versions/current/wol-command#Personal-Files) command.

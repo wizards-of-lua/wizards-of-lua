@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -56,7 +55,7 @@ public final class PlayerItemTossEventClass
     }
 
     /**
-     * The [player](/modules/Player) tossing the item.
+     * The [player](../Player) tossing the item.
      */
     @LuaProperty
     public EntityPlayer getPlayer() {
@@ -64,7 +63,7 @@ public final class PlayerItemTossEventClass
     }
 
     /**
-     * This is the [dropped item](/modules/DroppedItem) being tossed.
+     * This is the [dropped item](../DroppedItem) being tossed.
      */
     @LuaProperty
     public EntityItem getItem() {

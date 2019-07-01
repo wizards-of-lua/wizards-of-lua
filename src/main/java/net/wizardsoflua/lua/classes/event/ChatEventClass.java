@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.ServerChatEvent;
 import net.sandius.rembulan.Table;
@@ -19,7 +18,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">ChatEvent</span> class contains information about a chat message
- * that has been posted by some [player](/modules/Player/).
+ * that has been posted by some [player](../Player/).
  *
  * ### Example
  *

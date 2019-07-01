@@ -1,9 +1,7 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import javax.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 import net.sandius.rembulan.Table;
@@ -86,7 +84,7 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     }
 
     /**
-     * This is the [item](/modules/Item) this entity is holding in its main hand.
+     * This is the [item](../Item) this entity is holding in its main hand.
      */
     @Override
     @LuaProperty
@@ -103,7 +101,7 @@ public final class MobClass extends BasicLuaClass<EntityLiving, MobClass.Instanc
     }
 
     /**
-     * This is the [item](/modules/Item) this entity is holding in his off hand.
+     * This is the [item](../Item) this entity is holding in his off hand.
      */
     @Override
     @LuaProperty

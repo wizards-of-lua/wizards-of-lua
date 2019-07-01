@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -17,11 +16,11 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">RightClickItemEvent</span> class is fired when a player
- * right-clicks somewhere with an [Item](/modules/Item).
+ * right-clicks somewhere with an [Item](../Item).
  *
  * Note that this is NOT fired if the player is targeting a block (see
- * [RightClickBlockEvent](/modules/RightClickBlockEvent)) or an entity (see
- * [PlayerEntityInteractEvent](/modules/PlayerEntityInteractEvent)).
+ * [RightClickBlockEvent](../RightClickBlockEvent)) or an entity (see
+ * [PlayerEntityInteractEvent](../PlayerEntityInteractEvent)).
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = RightClickItemEventClass.NAME,

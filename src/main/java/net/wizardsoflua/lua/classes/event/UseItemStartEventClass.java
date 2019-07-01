@@ -16,9 +16,9 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
- * The <span class="notranslate">UseItemStartEvent</span> class is fired when a [Mob](/modules/Mob)
- * or [Player](/modules/Player) starts using an [Item](/modules/Item). Setting the
- * [duration](/modules/UseItemEvent#duration) to zero or less cancels this event.
+ * The <span class="notranslate">UseItemStartEvent</span> class is fired when a [Mob](../Mob)
+ * or [Player](../Player) starts using an [Item](../Item). Setting the
+ * [duration](../UseItemEvent#duration) to zero or less cancels this event.
  *
  * #### Example
  *

@@ -65,8 +65,8 @@ public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<E
      *
      * In general, this is determined by the event class.
      *
-     * For instance, a [BlockPlaceEvent](/modules/BlockPlaceEvent) is *cancelable*, but a
-     * [SwingArmEvent](/modules/SwingArmEvent) is not.
+     * For instance, a [BlockPlaceEvent](../BlockPlaceEvent) is *cancelable*, but a
+     * [SwingArmEvent](../SwingArmEvent) is not.
      */
     @LuaProperty
     public boolean isCancelable() {
@@ -82,8 +82,7 @@ public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<E
      * If *cancelable* is <span class="notranslate">*false*</span>, then setting
      * [canceled](#canceled) results in an error.
      *
-     * Please note, an event can only be canceled during [event
-     * interception](/modules/Events#intercept).
+     * Please note, an event can only be canceled during [event interception](../Events#intercept).
      *
      * #### Example
      *
@@ -111,8 +110,8 @@ public final class EventClass extends BasicLuaClass<Event, EventClass.Instance<E
     }
 
     /**
-     * The name of this kind of event. Use this name to [connect an event
-     * queue](/modules/Events/#collect) to the event source for events of this kind.
+     * The name of this kind of event. Use this name to [connect an event queue](../Events/#collect)
+     * to the event source for events of this kind.
      */
     @LuaProperty
     public String getName() {

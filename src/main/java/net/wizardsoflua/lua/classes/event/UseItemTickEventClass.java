@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
@@ -18,8 +17,8 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 /**
  *
  * The <span class="notranslate">UseItemTickEvent</span> class is fired every gametick while a
- * [Mob](/modules/Mob) or [Player](/modules/Player) uses an [Item](/modules/Item). Setting the
- * [duration](/modules/UseItemEvent#duration) to zero or less cancels this event.
+ * [Mob](../Mob) or [Player](../Player) uses an [Item](../Item). Setting the
+ * [duration](../UseItemEvent#duration) to zero or less cancels this event.
  *
  * #### Example
  *

@@ -1,12 +1,9 @@
 package net.wizardsoflua.lua.classes.block;
 
 import java.util.Optional;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -39,17 +36,16 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
  * An instance of this class represents either one of the following types:
  *
  * 1. A live block reference - that is a block at a specific world position. It can be accessed by
- * [spell.block](/modules/Spell/#block). 'Live' means that whenever the block at that position
- * changes, the internal state of this object will change as well.
+ * [spell.block](../Spell/#block). 'Live' means that whenever the block at that position changes,
+ * the internal state of this object will change as well.
  *
  * 2. An immutable block value - it's a block that exists independently of the world. It can be
- * created, e.g. by calling [Blocks.get()](/modules/Blocks/#get) or
- * [Block:copy()](/modules/Block/#copy).
+ * created, e.g. by calling [Blocks.get()](../Blocks/#get) or [Block:copy()](../Block/#copy).
  *
  * Both types are 'unmodifiable', meaning that you can't change their internal states directly.
  * Instead, if you want to change a block in the world, you will need to assign a new value to the
- * [spell.block](/modules/Spell/#block) field. This will copy the state of the right-hand value into
- * the block at the given spell's position.
+ * [spell.block](../Spell/#block) field. This will copy the state of the right-hand value into the
+ * block at the given spell's position.
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = BlockClass.NAME)
@@ -99,7 +95,7 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
 
     /**
      * The 'material' give you some insights in how this block behaves. Please have a look into the
-     * [Material Book](/modules/Material/) for more information.
+     * [Material Book](../Material/) for more information.
      */
     @LuaProperty
     public Material getMaterial() {
@@ -246,7 +242,7 @@ public final class BlockClass extends BasicLuaClass<WolBlock, BlockClass.Instanc
     }
 
     /**
-     * The 'asItem' function returns this block as an [item](/modules/Item/) of the given amount.
+     * The 'asItem' function returns this block as an [item](../Item/) of the given amount.
      *
      * #### Example
      *

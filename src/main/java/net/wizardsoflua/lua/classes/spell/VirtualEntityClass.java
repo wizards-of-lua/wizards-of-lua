@@ -104,7 +104,7 @@ public final class VirtualEntityClass
      * If 'forceChunk' is set to false and there is no player close to the current world chunk, then
      * this chunk will become unloaded eventually and stored to the disk. This means that entities
      * that are inside this chunk will not take part in the update cycle anymore and neither can be
-     * found with [Entities.find()](/modules/Entities#find). Please also note that you can't summon
+     * found with [Entities.find()](../Entities#find). Please also note that you can't summon
      * any entities inside an unloaded chunk.
      *
      * However, even when the world chunk has been unloaded, this virtual entity itself will always
@@ -280,7 +280,7 @@ public final class VirtualEntityClass
     }
 
     /**
-     * The 'addTag' function adds the given tag to the set of [tags](/modules/Entity/#tags) of this
+     * The 'addTag' function adds the given tag to the set of [tags](../Entity/#tags) of this
      * entity. This function returns true if the tag was added successfully.
      */
     @LuaFunction
@@ -315,7 +315,7 @@ public final class VirtualEntityClass
      * is taken as default distance. Valid direction values are absolute directions ('up', 'down',
      * 'north', 'east', 'south', and 'west'), as well as relative directions ('forward', 'back',
      * 'left', and 'right'). Relative directions are interpreted relative to the direction the
-     * entity is [facing](/modules/VirtualEntity/#facing).
+     * entity is [facing](../VirtualEntity/#facing).
      *
      * #### Example
      *
@@ -360,7 +360,7 @@ public final class VirtualEntityClass
     }
 
     /**
-     * The 'removeTag' function removes the given tag from the set of [tags](/modules/Entity/#tags)
+     * The 'removeTag' function removes the given tag from the set of [tags](../Entity/#tags)
      * of this entity. This function returns true if the tag has been removed successfully, and
      * false if there was no such tag.
      */
@@ -371,7 +371,7 @@ public final class VirtualEntityClass
 
     /**
      * The 'scanView' function scans the view of this entity for the next (non-liquid) block. On
-     * success it returns a [BlockHit](/modules/BlockHit/), otherwise nil. It scans the view with a
+     * success it returns a [BlockHit](../BlockHit/), otherwise nil. It scans the view with a
      * line-of-sight-range of up to the given distance (meter).
      *
      * #### Example

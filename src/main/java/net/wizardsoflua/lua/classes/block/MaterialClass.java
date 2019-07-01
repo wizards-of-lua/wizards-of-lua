@@ -125,7 +125,7 @@ public final class MaterialClass extends BasicLuaClass<Material, MaterialClass.I
      * This property contains the name of this material, if known, or nil, if not. This is something
      * like 'GRASS', 'WOOD', 'IRON', and many others.
      *
-     * Please note that you must not confuse this with the [block name](/modules/Block/#name).
+     * Please note that you must not confuse this with the [block name](../Block/#name).
      *
      * For example, 'IRON' is the material not only of 'iron_bars', 'iron_block', 'iron_door',
      * 'iron_trapdoor', 'light_weighted_pressure_plate', and 'heavy_weighted_pressure_plate', but

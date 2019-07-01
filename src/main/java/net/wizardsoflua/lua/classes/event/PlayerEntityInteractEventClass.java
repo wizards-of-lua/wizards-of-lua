@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.Entity;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.sandius.rembulan.Table;
@@ -19,7 +18,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
  * The <span class="notranslate">PlayerEntityInteractEvent</span> class is fired when a player
- * right-clicks somewhere an [entity](/modules/Entity)
+ * right-clicks somewhere an [entity](../Entity)
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerEntityInteractEventClass.NAME,

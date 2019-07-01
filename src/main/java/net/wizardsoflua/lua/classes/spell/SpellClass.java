@@ -5,7 +5,6 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import com.google.auto.service.AutoService;
-
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.Entity;
@@ -175,13 +174,13 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
     }
 
     /**
-     * The 'owner' is a reference to the [entity](/modules/entity) that owns this spell.
+     * The 'owner' is a reference to the [entity](../entity) that owns this spell.
      *
      * In general, the owner is the same entity that has casted this spell directly using the
      * [/lua](/lua-command) command.
      *
-     * In most circumstances this will be a [player](/modules/Player). But it can be any other
-     * entity if the spell has been casted using the "/execute" command.
+     * In most circumstances this will be a [player](../Player). But it can be any other entity if
+     * the spell has been casted using the "/execute" command.
      *
      * For example, the following command
      *
@@ -195,8 +194,8 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
      * The owner can also be <span class="notranslate">nil</span>. That's the case if the spell has
      * been casted from a command block or from the server console.
      *
-     * If a spell casts another spell using [spell:execute()](/modules/Spell/#execute), then the
-     * owner is inherited by the new spell.
+     * If a spell casts another spell using [spell:execute()](../Spell/#execute), then the owner is
+     * inherited by the new spell.
      *
      * #### Example
      *
@@ -282,7 +281,7 @@ public final class SpellClass extends BasicLuaClass<SpellEntity, SpellClass.Inst
      * source.
      *
      * If a [/lua](/lua-command) command is executed, then the new spell inherits this spell's
-     * [owner](/modules/Spell#owner).
+     * [owner](../Spell#owner).
      *
      * #### Example
      *

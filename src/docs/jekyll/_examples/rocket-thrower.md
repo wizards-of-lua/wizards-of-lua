@@ -105,7 +105,7 @@ This should fire a rocket.
 So far, so good.
 
 ## How To Bind a Spell to an Event
-Now we want to bind this spell to the [SwingArmEvent](/modules/SwingArmEvent).
+Now we want to bind this spell to the [SwingArmEvent](/versions/current/modules/SwingArmEvent).
 
 To do this, we need some spell that observes this kind of event.
 Whenever it occurs, a rocket should be fired.

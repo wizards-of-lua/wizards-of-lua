@@ -2,14 +2,11 @@ package net.wizardsoflua.lua.module.events;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.sandius.rembulan.Table;
@@ -43,7 +40,7 @@ import net.wizardsoflua.lua.view.ViewFactory;
 
 /**
  * The <span class="notranslate">Events</span> module provides functions for accessing and firing
- * [Events](/modules/Event/).
+ * [Events](../Event/).
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
@@ -120,8 +117,8 @@ public class EventsModule extends LuaTableExtension {
   }
 
   /**
-   * The 'fire' function posts a new [CustomEvent](/modules/CustomEvent/) with the given name and
-   * the optional given content data.
+   * The 'fire' function posts a new [CustomEvent](../CustomEvent/) with the given name and the
+   * optional given content data.
    *
    * #### Example
    *
@@ -154,8 +151,8 @@ public class EventsModule extends LuaTableExtension {
   }
 
   /**
-   * The 'collect' function creates an [EventQueue](/modules/EventQueue/) that collects all
-   * [Event](/modules/Event) occurrences of the specified kind(s).
+   * The 'collect' function creates an [EventQueue](../EventQueue/) that collects all
+   * [Event](../Event) occurrences of the specified kind(s).
    *
    * #### Example
    *
@@ -259,15 +256,15 @@ public class EventsModule extends LuaTableExtension {
    * Creates an event interceptor for [Events](/module/Event) with the specified names.
    *
    * The interceptor will be called immediately when an event occurs, which allows events to be
-   * modified and [canceled](/modules/Event#canceled).
+   * modified and [canceled](../Event#canceled).
    *
-   * Event interceptors do not support [sleeping](/modules/Time#sleep) - therefor,
-   * [autosleep](/modules/Time#autosleep) is disabled and manual sleeping is treated as an illegal
+   * Event interceptors do not support [sleeping](../Time#sleep) - therefor,
+   * [autosleep](../Time#autosleep) is disabled and manual sleeping is treated as an illegal
    * operation.
    *
-   * As long as a [Spell](/modules/Spell) has any active event interceptors it will not terminate by
-   * itself, so make sure to [stop](/modules/EventInterceptor#stop) each event interceptor that is
-   * no longer needed.
+   * As long as a [Spell](../Spell) has any active event interceptors it will not terminate by
+   * itself, so make sure to [stop](../EventInterceptor#stop) each event interceptor that is no
+   * longer needed.
    *
    * #### Example
    *
@@ -285,14 +282,14 @@ public class EventsModule extends LuaTableExtension {
    * Be careful, when accessing variables that are used both by the main program as well as by the
    * event interceptor.
    *
-   * If [autosleep](/modules/Time#autosleep) is enabled, the main program can fall asleep eventually
-   * at any time, which allows that a variable might be modified in an awkward situation.
+   * If [autosleep](../Time#autosleep) is enabled, the main program can fall asleep eventually at
+   * any time, which allows that a variable might be modified in an awkward situation.
    *
    * For instance, the following program fails due to indexing a nil value in line 10 despite the
    * nil check in line 8.
    *
    * In this example there is an explicit sleep in line 9, but that sleep could just as well be
-   * caused by [autosleep](/modules/Time#autosleep).
+   * caused by [autosleep](../Time#autosleep).
    *
    * <code>
    * local abc = 'abc'

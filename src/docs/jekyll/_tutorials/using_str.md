@@ -25,7 +25,7 @@ you just get something like the following not very meaningful output:
 table: 0x0626bef0
 ```
 What you see is the standard output format of a table in Lua.
-This is because the underlying representation of a [Block](/modules/Block/) in Lua is a table.
+This is because the underlying representation of a [Block](/versions/current/modules/Block/) in Lua is a table.
 
 So this is not helpful.
 But we can do better.

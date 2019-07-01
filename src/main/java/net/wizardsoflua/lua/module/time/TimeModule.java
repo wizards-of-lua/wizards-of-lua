@@ -2,11 +2,8 @@ package net.wizardsoflua.lua.module.time;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import javax.annotation.Nullable;
-
 import com.google.auto.service.AutoService;
-
 import net.sandius.rembulan.Table;
 import net.sandius.rembulan.runtime.AbstractFunction1;
 import net.sandius.rembulan.runtime.ExecutionContext;
@@ -76,7 +73,7 @@ public class TimeModule extends LuaTableExtension {
    *
    * If this is set to false, the spell will never go to sleep automatically, but instead will be
    * broken when its allowance reaches zero. Default is true normally, but in an [event
-   * interceptor](/modules/Events#intercept) 'autosleep' is always false and can't be changed.
+   * interceptor](../Events#intercept) 'autosleep' is always false and can't be changed.
    */
   @LuaProperty
   public boolean isAutosleep() {

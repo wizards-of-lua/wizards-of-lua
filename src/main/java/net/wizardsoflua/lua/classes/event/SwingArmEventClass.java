@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -20,14 +19,14 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
- * he <span class="notranslate">SwingArmEvent</span> is fired whenever a [Player](/modules/Player)
- * waves an arm. This can be the left arm or the right arm.
+ * he <span class="notranslate">SwingArmEvent</span> is fired whenever a [Player](../Player) waves
+ * an arm. This can be the left arm or the right arm.
  *
  * This event is fired on three occasions:
  *
- * - just before the [RightClickBlockEvent](/modules/RightClickBlockEvent)
+ * - just before the [RightClickBlockEvent](../RightClickBlockEvent)
  *
- * - just before the [LeftClickBlockEvent](/modules/LeftClickBlockEvent)
+ * - just before the [LeftClickBlockEvent](../LeftClickBlockEvent)
  *
  * - when the player does a left-click into the air.
  *

@@ -244,7 +244,7 @@ public final class PlayerClass
     }
 
     /**
-     * This is the [item](/modules/Item) this entity is holding in its main hand.
+     * This is the [item](../Item) this entity is holding in its main hand.
      */
     @Override
     @LuaProperty
@@ -261,7 +261,7 @@ public final class PlayerClass
     }
 
     /**
-     * This is the [item](/modules/Item) this entity is holding in his off hand.
+     * This is the [item](../Item) this entity is holding in his off hand.
      */
     @Override
     @LuaProperty

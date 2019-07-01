@@ -1,7 +1,6 @@
 package net.wizardsoflua.lua.classes.event;
 
 import com.google.auto.service.AutoService;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.sandius.rembulan.Table;
@@ -18,8 +17,8 @@ import net.wizardsoflua.lua.classes.LuaClassAttributes;
 import net.wizardsoflua.lua.classes.common.Delegator;
 
 /**
- * The <span class="notranslate">PlayerLoggedOutEvent</span> is fired whenever a
- * [Player](/modules/Player) leaves the world (server).
+ * The <span class="notranslate">PlayerLoggedOutEvent</span> is fired whenever a [Player](../Player)
+ * leaves the world (server).
  */
 @AutoService(LuaConverter.class)
 @LuaClassAttributes(name = PlayerLoggedOutEventClass.NAME, superClass = EventClass.class)
