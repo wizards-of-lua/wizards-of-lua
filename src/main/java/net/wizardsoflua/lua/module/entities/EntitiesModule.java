@@ -1,14 +1,11 @@
 package net.wizardsoflua.lua.module.entities;
 
 import java.util.List;
-
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import com.google.auto.service.AutoService;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.command.arguments.EntitySelectorParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,9 +28,8 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.spell.SpellEntity;
 
 /**
- * The <span class="notranslate">Entities</span> module provides access to all
- * [Entity](/module/Entity) objects currently loaded.
- *
+ * The <span class="notranslate">Entities</span> module provides access to all [Entity](../Entity)
+ * objects currently loaded.
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
