@@ -23,7 +23,7 @@ task wrapper(type: Wrapper) { gradleVersion = '4.9' }
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
-version = "1.13.2-3.0.0-SNAPSHOT"
+version = "1.13.2-3.0.0"
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -153,43 +153,117 @@ jar {
   }
 }
 
+// -------------------------------------------------------------------------------------------------
+//    ____
+//   |  _ \   ___    ___  ___
+//   | | | | / _ \  / __|/ __|
+//   | |_| || (_) || (__ \__ \
+//   |____/  \___/  \___||___/
+//
+// -------------------------------------------------------------------------------------------------
+
 dependencies {
   jrubyExec 'rubygems:jekyll:3.8.5'
   jrubyExec 'rubygems:jekyll-theme-midnight:0.1.1'
 }
 
 File jekyllSrcDir = file("src/docs/jekyll")
-File jekyllBuildDir = new File(buildDir, 'jekyll')
+File currentDocsJekyllDir = new File(buildDir, 'current-docs/jekyll')
+File currentDocsHtmlDir = new File(buildDir, 'current-docs/html')
+File namedDocsJekyllDir = new File(buildDir, 'named-docs/jekyll')
+File namedDocsHtmlDir = new File(buildDir, 'named-docs/html')
 
-task copyJekyllFiles(type: Copy) {
-  from jekyllSrcDir
-  into jekyllBuildDir
-}
-
-task copyModulesDocumentation(type: Copy) {
-  dependsOn compileJava
-  from compileJava.options.annotationProcessorGeneratedSourcesDirectory ?: sourceSets.main.java.outputDir
-  into new File(jekyllBuildDir, '_modules')
-  include '**/*.md'
-  includeEmptyDirs false
-}
-
-task updateWebsite(type: com.github.jrubygradle.JRubyExec) {
-  dependsOn cleanCopyJekyllFiles
-  dependsOn copyJekyllFiles
-  dependsOn copyModulesDocumentation
-
-  script 'jekyll'
-  workingDir temporaryDir
-  scriptArgs 'build', '-s', jekyllBuildDir.absolutePath, '-d', file('docs').absolutePath
-
-  doFirst {
-    delete file('docs')
+def runJekyll(File sourceDir, File targetDir, File temporaryDir) {
+  jrubyexec {
+    script 'jekyll'
+    workingDir temporaryDir
+    scriptArgs 'build', '-s', sourceDir.absolutePath, '-d', targetDir.absolutePath
   }
 }
 
-task jekyllServe(type: com.github.jrubygradle.JRubyExec) {
-  dependsOn updateWebsite
+task prepareCurrentDocs {
+  dependsOn compileJava
+
+  copy {
+    from jekyllSrcDir
+    into currentDocsJekyllDir
+  }
+  copy {
+    from compileJava.options.annotationProcessorGeneratedSourcesDirectory ?: sourceSets.main.java.outputDir
+    into new File(currentDocsJekyllDir, '_modules')
+    include '**/*.md'
+    includeEmptyDirs false
+  }
+}
+
+task buildCurrentDocs {
+  dependsOn prepareCurrentDocs
+
+  inputs.dir currentDocsJekyllDir
+  outputs.dir currentDocsHtmlDir
+
+  doLast {
+    runJekyll(currentDocsJekyllDir, currentDocsHtmlDir, temporaryDir)
+  }
+}
+
+task prepareNamedDocs(type: Copy) {
+  dependsOn prepareCurrentDocs
+
+  from currentDocsJekyllDir
+  into namedDocsJekyllDir
+  filter {
+    it.replace('current', version)
+  }
+}
+
+task buildNamedDocs {
+  dependsOn prepareNamedDocs
+
+  inputs.dir namedDocsJekyllDir
+  outputs.dir namedDocsHtmlDir
+
+  doLast {
+    runJekyll(namedDocsJekyllDir, namedDocsHtmlDir, temporaryDir)
+  }
+}
+
+task buildDocs {
+  dependsOn clean
+  dependsOn buildCurrentDocs
+  dependsOn buildNamedDocs
+
+  doLast {
+    file('docs/versions').renameTo(temporaryDir)
+    delete new File(temporaryDir, 'versions/current')
+    delete new File(temporaryDir, 'versions/' + version)
+    delete file('docs')
+    copy {
+      from currentDocsHtmlDir
+      into file('docs')
+    }
+    copy {
+      from namedDocsHtmlDir
+      include { it.path.startsWith('versions') }
+      into file('docs')
+    }
+    copy {
+      from temporaryDir
+      into file('docs')
+    }
+  }
+}
+
+task serveCurrentDocs(type: com.github.jrubygradle.JRubyExec) {
+  dependsOn clean
+  dependsOn buildCurrentDocs
+
+  script 'jekyll'
+  workingDir temporaryDir
+  scriptArgs 'serve', '-s', currentDocsHtmlDir.absolutePath
+}
+
+task serveDocs(type: com.github.jrubygradle.JRubyExec) {
   script 'jekyll'
   workingDir temporaryDir
   scriptArgs 'serve', '-s', file('docs').absolutePath
