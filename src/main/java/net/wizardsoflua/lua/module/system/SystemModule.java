@@ -264,9 +264,9 @@ public class SystemModule extends LuaTableExtension {
   /**
    * The <span class="notranslate">'execute'</span> function invokes the program with the given name
    * and the given arguments on the server's operating system. Please note that you only can execute
-   * programs living inside the server's [script gateway directory](/configuration-file). Please
-   * note that this is a blocking call. The spell will resume its execution only after the program
-   * has terminated.
+   * programs living inside the server's [script gateway
+   * directory](../../configuration-file#scriptgateway). Please note that this is a blocking call.
+   * The spell will resume its execution only after the program has terminated.
    *
    * #### Example
    *

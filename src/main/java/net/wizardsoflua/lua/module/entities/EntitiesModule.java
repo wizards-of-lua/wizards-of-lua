@@ -28,9 +28,8 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 import net.wizardsoflua.spell.SpellEntity;
 
 /**
- * The <span class="notranslate">Entities</span> module provides access to all
- * [Entity](/module/Entity) objects currently loaded.
- *
+ * The <span class="notranslate">Entities</span> module provides access to all [Entity](../Entity)
+ * objects currently loaded.
  */
 @AutoService(SpellExtension.class)
 @GenerateLuaModuleTable
