@@ -112,9 +112,9 @@ ext.libs = [
   jsr305:                   'com.google.code.findbugs:jsr305:3.0.1',
   junit_jupiter_engine:     'org.junit.jupiter:junit-jupiter-engine:5.4.2',
   junit_platform_launcher:  'org.junit.platform:junit-platform-launcher:1.4.2',
-  rembulan_compiler:        'net.sandius.rembulan:rembulan-compiler:0.2-SNAPSHOT',
-  rembulan_runtime:         'net.sandius.rembulan:rembulan-runtime:0.2-SNAPSHOT',
-  rembulan_stdlib:          'net.sandius.rembulan:rembulan-stdlib:0.2-SNAPSHOT',
+  rembulan_compiler:        'net.sandius.rembulan:rembulan-compiler:0.3-SNAPSHOT',
+  rembulan_runtime:         'net.sandius.rembulan:rembulan-runtime:0.3-SNAPSHOT',
+  rembulan_stdlib:          'net.sandius.rembulan:rembulan-stdlib:0.3-SNAPSHOT',
 ]
 
 configurations {
