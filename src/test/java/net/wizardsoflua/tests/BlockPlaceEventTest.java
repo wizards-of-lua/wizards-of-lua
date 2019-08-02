@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.wizardsoflua.testenv.WolTestBase;
 
@@ -25,9 +24,9 @@ public class BlockPlaceEventTest extends WolTestBase {
     mc().setBlock(clickPos, Blocks.STONE);
   }
 
-  // /test net.wizardsoflua.tests.BlockPlaceEventTest test__BlockPlaceEvent_MAIN_HAND
+  // /test net.wizardsoflua.tests.BlockPlaceEventTest test__BlockPlaceEvent
   @Test
-  public void test__BlockPlaceEvent_MAIN_HAND() {
+  public void test__BlockPlaceEvent() {
     // Given:
     Block sand = Blocks.SAND;
     mc().player().setMainHandItem(new ItemStack(sand));
@@ -35,8 +34,8 @@ public class BlockPlaceEventTest extends WolTestBase {
     mc().executeCommand("lua q=Events.collect('BlockPlaceEvent')\n"//
         + "e=q:next()\n"//
         + "print(e.pos)\n"//
+        + "print(e.entity.name)\n"//
         + "print(e.block.name)\n"//
-        + "print(e.hand)\n"//
         + "print(e.placedAgainst.name)\n"//
     );
 
@@ -45,33 +44,8 @@ public class BlockPlaceEventTest extends WolTestBase {
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
+    assertThat(mc().nextServerMessage()).isEqualTo(mc().player().getName());
     assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getPath());
-    assertThat(mc().nextServerMessage()).isEqualTo(EnumHand.MAIN_HAND.toString());
-    assertThat(mc().nextServerMessage()).isEqualTo("stone");
-  }
-
-  // /test net.wizardsoflua.tests.BlockPlaceEventTest test__BlockPlaceEvent_OFF_HAND
-  @Test
-  public void test__BlockPlaceEvent_OFF_HAND() {
-    // Given:
-    Block sand = Blocks.SAND;
-    mc().player().setOffHandItem(new ItemStack(sand));
-    mc().player().setPosition(playerPos);
-    mc().executeCommand("lua q=Events.collect('BlockPlaceEvent')\n"//
-        + "e=q:next()\n"//
-        + "print(e.pos)\n"//
-        + "print(e.block.name)\n"//
-        + "print(e.hand)\n"//
-        + "print(e.placedAgainst.name)\n"//
-    );
-
-    // When:
-    mc().player().rightclick(clickPos, UP);
-
-    // Then:
-    assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
-    assertThat(mc().nextServerMessage()).isEqualTo(sand.getRegistryName().getPath());
-    assertThat(mc().nextServerMessage()).isEqualTo(EnumHand.OFF_HAND.toString());
     assertThat(mc().nextServerMessage()).isEqualTo("stone");
   }
 

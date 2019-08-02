@@ -1,10 +1,10 @@
 package net.wizardsoflua.lua.classes.event;
 
+import javax.annotation.Nullable;
 import com.google.auto.service.AutoService;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.world.BlockEvent;
 import net.sandius.rembulan.Table;
@@ -30,7 +30,7 @@ import net.wizardsoflua.lua.classes.common.Delegator;
 @GenerateLuaClassTable(instance = BlockPlaceEventClass.Instance.class)
 @GenerateLuaDoc(type = EventClass.TYPE, subtitle = "When a Player Places a Block")
 public final class BlockPlaceEventClass extends
-    BasicLuaClass<BlockEvent.PlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.PlaceEvent>> {
+    BasicLuaClass<BlockEvent.EntityPlaceEvent, BlockPlaceEventClass.Instance<BlockEvent.EntityPlaceEvent>> {
   public static final String NAME = "BlockPlaceEvent";
   @Resource
   private LuaConverters converters;
@@ -43,25 +43,17 @@ public final class BlockPlaceEventClass extends
   }
 
   @Override
-  protected Delegator<Instance<BlockEvent.PlaceEvent>> toLuaInstance(
-      BlockEvent.PlaceEvent javaInstance) {
+  protected Delegator<Instance<BlockEvent.EntityPlaceEvent>> toLuaInstance(
+      BlockEvent.EntityPlaceEvent javaInstance) {
     return new BlockPlaceEventClassInstanceTable<>(
         new Instance<>(javaInstance, getName(), injector), getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
-  public static class Instance<D extends BlockEvent.PlaceEvent>
+  public static class Instance<D extends BlockEvent.EntityPlaceEvent>
       extends BlockEventClass.Instance<D> {
     public Instance(D delegate, String name, Injector injector) {
       super(delegate, name, injector);
-    }
-
-    /**
-     * The hand the player used to place the block. Can be 'MAIN_HAND' or 'OFF_HAND'.
-     */
-    @LuaProperty
-    public EnumHand getHand() {
-      return delegate.getHand();
     }
 
     /**
@@ -106,8 +98,8 @@ public final class BlockPlaceEventClass extends
      * The player that triggered this event.
      */
     @LuaProperty
-    public EntityPlayer getPlayer() {
-      return delegate.getPlayer();
+    public @Nullable Entity getEntity() {
+      return delegate.getEntity();
     }
   }
 }
