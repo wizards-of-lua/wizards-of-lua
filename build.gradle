@@ -7,14 +7,17 @@ buildscript {
         maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath "com.github.jruby-gradle:jruby-gradle-plugin:1.7.0"
+        classpath "com.github.jengelman.gradle.plugins:shadow:4.0.4"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.github.jruby-gradle.base'
+apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'eclipse'
 
 sourceCompatibility = '1.8'
@@ -147,11 +150,20 @@ dependencies {
   testCompile libs.junit_platform_launcher
 }
 
-jar {
-  from configurations.embed.collect {
-    it.isDirectory() ? it : zipTree(it)
+shadowJar {
+  configurations = [ project.configurations.embed ]
+  // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/6025
+  relocate 'javax.inject', 'net.wizardsoflua.shadow.javax.inject'
+  relocate 'org.objectweb.asm', 'net.wizardsoflua.shadow.org.objectweb.asm'
+}
+
+reobf {
+  shadowJar {
+    mappings = createMcpToSrg.output
   }
 }
+
+reobfShadowJar.dependsOn createMcpToSrg
 
 // -------------------------------------------------------------------------------------------------
 //    ____
