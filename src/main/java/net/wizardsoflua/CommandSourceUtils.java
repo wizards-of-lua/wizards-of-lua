@@ -1,6 +1,7 @@
 package net.wizardsoflua;
 
 import static net.minecraft.util.text.TextFormatting.RED;
+
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.ICommandSource;
 import net.minecraft.server.MinecraftServer;
@@ -10,7 +11,9 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class CommandSourceUtils {
   private static ICommandSource getICommandSource(CommandSource source) {
-    return ObfuscationReflectionHelper.getPrivateValue(CommandSource.class, source, "source");
+    // return ObfuscationReflectionHelper.getPrivateValue(CommandSource.class, source, "source");
+    return ObfuscationReflectionHelper.getPrivateValue(CommandSource.class, source,
+        "field_197041_c");
   }
 
   public static void sendAndLogFeedback(CommandSource source, ITextComponent message) {
