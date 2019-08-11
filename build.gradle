@@ -2,6 +2,7 @@
  * Recompile annotation processor after change, for use in IDE.
  * - gradlew apt:jar
  */
+ 
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -26,7 +27,7 @@ task wrapper(type: Wrapper) { gradleVersion = '4.9' }
 
 group = "net.wizardsoflua" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "wol"
-version = "1.13.2-3.0.0"
+version = "${mcversion}-${modversion}"
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -34,7 +35,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20180921-1.13'
+    mappings channel: 'snapshot', version: "${mcp_mappings}"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('build/resources/main/META-INF/accesstransformer.cfg')
@@ -128,7 +129,7 @@ configurations {
 eclipseApt.dependsOn ':apt:jar'
 
 dependencies {
-  minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
+  minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
 
   annotationProcessor project(':apt')
   annotationProcessor libs.auto_service
@@ -148,6 +149,19 @@ dependencies {
   testCompile libs.eclipse_compiler
   testCompile libs.junit_jupiter_engine
   testCompile libs.junit_platform_launcher
+}
+
+processResources {
+  exclude '**/*.xcf'
+  from(sourceSets.main.resources.srcDirs) {
+    include 'META-INF/mods.toml'
+    include 'wol.properties'
+    expand 'version': project.version, 'minecraft_version': mcversion_toml, 'forge_version': forge_version_toml
+  }    
+  from(sourceSets.main.resources.srcDirs) {
+    exclude 'wol.properties'
+    exclude 'META-INF/mods.toml'
+  }
 }
 
 shadowJar {

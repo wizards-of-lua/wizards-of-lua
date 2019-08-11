@@ -3,9 +3,13 @@ package net.wizardsoflua;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.google.common.annotations.VisibleForTesting;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
@@ -19,7 +23,19 @@ public class WizardsOfLua {
   public static final String MODID = "wol";
   public static final String NAME = "Wizards of Lua";
   public static final String CONFIG_NAME = "wizards-of-lua";
-  public static final String VERSION = "@MOD_VERSION@";
+  public static final String VERSION = loadVersion();
+
+  private static String loadVersion() {
+    try {
+      Properties props = new Properties();
+      props.load(WizardsOfLua.class.getResource("/wol.properties").openStream());
+      String version = props.getProperty("version", "<devel>");
+      return version;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public static final String URL = "http://www.wizards-of-lua.net";
   public static final Logger LOGGER = LogManager.getLogger();
 
