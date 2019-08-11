@@ -43,7 +43,7 @@ public class AboutMessage {
 
   @SubscribeEvent
   public void onFmlServerStarted(FMLServerStartedEvent event) {
-    LOGGER.info(getTextComponent());
+    LOGGER.info(getTextComponent().getFormattedText());
   }
 
   @SubscribeEvent
