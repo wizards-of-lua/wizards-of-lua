@@ -153,29 +153,42 @@ public final class PlayerClass
       relativeFlags.remove(EnumFlags.X);
       relativeFlags.remove(EnumFlags.Y);
       relativeFlags.remove(EnumFlags.Z);
-      delegate.connection.setPlayerLocation(x, y, z, 0, 0, relativeFlags);
+      float rotationYaw = delegate.rotationYaw;
+      float rotationPitch = delegate.rotationPitch;
+      delegate.connection.setPlayerLocation(x, y, z, rotationYaw, rotationPitch, relativeFlags);
     }
 
     @Override
     public void setRotationPitch(float rotationPitch) {
       Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      double x = delegate.posX;
+      double y = delegate.posY;
+      double z = delegate.posZ;
+      float rotationYaw = delegate.rotationYaw;
       relativeFlags.remove(EnumFlags.X_ROT);
-      delegate.connection.setPlayerLocation(0, 0, 0, 0, rotationPitch, relativeFlags);
+      delegate.connection.setPlayerLocation(x, y, z, rotationYaw, rotationPitch, relativeFlags);
     }
 
     @Override
     public void setRotationYaw(float rotationYaw) {
       Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      double x = delegate.posX;
+      double y = delegate.posY;
+      double z = delegate.posZ;
       relativeFlags.remove(EnumFlags.Y_ROT);
-      delegate.connection.setPlayerLocation(0, 0, 0, rotationYaw, 0, relativeFlags);
+      float rotationPitch = delegate.rotationPitch;
+      delegate.connection.setPlayerLocation(x, y, z, rotationYaw, rotationPitch, relativeFlags);
     }
 
     @Override
     protected void setRotation(float rotationYaw, float rotationPitch) {
       Set<EnumFlags> relativeFlags = EnumSet.allOf(EnumFlags.class);
+      double x = delegate.posX;
+      double y = delegate.posY;
+      double z = delegate.posZ;
       relativeFlags.remove(EnumFlags.X_ROT);
       relativeFlags.remove(EnumFlags.Y_ROT);
-      delegate.connection.setPlayerLocation(0, 0, 0, rotationYaw, rotationPitch, relativeFlags);
+      delegate.connection.setPlayerLocation(x, y, z, rotationYaw, rotationPitch, relativeFlags);
     }
   }
 }

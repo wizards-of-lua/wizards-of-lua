@@ -98,13 +98,19 @@ public class PlayerBackdoor {
     return callOnMainThread(() -> SpellUtil.getPositionLookingAt(getTestPlayer()));
   }
 
-  public void setRotationYaw(float yaw) {
+  public void setRotationYaw(float rotationYaw) {
     runChangeOnMainThread(() -> {
       EntityPlayerMP player = getTestPlayer();
-      player.setRotationYawHead(yaw);
-      player.setRenderYawOffset(yaw);
-      player.connection.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw,
+      player.connection.setPlayerLocation(player.posX, player.posY, player.posZ, rotationYaw,
           player.rotationPitch);
+    });
+  }
+
+  public void setRotationPitch(float rotationPitch) {
+    runChangeOnMainThread(() -> {
+      EntityPlayerMP player = getTestPlayer();
+      player.connection.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw,
+          rotationPitch);
     });
   }
 
