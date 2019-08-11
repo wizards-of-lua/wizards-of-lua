@@ -155,7 +155,7 @@ public final class WolTestenv implements AutoCloseable {
 
   @SubscribeEvent
   public void onTick(ServerTickEvent event) {
-    if (event.phase == Phase.END) {
+    if (event.phase == Phase.START) {
       if (pendingChangeCount.compareAndSet(0, SYNCED)) {
         synchronized (changeLock) {
           changeLock.notifyAll();
@@ -170,8 +170,9 @@ public final class WolTestenv implements AutoCloseable {
    * <p>
    * Tasks registered via {@link #runChangeOnMainThread(Runnable)} will run in the beginning of a
    * server tick, before stuff like the {@link PlayerChunkMap} is ticked which causes changes to be
-   * send to the client. So this method blocks until there are no more pending tasks and the server
-   * tick has ended.
+   * send to the client. So this method blocks until there are no more pending tasks and the next
+   * server tick has ended. We wait for the beginning of the next server tick to ensure that the
+   * network has enough time to propagate the changes to the client.
    */
   public void waitForSyncedClient() {
     synchronized (changeLock) {
