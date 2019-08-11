@@ -42,11 +42,11 @@ public class WolTestBase extends TestDataFactory {
 
     mc().gameRules().setSendCommandFeedback(false);
     mc().executeCommand("kill @e[type=!player]");
-    testenv.waitForPendingActions();
     mc().gameRules().setSendCommandFeedback(true);
 
-    eventRecorder.clear();
     eventRecorder.setEnabled(true);
+    testenv.waitForSyncedClient();
+    eventRecorder.clear();
   }
 
   @AfterEach

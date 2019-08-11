@@ -8,6 +8,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.wizardsoflua.testenv.event.ClientSyncResponseEvent;
 import net.wizardsoflua.testenv.event.ServerLog4jEvent;
 import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 
@@ -32,6 +33,10 @@ public class EventRecorder {
 
   public boolean isEnabled() {
     return enabled;
+  }
+
+  public <E extends Event> E waitFor(Class<E> eventType) throws InterruptedException {
+    return waitFor(eventType, 5, TimeUnit.SECONDS);
   }
 
   /**
@@ -86,12 +91,17 @@ public class EventRecorder {
   }
 
   @SubscribeEvent
-  public void onEvent(TestPlayerReceivedChatEvent evt) {
+  public void onEvent(ClientSyncResponseEvent evt) {
     addEvent(evt);
   }
 
   @SubscribeEvent
   public void onEvent(ServerLog4jEvent evt) {
+    addEvent(evt);
+  }
+
+  @SubscribeEvent
+  public void onEvent(TestPlayerReceivedChatEvent evt) {
     addEvent(evt);
   }
 
