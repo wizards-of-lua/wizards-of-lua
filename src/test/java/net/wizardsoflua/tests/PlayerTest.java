@@ -229,6 +229,76 @@ public class PlayerTest extends WolTestBase {
     assertThat(mc().nextClientMessage()).isEqualTo("false");
   }
 
+  // /test net.wizardsoflua.tests.PlayerTest test_setting_pos_does_not_change_rotation
+  @Test
+  public void test_setting_pos_does_not_change_rotation() throws Exception {
+    // Given:
+    mc().player().setPosition(new BlockPos(3, 4, 5));
+    mc().player().setRotationYaw(6);
+    mc().player().setRotationPitch(7);
+
+    // When:
+    mc().player().chat("/lua " //
+        + "spell.owner.pos = Vec3(8, 9, 10);\n" //
+        + "print('pos='..spell.owner.pos);\n" //
+        + "print('rotationYaw='..spell.owner.rotationYaw);\n" //
+        + "print('rotationPitch='..spell.owner.rotationPitch);\n" //
+    );
+
+    // Then:
+    assertThat(mc().nextClientMessage()).isEqualTo("pos={8.0, 9.0, 10.0}");
+    assertThat(mc().nextClientMessage()).isEqualTo("rotationYaw=6.0");
+    assertThat(mc().nextClientMessage()).isEqualTo("rotationPitch=7.0");
+  }
+
+  // @formatter:off
+  // /test net.wizardsoflua.tests.PlayerTest test_setting_rotationYaw_does_not_change_pos_or_rotationPitch
+  // @formatter:on
+  @Test
+  public void test_setting_rotationYaw_does_not_change_pos_or_rotationPitch() throws Exception {
+    // Given:
+    mc().player().setPosition(new BlockPos(3, 4, 5));
+    mc().player().setRotationYaw(6);
+    mc().player().setRotationPitch(7);
+
+    // When:
+    mc().player().chat("/lua " //
+        + "spell.owner.rotationYaw = 8;\n" //
+        + "print('pos='..spell.owner.pos);\n" //
+        + "print('rotationYaw='..spell.owner.rotationYaw);\n" //
+        + "print('rotationPitch='..spell.owner.rotationPitch);\n" //
+    );
+
+    // Then:
+    assertThat(mc().nextClientMessage()).isEqualTo("pos={3.0, 4.0, 5.0}");
+    assertThat(mc().nextClientMessage()).isEqualTo("rotationYaw=8.0");
+    assertThat(mc().nextClientMessage()).isEqualTo("rotationPitch=7.0");
+  }
+
+  // @formatter:off
+  // /test net.wizardsoflua.tests.PlayerTest test_setting_rotationPitch_does_not_change_pos_or_rotationYaw
+  // @formatter:on
+  @Test
+  public void test_setting_rotationPitch_does_not_change_pos_or_rotationYaw() throws Exception {
+    // Given:
+    mc().player().setPosition(new BlockPos(3, 4, 5));
+    mc().player().setRotationYaw(6);
+    mc().player().setRotationPitch(7);
+
+    // When:
+    mc().player().chat("/lua " //
+        + "spell.owner.rotationPitch = 8;\n" //
+        + "print('pos='..spell.owner.pos);\n" //
+        + "print('rotationYaw='..spell.owner.rotationYaw);\n" //
+        + "print('rotationPitch='..spell.owner.rotationPitch);\n" //
+    );
+
+    // Then:
+    assertThat(mc().nextClientMessage()).isEqualTo("pos={3.0, 4.0, 5.0}");
+    assertThat(mc().nextClientMessage()).isEqualTo("rotationYaw=6.0");
+    assertThat(mc().nextClientMessage()).isEqualTo("rotationPitch=8.0");
+  }
+
   // /test net.wizardsoflua.tests.PlayerTest test_can_set_rotationYaw_to_float_value
   @Test
   public void test_can_set_rotationYaw_to_float_value() throws Exception {
