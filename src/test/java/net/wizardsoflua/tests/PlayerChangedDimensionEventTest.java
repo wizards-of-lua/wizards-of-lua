@@ -40,7 +40,6 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
   public void test() {
     // Given:
     String expected = mc().player().getName();
-    String sometimesExpected = mc().player().getName() + " moved too quickly!";
     createPortal(portalPos);
     mc().executeCommand(
         "/lua q=Events.collect('PlayerChangedDimensionEvent'); e=q:next(); print(e.player.name)");
@@ -50,9 +49,6 @@ public class PlayerChangedDimensionEventTest extends WolTestBase {
 
     // Then:
     String actual = mc().nextServerMessage();
-    if (actual.startsWith(sometimesExpected)) {
-      actual = mc().nextServerMessage();
-    }
     assertThat(actual).isEqualTo(expected);
   }
 

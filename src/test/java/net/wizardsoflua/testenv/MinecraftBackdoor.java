@@ -14,7 +14,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -119,7 +118,7 @@ public class MinecraftBackdoor {
   public <E extends Event> E waitFor(Class<E> eventType) {
     try {
       testenv.waitForPendingActions();
-      return getEventRecorder().waitFor(eventType, 5, TimeUnit.SECONDS);
+      return getEventRecorder().waitFor(eventType);
     } catch (InterruptedException e) {
       throw new UndeclaredThrowableException(e);
     }

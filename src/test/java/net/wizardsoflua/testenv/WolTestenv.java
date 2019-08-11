@@ -22,7 +22,10 @@ import net.wizardsoflua.extension.InjectionScope;
 import net.wizardsoflua.filesystem.WolServerFileSystem;
 import net.wizardsoflua.lua.module.searcher.LuaFunctionBinaryCache;
 import net.wizardsoflua.spell.SpellRegistry;
+import net.wizardsoflua.testenv.event.ClientSyncResponseEvent;
+import net.wizardsoflua.testenv.event.TestPlayerReceivedChatEvent;
 import net.wizardsoflua.testenv.junit.AbortExtension;
+import net.wizardsoflua.testenv.net.ClientSyncRequestMessage;
 import net.wizardsoflua.testenv.net.NetworkMessage;
 import net.wizardsoflua.testenv.net.WolTestPacketChannel;
 
@@ -143,10 +146,10 @@ public final class WolTestenv implements AutoCloseable {
     return testPlayer.get();
   }
 
-  private static final int SYNCED = -1;
+  private static final int SENT = -1;
   /**
-   * The amount of changes to be run on the server thread. A value of {@value #SYNCED} indicates,
-   * that not only are there no pending changes, but all finished changes were synced to the client.
+   * The amount of changes to be run on the server thread. A value of {@value #SENT} indicates, that
+   * not only are there no pending changes, but all finished changes were sent to the client.
    */
   private final AtomicInteger pendingChangeCount = new AtomicInteger();
   private final Object changeLock = new Object();
@@ -155,8 +158,8 @@ public final class WolTestenv implements AutoCloseable {
 
   @SubscribeEvent
   public void onTick(ServerTickEvent event) {
-    if (event.phase == Phase.START) {
-      if (pendingChangeCount.compareAndSet(0, SYNCED)) {
+    if (event.phase == Phase.END) {
+      if (pendingChangeCount.compareAndSet(0, SENT)) {
         synchronized (changeLock) {
           changeLock.notifyAll();
         }
@@ -171,17 +174,47 @@ public final class WolTestenv implements AutoCloseable {
    * Tasks registered via {@link #runChangeOnMainThread(Runnable)} will run in the beginning of a
    * server tick, before stuff like the {@link PlayerChunkMap} is ticked which causes changes to be
    * send to the client. So this method blocks until there are no more pending tasks and the next
-   * server tick has ended. We wait for the beginning of the next server tick to ensure that the
-   * network has enough time to propagate the changes to the client.
+   * server tick has ended.
+   * <p>
+   * To make sure that all changes were propagated through the network to the client and there are
+   * no pending client responses such as pending {@link TestPlayerReceivedChatEvent}s we then
+   * perform a handshake.
    */
   public void waitForSyncedClient() {
     synchronized (changeLock) {
-      while (pendingChangeCount.get() != SYNCED) {
+      while (pendingChangeCount.get() != SENT) {
         try {
           changeLock.wait();
         } catch (InterruptedException ignore) {
         }
       }
+    }
+    handshake();
+  }
+
+  private volatile boolean pendingHandshake;
+  private final Object handshakeLock = new Object();
+
+  private void handshake() {
+    pendingHandshake = true;
+    EntityPlayerMP player = getTestPlayer();
+    NetworkMessage message = new ClientSyncRequestMessage();
+    WolTestPacketChannel.sendTo(player, message);
+    synchronized (handshakeLock) {
+      while (pendingHandshake) {
+        try {
+          handshakeLock.wait();
+        } catch (InterruptedException ignore) {
+        }
+      }
+    }
+  }
+
+  @SubscribeEvent
+  public void onTick(ClientSyncResponseEvent event) {
+    pendingHandshake = false;
+    synchronized (handshakeLock) {
+      handshakeLock.notifyAll();
     }
   }
 
@@ -221,7 +254,7 @@ public final class WolTestenv implements AutoCloseable {
    * @return a future representing pending completion of the task
    */
   public ListenableFuture<Object> runChangeOnMainThread(Runnable task) {
-    pendingChangeCount.updateAndGet(it -> it == SYNCED ? 1 : it + 1);
+    pendingChangeCount.updateAndGet(it -> it == SENT ? 1 : it + 1);
     return runOnMainThread(() -> {
       try {
         task.run();

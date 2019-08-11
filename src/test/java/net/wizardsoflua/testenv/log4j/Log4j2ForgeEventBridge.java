@@ -28,6 +28,9 @@ public class Log4j2ForgeEventBridge {
       if (EffectiveSide.get() == LogicalSide.SERVER) {
         Message message = event.getMessage();
         String text = message.getFormattedMessage();
+        if (text.startsWith("Can't keep up! Is the server overloaded?")) {
+          return;
+        }
         MinecraftForge.EVENT_BUS.post(new ServerLog4jEvent(text));
       }
     }
