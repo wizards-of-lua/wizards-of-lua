@@ -85,6 +85,6 @@ public class CommandsTest extends WolTestBase {
 
     // Then:
     TestPlayerReceivedChatEvent act = mc().waitFor(TestPlayerReceivedChatEvent.class);
-    assertThat(act.getMessage()).isEqualTo("You do not have permission to use this command");
+    assertThat(act.getMessage()).isEqualTo("Unknown command");
   }
 }

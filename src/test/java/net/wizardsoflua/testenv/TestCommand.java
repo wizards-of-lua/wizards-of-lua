@@ -88,7 +88,7 @@ public class TestCommand implements Command<CommandSource> {
 
     executor.submit(() -> {
       try (WolTestenv testenv = new WolTestenv(mod, serverScope, player)) {
-        WolTestExecutionListener listener = new WolTestExecutionListener(source);
+        WolTestExecutionListener listener = new WolTestExecutionListener(testenv);
         Runnable aborter = () -> {
           listener.onAbort();
           testenv.getAbortExtension().abortTestRun();

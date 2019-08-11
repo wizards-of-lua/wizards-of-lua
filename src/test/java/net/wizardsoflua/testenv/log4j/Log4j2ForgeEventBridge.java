@@ -31,6 +31,9 @@ public class Log4j2ForgeEventBridge {
         if (text.startsWith("Can't keep up! Is the server overloaded?")) {
           return;
         }
+        if (text.contains("moved too quickly!")) {
+          return;
+        }
         MinecraftForge.EVENT_BUS.post(new ServerLog4jEvent(text));
       }
     }
