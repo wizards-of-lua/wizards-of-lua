@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
@@ -28,15 +27,20 @@ public class ServiceLoader {
         .debug("Searching for services implementing the " + service.getSimpleName() + " interface");
     Set<Class<? extends S>> result = new HashSet<>();
     String name = PREFIX + service.getName();
-    try {
-      Enumeration<URL> resources = classLoader.getResources(name);
-      while (resources.hasMoreElements()) {
-        URL resource = resources.nextElement();
-        result.addAll(parse(resource, service, classLoader));
-      }
-    } catch (IOException ex) {
-      throw fail(service, "Error reading configuration file", ex);
+    // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/6029
+    URL resource = classLoader.getResource(name);
+    if (resource != null) {
+      result.addAll(parse(resource, service, classLoader));
     }
+    // try {
+    // Enumeration<URL> resources = classLoader.getResources(name);
+    // while (resources.hasMoreElements()) {
+    // URL resource = resources.nextElement();
+    // result.addAll(parse(resource, service, classLoader));
+    // }
+    // } catch (IOException ex) {
+    // throw fail(service, "Error reading configuration file", ex);
+    // }
     LOGGER.debug("Found " + result.size() + " services: "
         + result.stream().map(s -> s.getName()).collect(Collectors.joining(", ")));
     return result;
