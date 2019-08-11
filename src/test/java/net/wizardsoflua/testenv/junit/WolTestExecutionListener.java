@@ -4,8 +4,6 @@ import static java.util.Objects.requireNonNull;
 import static net.minecraft.util.text.TextFormatting.GREEN;
 import static net.minecraft.util.text.TextFormatting.RED;
 import static net.minecraft.util.text.TextFormatting.YELLOW;
-import static net.wizardsoflua.CommandSourceUtils.sendAndLogErrorMessage;
-import static net.wizardsoflua.CommandSourceUtils.sendAndLogFeedback;
 import static net.wizardsoflua.WolAnnouncementMessage.createAnnouncement;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,21 +14,21 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.CustomBossEvent;
 import net.minecraft.server.CustomBossEvents;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.BossInfo.Color;
 import net.wizardsoflua.testenv.WolTestMod;
+import net.wizardsoflua.testenv.WolTestenv;
 
 public class WolTestExecutionListener implements TestExecutionListener {
   private static final ResourceLocation BOSSBAR_ID =
       new ResourceLocation(WolTestMod.MODID, "test-progress");
-  private final CommandSource source;
+  private final WolTestenv testenv;
 
   private final AtomicInteger testsFound = new AtomicInteger();
   private final AtomicInteger testsSuccessful = new AtomicInteger();
@@ -40,8 +38,27 @@ public class WolTestExecutionListener implements TestExecutionListener {
   private LocalDateTime start;
   private TestPlan testPlan;
 
-  public WolTestExecutionListener(CommandSource source) {
-    this.source = requireNonNull(source, "source");
+  public WolTestExecutionListener(WolTestenv testenv) {
+    this.testenv = requireNonNull(testenv, "testenv");
+  }
+
+  private MinecraftServer getServer() {
+    return testenv.getServer();
+  }
+
+  private EntityPlayerMP getPlayer() {
+    return testenv.getTestPlayer();
+  }
+
+  private void sendAndLogFeedback(ITextComponent message) {
+    getServer().sendMessage(message);
+    getPlayer().sendMessage(message);
+  }
+
+  private void sendAndLogErrorMessage(ITextComponent error) {
+    ITextComponent message = new TextComponentString("").appendSibling(error).applyTextStyle(RED);
+    getServer().sendMessage(message);
+    getPlayer().sendMessage(message);
   }
 
   private int getTestsFinished() {
@@ -70,7 +87,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
     testsFound.addAndGet(testCount);
     updateProgressBar();
 
-    sendAndLogFeedback(source, createAnnouncement("Found " + testCount + " tests..."));
+    sendAndLogFeedback(createAnnouncement("Found " + testCount + " tests..."));
   }
 
   @Override
@@ -79,7 +96,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
     ITextComponent message = new TextComponentString("Finished " + testsFound + " ");
     appendDetailedTestCount(message);
     message.appendText(" tests in " + duration.getSeconds() + " seconds");
-    sendAndLogFeedback(source, createAnnouncement(message));
+    sendAndLogFeedback(createAnnouncement(message));
     removeProgressBar();
   }
 
@@ -96,7 +113,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
   public void onAbort() {
     ITextComponent announcement = createAnnouncement("Aborting test run...");
     announcement.applyTextStyle(YELLOW);
-    sendAndLogFeedback(source, announcement);
+    sendAndLogFeedback(announcement);
     abort = true;
   }
 
@@ -117,7 +134,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
       ITextComponent announcement =
           createAnnouncement("Skipped " + displayName + " because:\n" + reason);
       announcement.applyTextStyle(YELLOW);
-      sendAndLogFeedback(source, announcement);
+      sendAndLogFeedback(announcement);
     }
   }
 
@@ -125,7 +142,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
   public void executionStarted(TestIdentifier testIdentifier) {
     if (testIdentifier.isTest()) {
       String displayName = testIdentifier.getDisplayName();
-      sendAndLogFeedback(source, createAnnouncement("Started " + displayName));
+      sendAndLogFeedback(createAnnouncement("Started " + displayName));
     }
   }
 
@@ -146,7 +163,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
           testExecutionResult.getThrowable().ifPresent(it -> {
             String displayName = testIdentifier.getDisplayName();
             ITextComponent message = createAnnouncement(displayName + " failed: " + it.toString());
-            sendAndLogErrorMessage(source, message);
+            sendAndLogErrorMessage(message);
             it.printStackTrace();
           });
           break;
@@ -186,22 +203,17 @@ public class WolTestExecutionListener implements TestExecutionListener {
   }
 
   private CustomBossEvent getProgressBar() {
-    CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
+    CustomBossEvents customBossEvents = getServer().getCustomBossEvents();
     CustomBossEvent progressBar = customBossEvents.get(BOSSBAR_ID);
     return progressBar;
   }
 
   private CustomBossEvent createProgressBar() {
-    CustomBossEvents customBossEvents = source.getServer().getCustomBossEvents();
+    CustomBossEvents customBossEvents = getServer().getCustomBossEvents();
     ITextComponent name = new TextComponentString("Test Progress");
     CustomBossEvent progressBar = customBossEvents.add(BOSSBAR_ID, name);
     progressBar.setColor(Color.GREEN);
-
-    Entity entity = source.getEntity();
-    if (entity instanceof EntityPlayerMP) {
-      EntityPlayerMP player = (EntityPlayerMP) entity;
-      progressBar.addPlayer(player);
-    }
+    progressBar.addPlayer(getPlayer());
     return progressBar;
   }
 
@@ -209,7 +221,7 @@ public class WolTestExecutionListener implements TestExecutionListener {
     CustomBossEvent progressBar = getProgressBar();
     if (progressBar != null) {
       progressBar.removeAllPlayers();
-      source.getServer().getCustomBossEvents().remove(progressBar);
+      getServer().getCustomBossEvents().remove(progressBar);
     }
   }
 }

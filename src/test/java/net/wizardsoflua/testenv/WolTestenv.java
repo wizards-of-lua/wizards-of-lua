@@ -14,6 +14,7 @@ import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.wizardsoflua.TimeService;
@@ -142,6 +143,17 @@ public final class WolTestenv implements AutoCloseable {
     }
   }
 
+  @SubscribeEvent
+  public void onEvent(PlayerLoggedInEvent evt) {
+    EntityPlayer player = evt.getPlayer();
+    if (player instanceof EntityPlayerMP) {
+      if (player == testPlayer.updateAndGet(
+          it -> it.getUniqueID().equals(player.getUniqueID()) ? (EntityPlayerMP) player : it)) {
+        handShaked();
+      }
+    }
+  }
+
   public EntityPlayerMP getTestPlayer() {
     return testPlayer.get();
   }
@@ -189,13 +201,13 @@ public final class WolTestenv implements AutoCloseable {
         }
       }
     }
-    handshake();
+    handShake();
   }
 
   private volatile boolean pendingHandshake;
   private final Object handshakeLock = new Object();
 
-  private void handshake() {
+  private void handShake() {
     pendingHandshake = true;
     EntityPlayerMP player = getTestPlayer();
     NetworkMessage message = new ClientSyncRequestMessage();
@@ -210,12 +222,16 @@ public final class WolTestenv implements AutoCloseable {
     }
   }
 
-  @SubscribeEvent
-  public void onTick(ClientSyncResponseEvent event) {
+  private void handShaked() {
     pendingHandshake = false;
     synchronized (handshakeLock) {
       handshakeLock.notifyAll();
     }
+  }
+
+  @SubscribeEvent
+  public void onTick(ClientSyncResponseEvent event) {
+    handShaked();
   }
 
   /**
