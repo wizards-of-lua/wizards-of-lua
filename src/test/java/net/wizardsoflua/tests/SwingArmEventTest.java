@@ -38,7 +38,7 @@ public class SwingArmEventTest extends WolTestBase {
     mc().executeCommand("/lua q=Events.collect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
-    mc().player().rightclick(clickPos, facing);
+    mc().player().rightClick(clickPos, facing);
 
     // Then:
     RightClickBlock act1 = mc().waitFor(RightClickBlock.class);
@@ -60,7 +60,7 @@ public class SwingArmEventTest extends WolTestBase {
     mc().executeCommand("/lua q=Events.collect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
-    mc().player().rightclick(clickPos, facing);
+    mc().player().rightClick(clickPos, facing);
 
     // Then:
     RightClickBlock act1 = mc().waitFor(RightClickBlock.class);
@@ -81,7 +81,7 @@ public class SwingArmEventTest extends WolTestBase {
     mc().executeCommand("/lua q=Events.collect('SwingArmEvent'); e=q:next(); print(e.hand)");
 
     // When:
-    mc().player().leftclick(clickPos, facing);
+    mc().player().leftClick(clickPos, facing);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(expected);

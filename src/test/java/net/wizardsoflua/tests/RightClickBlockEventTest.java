@@ -39,7 +39,7 @@ public class RightClickBlockEventTest extends WolTestBase {
     mc().executeCommand("/lua q=Events.collect('RightClickBlockEvent'); e=q:next(); print(e.pos)");
 
     // When:
-    mc().player().rightclick(clickPos, facing);
+    mc().player().rightClick(clickPos, facing);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(expected);

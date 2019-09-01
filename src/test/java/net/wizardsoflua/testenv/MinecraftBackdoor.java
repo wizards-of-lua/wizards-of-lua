@@ -229,14 +229,16 @@ public class MinecraftBackdoor {
   }
 
   public @Nullable List<? extends Entity> findEntities(String target) {
-    try {
-      CommandSource source = getServer().getCommandSource();
-      EntitySelectorParser parser = new EntitySelectorParser(new StringReader(target));
-      EntitySelector selector = parser.parse();
-      return selector.select(source);
-    } catch (CommandSyntaxException e) {
-      throw new UndeclaredThrowableException(e);
-    }
+    return testenv.callOnMainThread(() -> {
+      try {
+        CommandSource source = getServer().getCommandSource();
+        EntitySelectorParser parser = new EntitySelectorParser(new StringReader(target));
+        EntitySelector selector = parser.parse();
+        return selector.select(source);
+      } catch (CommandSyntaxException e) {
+        throw new UndeclaredThrowableException(e);
+      }
+    });
   }
 
   public void createTeam(String team) {

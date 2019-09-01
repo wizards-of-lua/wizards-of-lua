@@ -40,7 +40,7 @@ public class BlockPlaceEventTest extends WolTestBase {
     );
 
     // When:
-    mc().player().rightclick(clickPos, UP);
+    mc().player().rightClick(clickPos, UP);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(format(blockPos));
@@ -61,7 +61,7 @@ public class BlockPlaceEventTest extends WolTestBase {
         + "print(event.cancelable)\n"//
         + "end)\n"//
     );
-    mc().player().rightclick(clickPos, UP);
+    mc().player().rightClick(clickPos, UP);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo("true");
@@ -82,7 +82,7 @@ public class BlockPlaceEventTest extends WolTestBase {
         + "print('#'..event.name)\n"//
         + "end)\n"//
     );
-    mc().player().rightclick(clickPos, UP);
+    mc().player().rightClick(clickPos, UP);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo("#BlockPlaceEvent");
@@ -109,7 +109,7 @@ public class BlockPlaceEventTest extends WolTestBase {
         + "sleep(1)\n"//
         + "end"//
     );
-    mc().player().rightclick(clickPos, UP);
+    mc().player().rightClick(clickPos, UP);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo("test-output: event.cancelable=false");
@@ -136,7 +136,7 @@ public class BlockPlaceEventTest extends WolTestBase {
         + "sleep(1)\n"//
         + "end"//
     );
-    mc().player().rightclick(clickPos, UP);
+    mc().player().rightClick(clickPos, UP);
 
     // Then:
     assertThat(mc().nextServerMessage()).contains("attempt to cancel BlockPlaceEvent\n at line 6");

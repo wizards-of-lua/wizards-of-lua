@@ -3,14 +3,16 @@ package net.wizardsoflua.testenv.net;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import com.google.auto.service.AutoService;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 @AutoService(NetworkMessage.class)
@@ -34,29 +36,40 @@ public class LeftClickEntityMessage implements NetworkMessage {
   }
 
   @Override
-  public void handle(NetworkEvent.Context contextSupplier) {
-    Minecraft minecraft = Minecraft.getInstance();
-    Entity entity = findEnityById(minecraft.world);
-    if (entity != null) {
-      minecraft.objectMouseOver = new RayTraceResult(entity);
-      try {
-        Method m = Minecraft.class.getDeclaredMethod("clickMouse");
-        m.setAccessible(true);
-        m.invoke(minecraft);
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-        throw new RuntimeException(e);
-      }
-    } else {
-      throw new RuntimeException("Can't find entity with id = " + entityId);
-    }
+  public void handle(NetworkEvent.Context context) {
+    DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.handle(context, entityId));
   }
 
-  private @Nullable Entity findEnityById(World world) {
-    for (Entity e : world.loadedEntityList) {
-      if (e.getUniqueID().equals(entityId)) {
-        return e;
-      }
+  @OnlyIn(Dist.CLIENT)
+  private static class ClientProxy {
+    private static void handle(NetworkEvent.Context context, UUID entityId) {
+      context.enqueueWork(() -> {
+        Entity entity = findEnityById(entityId);
+        if (entity != null) {
+          Minecraft minecraft = Minecraft.getInstance();
+          minecraft.objectMouseOver = new RayTraceResult(entity);
+          try {
+            Method m = Minecraft.class.getDeclaredMethod("clickMouse");
+            m.setAccessible(true);
+            m.invoke(minecraft);
+          } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+          }
+        } else {
+          throw new RuntimeException("Can't find entity with id = " + entityId);
+        }
+      });
     }
-    return null;
+
+    private static @Nullable Entity findEnityById(UUID entityId) {
+      Minecraft minecraft = Minecraft.getInstance();
+      WorldClient world = minecraft.world;
+      for (Entity entity : world.loadedEntityList) {
+        if (entity.getUniqueID().equals(entityId)) {
+          return entity;
+        }
+      }
+      return null;
+    }
   }
 }

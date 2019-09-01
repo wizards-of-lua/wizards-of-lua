@@ -36,7 +36,7 @@ public class BlockBreakEventTest extends WolTestBase {
     mc().executeCommand("/lua q=Events.collect('BlockBreakEvent'); e=q:next(); print(e.pos)");
 
     // When:
-    mc().player().leftclick(blockPos, UP);
+    mc().player().leftClick(blockPos, UP);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(expected);

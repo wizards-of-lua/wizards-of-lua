@@ -213,11 +213,11 @@ public class PlayerBackdoor {
     perform(new LeftClickEntityMessage(entity));
   }
 
-  public void leftclick(BlockPos pos, EnumFacing face) {
+  public void leftClick(BlockPos pos, EnumFacing face) {
     perform(new LeftClickMessage(pos, face));
   }
 
-  public void rightclick(BlockPos pos, EnumFacing face) {
+  public void rightClick(BlockPos pos, EnumFacing face) {
     perform(new RightClickMessage(pos, face));
   }
 

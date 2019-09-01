@@ -22,12 +22,12 @@ public class ReconnectMessage implements NetworkMessage {
 
   @Override
   public void handle(NetworkEvent.Context context) {
-    DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.reconnect(context));
+    DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> ClientProxy.handle(context));
   }
 
   @OnlyIn(Dist.CLIENT)
   private static class ClientProxy {
-    private static void reconnect(NetworkEvent.Context context) {
+    private static void handle(NetworkEvent.Context context) {
       context.enqueueWork(() -> {
         Minecraft minecraft = Minecraft.getInstance();
         NetworkManager networkManager = minecraft.player.connection.getNetworkManager();

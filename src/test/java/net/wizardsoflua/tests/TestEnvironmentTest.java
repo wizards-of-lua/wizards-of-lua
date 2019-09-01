@@ -129,7 +129,7 @@ public class TestEnvironmentTest extends WolTestBase {
     EnumFacing facing = EnumFacing.UP;
 
     // When:
-    mc().player().leftclick(clickPos, facing);
+    mc().player().leftClick(clickPos, facing);
 
     // Then:
     LeftClickBlock act = mc().waitFor(LeftClickBlock.class);
@@ -150,7 +150,7 @@ public class TestEnvironmentTest extends WolTestBase {
     EnumFacing facing = EnumFacing.WEST;
 
     // When:
-    mc().player().rightclick(clickPos, facing);
+    mc().player().rightClick(clickPos, facing);
 
     // Then:
     RightClickBlock act = mc().waitFor(RightClickBlock.class);

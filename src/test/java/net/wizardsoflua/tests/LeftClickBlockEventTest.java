@@ -37,7 +37,7 @@ public class LeftClickBlockEventTest extends WolTestBase {
     mc().executeCommand("/lua q=Events.collect('LeftClickBlockEvent'); e=q:next(); print(e.pos)");
 
     // When:
-    mc().player().leftclick(clickPos, facing);
+    mc().player().leftClick(clickPos, facing);
 
     // Then:
     assertThat(mc().nextServerMessage()).isEqualTo(expected);

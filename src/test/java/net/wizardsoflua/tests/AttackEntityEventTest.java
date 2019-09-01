@@ -22,9 +22,9 @@ public class AttackEntityEventTest extends WolTestBase {
   public void test() {
     // Given:
     mc().player().setPosition(playerPos);
-    mc().executeCommand("/summon minecraft:pig %s %s %s {CustomName:testpig}", pigPos.getX(),
+    mc().executeCommand("/summon minecraft:pig %s %s %s {Tags:[testpig]}", pigPos.getX(),
         pigPos.getY(), pigPos.getZ());
-    Entity pig = mc().findEntities("@e[name=testpig]").get(0);
+    Entity pig = mc().findEntities("@e[tag=testpig]").get(0);
     mc().executeCommand(
         "/lua Events.on('AttackEntityEvent'):call(function(event) print(event.target.uuid) end)");
     mc().clearEvents();
