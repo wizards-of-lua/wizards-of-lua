@@ -212,14 +212,14 @@ task prepareCurrentDocs {
 
   doLast {
     copy {
-      from jekyllSrcDir
-      into currentDocsJekyllDir
-    }
-    copy {
       from compileJava.options.annotationProcessorGeneratedSourcesDirectory ?: sourceSets.main.java.outputDir
       into new File(currentDocsJekyllDir, '_modules')
       include '**/*.md'
       includeEmptyDirs false
+    }
+    copy {
+      from jekyllSrcDir
+      into currentDocsJekyllDir
     }
   }
 }
