@@ -46,11 +46,9 @@ import net.wizardsoflua.lua.nbt.NbtConverter;
 @GenerateLuaClassTable(instance = EntityClass.Instance.class)
 @GenerateLuaDoc(subtitle = "The Base Class of all Organic or Inorganic Entities")
 public final class EntityClass extends BasicLuaClass<Entity, EntityClass.Instance<Entity>> {
-
   public static final String NAME = "Entity";
   @Resource
   private LuaConverters converters;
-
   @Resource
   private Injector injector;
 

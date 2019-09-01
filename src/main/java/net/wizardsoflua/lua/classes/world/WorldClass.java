@@ -3,7 +3,6 @@ package net.wizardsoflua.lua.classes.world;
 import static com.google.common.base.Preconditions.checkNotNull;
 import javax.annotation.Nullable;
 import com.google.auto.service.AutoService;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Village;
@@ -34,8 +33,6 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
   public static final String NAME = "World";
   @Resource
   private LuaConverters converters;
-  @Resource
-  private MinecraftServer server;
 
   @Override
   protected Table createRawTable() {
@@ -44,18 +41,13 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
 
   @Override
   protected Delegator<Instance<World>> toLuaInstance(World javaInstance) {
-    return new WorldClassInstanceTable<>(new Instance<>(javaInstance, server.getFolderName()),
-        getTable(), converters);
+    return new WorldClassInstanceTable<>(new Instance<>(javaInstance), getTable(), converters);
   }
 
   @GenerateLuaInstanceTable
   public static class Instance<D extends World> extends LuaInstance<D> {
-
-    private String folder;
-
-    public Instance(D delegate, String folder) {
+    public Instance(D delegate) {
       super(delegate);
-      this.folder = folder;
     }
 
     /**
@@ -80,7 +72,7 @@ public final class WorldClass extends BasicLuaClass<World, WorldClass.Instance<W
      */
     @LuaProperty
     public String getFolder() {
-      return folder;
+      return delegate.getServer().getFolderName();
     }
 
     /**
