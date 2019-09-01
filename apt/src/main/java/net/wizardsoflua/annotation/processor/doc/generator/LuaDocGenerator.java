@@ -120,7 +120,7 @@ public class LuaDocGenerator {
             Name qualifiedSuperName = superElement.getQualifiedName();
             String luaName = luaTypeNames.get(qualifiedSuperName.toString());
             if (luaName != null) {
-              return toReference(luaName);
+              return renderPart(luaName);
             }
             if (qualifiedSuperName.contentEquals(Table.class.getName())) {
               return "table";
