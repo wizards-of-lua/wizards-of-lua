@@ -2,7 +2,7 @@
  * Recompile annotation processor after change, for use in IDE.
  * - gradlew apt:jar
  */
- 
+
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
@@ -157,7 +157,7 @@ processResources {
     include 'META-INF/mods.toml'
     include 'wol.properties'
     expand 'version': project.version, 'minecraft_version': mcversion_toml, 'forge_version': forge_version_toml
-  }    
+  }
   from(sourceSets.main.resources.srcDirs) {
     exclude 'wol.properties'
     exclude 'META-INF/mods.toml'
@@ -210,15 +210,17 @@ def runJekyll(File sourceDir, File targetDir, File temporaryDir) {
 task prepareCurrentDocs {
   dependsOn compileJava
 
-  copy {
-    from jekyllSrcDir
-    into currentDocsJekyllDir
-  }
-  copy {
-    from compileJava.options.annotationProcessorGeneratedSourcesDirectory ?: sourceSets.main.java.outputDir
-    into new File(currentDocsJekyllDir, '_modules')
-    include '**/*.md'
-    includeEmptyDirs false
+  doLast {
+    copy {
+      from jekyllSrcDir
+      into currentDocsJekyllDir
+    }
+    copy {
+      from compileJava.options.annotationProcessorGeneratedSourcesDirectory ?: sourceSets.main.java.outputDir
+      into new File(currentDocsJekyllDir, '_modules')
+      include '**/*.md'
+      includeEmptyDirs false
+    }
   }
 }
 
@@ -238,8 +240,12 @@ task prepareNamedDocs(type: Copy) {
 
   from currentDocsJekyllDir
   into namedDocsJekyllDir
-  filter {
-    it.replace('current', version)
+  eachFile {
+    if (it.path == '_config.yml') {
+      filter {
+        it.replace('current', version)
+      }
+    }
   }
 }
 
@@ -255,7 +261,6 @@ task buildNamedDocs {
 }
 
 task buildDocs {
-  dependsOn clean
   dependsOn buildCurrentDocs
   dependsOn buildNamedDocs
 
@@ -281,16 +286,23 @@ task buildDocs {
 }
 
 task serveCurrentDocs(type: com.github.jrubygradle.JRubyExec) {
-  dependsOn clean
   dependsOn buildCurrentDocs
 
   script 'jekyll'
   workingDir temporaryDir
   scriptArgs 'serve', '-s', currentDocsHtmlDir.absolutePath
+
+  doFirst {
+    mkdir temporaryDir
+  }
 }
 
 task serveDocs(type: com.github.jrubygradle.JRubyExec) {
   script 'jekyll'
   workingDir temporaryDir
   scriptArgs 'serve', '-s', file('docs').absolutePath
+
+  doFirst {
+    mkdir temporaryDir
+  }
 }
