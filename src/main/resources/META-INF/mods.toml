@@ -7,7 +7,7 @@
 modLoader="javafml" #mandatory
 
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[${forge_version},)" #mandatory 
+loaderVersion="[${forge_version},)" #mandatory
 
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/wizards-of-lua/wizards-of-lua/issues/" #optional
@@ -60,6 +60,6 @@ The Art of Spell Crafting
 [[dependencies.wol]]
     modId="minecraft"
     mandatory=true
-    versionRange="[${minecraft_version}]"
+    versionRange="[1.13.2]"
     ordering="NONE"
     side="SERVER"
