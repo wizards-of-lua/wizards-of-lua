@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Wizards of Lua by </title>
+    <title>LeftClickBlockEvent - Wizards of Lua by </title>
     <link rel="stylesheet" href="/assets/css/style.css?v=">
     <link rel="stylesheet" href="/css/extra.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -50,13 +50,14 @@
         </div>
         
 
-        <h1><span class="notranslate">LeftClickBlockEvent</span></h1>
+        <h1><span class="notranslate">LeftClickBlockEvent</span> - When a Player Left-Clicks on a Block</h1>
         
         
 
 
 
-        
+        <p>The <span class="notranslate">LeftClickBlockEvent</span> class is fired when a player left-clicks
+at some block.</p>
 
 
         
@@ -91,6 +92,22 @@ and some examples about how to use them in your spells.</p>
 
 <p><a style="position:relative; top:-70px; display:block;" name="hitVec"></a></p>
 <h3 id="hitvec--vec3"><span class="notranslate">hitVec : <a href="../Vec3">Vec3</a></span></h3>
+
+<p>The exact position the player clicked at.</p>
+
+<h4 id="example">Example</h4>
+
+<p>Creating some particle effect at the left-click hit position.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">Events</span><span class="p">.</span><span class="n">collect</span><span class="p">(</span><span class="s2">"LeftClickBlockEvent"</span><span class="p">)</span>
+<span class="k">while</span> <span class="kc">true</span> <span class="k">do</span>
+  <span class="kd">local</span> <span class="n">event</span> <span class="o">=</span> <span class="n">queue</span><span class="p">:</span><span class="nb">next</span><span class="p">()</span>
+  <span class="kd">local</span> <span class="n">v</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="n">hitVec</span>
+  <span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="s">[[
+    /particle angryVillager %s %s %s 0 0 0 0 1 true
+  ]]</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">.</span><span class="n">z</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -127,7 +144,7 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
    
    
-   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i> - Managing Types</i></a></li>
    
    
    <li><a href="/versions/current/modules/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
@@ -142,7 +159,7 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What Lies in View</i></a></li>
+   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What is in Sight</i></a></li>
    
    
    <li><a href="/versions/current/modules/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
@@ -151,7 +168,7 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
    
    
-   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i> - Intercepting Events</i></a></li>
    
    
    <li><a href="/versions/current/modules/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
@@ -193,16 +210,19 @@ and some examples about how to use them in your spells.</p>
    
    
    
-   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/AttackEntityEvent/" alt="AttackEntityEvent"><u><span class="notranslate">AttackEntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i> - When a Player Breaks a Block</i></a></li>
    
    
    <li><a href="/versions/current/modules/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i> - When a Player Places a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i> - Knowing what Players are Talking About</i></a></li>
    
    
    <li><a href="/versions/current/modules/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
@@ -226,10 +246,10 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i> - When a Player Left-Clicks on a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i> - When a Living Entity Dies</i></a></li>
    
    
    <li><a href="/versions/current/modules/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
@@ -238,22 +258,31 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
    
    
+   <li><a href="/versions/current/modules/PlayerEntityInteractEvent/" alt="PlayerEntityInteractEvent"><u><span class="notranslate">PlayerEntityInteractEvent</span></u><i> - When a Player Right-Clicks on an Entity</i></a></li>
+   
+   
    <li><a href="/versions/current/modules/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i> - When a Player Collects Something</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemTossEvent/" alt="PlayerItemTossEvent"><u><span class="notranslate">PlayerItemTossEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i> - When a Player Joins the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i> - When a Player Leaves the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i> - When a Player is Reborn</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i> - When a Player Right-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickItemEvent/" alt="RightClickItemEvent"><u><span class="notranslate">RightClickItemEvent</span></u><i> - When a Player Right-Clicks with an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
@@ -262,19 +291,19 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity Uses an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity starts using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity Starts Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity stops using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity Stops Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity Uses an Item</i></a></li>
    
 </ul>
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Wizards of Lua by </title>
+    <title>Logger - Wizards of Lua by </title>
     <link rel="stylesheet" href="/assets/css/style.css?v=">
     <link rel="stylesheet" href="/css/extra.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -59,6 +59,12 @@
         <p>The <span class="notranslate">Logger</span> class supports writing log messages into the server’s
 log file.</p>
 
+<p>The log messages can be of the following severity: error, warn, info, debug, and trace.</p>
+
+<p>The server’s log files are found inside the server’s <code class="highlighter-rouge">logs</code> folder. By default “error”,
+“warn”, and “info” messages go into the files “latest.log” and “debug.log”, while “debug” and
+“trace” messages only go into “debug.log”.</p>
+
 
         
         
@@ -113,26 +119,44 @@ and some examples about how to use them in your spells.</p>
 <p><a style="position:relative; top:-70px; display:block;" name="debug"></a></p>
 <h3 id="debug-message-arg---nil"><span class="notranslate">debug (message, arg…) -&gt; <a href="../nil">nil</a></span></h3>
 
-<p>The <span class="notranslate">‘debug’</span> function writes the given message into the
+<p>The <span class="notranslate">‘debug’</span> function writes the given debug message into the
 server’s log file if the log level is at least ‘debug’, prefixed with this logger’s name.</p>
 
 <p>Optionally you can provide some message arguments that will be formatted into the final
 message (<a href="https://www.lua.org/manual/5.3/manual.html#pdf-string.format">see
 string.format()</a>).</p>
 
+<h4 id="example">Example</h4>
+
+<p>Printing a debug message into the server’s log file, prefixed with the category label
+“my-logger”.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Some debug message"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-1">Example</h4>
+
+<p>Printing a formatted debug message into the server’s log file, prefixed with the category
+label “my-logger.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Some debug message with some value %s"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="error"></a></p>
 <h3 id="error-message-arg---nil"><span class="notranslate">error (message, arg…) -&gt; <a href="../nil">nil</a></span></h3>
 
-<p>The <span class="notranslate">‘error’</span> function writes the given message into the
+<p>The <span class="notranslate">‘error’</span> function writes the given error message into the
 server’s log file if the log level is at least ‘error’, prefixed with this logger’s name.</p>
 
 <p>Optionally you can provide some message arguments that will be formatted into the final
 message (<a href="https://www.lua.org/manual/5.3/manual.html#pdf-string.format">see
 string.format()</a>).</p>
 
-<h4 id="example">Example</h4>
+<h4 id="example-2">Example</h4>
 
 <p>Printing an error message into the server’s log file, prefixed with the category label
 “my-logger”.</p>
@@ -141,7 +165,7 @@ string.format()</a>).</p>
 <span class="n">logger</span><span class="p">:</span><span class="nb">error</span><span class="p">(</span><span class="s2">"Some error message"</span><span class="p">)</span>
 </code></pre></div></div>
 
-<h4 id="example-1">Example</h4>
+<h4 id="example-3">Example</h4>
 
 <p>Printing a formatted error message into the server’s log file, prefixed with the category
 label “my-logger.</p>
@@ -155,29 +179,30 @@ label “my-logger.</p>
 <p><a style="position:relative; top:-70px; display:block;" name="info"></a></p>
 <h3 id="info-message-arg---nil"><span class="notranslate">info (message, arg…) -&gt; <a href="../nil">nil</a></span></h3>
 
-<p>The <span class="notranslate">‘info’</span> function writes the given message into the
-server’s log file if the log level is at least ‘info’, prefixed with this logger’s name.</p>
+<p>The <span class="notranslate">‘info’</span> function writes the given information message
+into the server’s log file if the log level is at least ‘info’, prefixed with this logger’s
+name.</p>
 
 <p>Optionally you can provide some message arguments that will be formatted into the final
 message (<a href="https://www.lua.org/manual/5.3/manual.html#pdf-string.format">see
 string.format()</a>).</p>
 
-<h4 id="example-2">Example</h4>
+<h4 id="example-4">Example</h4>
 
 <p>Printing an info message into the server’s log file, prefixed with the category label
 “my-logger”.</p>
 
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
-<span class="n">logger</span><span class="p">:</span><span class="n">info</span><span class="p">(</span><span class="s2">"Some message"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">info</span><span class="p">(</span><span class="s2">"Some info message"</span><span class="p">)</span>
 </code></pre></div></div>
 
-<h4 id="example-3">Example</h4>
+<h4 id="example-5">Example</h4>
 
 <p>Printing a formatted info message into the server’s log file, prefixed with the category
-label “my-logger”.</p>
+label “my-logger.</p>
 
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
-<span class="n">logger</span><span class="p">:</span><span class="n">info</span><span class="p">(</span><span class="s2">"Some message with values %s and %s"</span><span class="p">,</span> <span class="n">valueA</span><span class="p">,</span> <span class="n">valueB</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">info</span><span class="p">(</span><span class="s2">"Some info message with some value %s"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 </code></pre></div></div>
 
 <hr />
@@ -185,24 +210,60 @@ label “my-logger”.</p>
 <p><a style="position:relative; top:-70px; display:block;" name="trace"></a></p>
 <h3 id="trace-message-arg---nil"><span class="notranslate">trace (message, arg…) -&gt; <a href="../nil">nil</a></span></h3>
 
-<p>The <span class="notranslate">‘trace’</span> function writes the given message into the
-server’s log file if the log level is at least ‘trace’, prefixed with this logger’s name.</p>
+<p>The <span class="notranslate">‘trace’</span> function writes the given tracing message into
+the server’s log file if the log level is at least ‘trace’, prefixed with this logger’s name.</p>
 
 <p>Optionally you can provide some message arguments that will be formatted into the final
 message (<a href="https://www.lua.org/manual/5.3/manual.html#pdf-string.format">see
 string.format()</a>).</p>
+
+<h4 id="example-6">Example</h4>
+
+<p>Printing a tracing message into the server’s log file, prefixed with the category label
+“my-logger”.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">trace</span><span class="p">(</span><span class="s2">"Some tracing message"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-7">Example</h4>
+
+<p>Printing a formatted traceing message into the server’s log file, prefixed with the category
+label “my-logger.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">trace</span><span class="p">(</span><span class="s2">"Some traceing message with some value %s"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</code></pre></div></div>
 
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="warn"></a></p>
 <h3 id="warn-message-arg---nil"><span class="notranslate">warn (message, arg…) -&gt; <a href="../nil">nil</a></span></h3>
 
-<p>The <span class="notranslate">‘warn’</span> function writes the given message into the
-server’s log file if the log level is at least ‘warn’, prefixed with this logger’s name.</p>
+<p>The <span class="notranslate">‘warn’</span> function writes the given warning message into
+the server’s log file if the log level is at least ‘warn’, prefixed with this logger’s name.</p>
 
 <p>Optionally you can provide some message arguments that will be formatted into the final
 message (<a href="https://www.lua.org/manual/5.3/manual.html#pdf-string.format">see
 string.format()</a>).</p>
+
+<h4 id="example-8">Example</h4>
+
+<p>Printing a warning message into the server’s log file, prefixed with the category label
+“my-logger”.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Some warning message"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-9">Example</h4>
+
+<p>Printing a formatted warning message into the server’s log file, prefixed with the category
+label “my-logger.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Loggers</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"my-logger"</span><span class="p">)</span>
+<span class="n">logger</span><span class="p">:</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Some warning message with some value %s"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -239,7 +300,7 @@ string.format()</a>).</p>
    <li><a href="/versions/current/modules/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
    
    
-   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i> - Managing Types</i></a></li>
    
    
    <li><a href="/versions/current/modules/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
@@ -254,7 +315,7 @@ string.format()</a>).</p>
    <li><a href="/versions/current/modules/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What Lies in View</i></a></li>
+   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What is in Sight</i></a></li>
    
    
    <li><a href="/versions/current/modules/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
@@ -263,7 +324,7 @@ string.format()</a>).</p>
    <li><a href="/versions/current/modules/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
    
    
-   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i> - Intercepting Events</i></a></li>
    
    
    <li><a href="/versions/current/modules/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
@@ -305,16 +366,19 @@ string.format()</a>).</p>
    
    
    
-   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/AttackEntityEvent/" alt="AttackEntityEvent"><u><span class="notranslate">AttackEntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i> - When a Player Breaks a Block</i></a></li>
    
    
    <li><a href="/versions/current/modules/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i> - When a Player Places a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i> - Knowing what Players are Talking About</i></a></li>
    
    
    <li><a href="/versions/current/modules/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
@@ -338,10 +402,10 @@ string.format()</a>).</p>
    <li><a href="/versions/current/modules/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i> - When a Player Left-Clicks on a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i> - When a Living Entity Dies</i></a></li>
    
    
    <li><a href="/versions/current/modules/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
@@ -350,22 +414,31 @@ string.format()</a>).</p>
    <li><a href="/versions/current/modules/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
    
    
+   <li><a href="/versions/current/modules/PlayerEntityInteractEvent/" alt="PlayerEntityInteractEvent"><u><span class="notranslate">PlayerEntityInteractEvent</span></u><i> - When a Player Right-Clicks on an Entity</i></a></li>
+   
+   
    <li><a href="/versions/current/modules/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i> - When a Player Collects Something</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemTossEvent/" alt="PlayerItemTossEvent"><u><span class="notranslate">PlayerItemTossEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i> - When a Player Joins the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i> - When a Player Leaves the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i> - When a Player is Reborn</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i> - When a Player Right-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickItemEvent/" alt="RightClickItemEvent"><u><span class="notranslate">RightClickItemEvent</span></u><i> - When a Player Right-Clicks with an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
@@ -374,19 +447,19 @@ string.format()</a>).</p>
    <li><a href="/versions/current/modules/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity Uses an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity starts using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity Starts Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity stops using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity Stops Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity Uses an Item</i></a></li>
    
 </ul>
 

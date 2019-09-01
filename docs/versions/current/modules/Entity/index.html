@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Wizards of Lua by </title>
+    <title>Entity - Wizards of Lua by </title>
     <link rel="stylesheet" href="/assets/css/style.css?v=">
     <link rel="stylesheet" href="/css/extra.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -121,7 +121,7 @@
     </tr>
     <tr>
       <td><a href="#nbt"><span class="notranslate">nbt</span></a></td>
-      <td><span class="notranslate"><a href="../table">table</a></span></td>
+      <td><span class="notranslate">table</span></td>
       <td style="text-align: center">r</td>
     </tr>
     <tr>
@@ -186,7 +186,7 @@
     <tr>
       <td><a href="#dropItem"> <span class="notranslate">dropItem</span> </a></td>
       <td><span class="notranslate">item, offsetY</span></td>
-      <td style="text-align: center"><span class="notranslate"><a href="../Entity">Entity</a></span></td>
+      <td style="text-align: center"><span class="notranslate"><a href="../DroppedItem">DroppedItem</a></span></td>
     </tr>
     <tr>
       <td><a href="#kill"> <span class="notranslate">kill</span> </a></td>
@@ -274,6 +274,26 @@ currently is living in. 0 means the Overworld. -1 is the Nether, and 1 is the En
 <p>The ‘lookVec’ is a 3-dimensional vector that points into the direction this entity is looking
 at, or nil, if it is not looking anywhere, for example, if it has no eyes.</p>
 
+<h4 id="example">Example</h4>
+
+<p>Letting the wizard spit 10 meters into the direction he is looking at.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">dir</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">lookVec</span>
+<span class="kd">local</span> <span class="n">s</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">pos</span><span class="o">+</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">eyeHeight</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">.</span><span class="mi">1</span> <span class="k">do</span>
+  <span class="n">spell</span><span class="p">.</span><span class="n">pos</span><span class="o">=</span><span class="n">s</span><span class="o">+</span><span class="n">dir</span><span class="o">*</span><span class="n">i</span>
+  <span class="n">spell</span><span class="p">:</span><span class="n">execute</span><span class="p">(</span><span class="s2">"particle droplet ~ ~ ~ 0 0 0 0"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h4 id="example-1">Example</h4>
+
+<p>Moving the spell into the owners eye and pointing it into the owner’s look direction.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">pos</span><span class="o">+</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">eyeHeight</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">spell</span><span class="p">.</span><span class="n">lookVec</span> <span class="o">=</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">lookVec</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="motion"></a></p>
@@ -281,6 +301,13 @@ at, or nil, if it is not looking anywhere, for example, if it has no eyes.</p>
 
 <p>The ‘motion’ is a 3-dimensional vector that represents the velocity of this entity when it is
 moved by some external force, e.g. when it is falling or when it is pushed by an explosion.</p>
+
+<h4 id="example-2">Example</h4>
+
+<p>Pushing the wizard up into the sky.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">motion</span><span class="o">=</span><span class="n">Vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -294,13 +321,26 @@ character, like ‘mickkay’ or ‘bytemage’.</p>
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="nbt"></a></p>
-<h3 id="nbt--table"><span class="notranslate">nbt : <a href="../table">table</a></span></h3>
+<h3 id="nbt--table"><span class="notranslate">nbt : table</span></h3>
 
 <p>The ‘nbt’ value (short for Named Binary Tag) is a table of entity-specifc key-value pairs
-also called <a href="https://minecraft.gamepedia.com/Commands#Data_tags">data tags</a>. The nbt property
-is readonly but gives you a modifiable copy of the internal value. You can change the
-contents, but to activate them you have to assign the modified table to the entity by using
-the <a href="../Entity/#putNbt">putNbt()</a> function.</p>
+also called <a href="https://minecraft.gamepedia.com/Commands#Data_tags">data tags</a>.</p>
+
+<p>The nbt property is readonly but gives you a modifiable copy of the internal value.</p>
+
+<p>You can change the contents, but to activate them you have to assign the modified table to
+the entity by using the <a href="../Entity/#putNbt">putNbt()</a> function.</p>
+
+<h4 id="example-3">Example</h4>
+
+<p>Putting on a helmet on all zombies.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">zombie</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@e[type=zombie]"</span><span class="p">))</span> <span class="k">do</span>
+  <span class="kd">local</span> <span class="n">n</span><span class="o">=</span><span class="n">zombie</span><span class="p">.</span><span class="n">nbt</span>
+  <span class="n">n</span><span class="p">.</span><span class="n">ArmorItems</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="n">Count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">id</span><span class="o">=</span><span class="s2">"iron_helmet"</span><span class="p">}</span>
+  <span class="n">zombie</span><span class="p">:</span><span class="n">putNbt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -348,6 +388,20 @@ value of 0 means the entity is facing south. 90 corresponds to west, and 45 to s
 
 <p>The ‘tags’ value is a list of strings that have been assigned to this entity.</p>
 
+<h4 id="example-4">Example</h4>
+
+<p>Tagging the wizard as great and fearsome.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">tags</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"great"</span><span class="p">,</span> <span class="s2">"fearsome"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="example-5">Example</h4>
+
+<p>Printing the wizard’s tags.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span> <span class="n">str</span><span class="p">(</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">tags</span><span class="p">))</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="uuid"></a></p>
@@ -382,10 +436,21 @@ entity. This function returns true if the tag was added successfully.</p>
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="dropItem"></a></p>
-<h3 id="dropitem-item-offsety---entity"><span class="notranslate">dropItem (item, offsetY) -&gt; <a href="../Entity">Entity</a></span></h3>
+<h3 id="dropitem-item-offsety---droppeditem"><span class="notranslate">dropItem (item, offsetY) -&gt; <a href="../DroppedItem">DroppedItem</a></span></h3>
 
 <p>The ‘dropItem’ function drops the given item at this entity’s position modified by the
 optionally given vertical offset.</p>
+
+<h4 id="example-6">Example</h4>
+
+<p>Dropping the block at the spell’s position as an item.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">name</span> <span class="o">~=</span> <span class="s2">"air"</span> <span class="k">then</span>
+  <span class="kd">local</span> <span class="n">item</span> <span class="o">=</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">:</span><span class="n">asItem</span><span class="p">()</span>
+  <span class="n">spell</span><span class="p">:</span><span class="n">dropItem</span><span class="p">(</span> <span class="n">item</span><span class="p">)</span>
+  <span class="n">spell</span><span class="p">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"air"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -394,44 +459,103 @@ optionally given vertical offset.</p>
 
 <p>The ‘kill’ function kills this entity during the next game tick.</p>
 
+<h4 id="example-7">Example</h4>
+
+<p>Killing all pigs that are swimming in liquid material.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">pigs</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@e[type=pig]"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">pig</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">pigs</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">spell</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">pig</span><span class="p">.</span><span class="n">pos</span>
+  <span class="k">if</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">material</span><span class="p">.</span><span class="n">liquid</span> <span class="k">then</span>
+    <span class="n">pig</span><span class="p">:</span><span class="n">kill</span><span class="p">()</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="move"></a></p>
 <h3 id="move-directionname-distance---nil"><span class="notranslate">move (directionName, distance) -&gt; nil</span></h3>
 
 <p>The ‘move’ function teleports this entity instantly to the position relative to its current
-position specified by the given direction and distance. If no distance is specified, 1 meter
-is taken as default distance. Valid direction values are absolute directions (‘up’, ‘down’,
-‘north’, ‘east’, ‘south’, and ‘west’), as well as relative directions (‘forward’, ‘back’,
-‘left’, and ‘right’). Relative directions are interpreted relative to the direction the
-entity is <a href="../Entity/#facing">facing</a>.</p>
+position specified by the given direction and distance.</p>
+
+<p>If no distance is specified, 1 meter is taken as default distance. Valid direction values are
+absolute directions (‘up’, ‘down’, ‘north’, ‘east’, ‘south’, and ‘west’), as well as relative
+directions (‘forward’, ‘back’, ‘left’, and ‘right’).</p>
+
+<p>Relative directions are interpreted relative to the direction the entity is
+<a href="../Entity/#facing">facing</a>.</p>
+
+<h4 id="example-8">Example</h4>
+
+<p>Moving the spell’s owner for half a meter to the left.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">:</span><span class="n">move</span><span class="p">(</span> <span class="s2">"left"</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div></div>
 
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="putNbt"></a></p>
 <h3 id="putnbt-nbt---nil"><span class="notranslate">putNbt (nbt) -&gt; nil</span></h3>
 
-<p>The ‘putNbt’ function inserts the given table entries into the <a href="../Entity/#nbt">nbt</a>
-property of this entity. Please note that this function is not supported for
-<a href="../Player/">Player</a> objects.</p>
+<p>The ‘putNbt’ function inserts the given table entries into the <a href="../Entity/#nbt">nbt</a> property
+of this entity.</p>
+
+<p>Please note that this function is not supported for <a href="../Player/">Player</a> objects.</p>
+
+<h4 id="example-9">Example</h4>
+
+<p>Cutting the health of all bats to half.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">e</span> <span class="o">=</span> <span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@e[type=bat]"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">bat</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">do</span>
+  <span class="kd">local</span> <span class="n">h</span> <span class="o">=</span> <span class="nb">math.floor</span><span class="p">(</span><span class="n">bat</span><span class="p">.</span><span class="n">nbt</span><span class="p">.</span><span class="n">Health</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+  <span class="n">bat</span><span class="p">:</span><span class="n">putNbt</span><span class="p">({</span><span class="n">Health</span><span class="o">=</span><span class="n">h</span><span class="p">})</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">bat</span><span class="p">.</span><span class="n">nbt</span><span class="p">.</span><span class="n">Health</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h4 id="example-10">Example</h4>
+
+<p>Finding all pigs and putting a saddle on each of them.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">pig</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">Entities</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"@e[type=pig]"</span><span class="p">))</span> <span class="k">do</span>
+  <span class="n">pig</span><span class="p">:</span><span class="n">putNbt</span><span class="p">({</span><span class="n">Saddle</span><span class="o">=</span><span class="mi">1</span><span class="p">})</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="removeTag"></a></p>
 <h3 id="removetag-tag---boolean"><span class="notranslate">removeTag (tag) -&gt; boolean</span></h3>
 
-<p>The ‘removeTag’ function removes the given tag from the set of <a href="../Entity/#tags">tags</a>
-of this entity. This function returns true if the tag has been removed successfully, and
-false if there was no such tag.</p>
+<p>The ‘removeTag’ function removes the given tag from the set of <a href="../Entity/#tags">tags</a> of
+this entity. This function returns true if the tag has been removed successfully, and false
+if there was no such tag.</p>
 
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="scanView"></a></p>
 <h3 id="scanview-distance---blockhit"><span class="notranslate">scanView (distance) -&gt; <a href="../BlockHit">BlockHit</a></span></h3>
 
-<p>The ‘scanView’ function scans the view of this entity for the next (non-liquid) block. On
-success it returns a <a href="../BlockHit/">BlockHit</a>, otherwise nil. It scans the view with a
+<p>The ‘scanView’ function scans the view of this entity for the next (non-liquid) block.</p>
+
+<p>On success it returns a <a href="../BlockHit/">BlockHit</a>, otherwise nil. It scans the view with a
 line-of-sight-range of up to the given distance (meter).</p>
+
+<h4 id="example-11">Example</h4>
+
+<p>Prints the name of the block the spell’s owner is looking at (up to a maximum distance of 10
+meters).</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">maxDistance</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="kd">local</span> <span class="n">hit</span> <span class="o">=</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">:</span><span class="n">scanView</span><span class="p">(</span> <span class="n">maxDistance</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">hit</span> <span class="k">then</span>
+  <span class="n">spell</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">hit</span><span class="p">.</span><span class="n">pos</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">name</span><span class="o">..</span><span class="s2">" is looking at "</span><span class="o">..</span><span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -468,7 +592,7 @@ line-of-sight-range of up to the given distance (meter).</p>
    <li><a href="/versions/current/modules/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
    
    
-   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i> - Managing Types</i></a></li>
    
    
    <li><a href="/versions/current/modules/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
@@ -483,7 +607,7 @@ line-of-sight-range of up to the given distance (meter).</p>
    <li><a href="/versions/current/modules/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What Lies in View</i></a></li>
+   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What is in Sight</i></a></li>
    
    
    <li><a href="/versions/current/modules/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
@@ -492,7 +616,7 @@ line-of-sight-range of up to the given distance (meter).</p>
    <li><a href="/versions/current/modules/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
    
    
-   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i> - Intercepting Events</i></a></li>
    
    
    <li><a href="/versions/current/modules/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
@@ -534,16 +658,19 @@ line-of-sight-range of up to the given distance (meter).</p>
    
    
    
-   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/AttackEntityEvent/" alt="AttackEntityEvent"><u><span class="notranslate">AttackEntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i> - When a Player Breaks a Block</i></a></li>
    
    
    <li><a href="/versions/current/modules/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i> - When a Player Places a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i> - Knowing what Players are Talking About</i></a></li>
    
    
    <li><a href="/versions/current/modules/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
@@ -567,10 +694,10 @@ line-of-sight-range of up to the given distance (meter).</p>
    <li><a href="/versions/current/modules/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i> - When a Player Left-Clicks on a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i> - When a Living Entity Dies</i></a></li>
    
    
    <li><a href="/versions/current/modules/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
@@ -579,22 +706,31 @@ line-of-sight-range of up to the given distance (meter).</p>
    <li><a href="/versions/current/modules/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
    
    
+   <li><a href="/versions/current/modules/PlayerEntityInteractEvent/" alt="PlayerEntityInteractEvent"><u><span class="notranslate">PlayerEntityInteractEvent</span></u><i> - When a Player Right-Clicks on an Entity</i></a></li>
+   
+   
    <li><a href="/versions/current/modules/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i> - When a Player Collects Something</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemTossEvent/" alt="PlayerItemTossEvent"><u><span class="notranslate">PlayerItemTossEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i> - When a Player Joins the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i> - When a Player Leaves the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i> - When a Player is Reborn</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i> - When a Player Right-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickItemEvent/" alt="RightClickItemEvent"><u><span class="notranslate">RightClickItemEvent</span></u><i> - When a Player Right-Clicks with an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
@@ -603,19 +739,19 @@ line-of-sight-range of up to the given distance (meter).</p>
    <li><a href="/versions/current/modules/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity Uses an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity starts using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity Starts Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity stops using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity Stops Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity Uses an Item</i></a></li>
    
 </ul>
 

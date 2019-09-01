@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Wizards of Lua by </title>
+    <title>Time - Wizards of Lua by </title>
     <link rel="stylesheet" href="/assets/css/style.css?v=">
     <link rel="stylesheet" href="/css/extra.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -56,7 +56,8 @@
 
 
 
-        <p>The Time module provides access to time related properties of the active Spell’s world.</p>
+        <p>The <span class="notranslate">Time</span> module provides access to time related properties of
+the active Spell’s world.</p>
 
 
         
@@ -134,8 +135,8 @@ and some examples about how to use them in your spells.</p>
 <p><a style="position:relative; top:-70px; display:block;" name="allowance"></a></p>
 <h3 id="allowance--number-long"><span class="notranslate">allowance : number (long)</span></h3>
 
-<p>The allowance is the number of lua ticks that are left before the active spell must sleep for
-at least one game tick.</p>
+<p>The allowance is the number of lua ticks that are left before the spell or event listener is
+broken or sent to sleep, depending on <a href="#autosleep">autosleep</a>.</p>
 
 <hr />
 
@@ -143,8 +144,11 @@ at least one game tick.</p>
 <h3 id="autosleep--boolean"><span class="notranslate">autosleep : boolean</span></h3>
 
 <p>The autosleep value defines whether the current spell should go to sleep automatically when its
-allowance is exceeded. If this is set to false, the spell will never go to sleep automatically,
-but instead will be broken when its allowance falls below zero. Default is true.</p>
+allowance is exceeded.</p>
+
+<p>If this is set to false, the spell will never go to sleep automatically, but instead will be
+broken when its allowance reaches zero. Default is true normally, but in an <a href="../Events#intercept">event
+interceptor</a> ‘autosleep’ is always false and can’t be changed.</p>
 
 <hr />
 
@@ -159,7 +163,7 @@ but instead will be broken when its allowance falls below zero. Default is true.
 <h3 id="luatime--number-long"><span class="notranslate">luatime : number (long)</span></h3>
 
 <p>The luatime is the number of lua ticks that the current spell has worked since it has been
-casted.</p>
+casted. This includes lua ticks of event listeners.</p>
 
 <hr />
 
@@ -183,12 +187,46 @@ and some examples about how to use them in your spells.</p>
 <p>Returns a string with the current real date and time. If you want you can change the format by
 providing an optional format string.</p>
 
+<h4 id="example">Example</h4>
+
+<p>Printing the current date and time in ISO date-time format, such as ‘2011-12-03T10:15:30’.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">getDate</span><span class="p">())</span>
+</code></pre></div></div>
+
+<h4 id="example-1">Example</h4>
+
+<p>Printing the current date and time with a custom format, such as ‘03 Oct, 2017 - 10:15:29’.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="n">Time</span><span class="p">.</span><span class="n">getDate</span><span class="p">(</span><span class="s2">"dd MMM, yyyy - HH:mm:ss"</span><span class="p">))</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="sleep"></a></p>
 <h3 id="sleep-ticks---nil"><span class="notranslate">sleep (ticks) -&gt; <a href="../nil">nil</a></span></h3>
 
-<p>Forces the current spell to sleep for the given amount of game ticks.</p>
+<p>Forces the current spell to sleep for the given number of game ticks.</p>
+
+<p>If the number is 0, the spell won’t sleep. If the number is negative, this function will issue
+an error. If the number is nil, the spell might go to sleep or not. This depends on the number
+of lua ticks that are already consumed by this spell.</p>
+
+<p>The rule is as follows: the spell will be sent to sleep if the spell’s allowance falls below
+the half value of the spell’s initial allowance.</p>
+
+<h4 id="example-2">Example</h4>
+
+<p>Sending the current spell to sleep for 100 game ticks, which are approximately 5 seconds.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Time</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Since <span class="notranslate">‘sleep’</span> is a widely used function, there is a shortcut
+for it.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sleep</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -225,7 +263,7 @@ providing an optional format string.</p>
    <li><a href="/versions/current/modules/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
    
    
-   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i> - Managing Types</i></a></li>
    
    
    <li><a href="/versions/current/modules/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
@@ -240,7 +278,7 @@ providing an optional format string.</p>
    <li><a href="/versions/current/modules/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What Lies in View</i></a></li>
+   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What is in Sight</i></a></li>
    
    
    <li><a href="/versions/current/modules/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
@@ -249,7 +287,7 @@ providing an optional format string.</p>
    <li><a href="/versions/current/modules/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
    
    
-   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i> - Intercepting Events</i></a></li>
    
    
    <li><a href="/versions/current/modules/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
@@ -291,16 +329,19 @@ providing an optional format string.</p>
    
    
    
-   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/AttackEntityEvent/" alt="AttackEntityEvent"><u><span class="notranslate">AttackEntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i> - When a Player Breaks a Block</i></a></li>
    
    
    <li><a href="/versions/current/modules/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i> - When a Player Places a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i> - Knowing what Players are Talking About</i></a></li>
    
    
    <li><a href="/versions/current/modules/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
@@ -324,10 +365,10 @@ providing an optional format string.</p>
    <li><a href="/versions/current/modules/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i> - When a Player Left-Clicks on a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i> - When a Living Entity Dies</i></a></li>
    
    
    <li><a href="/versions/current/modules/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
@@ -336,22 +377,31 @@ providing an optional format string.</p>
    <li><a href="/versions/current/modules/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
    
    
+   <li><a href="/versions/current/modules/PlayerEntityInteractEvent/" alt="PlayerEntityInteractEvent"><u><span class="notranslate">PlayerEntityInteractEvent</span></u><i> - When a Player Right-Clicks on an Entity</i></a></li>
+   
+   
    <li><a href="/versions/current/modules/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i> - When a Player Collects Something</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemTossEvent/" alt="PlayerItemTossEvent"><u><span class="notranslate">PlayerItemTossEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i> - When a Player Joins the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i> - When a Player Leaves the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i> - When a Player is Reborn</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i> - When a Player Right-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickItemEvent/" alt="RightClickItemEvent"><u><span class="notranslate">RightClickItemEvent</span></u><i> - When a Player Right-Clicks with an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
@@ -360,19 +410,19 @@ providing an optional format string.</p>
    <li><a href="/versions/current/modules/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity Uses an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity starts using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity Starts Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity stops using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity Stops Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity Uses an Item</i></a></li>
    
 </ul>
 

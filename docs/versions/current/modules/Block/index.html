@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Wizards of Lua by </title>
+    <title>Block - Wizards of Lua by </title>
     <link rel="stylesheet" href="/assets/css/style.css?v=">
     <link rel="stylesheet" href="/css/extra.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -56,7 +56,26 @@
 
 
 
-        
+        <p>The <span class="notranslate">Block</span> class is a basic unit of structure in Minecraft.</p>
+
+<p>An instance of this class represents either one of the following types:</p>
+
+<ol>
+  <li>
+    <p>A live block reference - that is a block at a specific world position. It can be accessed by
+<a href="../Spell/#block">spell.block</a>. ‘Live’ means that whenever the block at that position changes,
+the internal state of this object will change as well.</p>
+  </li>
+  <li>
+    <p>An immutable block value - it’s a block that exists independently of the world. It can be
+created, e.g. by calling <a href="../Blocks/#get">Blocks.get()</a> or <a href="../Block/#copy">Block:copy()</a>.</p>
+  </li>
+</ol>
+
+<p>Both types are ‘unmodifiable’, meaning that you can’t change their internal states directly.
+Instead, if you want to change a block in the world, you will need to assign a new value to the
+<a href="../Spell/#block">spell.block</a> field. This will copy the state of the right-hand value into the
+block at the given spell’s position.</p>
 
 
         
@@ -76,7 +95,7 @@
   <tbody>
     <tr>
       <td><a href="#data"><span class="notranslate">data</span></a></td>
-      <td><span class="notranslate"><a href="../table">table</a></span></td>
+      <td><span class="notranslate">table</span></td>
       <td style="text-align: center">r</td>
     </tr>
     <tr>
@@ -91,7 +110,7 @@
     </tr>
     <tr>
       <td><a href="#nbt"><span class="notranslate">nbt</span></a></td>
-      <td><span class="notranslate"><a href="../table">table</a></span></td>
+      <td><span class="notranslate">table</span></td>
       <td style="text-align: center">r</td>
     </tr>
   </tbody>
@@ -139,22 +158,38 @@ and some examples about how to use them in your spells.</p>
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="data"></a></p>
-<h3 id="data--table"><span class="notranslate">data : <a href="../table">table</a></span></h3>
+<h3 id="data--table"><span class="notranslate">data : table</span></h3>
+
+<p>The ‘data’ value is a table of block-specifc key-value pairs that provide human readable
+information about the <a href="https://minecraft.gamepedia.com/Data_values#Data">block’s data</a>. For
+example, a grass block has a property called ‘snowy’ which can be true or false, and a
+furnace has a property called ‘facing’ which can be one of ‘north’, ‘east’, ‘south’, and
+‘west’.</p>
 
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="material"></a></p>
 <h3 id="material--material"><span class="notranslate">material : <a href="../Material">Material</a></span></h3>
 
+<p>The ‘material’ give you some insights in how this block behaves. Please have a look into the
+<a href="../Material/">Material Book</a> for more information.</p>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="name"></a></p>
 <h3 id="name--string"><span class="notranslate">name : string</span></h3>
 
+<p>This is the basic name of the block, e.g. ‘grass’, ‘stone’, or ‘air’.</p>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="nbt"></a></p>
-<h3 id="nbt--table"><span class="notranslate">nbt : <a href="../table">table</a></span></h3>
+<h3 id="nbt--table"><span class="notranslate">nbt : table</span></h3>
+
+<p>The ‘nbt’ value (short for Named Binary Tag) is a table of block-specifc key-value pairs
+about the <a href="https://minecraft.gamepedia.com/Block_entity_format">block’s entity</a>. Only a small
+amount of blocks do have a block entity. For example, the sign’s entity contains information
+about its text, and the chest’s entity contains information about its content.</p>
 
 <hr />
 
@@ -168,20 +203,101 @@ and some examples about how to use them in your spells.</p>
 <p><a style="position:relative; top:-70px; display:block;" name="asItem"></a></p>
 <h3 id="asitem-amount---item"><span class="notranslate">asItem (amount) -&gt; <a href="../Item">Item</a></span></h3>
 
+<p>The ‘asItem’ function returns this block as an <a href="../Item/">item</a> of the given amount.</p>
+
+<h4 id="example">Example</h4>
+
+<p>Creating an item from the block at the spell’s current position and putting it into the
+wizard’s offhand.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">item</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">:</span><span class="n">asItem</span><span class="p">();</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">offhand</span><span class="o">=</span><span class="n">item</span>
+</code></pre></div></div>
+
+<p>Creating a full stack of of the block at the spell’s current position and putting it into the
+wizard’s offhand.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">item</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">:</span><span class="n">asItem</span><span class="p">(</span><span class="mi">64</span><span class="p">);</span> <span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">offhand</span><span class="o">=</span><span class="n">item</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="copy"></a></p>
 <h3 id="copy----block"><span class="notranslate">copy () -&gt; <a href="../Block">Block</a></span></h3>
+
+<p>the ‘copy’ function returns a copy of this block.</p>
 
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="withData"></a></p>
 <h3 id="withdata-data---block"><span class="notranslate">withData (data) -&gt; <a href="../Block">Block</a></span></h3>
 
+<p>The ‘withData’ function returns a modified copy of the given block with the given table
+values as the <a href="https://minecraft.gamepedia.com/Data_values#Data">block’s data</a>.</p>
+
+<h4 id="example-1">Example</h4>
+
+<p>Creating a smooth diorite block and placing it at the spell’s position.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span> <span class="s2">"stone"</span><span class="p">):</span><span class="n">withData</span><span class="p">(</span>
+  <span class="p">{</span> <span class="n">variant</span> <span class="o">=</span> <span class="s2">"smooth_diorite"</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h4 id="example-2">Example</h4>
+
+<p>Creating a bundle of full grown wheat on top of the block at the spell’s position.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">:</span><span class="n">move</span><span class="p">(</span> <span class="s2">"up"</span><span class="p">)</span>
+<span class="n">spell</span><span class="p">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span> <span class="s2">"wheat"</span><span class="p">):</span><span class="n">withData</span><span class="p">(</span>
+  <span class="p">{</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">7</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
 <hr />
 
 <p><a style="position:relative; top:-70px; display:block;" name="withNbt"></a></p>
 <h3 id="withnbt-nbt---block"><span class="notranslate">withNbt (nbt) -&gt; <a href="../Block">Block</a></span></h3>
+
+<p>The ‘withNbt’ function returns a modified copy of this block with the given table values for
+the <a href="https://minecraft.gamepedia.com/Block_entity_format">block’s entity</a>.</p>
+
+<h4 id="example-3">Example</h4>
+
+<p>Creating a standing sign with the name of the current spell’s owner written onto it and
+placing it at the spell’s position.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span> <span class="s2">"standing_sign"</span><span class="p">):</span><span class="n">withNbt</span><span class="p">(</span> <span class="p">{</span>
+  <span class="n">Text1</span> <span class="o">=</span> <span class="s1">'{"text":"'</span><span class="o">..</span><span class="n">spell</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">name</span><span class="o">..</span><span class="s1">'"}'</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h4 id="example-4">Example</h4>
+
+<p>Creating a wall sign showing the current time.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">:</span><span class="n">move</span><span class="p">(</span><span class="s2">"back"</span><span class="p">)</span>
+<span class="n">spell</span><span class="p">.</span><span class="n">rotationYaw</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">rotationYaw</span><span class="o">+</span><span class="mi">180</span>
+<span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="o">=</span><span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"wall_sign"</span><span class="p">):</span><span class="n">withData</span><span class="p">({</span><span class="n">facing</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">facing</span><span class="p">})</span>
+<span class="k">while</span> <span class="kc">true</span> <span class="k">do</span>
+  <span class="kd">local</span> <span class="n">time</span><span class="o">=</span><span class="n">Time</span><span class="p">.</span><span class="n">getDate</span><span class="p">(</span><span class="s2">"HH:mm:ss"</span><span class="p">)</span>
+  <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="o">=</span><span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">:</span><span class="n">withNbt</span><span class="p">({</span><span class="n">Text1</span><span class="o">=</span> <span class="s1">'{"text":"'</span><span class="o">..</span><span class="n">time</span><span class="o">..</span><span class="s1">'"}'</span><span class="p">})</span>
+  <span class="n">sleep</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h4 id="example-5">Example</h4>
+
+<p>Putting a stack of 64 wheat bundles into slot no. 5 of the chest (or the shulker box) at the
+spell’s position.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">spell</span><span class="p">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="p">:</span><span class="n">withNbt</span><span class="p">(</span> <span class="p">{</span>
+  <span class="n">Items</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{</span> <span class="n">Count</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span> <span class="n">Damage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Slot</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="n">id</span> <span class="o">=</span> <span class="s2">"minecraft:wheat"</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
 
 <hr />
 
@@ -218,7 +334,7 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
    
    
-   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i> - Managing Types</i></a></li>
    
    
    <li><a href="/versions/current/modules/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
@@ -233,7 +349,7 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What Lies in View</i></a></li>
+   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What is in Sight</i></a></li>
    
    
    <li><a href="/versions/current/modules/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
@@ -242,7 +358,7 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
    
    
-   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i> - Intercepting Events</i></a></li>
    
    
    <li><a href="/versions/current/modules/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
@@ -284,16 +400,19 @@ and some examples about how to use them in your spells.</p>
    
    
    
-   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/AttackEntityEvent/" alt="AttackEntityEvent"><u><span class="notranslate">AttackEntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i> - When a Player Breaks a Block</i></a></li>
    
    
    <li><a href="/versions/current/modules/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i> - When a Player Places a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i> - Knowing what Players are Talking About</i></a></li>
    
    
    <li><a href="/versions/current/modules/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
@@ -317,10 +436,10 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i> - When a Player Left-Clicks on a Block</i></a></li>
    
    
-   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i> - When a Living Entity Dies</i></a></li>
    
    
    <li><a href="/versions/current/modules/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
@@ -329,22 +448,31 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
    
    
+   <li><a href="/versions/current/modules/PlayerEntityInteractEvent/" alt="PlayerEntityInteractEvent"><u><span class="notranslate">PlayerEntityInteractEvent</span></u><i> - When a Player Right-Clicks on an Entity</i></a></li>
+   
+   
    <li><a href="/versions/current/modules/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i> - When a Player Collects Something</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerItemTossEvent/" alt="PlayerItemTossEvent"><u><span class="notranslate">PlayerItemTossEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i> - When a Player Joins the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i> - When a Player Leaves the World</i></a></li>
    
    
-   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i></i></a></li>
+   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i> - When a Player is Reborn</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i> - When a Player Right-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickItemEvent/" alt="RightClickItemEvent"><u><span class="notranslate">RightClickItemEvent</span></u><i> - When a Player Right-Clicks with an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
@@ -353,19 +481,19 @@ and some examples about how to use them in your spells.</p>
    <li><a href="/versions/current/modules/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity Uses an Item</i></a></li>
    
    
    <li><a href="/versions/current/modules/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity starts using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity Starts Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity stops using an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity Stops Using an Item</i></a></li>
    
    
-   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity uses an Item</i></a></li>
+   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity Uses an Item</i></a></li>
    
 </ul>
 
