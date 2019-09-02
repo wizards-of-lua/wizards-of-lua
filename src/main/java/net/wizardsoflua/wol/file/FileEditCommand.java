@@ -1,6 +1,6 @@
 package net.wizardsoflua.wol.file;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
@@ -19,7 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.file.LuaFileRepository;
-
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 public class FileEditCommand implements CommandRegisterer, Command<CommandSource> {
   @AutoService(CommandRegisterer.class)
   public static class PersonalFileEditCommand extends FileEditCommand {
@@ -52,14 +52,13 @@ public class FileEditCommand implements CommandRegisterer, Command<CommandSource
         literal("wol")//
             .then(section.getCommandLiteral()//
                 .then(literal("edit")//
-                    .then(argument(FILE_ARGUMENT, string())//
+                    .then(argument(FILE_ARGUMENT, greedyString())//
                         .executes(this)))));
   }
 
   @Override
   public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
     String file = StringArgumentType.getString(context, FILE_ARGUMENT);
-
     CommandSource source = context.getSource();
     EntityPlayer player = source.asPlayer();
     URL url = null;
@@ -77,41 +76,4 @@ public class FileEditCommand implements CommandRegisterer, Command<CommandSource
     source.sendFeedback(message, false);
     return Command.SINGLE_SUCCESS;
   }
-
-  // private static final int MAX_NUM_FILES = 500;
-  // @Override
-  // public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
-  // Deque<String> argList, BlockPos targetPos) {
-  // String name = argList.poll();
-  //
-  // Entity entity = sender.getCommandSenderEntity();
-  // if (entity instanceof EntityPlayer) {
-  // EntityPlayer player = (EntityPlayer) entity;
-  // List<String> files = wol.getFileRepository().getLuaFilenames(player);
-  // return getMatchingTokens(name, files.subList(0, Math.min(files.size(), MAX_NUM_FILES)));
-  // }
-  // return Collections.emptyList();
-  // }
-  //
-  // @Override
-  // public void execute(ICommandSender sender, Deque<String> argList) throws CommandException {
-  // String name = argList.poll();
-  //
-  // Entity entity = sender.getCommandSenderEntity();
-  // if (entity instanceof EntityPlayer) {
-  // EntityPlayer player = (EntityPlayer) entity;
-  // URL url;
-  // try {
-  // url = wol.getFileRepository().getFileEditURL(player, name);
-  // } catch (IllegalArgumentException e) {
-  // throw new CommandException(e.getMessage());
-  // }
-  // WolAnnouncementMessage message = new WolAnnouncementMessage("Click here to edit: ");
-  // message.appendSibling(newChatWithLinks(url.toExternalForm(), false));
-  // sender.sendMessage(message);
-  // } else {
-  // throw new CommandException("Only players can use this command!");
-  // }
-  // }
-
 }
