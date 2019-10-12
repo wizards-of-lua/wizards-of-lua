@@ -1,5 +1,7 @@
 package net.wizardsoflua.reflect.b;
 
-public class B {
+import net.wizardsoflua.reflect.a.A;
+
+public class B extends A {
   void m() {}
 }
