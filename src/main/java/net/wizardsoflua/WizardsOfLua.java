@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.google.common.annotations.VisibleForTesting;
-
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
@@ -65,7 +62,7 @@ public class WizardsOfLua {
 
   public void processImcMessages(InterModProcessEvent event) {
     TypedImc.getMessages(event, WizardsOfLuaConsumer.class).forEach(it -> {
-      it.accept(WizardsOfLua.this);
+      it.accept(this);
     });
   }
 
