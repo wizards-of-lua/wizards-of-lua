@@ -2,9 +2,7 @@ package net.wizardsoflua.reflect;
 
 import java.lang.reflect.Method;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -38,67 +36,91 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
     assertThat(actual).isFalse();
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Public_Method_without_Arguments() throws Exception {
     // given:
     class A {
-      public void m() {}
+      public boolean isMOverridden() {
+        return m();
+      }
+
+      public boolean m() {
+        return false;
+      }
     }
     class B extends A {
       @Override
-      public void m() {}
+      public boolean m() {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Protected_Method_without_Arguments() throws Exception {
     // given:
     class A {
-      protected void m() {}
+      public boolean isMOverridden() {
+        return m();
+      }
+
+      protected boolean m() {
+        return false;
+      }
     }
     class B extends A {
       @Override
-      protected void m() {}
+      protected boolean m() {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Package_Method_without_Arguments() throws Exception {
     // given:
     class A {
-      void m() {}
+      public boolean isMOverridden() {
+        return m();
+      }
+
+      boolean m() {
+        return false;
+      }
     }
     class B extends A {
       @Override
-      void m() {}
+      boolean m() {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -107,12 +129,13 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
     // given:
     Method m1 = getMethodM(net.wizardsoflua.reflect.a.A.class);
     Method m2 = getMethodM(net.wizardsoflua.reflect.b.B.class);
+    boolean expected = new net.wizardsoflua.reflect.b.B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isFalse();
+    assertThat(actual).isEqualTo(expected);
   }
 
   @SuppressWarnings("unused")
@@ -120,61 +143,86 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
   public void test_isOverridden__Private_Method_without_Arguments() throws Exception {
     // given:
     class A {
-      private void m() {}
+      public boolean isMOverridden() {
+        return m();
+      }
+
+      private boolean m() {
+        return false;
+      }
     }
     class B extends A {
-      private void m() {}
+      private boolean m() {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isFalse();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Public_Method_with_same_Argument() throws Exception {
     // given:
     class A {
-      public void m(String a1) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(String a1) {
+        return false;
+      }
     }
     class B extends A {
       @Override
-      public void m(String a1) {}
+      public boolean m(String a1) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Public_Method_with_different_ArgumentName() throws Exception {
     // given:
     class A {
-      public void m(String a1) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(String a1) {
+        return false;
+      }
     }
     class B extends A {
       @Override
-      public void m(String a2) {}
+      public boolean m(String a2) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
   @SuppressWarnings("unused")
@@ -182,19 +230,28 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
   public void test_isOverridden__Public_Method_with_different_ArgumentType() throws Exception {
     // given:
     class A {
-      public void m(String a1) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(String a1) {
+        return false;
+      }
     }
     class B extends A {
-      public void m(Integer a1) {}
+      public boolean m(Integer a1) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isFalse();
+    assertThat(actual).isEqualTo(expected);
   }
 
   @SuppressWarnings("unused")
@@ -202,26 +259,38 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
   public void test_isOverridden__Public_Method_with_more_specific_ArgumentType() throws Exception {
     // given:
     class A {
-      public void m(CharSequence a1) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(CharSequence a1) {
+        return false;
+      }
     }
     class B extends A {
-      public void m(String a1) {}
+      public boolean m(String a1) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isFalse();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Public_Method_with_more_specific_ReturnType() throws Exception {
     // given:
     class A {
+      public boolean isMOverridden() {
+        return m() != null;
+      }
+
       public CharSequence m() {
         return null;
       }
@@ -229,59 +298,76 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
     class B extends A {
       @Override
       public String m() {
-        return null;
+        return "";
       }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Specified_generic_ClassParam() throws Exception {
     // given:
     class A<T> {
-      public void m(T t) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(T t) {
+        return false;
+      }
     }
     class B extends A<String> {
       @Override
-      public void m(String t) {}
+      public boolean m(String t) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Unspecified_generic_ClassParam() throws Exception {
     // given:
     class A<T> {
-      public void m(T t) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(T t) {
+        return false;
+      }
     }
     class B<S> extends A<S> {
       @Override
-      public void m(S s) {}
+      public boolean m(S s) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B<>().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
   @SuppressWarnings("unused")
@@ -289,40 +375,57 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
   public void test_isOverridden__Unrelated_generic_ClassParam() throws Exception {
     // given:
     class A<T> {
-      public void m(T t) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public boolean m(T t) {
+        return false;
+      }
     }
     class B<T, S extends CharSequence> extends A<T> {
-      public void m(S s) {}
+      public boolean m(S s) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B<>().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isFalse();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Generic_MethodParam() throws Exception {
     // given:
     class A {
-      public <T> void m(T t) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public <T> boolean m(T t) {
+        return false;
+      }
     }
     class B extends A {
       @Override
-      public <S> void m(S s) {}
+      public <S> boolean m(S s) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 
   @SuppressWarnings("unused")
@@ -330,39 +433,56 @@ public class ReflectionUtils_isOverridden_Test extends Assertions {
   public void test_isOverridden__Unrelated_generic_MethodParam() throws Exception {
     // given:
     class A {
-      public <T> void m(T t) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public <T> boolean m(T t) {
+        return false;
+      }
     }
     class B extends A {
-      public <S extends CharSequence> void m(S s) {}
+      public <S extends CharSequence> boolean m(S s) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isFalse();
+    assertThat(actual).isEqualTo(expected);
   }
 
-  @SuppressWarnings("unused")
   @Test
   public void test_isOverridden__Specified_generic_MethodParam() throws Exception {
     // given:
     class A<S> {
-      public <T extends List<S>> void m(T t) {}
+      public boolean isMOverridden() {
+        return m(null);
+      }
+
+      public <T extends List<S>> boolean m(T t) {
+        return false;
+      }
     }
     class B extends A<String> {
       @Override
-      public <S extends List<String>> void m(S s) {}
+      public <S extends List<String>> boolean m(S s) {
+        return true;
+      }
     }
     Method m1 = getMethodM(A.class);
     Method m2 = getMethodM(B.class);
+    boolean expected = new B().isMOverridden();
 
     // when:
     boolean actual = ReflectionUtils.isOverridden(m1, m2);
 
     // then:
-    assertThat(actual).isTrue();
+    assertThat(actual).isEqualTo(expected);
   }
 }

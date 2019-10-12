@@ -1,5 +1,11 @@
 package net.wizardsoflua.reflect.a;
 
 public class A {
-  void m() {}
+  public boolean isMOverridden() {
+    return m();
+  }
+
+  boolean m() {
+    return false;
+  }
 }
