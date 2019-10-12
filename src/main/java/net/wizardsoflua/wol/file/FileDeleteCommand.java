@@ -1,6 +1,5 @@
 package net.wizardsoflua.wol.file;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static java.util.Objects.requireNonNull;
 import static net.minecraft.command.Commands.argument;

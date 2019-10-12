@@ -19,7 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.wizardsoflua.WolAnnouncementMessage;
 import net.wizardsoflua.extension.server.spi.CommandRegisterer;
 import net.wizardsoflua.file.LuaFileRepository;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+
 public class FileEditCommand implements CommandRegisterer, Command<CommandSource> {
   @AutoService(CommandRegisterer.class)
   public static class PersonalFileEditCommand extends FileEditCommand {
