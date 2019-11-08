@@ -11,7 +11,7 @@ Most notably it brings the new [SwingArmEvent](/versions/current/modules/SwingAr
 which is fired when a player swings his left or right arm.
 This is extreamly useful, for example, if you want to create a magic wand.
 <!--more-->
-See the [Rocket Thrower example](/examples/rocket-thrower) for more information.
+See the [Rocket Thrower example](/versions/current/examples/rocket-thrower) for more information.
 
 * Fixed [#67](https://github.com/wizards-of-lua/wizards-of-lua/issues/67) - Support the configuration of a shared profile. See the docs for [/wol sharedAutoRequire](/versions/current/wol-command#Shared-Default-Dependencies).
 * Fixed [#71](https://github.com/wizards-of-lua/wizards-of-lua/issues/71) - Support [swing-arm event](/versions/current/modules/SwingArmEvent).

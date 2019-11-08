@@ -1,41 +1,34 @@
-docs_list_title: Navigation
-docs:
+title: Navigation
 
-- title: Home
-  url: /
-
-- title: News
-  url: /news
-
-- title: Features
-  url: /features
-
-- title: Introduction
-  url: /introduction
-
-- title: Download & Installation
-  url: /installation
-
-- title: Configuration
-  url: /versions/current/configuration-file
-
-- title: The /lua Command
-  url: /versions/current/lua-command
-
-- title: The /wol Command
-  url: /versions/current/wol-command
-
-- title: Spell Book Library
-  url: /versions/current/spellbooklibrary
-
-- title: Spell Packs
-  url: /spellpacks
-
-- title: Examples
-  url: /examples
-
-- title: Tutorials
-  url: /tutorials
-
-- title: Feedback
-  url: /feedback
+general:
+  title: General
+  items:
+  - title: Home
+    url: /
+  - title: News
+    url: /news
+  - title: Features
+    url: /features
+  - title: Introduction
+    url: /introduction
+  - title: Spell Packs
+    url: /spellpacks
+  - title: Feedback
+    url: /feedback
+versioned:
+  title: Versioned
+  items:
+  - title: Download & Installation
+    url: /versions/current/installation
+  - title: Configuration
+    url: /versions/current/configuration-file
+  - title: The /lua Command
+    url: /versions/current/lua-command
+  - title: The /wol Command
+    url: /versions/current/wol-command
+  - title: Spell Book Library
+    url: /versions/current/spellbooklibrary
+  - title: Examples
+    url: /versions/current/examples
+  - title: Tutorials
+    url: /versions/current/tutorials

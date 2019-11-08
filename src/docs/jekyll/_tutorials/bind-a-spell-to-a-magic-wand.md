@@ -19,11 +19,11 @@ This tutorial shows
 * and how to create an observer spell that activates it.
 
 Please note, that this tutorial assumes that you are familiar with
-[importing Lua files](/tutorials/importing_lua_files) into your spells.
+[importing Lua files](../../tutorials/importing_lua_files) into your spells.
 
 Normally, if you have three different magic wands, for example, the wand of feather-light flight,
-the [rocket thrower](/examples/rocket-thrower), and the smoking stick, you also need
-three distinct observer spells, each observing the event source for the [swing arm events](/versions/current/modules/SwingArmEvent),
+the [rocket thrower](../../examples/rocket-thrower), and the smoking stick, you also need
+three distinct observer spells, each observing the event source for the [swing arm events](../../modules/SwingArmEvent),
 and if that event occurs, then casting the appropriate spell.
 But creating an observer spell for each type of magic wand is cumbersome.
 Instead, we want to have one single observer spell for all kind of wands.
@@ -44,7 +44,7 @@ end
 ```
 As you can see, whenever a SwingArmEvent occurs, this observer checks if the item's name is
 correct (here: Rocket Thrower), and if so, it will call the corresponding function (here:
-[rocket()](/examples/rocket-thrower#rocket) ) with the player object passed in as argument.
+[rocket()](../../examples/rocket-thrower#rocket) ) with the player object passed in as argument.
 
 Now that we know what the observer spell is doing, we want to disassemble it into two parts.
 Part one will be responsible for providing the wand-specific command.
@@ -84,7 +84,7 @@ that item into our main hand and call:
 ```
 
 We have just defined what should be done when the
-[SwingArmEvent](/versions/current/modules/SwingArmEvent) occurs.
+[SwingArmEvent](../../modules/SwingArmEvent) occurs.
 But this is not enough.
 We still need another spell that observes the events and handles them by
 executing the commands.

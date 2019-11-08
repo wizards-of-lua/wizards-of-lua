@@ -42,10 +42,10 @@ collections:
     permalink: /versions/current/modules/:path/
   tutorials:
     output: true
-    permalink: /tutorials/:path/
+    permalink: /versions/current/tutorials/:path/
   examples:
     output: true
-    permalink: /examples/:path/
+    permalink: /versions/current/examples/:path/
   spellpacks:
     output: true
     permalink: /spellpacks/:path/

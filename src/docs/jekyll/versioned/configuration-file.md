@@ -63,10 +63,10 @@ This value can be modified from within the game by [/wol eventListenerLuaTicksLi
 Please note, that until the next server restart the about message is only shown once to each user.
 * **luaLibDirHome**: defines the relative or absolute location of the home of all Lua library directories.
 This directory is parent to the shared lib and all user-specific library directories.
-For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
+For more information about this value please have a look into the [tutorial about importing Lua files](../../tutorials/importing_lua_files).
 * **sharedLibDir**: defines the relative or absolute location of the shared library directory.
 This directory is parent of all Lua modules that can be used by all spell.
-For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
+For more information about this value please have a look into the [tutorial about importing Lua files](../../tutorials/importing_lua_files).
 * **gitHubAccessToken**: defines the [GitHub Access Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token)
 this Minecraft server will use when a player [downloads a Gists](wol-command#Import-Gist).
 By using an access token you can increase the request rate limit from 50 to 5000 requests per hour.
@@ -126,5 +126,5 @@ New entries are added automatically when a new player uses the [/lua command](lu
 * **libDir**: defines the relative or absolute location of the player-specific Lua library directory.
 This directory is parent of all Lua modules that can be used by the player.
 If defined as relative, it will be located inside the directory defined by <tt>General.luaLibDirHome</tt>.
-For more information about this value please have a look into the [tutorial about importing Lua files](/tutorials/importing_lua_files).
+For more information about this value please have a look into the [tutorial about importing Lua files](../../tutorials/importing_lua_files).
 * **apiKey**: is a personal and randomly generated key that is used for authenticating a REST client (e.g. the web browser). This is used if you want to edit Lua files with your web browser. You should not edit its value. If you want to change it, please do so by calling ```/wol browser logout``` - this will generate a new random key.

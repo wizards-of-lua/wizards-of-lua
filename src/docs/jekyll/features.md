@@ -7,7 +7,7 @@ gives you the power to cast magical spells in Minecraft.*
 
 With a spell you can, for example, do the following:
 
-* Create [magical items](/examples/rocket-thrower).
+* Create [magical items](/versions/current/examples/rocket-thrower).
 * Create mini games.
 * Create procedural structures.
 
@@ -26,6 +26,6 @@ As a wizard, you will know how to execute the following great magical powers:
 * [Receiving](/versions/current/modules/Events/#collect) in-game events like [left-click-block](/versions/current/modules/LeftClickBlockEvent), [swing-arm](/versions/current/modules/SwingArmEvent), and many others.
 * [Firing](/versions/current/modules/Events/#fire) and handling [custom events](/versions/current/modules/CustomEvent).
 * [Executing](/versions/current/modules/Spell/#execute) any Minecraft command, even those added by other mods.
-* [Accessing](/tutorials/importing_lua_files/) self-made Lua modules from the server's file system.
+* [Accessing](/versions/current/tutorials/importing_lua_files/) self-made Lua modules from the server's file system.
 
 If you want to start right now, please read the [introduction](/introduction).

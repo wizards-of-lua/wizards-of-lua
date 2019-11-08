@@ -15,4 +15,4 @@ The 1.6.1-alpha is available. It brings a great productivity boost since Lua pro
 
 Please note that this version is not backwards compatible since the config file format has been changed from the standard Forge format to the Lua standard.
 
-There is a new tutorial that shows [how to import Lua files from the file system](/tutorials/importing_lua_files/).
+There is a new tutorial that shows [how to import Lua files from the file system](/versions/current/tutorials/importing_lua_files/).

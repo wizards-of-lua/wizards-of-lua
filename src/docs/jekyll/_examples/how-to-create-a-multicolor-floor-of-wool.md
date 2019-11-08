@@ -40,7 +40,7 @@ Please note that almost all statements are terminated with the semicolon charact
 
 For normal Lua programs this is actually not necessary.
 But due the fact that the current version of WoL (1.0.0-alpha) has no support for
-[importing Lua files](/tutorials/importing_lua_files), we have to insert the whole program into the single line of the chat or a command block.
+[importing Lua files](../../tutorials/importing_lua_files), we have to insert the whole program into the single line of the chat or a command block.
 Here we need the semicolons, so that Lua can separate the statements from each other.
 Actually, I had to execute this spell using a command block since it is a little bit longer than the character limit of the chat (wich is 256).
 

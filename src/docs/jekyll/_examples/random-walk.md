@@ -37,7 +37,7 @@ end;
 Since we are in a 3-dimensional world we have to make sure that the new
 block is always placed on the topmost place.
 That's why we have those two <tt>while</tt>-loops in the middle of the spell.
-On the bottom you can see the usage of the Spell's very powerful [execute](/versions/current/modules/Spell/#execute) function
+On the bottom you can see the usage of the Spell's very powerful [execute](../../modules/Spell/#execute) function
 that can execute any Minecraft command.
 Here we use it to create some fancy particle effects.
 

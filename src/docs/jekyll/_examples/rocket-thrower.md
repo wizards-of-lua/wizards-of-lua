@@ -33,7 +33,7 @@ one for making the rocket fly, and the other for launching it
 when you swing your arm.
 
 Since we need to create two functions, please make sure that you are familiar with
-[importing Lua files](/tutorials/importing_lua_files) into your spells.
+[importing Lua files](../../tutorials/importing_lua_files) into your spells.
 
 ## How to Create a Profile
 
@@ -105,7 +105,7 @@ This should fire a rocket.
 So far, so good.
 
 ## How To Bind a Spell to an Event
-Now we want to bind this spell to the [SwingArmEvent](/versions/current/modules/SwingArmEvent).
+Now we want to bind this spell to the [SwingArmEvent](../../modules/SwingArmEvent).
 
 To do this, we need some spell that observes this kind of event.
 Whenever it occurs, a rocket should be fired.
