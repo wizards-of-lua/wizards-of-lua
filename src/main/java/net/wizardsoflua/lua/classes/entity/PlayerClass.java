@@ -1,12 +1,16 @@
 package net.wizardsoflua.lua.classes.entity;
 
 import static java.lang.String.format;
+
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+
 import javax.annotation.Nullable;
+
 import com.google.auto.service.AutoService;
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -15,6 +19,8 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.GameType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -24,6 +30,7 @@ import net.sandius.rembulan.Table;
 import net.wizardsoflua.annotation.GenerateLuaClassTable;
 import net.wizardsoflua.annotation.GenerateLuaDoc;
 import net.wizardsoflua.annotation.GenerateLuaInstanceTable;
+import net.wizardsoflua.annotation.LuaFunction;
 import net.wizardsoflua.annotation.LuaProperty;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.PreDestroy;
@@ -288,6 +295,23 @@ public final class PlayerClass
     public void setOffhand(@Nullable ItemStack offhand) {
       // NOTE: this method is redeclared here to force the lua doc generator to write this docs
       super.setOffhand(offhand);
+    }
+
+    /**
+     * The 'write' function adds the given message to this player's chat.
+     *
+     * #### Example
+     *
+     * Tell "hello!" to the spell's owner.
+     *
+     * <code>
+     * spell.owner:write( "hello!")
+     * </code>
+     */
+    @LuaFunction
+    public void write(String message) {
+      ITextComponent text = new TextComponentString(message);
+      delegate.sendMessage(text);
     }
   }
 }
