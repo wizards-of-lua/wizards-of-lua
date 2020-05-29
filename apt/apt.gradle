@@ -3,9 +3,13 @@ apply plugin: 'java'
 
 apply from: rootProject.file('gradle-snippets/eclipse/annotation-processing.gradle')
 
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 dependencies {
   annotationProcessor libs.auto_service
   compileOnly libs.auto_service
+  compileOnly libs.javax_annotation
   compile libs.guava
   compile libs.javapoet
   compile libs.jsr305

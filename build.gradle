@@ -22,6 +22,7 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'eclipse'
 
 sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 task wrapper(type: Wrapper) { gradleVersion = '4.9' }
 
@@ -111,6 +112,7 @@ ext.libs = [
   eclipse_compiler:         'org.eclipse.jdt:org.eclipse.jdt.compiler.apt:1.3.110',
   guava:                    'com.google.guava:guava:21.0',
   javapoet:                 'com.squareup:javapoet:1.10.0',
+  javax_annotation:         'javax.annotation:javax.annotation-api:1.3.2',
   javax_inject:             'javax.inject:javax.inject:1',
   jlhttp:                   'net.freeutils:jlhttp:2.4',
   jsr305:                   'com.google.code.findbugs:jsr305:3.0.1',
@@ -133,8 +135,10 @@ dependencies {
 
   annotationProcessor project(':apt')
   annotationProcessor libs.auto_service
+  annotationProcessor libs.javax_annotation
   compileOnly project(':apt')
-  compileOnly libs.auto_service
+  compileOnly libs.auto_service  
+  compileOnly libs.javax_annotation   
 
   embed project(':extension-api')
   embed libs.jlhttp
@@ -149,6 +153,9 @@ dependencies {
   testCompile libs.eclipse_compiler
   testCompile libs.junit_jupiter_engine
   testCompile libs.junit_platform_launcher
+  testCompile project(':apt')
+  testCompile libs.auto_service  
+  testCompile libs.javax_annotation
 }
 
 processResources {
