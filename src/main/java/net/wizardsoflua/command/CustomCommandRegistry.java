@@ -3,11 +3,14 @@ package net.wizardsoflua.command;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
+
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import javax.inject.Inject;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.mojang.brigadier.Command;
@@ -17,6 +20,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -58,7 +62,7 @@ public class CustomCommandRegistry {
     CommandSource source = context.getSource();
 
     PrintReceiver printReceiver = message -> {
-      source.sendFeedback(new TextComponentString(message), false);
+      source.sendFeedback(new TextComponentString(message), true);
     };
 
     // FIXME catch exceptions here? show them as error feedback?

@@ -5,15 +5,19 @@ import static net.minecraft.command.Commands.argument;
 import static net.minecraft.command.Commands.literal;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import static net.wizardsoflua.WolAnnouncementMessage.createAnnouncement;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 import javax.inject.Inject;
+
 import com.google.auto.service.AutoService;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.text.TextComponentString;
 import net.wizardsoflua.extension.server.spi.CommandRegisterer;
@@ -39,7 +43,7 @@ public class LuaCommand implements CommandRegisterer, Command<CommandSource> {
     try {
       String luaCode = StringArgumentType.getString(context, "code");
       PrintReceiver printReceiver = message -> {
-        source.sendFeedback(new TextComponentString(message), false);
+        source.sendFeedback(new TextComponentString(message), true);
       };
 
       factory.create(source, printReceiver, luaCode);
