@@ -1,0 +1,419 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Wol Command - Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/versions/1.13.2-3.0.0-rc1/wol-command" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+
+        <h1>The Wol Command</h1>
+        <p><em>The <tt>/wol</tt> command (wol is short for Wizards Of Lua) gives you some
+control over the Winzards of Lua mod.</em></p>
+
+<p><br /></p>
+
+<h2 id="listing-spells">Listing Spells</h2>
+<h3 id="listing-all-active-spells">Listing all Active Spells</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell list all
+</code></pre></div></div>
+<p>This will print the list of all active spells.
+For each spell you will get the spell ID (SID), followed by the first 40 characters of its code.</p>
+
+<h3 id="listing-all-active-spells-by-owner">Listing all Active Spells by Owner</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell list byOwner mickkay
+</code></pre></div></div>
+<p>This will print the list of all active spells owned by player mickkay.</p>
+
+<p>A shortcut to this is</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell list
+</code></pre></div></div>
+
+<h3 id="listing-all-active-spells-by-name">Listing all Active Spells by Name</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell list byName funny-name
+</code></pre></div></div>
+<p>This will print the list of all active spells called ‘funny-name’.</p>
+
+<h3 id="listing-all-active-spells-by-name-1">Listing all Active Spells by Name</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell list bySid 1234
+</code></pre></div></div>
+<p>This will print the list of all active spells with spell ID 1234.
+Since spell IDs are unique, this will give you 1 match at most.</p>
+
+<p><br /></p>
+
+<h2 id="breaking-spells">Breaking Spells</h2>
+<p>There are several options to break spells.</p>
+
+<h3 id="breaking-all-active-spells">Breaking all Active Spells</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell break all
+</code></pre></div></div>
+<p>This will break all active spells immediately.</p>
+
+<h3 id="breaking-spells-by-name">Breaking Spells by Name</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell break byName Spell-1
+</code></pre></div></div>
+<p>This will break all spells with name “Spell-1”.
+Please note that you can <a href="modules/Spell/#name">change the name</a> of any spell.</p>
+
+<h3 id="breaking-spells-by-spell-id">Breaking Spells by Spell ID</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell break bySid 15
+</code></pre></div></div>
+<p>This will break the spell with the spell id 15.</p>
+
+<h3 id="breaking-spells-by-owner">Breaking Spells by Owner</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol spell break byOwner mickkay
+</code></pre></div></div>
+<p>This will break all spells owned by player mickkay.</p>
+
+<p><br /></p>
+
+<p><a name="Browser" style="position:relative; top:-70px; display:block;"></a></p>
+<h2 id="browser">Browser</h2>
+<h3 id="login">Login</h3>
+<p>If you want to edit your Lua files with your web browser, your have to log in first.</p>
+
+<p><em>Example:</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol browser login
+</code></pre></div></div>
+<p>This will print a web link into the chat.
+Just press T and click on it.
+Minecraft will open your web browser and load an authentication token.
+After that you can edit your files with your browser.</p>
+
+<h3 id="logout">Logout</h3>
+<p>If you don’t want to edit your Lua files with your web browser anymore, your can log out.</p>
+
+<p><em>Example:</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol browser logout
+</code></pre></div></div>
+<p>This will generate a new authentication token for your.
+After that you can not edit your files with your browser anymore, unless of course, you log in again.</p>
+
+<p><br /></p>
+
+<p><a name="Personal-Files" style="position:relative; top:-70px; display:block;"></a></p>
+<h2 id="personal-files">Personal Files</h2>
+<p>In order to store your spells for later use, you can create a file and save it into
+your personal directory.
+Then you can load your spells any time after by calling <code class="highlighter-rouge">require</code>.</p>
+
+<p><em>Example:</em></p>
+
+<p>To load the contents of the file <code class="highlighter-rouge">myfile.lua</code> into the current spell and
+call the function <code class="highlighter-rouge">myFunc()</code> which is declared in that file, just execute the following
+command:</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"myfile"</span><span class="p">);</span> <span class="n">myFunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Per default, a personal file is only visible to the owner.
+In order to access it from outside, e.g. from within a command block, you have to call <code class="highlighter-rouge">addpath</code>.</p>
+
+<p><em>Example:</em></p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">addpath</span><span class="p">(</span><span class="s2">"mickkay"</span><span class="p">);</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"myfile"</span><span class="p">);</span> <span class="n">myFunc</span><span class="p">()</span>
+</code></pre></div></div>
+<p>This spell adds mickkay’s personal directory to the spell’s Lua search path.
+After that, the spell can load any of mickkay’s files.</p>
+
+<p><a name="File-Edit" style="position:relative; top:-70px; display:block;"></a></p>
+<h3 id="creating-a-new-file">Creating a New File</h3>
+<p>To create a new file in your personal directory, just submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file edit &lt;newfilename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;newfilename&gt;</em> will be the name of the new file.
+This will print the web link of the new file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your new file in your web browser.</p>
+
+<p>For example, to create a file with the name “profile.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file edit profile.lua
+</code></pre></div></div>
+
+<h3 id="editing-an-existing-file">Editing an Existing File</h3>
+<p>To edit an existing file from your personal directory, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file edit &lt;filename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;filename&gt;</em> is the name of the file.
+This will print the web link of the file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your file in your web browser.</p>
+
+<p>For example, to edit a file with the name “magic/rocket.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file edit magic/rocket.lua
+</code></pre></div></div>
+
+<h3 id="moving-an-existing-file">Moving an Existing File</h3>
+<p>To move an existing file from your personal directory to some new location, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file move &lt;filename&gt; &lt;newfilename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;filename&gt;</em> is the old name of the file and
+<em>&lt;newfilename&gt;</em> is the new name of the file.</p>
+
+<p>For example, to move a file with the name “magic/rocket.lua” to “items/rocket.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file move magic/rocket.lua items/rocket.lua
+</code></pre></div></div>
+
+<h3 id="deleting-an-existing-file">Deleting an Existing File</h3>
+<p>To delete an existing file from your personal directory, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file delete &lt;filename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;filename&gt;</em> is the name of the file.</p>
+
+<p>For example, to delete a file with the name “magic/rocket.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file delete magic/rocket.lua
+</code></pre></div></div>
+
+<p><a name="Import-Gist" style="position:relative; top:-70px; display:block;"></a></p>
+<h3 id="importing-files-from-github-gists">Importing Files from GitHub Gists</h3>
+<p>To import a GitHub Gist into your personal directory, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file gist get &lt;gist-id&gt; &lt;target-folder&gt;
+</code></pre></div></div>
+<p>where <em>&lt;gist-id&gt;</em> is the ID of the Gist you want to import,
+and <em>&lt;target-folder&gt;</em> is the name of the folder, where the Gist’s contents should be stored.</p>
+
+<p>The specification of the target folder is optional. If not specified, the top-level folder is used as target folder.</p>
+
+<p>Please note, that this is a limited function.
+As of a restriction by GitHub, your Minecraft server can only download a maximum number of 50 Gists per hour.
+However, if you want to increase this limit, please consider <a href="configuration-file#General">configuring a personal GitHub access token</a>.</p>
+
+<p>For example, to import the <a href="https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3">Tetris Gist</a>, which has the Gist ID <tt>a86a1e7a6c02fbd850d2ef4d4b618fb3</tt>, type the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file gist get a86a1e7a6c02fbd850d2ef4d4b618fb3
+</code></pre></div></div>
+<p>This will download the file ‘tetris.lua’ from the Tetris Gist into your personal directory.</p>
+
+<p>Alternatively you also could use the Gist’s URL instead of its ID:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol file gist get https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3
+</code></pre></div></div>
+
+<p><br /></p>
+
+<p><a name="Shared-Files" style="position:relative; top:-70px; display:block;"></a></p>
+<h2 id="shared-files">Shared Files</h2>
+<p>Files inside the shared directory are called shared files.
+They are visible to all wizards and have no specific owner.
+Anybody with operator privileges can use, view, and edit these files.</p>
+
+<h3 id="creating-a-new-shared-file">Creating a New Shared File</h3>
+<p>To create a new shared file, just submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file edit &lt;newfilename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;newfilename&gt;</em> will be the name of the new file.
+This will print the web link of the new file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your new file in your web browser.</p>
+
+<p>For example, to create a shared file with the name “shared-profile.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file edit shared-profile.lua
+</code></pre></div></div>
+
+<h3 id="editing-an-existing-shared-file">Editing an Existing Shared File</h3>
+<p>To edit an existing shared file, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file edit &lt;filename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;filename&gt;</em> is the name of the file.
+This will print the web link of the new file into the chat.
+Just press T and then click on it.
+Minecraft will open a Lua editor for your new file in your web browser.</p>
+
+<p>For example, to edit a shared file with the name “magic/rocket.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file edit magic/rocket.lua
+</code></pre></div></div>
+
+<h3 id="moving-an-existing-shared-file">Moving an Existing Shared File</h3>
+<p>To move an existing shared file to some new location, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file move &lt;filename&gt; &lt;newfilename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;filename&gt;</em> is the old name of the file and
+<em>&lt;newfilename&gt;</em> is the new name of the file.</p>
+
+<p>For example, to move a file with the name “magic/rocket.lua” to “items/rocket.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file move magic/rocket.lua items/rocket.lua
+</code></pre></div></div>
+
+<h3 id="deleting-an-existing-shared-file">Deleting an Existing Shared File</h3>
+<p>To delete an existing shared file, just submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file delete &lt;filename&gt;
+</code></pre></div></div>
+<p>where <em>&lt;filename&gt;</em> is the name of the file.</p>
+
+<p>For example, to delete a file with the name “magic/rocket.lua”, just type:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file delete magic/rocket.lua
+</code></pre></div></div>
+
+<h3 id="importing-files-from-github-gists-into-the-shared-directory">Importing Files from GitHub Gists into the Shared Directory</h3>
+<p>To import a GitHub Gist into the shared directory, submit the following command:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file gist get &lt;gist-id&gt; &lt;target-folder&gt;
+</code></pre></div></div>
+<p>where <em>&lt;gist-id&gt;</em> is the ID of the Gist you want to import,
+and <em>&lt;target-folder&gt;</em> is the name of the folder, where the Gist’s contents should be stored.</p>
+
+<p>The specification of the target folder is optional. If not specified, the top-level folder is used as target folder.</p>
+
+<p>Please note, that this is a limited function.
+As of a restriction by GitHub, your Minecraft server can only download a maximum number of 50 Gists per hour.
+However, if you want to increase this limit, please consider <a href="configuration-file#General">configuring a personal GitHub access token</a>.</p>
+
+<p>For example, to import the <a href="https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3">Tetris Gist</a>, which has the Gist ID <tt>a86a1e7a6c02fbd850d2ef4d4b618fb3</tt>, type the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file gist get a86a1e7a6c02fbd850d2ef4d4b618fb3
+</code></pre></div></div>
+<p>This will download the file ‘tetris.lua’ from the Tetris Gist into the shared directory.</p>
+
+<p>Alternatively you also could use the Gist’s URL instead of its ID:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol shared-file gist get https://gist.github.com/mkarneim/a86a1e7a6c02fbd850d2ef4d4b618fb3
+</code></pre></div></div>
+
+<p><br /></p>
+
+<p><a name="Pack" style="position:relative; top:-70px; display:block;"></a></p>
+<h2 id="pack">Pack</h2>
+<h3 id="export">Export</h3>
+<p>This command is meant to be used by users who want to create a <a href="/spellpacks.html">spell pack</a> with all Lua files of a given subdirectory of the libs/shared folder so that it can be distributed to other servers.
+This command stores a spell pack using the contents of the given source directory (that must exist inside the libs/shared folder) into a JAR file and produces a http link to download it.</p>
+
+<p><em>Example:</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol pack export dummy
+</code></pre></div></div>
+<p>This command compresses the contents of the “dummy” directory (that must exist inside the libs/shared folder) into a JAR file and produces a http link to download it.</p>
+
+<p><br /></p>
+
+<p><a name="Startup-Sequence" style="position:relative; top:-70px; display:block;"></a></p>
+<h2 id="initiating-the-startup-sequence">Initiating the Startup Sequence</h2>
+<p>This command manually initiates the startup sequence. This is the same sequence that is automatically executed
+when the server is started.</p>
+
+<p>It searches all add-ons and the shared directory for startup modules (these are Lua files called “startup.lua”)
+and launches them. The locations are searched breadth first, and in this order the startup modules are launched.
+This ensures that startup modules in a lower directory are launched only after all startup modules in all upper directory have been launched. However, the launch order of modules with the same directory level is unspecified.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol startup
+</code></pre></div></div>
+<p><br /></p>
+
+<p><a name="Lua-Ticks-Limit" style="position:relative; top:-70px; display:block;"></a></p>
+<h2 id="lua-ticks-limit-configuration">Lua Ticks Limit Configuration</h2>
+<p>The <tt>luaTicksLimit</tt> value defines how many Lua ticks each spell can use during
+a single game tick. When this value is exceeded, the spell will be broken or
+sent to sleep for one game tick. This depends on the <a href="modules/Time/#autosleep">Time.autosleep</a> setting.
+For event listeners use <tt>eventListenerLuaTicksLimit</tt>.
+This value defines how many Lua ticks an event handler can use for each event.</p>
+
+<h3 id="showing-the-lua-ticks-limit">Showing the Lua Ticks Limit</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol luaTicksLimit
+</code></pre></div></div>
+<p>and</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol eventListenerLuaTicksLimit
+</code></pre></div></div>
+<p>This will print the current values into your chat screen.</p>
+
+<h3 id="setting-the-lua-ticks-limit">Setting the Lua Ticks Limit</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol luaTicksLimit set 100000
+</code></pre></div></div>
+<p>and</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/wol eventListenerLuaTicksLimit set 100000
+</code></pre></div></div>
+<p>Default is 50000.</p>
+
+<p>The new value will also stored into the config file at <tt>config/wizards-of-lua/wizards-of-lua.luacfg</tt>, which means that it survives a server restart.</p>
+
+<p>Please use this with care, since this can slow down your Minecraft server, especially
+when there are a lot of spells runnung concurrently.</p>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/versions/current/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/versions/current/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/versions/current/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/versions/current/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

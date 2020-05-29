@@ -1,0 +1,504 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>System - Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/versions/current/modules/System/" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+          
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+        
+
+        <h1><span class="notranslate">System</span> - Interacting with the Server's OS</h1>
+        
+        
+
+
+
+        <p>The <span class="notranslate">System</span> module provides functions for interacting with the
+server’s operating system.</p>
+
+
+        
+        
+<p>Here is an overview of the System <em>functions</em>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Function</th>
+      <th>Parameters</th>
+      <th style="text-align: center">Results</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="#delete"> <span class="notranslate">delete</span> </a></td>
+      <td><span class="notranslate">path</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+    <tr>
+      <td><a href="#execute"> <span class="notranslate">execute</span> </a></td>
+      <td><span class="notranslate">name, arg…</span></td>
+      <td style="text-align: center"><span class="notranslate">number, string</span></td>
+    </tr>
+    <tr>
+      <td><a href="#isDir"> <span class="notranslate">isDir</span> </a></td>
+      <td><span class="notranslate">path</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+    <tr>
+      <td><a href="#isFile"> <span class="notranslate">isFile</span> </a></td>
+      <td><span class="notranslate">path</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+    <tr>
+      <td><a href="#listFiles"> <span class="notranslate">listFiles</span> </a></td>
+      <td><span class="notranslate">path</span></td>
+      <td style="text-align: center"><span class="notranslate">table</span></td>
+    </tr>
+    <tr>
+      <td><a href="#makeDir"> <span class="notranslate">makeDir</span> </a></td>
+      <td><span class="notranslate">path</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+    <tr>
+      <td><a href="#move"> <span class="notranslate">move</span> </a></td>
+      <td><span class="notranslate">path, newPath</span></td>
+      <td style="text-align: center"><span class="notranslate">boolean</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="functions">Functions</h2>
+
+<p>Below you find short descriptions about each of the functions
+and some examples about how to use them in your spells.</p>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="delete"></a></p>
+<h3 id="delete-path---boolean"><span class="notranslate">delete (path) -&gt; boolean</span></h3>
+
+<p>The <span class="notranslate">‘delete’</span> function deletes the file with the given path.
+The path is interpreted relative to the server’s world folder. This function returns true if
+the file did exist and has been deleted.</p>
+
+<p>Please note that deleting a directory is only supported if its empty.</p>
+
+<h4 id="example">Example</h4>
+
+<p>Deleting the file “some-file-to-delete.txt” from the server’s world folder.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">System</span><span class="p">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">'/some-file-to-delete.txt'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="execute"></a></p>
+<h3 id="execute-name-arg---number-string"><span class="notranslate">execute (name, arg…) -&gt; number, string</span></h3>
+
+<p>The <span class="notranslate">‘execute’</span> function invokes the program with the given name
+and the given arguments on the server’s operating system. Please note that you only can execute
+programs living inside the server’s <a href="../../configuration-file#scriptgateway">script gateway
+directory</a>. Please note that this is a blocking call.
+The spell will resume its execution only after the program has terminated.</p>
+
+<h4 id="example-1">Example</h4>
+
+<p>Calling the “echo.sh” shell script from the server’s script gateway directory.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">exitcode</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">System</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'echo.sh'</span><span class="p">,</span><span class="s1">'some argument'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'exitcode'</span><span class="p">,</span> <span class="n">exitcode</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'result'</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="isDir"></a></p>
+<h3 id="isdir-path---boolean"><span class="notranslate">isDir (path) -&gt; boolean</span></h3>
+
+<p>The <span class="notranslate">‘isDir’</span> function checks whether the given path points to a
+directory (in contrast to a regular file). The path is interpreted relative to the server’s
+world folder.</p>
+
+<h4 id="example-2">Example</h4>
+
+<p>Printing the file type of the file “some/file” inside the server’s world folder.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">path</span> <span class="o">=</span> <span class="s1">'/some/file'</span>
+<span class="k">if</span> <span class="n">System</span><span class="p">.</span><span class="n">isFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">'% is a regular file'</span><span class="p">,</span><span class="n">path</span><span class="p">))</span>
+<span class="k">end</span>
+<span class="k">if</span> <span class="n">System</span><span class="p">.</span><span class="n">isDir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">'% is a directory'</span><span class="p">,</span><span class="n">path</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="isFile"></a></p>
+<h3 id="isfile-path---boolean"><span class="notranslate">isFile (path) -&gt; boolean</span></h3>
+
+<p>The <span class="notranslate">‘isFile’</span> function checks whether the given path points to
+a regular file (in contrast to a directory). The path is interpreted relative to the server’s
+world folder.</p>
+
+<h4 id="example-3">Example</h4>
+
+<p>Printing the file type of the file “some/file” inside the server’s world folder.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">path</span> <span class="o">=</span> <span class="s1">'/some/file'</span>
+<span class="k">if</span> <span class="n">System</span><span class="p">.</span><span class="n">isFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">'% is a regular file'</span><span class="p">,</span><span class="n">path</span><span class="p">))</span>
+<span class="k">end</span>
+<span class="k">if</span> <span class="n">System</span><span class="p">.</span><span class="n">isDir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s1">'% is a directory'</span><span class="p">,</span><span class="n">path</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="listFiles"></a></p>
+<h3 id="listfiles-path---table"><span class="notranslate">listFiles (path) -&gt; table</span></h3>
+
+<p>The <span class="notranslate">‘listFiles’</span> function returns a table with the names of all
+files that exist inside the directory at the given path. The path is interpreted relative to
+the server’s world folder.</p>
+
+<h4 id="example-4">Example</h4>
+
+<p>Printing the names of all files inside the “region” folder of the server’s world folder.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">path</span> <span class="o">=</span> <span class="s1">'/region'</span>
+<span class="kd">local</span> <span class="n">names</span> <span class="o">=</span> <span class="n">System</span><span class="p">.</span><span class="n">listFiles</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">name</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h4 id="example-5">Example</h4>
+
+<p>Getting the names of all files inside server’s world folder.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">names</span> <span class="o">=</span> <span class="n">System</span><span class="p">.</span><span class="n">listFiles</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="makeDir"></a></p>
+<h3 id="makedir-path---boolean"><span class="notranslate">makeDir (path) -&gt; boolean</span></h3>
+
+<p>The <span class="notranslate">‘makeDir’</span> function creates a new directory with the given
+path if it did not already exist. The path is interpreted relative to the server’s world
+folder. This function returns true if the directory already existed or if it has been be
+created.</p>
+
+<h4 id="example-6">Example</h4>
+
+<p>Creating the directory “some/dir” in the server’s world folder.</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">created</span> <span class="o">=</span> <span class="n">System</span><span class="p">.</span><span class="n">makeDir</span><span class="p">(</span><span class="s1">'/some/dir'</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">created</span> <span class="k">then</span>
+  <span class="nb">error</span><span class="p">(</span><span class="s1">'Could not create directory'</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><a style="position:relative; top:-70px; display:block;" name="move"></a></p>
+<h3 id="move-path-newpath---boolean"><span class="notranslate">move (path, newPath) -&gt; boolean</span></h3>
+
+<p>The <span class="notranslate">‘move’</span> function moves or renames the file with the given
+path so that the resulting file is accessible by the given new path. The path is interpreted
+relative to the server’s world folder. This function returns true if the operation was
+successful.</p>
+
+<h4 id="example-7">Example</h4>
+
+<p>Renaming the file “aaa.txt” to “bbb.txt”</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">System</span><span class="p">.</span><span class="n">move</span><span class="p">(</span><span class="s1">'aaa.txt'</span><span class="p">,</span><span class="s1">'bbb.txt'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+
+
+        <div id="naviLeft">
+<h2>Modules</h2>
+<ul>
+   
+   
+   
+   
+   <li><a href="/versions/current/modules/Blocks/" alt="Blocks"><u><span class="notranslate">Blocks</span></u><i> - The Building Blocks Directory</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Commands/" alt="Commands"><u><span class="notranslate">Commands</span></u><i> - Managing Custom Commands</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Entities/" alt="Entities"><u><span class="notranslate">Entities</span></u><i> - Finding Entities</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Events/" alt="Events"><u><span class="notranslate">Events</span></u><i> - Knowing What Happened</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Items/" alt="Items"><u><span class="notranslate">Items</span></u><i> - Creating Items</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Loggers/" alt="Loggers"><u><span class="notranslate">Loggers</span></u><i> - Accessing Loggers</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/System/" alt="System"><u><span class="notranslate">System</span></u><i> - Interacting with the Server's OS</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Time/" alt="Time"><u><span class="notranslate">Time</span></u><i> - Accessing the Time</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Types/" alt="Types"><u><span class="notranslate">Types</span></u><i> - Managing Types</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Wol/" alt="Wol"><u><span class="notranslate">Wol</span></u><i> - Some Information about the Wizards of Lua</i></a></li>
+   
+</ul>
+<h2>General Classes</h2>
+<ul>
+   
+   
+   
+   
+   <li><a href="/versions/current/modules/Block/" alt="Block"><u><span class="notranslate">Block</span></u><i> - All There is to Know About a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockHit/" alt="BlockHit"><u><span class="notranslate">BlockHit</span></u><i> - What is in Sight</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/DroppedItem/" alt="DroppedItem"><u><span class="notranslate">DroppedItem</span></u><i> - Things That are Lying Around</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Entity/" alt="Entity"><u><span class="notranslate">Entity</span></u><i> - The Base Class of all Organic or Inorganic Entities</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/EventInterceptor/" alt="EventInterceptor"><u><span class="notranslate">EventInterceptor</span></u><i> - Intercepting Events</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/EventQueue/" alt="EventQueue"><u><span class="notranslate">EventQueue</span></u><i> - Collecting Events</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Item/" alt="Item"><u><span class="notranslate">Item</span></u><i> - Things You can Carry Around</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Logger/" alt="Logger"><u><span class="notranslate">Logger</span></u><i> - Logging Messages</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Material/" alt="Material"><u><span class="notranslate">Material</span></u><i> - Physical Properties of Blocks</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Mob/" alt="Mob"><u><span class="notranslate">Mob</span></u><i> - Mobile Creatures</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Object/" alt="Object"><u><span class="notranslate">Object</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Player/" alt="Player"><u><span class="notranslate">Player</span></u><i> - Controlling the Player</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Spell/" alt="Spell"><u><span class="notranslate">Spell</span></u><i> - Aspects of an Active Spell</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Vec3/" alt="Vec3"><u><span class="notranslate">Vec3</span></u><i> - Manipulating Location and Motion</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/VirtualEntity/" alt="VirtualEntity"><u><span class="notranslate">VirtualEntity</span></u><i> - The Base Class of all Virtual Entities</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/World/" alt="World"><u><span class="notranslate">World</span></u><i> - Where All Exists</i></a></li>
+   
+</ul>
+<h2>Events</h2>
+<ul>
+   
+   
+   
+   
+   <li><a href="/versions/current/modules/AttackEntityEvent/" alt="AttackEntityEvent"><u><span class="notranslate">AttackEntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockBreakEvent/" alt="BlockBreakEvent"><u><span class="notranslate">BlockBreakEvent</span></u><i> - When a Player Breaks a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockEvent/" alt="BlockEvent"><u><span class="notranslate">BlockEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/BlockPlaceEvent/" alt="BlockPlaceEvent"><u><span class="notranslate">BlockPlaceEvent</span></u><i> - When a Player Places a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/ChatEvent/" alt="ChatEvent"><u><span class="notranslate">ChatEvent</span></u><i> - Knowing what Players are Talking About</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/ChunkEvent/" alt="ChunkEvent"><u><span class="notranslate">ChunkEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/ChunkLoadEvent/" alt="ChunkLoadEvent"><u><span class="notranslate">ChunkLoadEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/ChunkUnloadEvent/" alt="ChunkUnloadEvent"><u><span class="notranslate">ChunkUnloadEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/CustomEvent/" alt="CustomEvent"><u><span class="notranslate">CustomEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/EntityEvent/" alt="EntityEvent"><u><span class="notranslate">EntityEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/EntityJoinWorldEvent/" alt="EntityJoinWorldEvent"><u><span class="notranslate">EntityJoinWorldEvent</span></u><i> - When an Entity Enters the World</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/Event/" alt="Event"><u><span class="notranslate">Event</span></u><i> - The Event Base Class</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/LeftClickBlockEvent/" alt="LeftClickBlockEvent"><u><span class="notranslate">LeftClickBlockEvent</span></u><i> - When a Player Left-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/LivingDeathEvent/" alt="LivingDeathEvent"><u><span class="notranslate">LivingDeathEvent</span></u><i> - When a Living Entity Dies</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/LivingEvent/" alt="LivingEvent"><u><span class="notranslate">LivingEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerChangedDimensionEvent/" alt="PlayerChangedDimensionEvent"><u><span class="notranslate">PlayerChangedDimensionEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerEntityInteractEvent/" alt="PlayerEntityInteractEvent"><u><span class="notranslate">PlayerEntityInteractEvent</span></u><i> - When a Player Right-Clicks on an Entity</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerInteractEvent/" alt="PlayerInteractEvent"><u><span class="notranslate">PlayerInteractEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerItemPickupEvent/" alt="PlayerItemPickupEvent"><u><span class="notranslate">PlayerItemPickupEvent</span></u><i> - When a Player Collects Something</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerItemTossEvent/" alt="PlayerItemTossEvent"><u><span class="notranslate">PlayerItemTossEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerLoggedInEvent/" alt="PlayerLoggedInEvent"><u><span class="notranslate">PlayerLoggedInEvent</span></u><i> - When a Player Joins the World</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerLoggedOutEvent/" alt="PlayerLoggedOutEvent"><u><span class="notranslate">PlayerLoggedOutEvent</span></u><i> - When a Player Leaves the World</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/PlayerRespawnEvent/" alt="PlayerRespawnEvent"><u><span class="notranslate">PlayerRespawnEvent</span></u><i> - When a Player is Reborn</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickBlockEvent/" alt="RightClickBlockEvent"><u><span class="notranslate">RightClickBlockEvent</span></u><i> - When a Player Right-Clicks on a Block</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/RightClickItemEvent/" alt="RightClickItemEvent"><u><span class="notranslate">RightClickItemEvent</span></u><i> - When a Player Right-Clicks with an Item</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/SpellBreakEvent/" alt="SpellBreakEvent"><u><span class="notranslate">SpellBreakEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/SwingArmEvent/" alt="SwingArmEvent"><u><span class="notranslate">SwingArmEvent</span></u><i></i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/UseItemEvent/" alt="UseItemEvent"><u><span class="notranslate">UseItemEvent</span></u><i> - When an Entity Uses an Item</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/UseItemFinishEvent/" alt="UseItemFinishEvent"><u><span class="notranslate">UseItemFinishEvent</span></u><i> - When an Entity finishes using an Item</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/UseItemStartEvent/" alt="UseItemStartEvent"><u><span class="notranslate">UseItemStartEvent</span></u><i> - When an Entity Starts Using an Item</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/UseItemStopEvent/" alt="UseItemStopEvent"><u><span class="notranslate">UseItemStopEvent</span></u><i> - When an Entity Stops Using an Item</i></a></li>
+   
+   
+   <li><a href="/versions/current/modules/UseItemTickEvent/" alt="UseItemTickEvent"><u><span class="notranslate">UseItemTickEvent</span></u><i> - While an Entity Uses an Item</i></a></li>
+   
+</ul>
+
+</div>
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/versions/current/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/versions/current/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/versions/current/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/versions/current/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

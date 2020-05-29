@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Wizards of Lua Configuration File - Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/versions/1.13.2-3.0.0-rc1/configuration-file" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+
+        <h1>The Wizards of Lua Configuration File</h1>
+        <p><em>The Wizards of Lua Mod can be configured by editing its configuration file.</em></p>
+
+<p>The Wizards of Lua configuration file is located at</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;minecraft&gt;/conf/wizards-of-lua/wizards-of-lua.luacfg
+</code></pre></div></div>
+
+<p>where &lt;minecraft&gt; is your Minecraft folder.</p>
+
+<p>Please note that you should only edit it manually when Minecraft is not running.
+Otherwise your changes will be ignored and might get overwritten when the mod’s configuration has been changed by some <a href="wol-command.html">/wol command</a>.</p>
+
+<h2 id="example">Example</h2>
+<p>Here is an example of the <tt>wizards-of-lua.luacfg</tt>:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">General</span> <span class="p">{</span>
+  <span class="n">luaTicksLimit</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+  <span class="n">eventListenerLuaTicksLimit</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+  <span class="n">showAboutMessage</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+  <span class="n">luaLibDirHome</span><span class="o">=</span><span class="s2">"libs"</span><span class="p">,</span>
+  <span class="n">sharedLibDir</span><span class="o">=</span><span class="s2">"shared"</span><span class="p">,</span>
+  <span class="n">gitHubAccessToken</span><span class="o">=</span><span class="s2">"5fb14281daac1ff4f16fd3e2adafbf91db3b9123"</span> <span class="p">}</span>
+<span class="n">RestApi</span> <span class="p">{</span>
+  <span class="n">hostname</span><span class="o">=</span><span class="s2">"example.com"</span><span class="p">,</span>
+  <span class="n">port</span><span class="o">=</span><span class="mi">60080</span><span class="p">,</span>
+  <span class="n">secure</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+  <span class="n">keystore</span><span class="o">=</span><span class="s2">"ssl-keystore.jks"</span><span class="p">,</span>
+  <span class="n">keystorePassword</span><span class="o">=</span><span class="s2">"123456"</span><span class="p">,</span>
+  <span class="n">keyPassword</span><span class="o">=</span><span class="s2">"123456"</span><span class="p">,</span>
+  <span class="n">webDir</span><span class="o">=</span><span class="s2">"www"</span><span class="p">,</span>
+  <span class="n">uuid</span><span class="o">=</span><span class="s2">"fd19a362-04fa-4a92-9481-cd21a85c44d8"</span><span class="p">,</span>
+  <span class="n">apiKey</span><span class="o">=</span><span class="s2">"sVu4QB1joXfQCM_DUAcFpw"</span> <span class="p">}</span>
+<span class="n">ScriptGateway</span> <span class="p">{</span>
+  <span class="n">enabled</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+  <span class="n">timeoutMillis</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+  <span class="n">dir</span><span class="o">=</span><span class="s2">"scripts"</span> <span class="p">}</span>
+<span class="n">Wizard</span> <span class="p">{</span>
+  <span class="n">id</span><span class="o">=</span><span class="s2">"0c77f1a8-943b-4f7b-aa09-f2b1737d4f03"</span><span class="p">,</span>
+  <span class="n">libDir</span><span class="o">=</span><span class="s2">"0c77f1a8-943b-4f7b-aa09-f2b1737d4f03"</span><span class="p">,</span>
+  <span class="n">apiKey</span><span class="o">=</span><span class="s2">"8lpZ81w7AGWfKCRLHSZtvA"</span> <span class="p">}</span>
+<span class="n">Wizard</span> <span class="p">{</span>
+  <span class="n">id</span><span class="o">=</span><span class="s2">"d26feccb-baae-4d90-8e3d-50389e8b8ad9"</span><span class="p">,</span>
+  <span class="n">libDir</span><span class="o">=</span><span class="s2">"d26feccb-baae-4d90-8e3d-50389e8b8ad9"</span><span class="p">,</span>
+  <span class="n">apiKey</span><span class="o">=</span><span class="s2">"9cssfWocUNoWVhA7-m50Cw"</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="format">Format</h2>
+<p>The contents of <tt>wizards-of-lua.luacfg</tt> is valid Lua code which is loaded and executed by Wol at server startup.
+“General”, “RestApi”, and “Wizard” are internal functions that accept a Lua table as parameter.
+All values (with the exception of the wizard id) are optional - in that sense that you can omit the assignment, but on the next startup Wol will choose sensible default values and store them into this file.</p>
+
+<p><a name="General" style="position:relative; top:-70px; display:block;"></a></p>
+<h3 id="general">General</h3>
+<p>This function sets the mod’s general configuration.</p>
+<ul>
+  <li><strong>luaTicksLimit</strong>: defines the number of Lua ticks a spell can run continuously before it must sleep at least for one game tick.
+This value can be modified from within the game by <a href="wol-command.html#Lua-Ticks-Limit">/wol luaTicksLimit</a>.</li>
+  <li><strong>eventListenerLuaTicksLimit</strong>: defines the number of Lua ticks an event listener can run per event.
+This value can be modified from within the game by <a href="wol-command.html#Lua-Ticks-Limit">/wol eventListenerLuaTicksLimit</a>.</li>
+  <li><strong>showAboutMessage</strong>: defines, whether the mod’s about message is shown to new users when they log into the server.
+Please note, that until the next server restart the about message is only shown once to each user.</li>
+  <li><strong>luaLibDirHome</strong>: defines the relative or absolute location of the home of all Lua library directories.
+This directory is parent to the shared lib and all user-specific library directories.
+For more information about this value please have a look into the <a href="/tutorials/importing_lua_files">tutorial about importing Lua files</a>.</li>
+  <li><strong>sharedLibDir</strong>: defines the relative or absolute location of the shared library directory.
+This directory is parent of all Lua modules that can be used by all spell.
+For more information about this value please have a look into the <a href="/tutorials/importing_lua_files">tutorial about importing Lua files</a>.</li>
+  <li><strong>gitHubAccessToken</strong>: defines the <a href="https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/#creating-a-token">GitHub Access Token</a>
+this Minecraft server will use when a player <a href="wol-command#Import-Gist">downloads a Gists</a>.
+By using an access token you can increase the request rate limit from 50 to 5000 requests per hour.
+Default is “”.</li>
+</ul>
+
+<h3 id="restapi">RestApi</h3>
+<p>This function sets the mod’s REST server configuration.
+The REST server is running inside your Minecraft server and provides HTTP (or HTTPS) access to your Lua files.
+All read and write access is protected by a combination of the server’s and the player’s secret <em>apiKey</em>.
+However, if you run Wol in a publicly accessible server environment, this is not sufficient in terms of security, since
+the key tokens are transmitted in plain text between web browser and REST server.
+To protect your keys in a server environment, you should set the <em>secure</em> property to “true”.</p>
+<ul>
+  <li><strong>hostname</strong>: defines the name of the REST server. This name will be used in the servers HTTP URL.
+For example, if you set the hostname to “wizards.example.com”, the resulting URL will start with “http://wizards.example.com”, or “https://wizards.example.com” respectively.
+To make the REST server only accessible from your local computer, set this to “127.0.0.1”. Default is “127.0.0.1”.</li>
+  <li><strong>port</strong>: defines the port number of the REST server. This number will be used in the servers HTTP URL.
+Default is “60000”.</li>
+  <li><strong>secure</strong>: defines whether the REST server should use Transport Layer Security (TLS aka. SSL).
+If this is set to “true”, the REST server is only accessible through HTTPS, and the following properties must also be defined: keystore, keystorePassword, keyPassword.
+Setting this to “false” is totally OK in a single player environment.
+However, if you plan to run Wol in a server environment, you should really consider setting this to “true” since this will protect your Lua files from unwanted read and write access.
+Default is “false”.</li>
+  <li><strong>keystore</strong>: this is the filename of the keystore that contains the REST server’s SSL certificate.
+If provided, the keystore file must be placed next to the “server.properties” file.
+This is only used if <em>secure</em> is set to “true”.
+Default is “”.
+There is a brief description about <a href="/creating-a-self-signed-ssl-certificate.html">how to create a self-signed SSL certificate</a> and how to use it with WoL.</li>
+  <li><strong>keystorePassword</strong>: this is the password that the REST server should use to access the keystore.
+This is only used if <em>secure</em> is set to “true”.
+Default is “”.</li>
+  <li><strong>keyPassword</strong>: this is the password that the REST server should use to read the server’s SSL certificate from the keystore.
+This is only used if <em>secure</em> is set to “true”.
+Default is “”.</li>
+  <li><strong>webDir</strong>: this is the filesystem path to the directory where the REST server caches static files.
+Its contents are deleted and recreated when the Minecraft server starts.
+This directory will be inside the mod’s configuration directory.
+Default is “www”.</li>
+  <li><strong>uuid</strong>: this is the REST servers UUID. This is currently not used, but may be used in a future version of this mod for
+authentication purpose.</li>
+  <li><strong>apiKey</strong>: this is the server’s randomly generated key that is used for authenticating a REST client (e.g. the web browser). This is used if you want to edit Lua files with your web browser. You should not edit its value. If you want to change it, please do so by deleting it and restarting the server.</li>
+</ul>
+
+<h3 id="scriptgateway">ScriptGateway</h3>
+<p>This function sets the mod’s script gateway configuration.</p>
+<ul>
+  <li><strong>enabled</strong>: defines whether the script gateway is enabled. If enabled, any spell can use the <a href="modules/System#execute">System.execute() function</a> to run any program from the scripts directory on the server’s operating system.
+Default is false.</li>
+  <li><strong>timeoutMillis</strong>: defines how many milliseconds a spell will wait for the normal termination of the executed program.
+When the timeout is reached, Minecraft will try to terminate the program.</li>
+  <li><strong>dir</strong>: defines the relative or absolute location of the directory where all executable scripts and programs are stored.
+Default is “scripts”.</li>
+</ul>
+
+<h3 id="wizard">Wizard</h3>
+<p>This function adds a player-specific configuration.
+New entries are added automatically when a new player uses the <a href="lua-command.html">/lua command</a> or the <a href="wol-command.html">/wol command</a> the first time.</p>
+<ul>
+  <li><strong>id</strong>: is the UUID of the player this configuration belongs to.</li>
+  <li><strong>libDir</strong>: defines the relative or absolute location of the player-specific Lua library directory.
+This directory is parent of all Lua modules that can be used by the player.
+If defined as relative, it will be located inside the directory defined by <tt>General.luaLibDirHome</tt>.
+For more information about this value please have a look into the <a href="/tutorials/importing_lua_files">tutorial about importing Lua files</a>.</li>
+  <li><strong>apiKey</strong>: is a personal and randomly generated key that is used for authenticating a REST client (e.g. the web browser). This is used if you want to edit Lua files with your web browser. You should not edit its value. If you want to change it, please do so by calling <code class="highlighter-rouge">/wol browser logout</code> - this will generate a new random key.</li>
+</ul>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/versions/current/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/versions/current/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/versions/current/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/versions/current/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Lua Command - Wizards of Lua by </title>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <link rel="stylesheet" href="/css/extra.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+      
+      <div id="header">
+        <nav>
+          <!-- <li class="fork"><a href="">View On GitHub</a></li> -->
+          <li class="fork"><a href="https://github.com/wizards-of-lua/wizards-of-lua">View On GitHub</a></li>
+
+          
+            <li class="translate">
+              <a href="http://translate.google.com/translate?hl=&sl=auto&tl=de&u=http%3A%2F%2Fwww.wizards-of-lua.net/versions/1.13.2-3.0.0-rc1/lua-command" alt="Translate this page"></a>
+            </li>
+          
+          <li class="discord"><a href="https://discord.gg/9En5Drt" alt="Discord"></a></li>
+          <li class="twitter"><a href="https://twitter.com/WizardsOfLua?ref_src=twsrc%5Etfw" alt="Follow @WizardsOfLua"></a></li>
+
+          
+        </nav>
+      </div><!-- end header -->
+      
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <img src="/images/steven-with-magic-wand-glowing.png" height="170" />
+          <h1><a href="/">Wizards of Lua</a></h1>
+          <p>The Art of Spell Crafting</p>
+          <hr>
+          <!--
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+          -->
+        </div>
+
+
+        <h1>The Lua Command</h1>
+        <p><em>The <tt>/lua</tt> command is used to cast a <a href="/introduction">spell</a> entity in Minecraft.
+This command can be executed from the in-game chat and from any command block.</em></p>
+
+<p>When executed, the Lua command casts a new spell.
+A spell is a game entity that exists at a specific location inside the world.
+It will exist as long as its program is running.
+After the program has terminated the spell vanishes from the world.</p>
+
+<p>To cast a spell, the player must be a member of the Wizards of Lua.
+Currently (as with the alpha version) only a player with operator priviliges is a wizard.
+In a single player game the “allow cheats” option must be active to allow the player to
+be a wizard.</p>
+
+<p>Due to the fact that this mod is based on the Forge mod, a maximum number of
+200 spells can be active concurrently.
+However, this number can be increased easily by editing the <tt>forgeChunkLoading.cfg</tt>
+file, which is located inside the <tt>config</tt> directory inside your Minecraft installation.</p>
+
+<p>Casting a spell is very easy. Here is a list of very short tutorials that help you
+getting started.</p>
+
+<h2 id="casting-a-spell">Casting a Spell</h2>
+<p>To cast a spell just type ‘t’ to open the chat prompt and begin typing:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/lua
+</code></pre></div></div>
+<p>Next to this command you can enter any sequence of statements that form
+a valid Lua program.
+If you are new to Lua programming, please make yourself familiar with the basic
+concepts of Lua.
+There are many websites which do a good job in teaching Lua to the newcomer.
+For example you could start with <a href="https://www.lua.org/start.html">www.lua.org</a>.</p>
+
+<p>After this is said, you could enter the following line into the chat:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">print</span><span class="p">(</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+<p>This will cast a spell that prints the following line into your chat output:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">2</span>
+</code></pre></div></div>
+<p>After this, the spell will terminate.
+The word <tt>print</tt> is the name of a function of a standard Lua module.</p>
+
+<p>Besides standard functions you can also use functions, modules and
+classes that come with the “Wizards of Lua” modification.</p>
+
+<h2 id="building-a-pillar-of-blocks">Building a Pillar of Blocks</h2>
+<p>A detailed documentation of mod-specific functions, modules and
+classes is available at the <a href="spellbooklibrary.html">Spell Book Library</a>.
+For now, we will grep a bunch of them in order to create a tall stone pillar.
+For example, you could enter the following line into the chat:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span> <span class="k">do</span> <span class="n">spell</span><span class="p">.</span><span class="n">block</span><span class="o">=</span><span class="n">Blocks</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stone"</span><span class="p">);</span> <span class="n">spell</span><span class="p">:</span><span class="n">move</span><span class="p">(</span><span class="s2">"up"</span><span class="p">);</span> <span class="k">end</span>
+</code></pre></div></div>
+<p>This will cast a spell that creates a pillar of stones directly in front of you,
+10 meters tall. Here is a picture of it:</p>
+
+<p><img src="/images/pillar-of-stone.jpg" alt="Pillar of Stone" /></p>
+
+<p>The base of the pillar is right at that location you where looking at when you
+submitted the command.</p>
+
+<p>For more examples please have a look at the <a href="spellbooklibrary.html">Spell Book Library</a>
+and the <a href="/tutorials.html">tutorials</a>.</p>
+
+<h2 id="importing-lua-modules-from-the-filesystem">Importing Lua Modules from the Filesystem</h2>
+<p>Since writing a Lua program into the chat is inconvenient and only works until the character limited of 256 is reached,
+it makes sense to put it into a file and load it later on request.
+Luckily WoL comes with a built-in Lua code editor to support file editing.
+To open the editor you can use the <a href="wol-command.html#File-Edit">/wol file edit</a> command.</p>
+
+<p>Let’s consider you have created a file called “my-module.lua” in your personal directory with the following contents:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">myfunc</span><span class="p">()</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">"you just called myfunc"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>If you want to call <code class="highlighter-rouge">myfunc()</code> in a spell, you have to “require” this module before you can call the function:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="nb">require</span> <span class="s2">"my-module"</span><span class="p">;</span> <span class="n">myfunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+<h2 id="using-a-personal-profile">Using a Personal Profile</h2>
+<p>Your personal profile is a special file called “profile.lua” that exists in your personal directory.
+If it exists, and if you cast a spell from the chat, then your profile is automatically required by your spell.</p>
+
+<p>For example, you can get rid of the “require” part above, if you put the following call into a file called “profile.lua” inside you personal directory:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"my-module"</span>
+</code></pre></div></div>
+
+<p>Then you can use <code class="highlighter-rouge">myfunc()</code> like this:</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">lua</span> <span class="n">myfunc</span><span class="p">()</span>
+</code></pre></div></div>
+
+
+        <div id="naviRight">
+<h2>Navigation</h2>
+<ul>
+   
+      <li><a href="/" alt="Home">Home</a></li>
+   
+      <li><a href="/news" alt="News">News</a></li>
+   
+      <li><a href="/features" alt="Features">Features</a></li>
+   
+      <li><a href="/introduction" alt="Introduction">Introduction</a></li>
+   
+      <li><a href="/installation" alt="Download & Installation">Download & Installation</a></li>
+   
+      <li><a href="/versions/current/configuration-file" alt="Configuration">Configuration</a></li>
+   
+      <li><a href="/versions/current/lua-command" alt="The /lua Command">The /lua Command</a></li>
+   
+      <li><a href="/versions/current/wol-command" alt="The /wol Command">The /wol Command</a></li>
+   
+      <li><a href="/versions/current/spellbooklibrary" alt="Spell Book Library">Spell Book Library</a></li>
+   
+      <li><a href="/spellpacks" alt="Spell Packs">Spell Packs</a></li>
+   
+      <li><a href="/examples" alt="Examples">Examples</a></li>
+   
+      <li><a href="/tutorials" alt="Tutorials">Tutorials</a></li>
+   
+      <li><a href="/feedback" alt="Feedback">Feedback</a></li>
+   
+</ul>
+</div>
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>
