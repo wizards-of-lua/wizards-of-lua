@@ -413,7 +413,6 @@ public class WolRestApiServer {
       long[] range = null;
       resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
       resp.sendBody(body, bytes.length, null);
-      System.out.println(content);
       return 0;
     }
 

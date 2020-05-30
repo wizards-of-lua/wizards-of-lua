@@ -137,8 +137,7 @@ body {
 			bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
 			exec: function(editor) {
 				document.title = "saving "+filepath;
-				var json =  JSON.stringify({ path: filename, content: editor.getValue()});
-				console.log("POST "+filename)
+				var json = JSON.stringify({ path: filename, content: editor.getValue()});
 				$.ajax({
 					type: "POST",
 					url: filename,
@@ -242,12 +241,8 @@ body {
 					suggestions = data.matches.sort();
 					$("#suggestion").empty();
 					suggestions.forEach(element => $("#suggestion").append('<div>'+element+'</div>'));
-					$('#suggestion div').click(function(event) {
-						suggestionClick = true;
-						takeSuggestion(event.target.innerText);
-						$('#path').focus();
-					});
-					if (suggestionSelect) $("#suggestion div:eq("+(suggestionSelect-1)+")").addClass('selected');
+					$('#suggestion div').click(function(event) { clickSuggestion(event) });
+					highlightSuggestion();
 					$('#suggestion').css('display','block');
 					$('#path').focus();
 				},
@@ -266,17 +261,42 @@ body {
 			suggestionClick = false;
 		}
 
+		function clickSuggestion(event) {
+			suggestionClick = true;
+			$('#path').focus();
+			takeSuggestion(event.target.innerText);
+			switchFile();
+		}
+
 		function takeSuggestion(text) {
-				$('#suggestion').css('display','none');
-				$('#path').val(text);
-				suggestionCursor = text.length;
-				suggestionSelect = 0;
-				requestSuggestions();
+			$('#suggestion').css('display','none');
+			$('#path').val(text);
+			suggestionCursor = text.length;
+			suggestionSelect = 0;
+			requestSuggestions();
+		}
+
+		function highlightSuggestion() {
+			$('#suggestion div').removeClass('selected');
+			if (suggestionSelect)
+				$('#suggestion div:eq('+(suggestionSelect-1)+')').addClass('selected');
 		}
 
 		function confirmDiscard() {
 			if (editor.session.getUndoManager().isClean()) return true;
 			return confirm("You have unsaved changes.\nDo you want to discard them?");
+		}
+
+		function switchFile() {
+			var path = $('#path').val();
+			if (!path.match('([\\w-]+)\\.([\\w-]+)$')) return;
+			if (!confirmDiscard()) {
+				$('#path').val(urlparts[3]);
+				return;
+			}
+			var context = $('#context').val();
+			if (context == 'private') context = uuid;
+			window.location = urlparts[1] + '/wol/lua/' + context + '/' + path;
 		}
 
 		$('#context').change(function() {
@@ -300,7 +320,6 @@ body {
 		});
 
 		$('#path').keyup(function(event) {
-			console.log(event);
 			suggestionCursor = event.target.selectionStart;
 			switch (event.which) {
 				case 9: // tab
@@ -308,19 +327,9 @@ body {
 						takeSuggestion(suggestions[suggestionSelect-1]);
 					break;
 				case 13: // return
-					if (suggestionSelect) {
+					if (suggestionSelect)
 						takeSuggestion(suggestions[suggestionSelect-1]);
-					} else {
-						var path = $('#path').val();
-						if (!path.match('([\\w-]+)\\.([\\w-]+)$')) return;
-						if (!confirmDiscard()) {
-							$('#path').val(urlparts[3]);
-							return;
-						}
-						var context = $('#context').val();
-						if (context == 'private') context = uuid;
-						window.location = urlparts[1] + '/wol/lua/' + context + '/' + path;
-					}
+					switchFile();
 					break;
 				case 27: // esc
 					resetSuggestions();
@@ -328,18 +337,20 @@ body {
 					break;
 				case 38: // up
 					if (suggestionSelect) suggestionSelect--;
-					$('#suggestion div').removeClass('selected');
-					if (suggestionSelect)
-						$('#suggestion div:eq('+(suggestionSelect-1)+')').addClass('selected');
+					highlightSuggestion();
 					break;
 				case 40: // down
 					if (suggestionSelect < suggestions.length) suggestionSelect++;                
-					$('#suggestion div').removeClass('selected');
-					$('#suggestion div:eq('+(suggestionSelect-1)+')').addClass('selected');
+					highlightSuggestion();
 					break;
 				default:
 					requestSuggestions();
 			}
+		});
+
+		$('#path').click(function(event) {
+			suggestionCursor = event.target.selectionStart;
+			requestSuggestions();
 		});
 
 		$('#path').blur(function() {
@@ -361,7 +372,7 @@ body {
 			error: function(data) {
 				console.log('ERROR requesting initiation');
 				console.log(data);
-			} 
+			}
 		});
 
 	</script>

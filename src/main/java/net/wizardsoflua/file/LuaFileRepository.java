@@ -442,21 +442,29 @@ public class LuaFileRepository {
     try {
       List<String> result = new ArrayList<>();
       Path path = contextDir.resolve(pathStr);
-      Path relativize = contextDir.relativize(path);
+      Path relPath = contextDir.relativize(path);
+      for (Path elem : relPath) {
+        if (elem.startsWith(".")) {
+          return result;
+        }
+      }
       if (Files.exists(path) && !contextDir.equals(path)) {
-        if (Files.isDirectory(path)) {
-          result.add(relativize.toString() + "/");
+        if (Files.isDirectory(path) && !pathStr.endsWith("/")) {
+          result.add(relPath.toString() + "/");
         }
       }
       while (true) {
         if (Files.exists(path) && Files.isDirectory(path)) {
-          result.addAll(Files.list(path).map(p -> {
-            if (Files.isDirectory(p)) {
-              return contextDir.relativize(p).toString() + "/";
-            } else {
-              return contextDir.relativize(p).toString();
-            }
-          }).filter(s -> s.startsWith(pathStr)).collect(Collectors.toList()));
+          result.addAll(Files.list(path) //
+              .filter(s -> !s.getFileName().toString().startsWith(".")) //
+              .map(p -> { //
+                if (Files.isDirectory(p)) {
+                  return contextDir.relativize(p).toString() + "/";
+                } else {
+                  return contextDir.relativize(p).toString();
+                }
+              }).filter(s -> s.startsWith(pathStr) && !s.equals(pathStr))
+              .collect(Collectors.toList()));
           return result;
         }
         if (contextDir.equals(path)) {
