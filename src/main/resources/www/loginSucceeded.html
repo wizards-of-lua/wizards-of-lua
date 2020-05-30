@@ -1,5 +1,40 @@
 <html>
+<head>
+<style>
+body {
+	background: #222;
+	font-family: sans-serif;
+}
+#message {
+	width: 400px;
+	margin: 100px auto 0;
+	padding: 20px;
+	border: 2px solid #4c4;
+	border-radius: 8px;
+	color: #4c4;
+	font-size: 42px;
+	text-align: center;
+}
+#subtext {
+	width: 400px;
+	margin: 8px auto 0;
+	color: #666;
+	font-size: 16px;
+	text-align: center;
+}
+</style>
+<script>
+	setTimeout(function() {
+		window.location	= "/wol/lua/shared/welcome.txt";
+	}, 3000);
+</script>
+</head>
 <body>
-Login Succeeded!
+<div id="message">
+login accepted
+</div>
+<div id="subtext">
+You will be redirected to the editor in a few seconds.
+</div>
 </body>
 </html>

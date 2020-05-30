@@ -2,6 +2,7 @@ package net.wizardsoflua.rest;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,17 +28,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
+
 import org.apache.commons.io.IOUtils;
+
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import net.freeutils.httpserver.HTTPServer;
 import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
@@ -173,6 +178,20 @@ public class WolRestApiServer {
       this.name = name;
       this.type = type;
       this.files = files;
+    }
+  }
+
+  class FileListJson {
+    public final String uuid;
+    public final String context;
+    public final String path;
+    public final List<String> matches;
+
+    public FileListJson(String uuid, String context, String path, List<String> matches) {
+      this.uuid = uuid;
+      this.context = context;
+      this.path = path;
+      this.matches = matches;
     }
   }
 
@@ -336,6 +355,66 @@ public class WolRestApiServer {
             + "\n See fml-server-latest.log for more info!");
         return 0;
       }
+    }
+
+    @HTTPServer.Context(value = "/wol/autocomplete", methods = {"GET"})
+    public int autocomplete(Request req, Response resp) throws IOException {
+      try {
+        LOGGER.debug("[REST] " + req.getMethod() + " " + req.getPath());
+        LoginCookie loginCookie = getLoginCookie(req);
+        if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
+          resp.sendError(401,
+              "Missing correct login token! Please login first by executing '/wol browser login' in Minecraft.");
+          return 0;
+        }
+        if (acceptsJson(req)) {
+          String context = req.getParams().get("c");
+          String path = req.getParams().get("p");
+          if (!isValidContext(context)) {
+            resp.sendError(401,
+                "Not a valid context! Allowed contexts are 'private','shared', and 'world'.");
+            return 0;
+          }
+          return sendAutocompletion(loginCookie.getPlayerUuid(), context, path, resp);
+        } else {
+          String accepts = req.getHeaders().get("Accept");
+          resp.sendError(503, "Only json is supported, but your requests only accepts " + accepts);
+          return 0;
+        }
+      } catch (Exception e) {
+        LOGGER.error("Error handling GET: " + req.getPath(), e);
+        resp.sendError(500, "Couldn't process GET method! e=" + e.getMessage()
+            + "\n See fml-server-latest.log for more info!");
+        return 0;
+      }
+    }
+
+
+
+    private boolean isValidContext(String context) {
+      switch (context) {
+        case "shared":
+        case "world":
+        case "private":
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    private int sendAutocompletion(UUID playerUuid, String context, String path, Response resp)
+        throws IOException {
+      List<String> filenames = repo.getMatches(playerUuid, context, path);
+      Gson gson = new Gson();
+      String content =
+          gson.toJson(new FileListJson(playerUuid.toString(), context, path, filenames));
+      byte[] bytes = content.getBytes(StandardCharsets.UTF_8.name());
+      InputStream body = new ByteArrayInputStream(bytes);
+      long[] range = null;
+      resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
+      resp.sendBody(body, bytes.length, null);
+      System.out.println(content);
+      return 0;
     }
 
     private int sendLuaFile(Request req, Response resp) throws IOException {

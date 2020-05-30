@@ -7,140 +7,363 @@
 <script src="/jquery/jquery-3.2.1.js"></script>
 <script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <style type="text/css" media="screen">
-#editor {
-    position: absolute;
-    top: 20px;
-        right: 0px;
-    bottom: 0px;
-    left: 10px;
-}
 body {
-    background-color: #252525;
+	background: #222;
+	font-family: Verdana, Geneva, sans-serif;
+	font-style: normal;
+}
+#editor {
+	position: absolute;
+	top: 40px;
+	right: 0px;
+	bottom: 0px;
+	left: 10px;
 }
 .logo {
-   position:absolute;
-   right: 5px;
-   top:2px;
+	position:absolute;
+	right: 5px;
+	top: 2px;
 }
 .discord-logo {
-   position:absolute;
-   right: 15px;
-   top:80px;
+	position: absolute;
+	right: 15px;
+	top: 80px;
 }
-.hints {
-   position:absolute;
-   right: 135px;
-   top:2px;
-   color: #686868;
-   font-family: Verdana, Geneva, sans-serif;
-   font-size: 12px;
-    font-style: normal;
+#tools {
+	position: absolute;
+	top: 0px;
+	right: 10px;
+	left: 10px;
+	height: 36px;
+}
+#context {
+	position: absolute;
+	top: 4px;
+	left: 0px;
+	width: 80px;
+	height: 21px;
+	padding: 1px 4px;
+	background: #222;
+	color: #fff;
+	border: 1px solid #666;
+	border-radius: 2px;
+	outline: none;
+}
+#path {
+	position: absolute;
+	top: 4px;
+	left: 84px;
+	height: 15px;
+	width: 600px;
+	padding: 2px 4px;
+	background: #222;
+	color: #fff;
+	border: 1px solid #666;
+	border-radius: 2px;
+	outline: none;
+	z-index: 20;
+}
+#suggestion {
+	display: none;
+	position: fixed;
+	top: 24px;
+	left: 94px;
+	width: 608px;
+	padding: 0;
+	font-size: 12px;
+	color: #fff;
+	border: 1px solid #666;
+	border-top: none;
+	border-radius: 2px;
+	background: #222;
+	z-index: 21;
+}
+#suggestion div {
+	border-top: 1px solid #666;
+	padding: 2px 4px;
+	cursor: pointer;
+}
+#suggestion div.selected,
+#suggestion div:hover {
+	background: #444;
+}
+#hints {
+	position: absolute;
+	top: 28px;
+	left: 0px;
+	font-size: 8px;
+	color: #ccc;
 }
 </style>
 </head>
 <body>
- <div class="hints" id="hints">--- Save: CTRL-S --- Reload: CTRL-R --- Find: CTRL-F ---</div>
+ <div id="tools">
+	<select id="context">
+		<option>private</option>
+		<option>shared</option>
+		<!-- option>world</option -->
+	</select>
+	<input type="text" id="path" />
+	<div id="suggestion"></div>
+	<span id="hints">Save: Ctrl-S / Open: Ctrl-O / Reload: Ctrl-R<!-- / Find: Ctrl-F --></span>
+ </div>
  <div id="editor"></div>
  <a href="http://www.wizards-of-lua.net/spellbooklibrary" target='wol-api-docs'><img class="logo" 
-    src="/steven-with-magic-wand-glowing.png"
-    alt="Open API docs at wizards-of-lua.net"
-    height="70"
-    ></a>
+	src="/steven-with-magic-wand-glowing.png"
+	alt="Open API docs at wizards-of-lua.net"
+	height="70"
+	></a>
  <a href="https://discord.gg/9En5Drt" target='wol-discord-channel'><img class="discord-logo" 
-    src="/discord-logo.png"
-    alt="Join our Discord channel"
-    height="70"
-    ></a>
+	src="/discord-logo.png"
+	alt="Join our Discord channel"
+	height="70"
+	></a>
  <script>
-        var loaded = false;
-        var doMarkClean = false;
-        var filename = window.location.href;
-        var filepath = "";
-        var editor = ace.edit("editor");
-        editor.getSession().setTabSize(2);
-        editor.$blockScrolling = Infinity;
-        editor.getSession().setMode("ace/mode/lua");
-        //editor.setTheme("ace/theme/dracula");
-        editor.setTheme("ace/theme/twilight");
-        editor.setHighlightActiveLine(true);
-        editor.commands.addCommand({
-            name: 'save',
-            bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
-            exec: function(editor) {
-                document.title = "saving "+filepath;
-                var value = editor.getValue();
-                var json =  JSON.stringify({ path : filename, content : value});
-                console.log("POST "+filename)
-                $.ajax({
-                    type: "POST",
-                    url: filename,
-                    data: json,
-                    contentType: "application/json",
-                    success: function(response) {
-                        document.title = filepath;
-                        setModified(false);
-                    }
-                })
-                .fail(function(response) {
-                    alert('Received an unexpected error while saving file!\n'
-                            + 'status=' + response.status + '\n' 
-                            + 'responseText=' + response.responseText);
-                    document.title = filepath;
-                });
-            }
-        })
-        
-        function setModified(modified) {
-            if ( modified) {
-                document.title = "\u25CF "+filepath;
-            } else {
-                editor.session.getUndoManager().markClean();
-                   document.title = filepath;
-            }
-        }
-        
-        editor.on("input", function() {
-            // input is async event, which fires after any change events
-            if ( doMarkClean) {
-                   setModified(false);
-                   doMarkClean = false;
-            } else {
-               setModified( ! editor.session.getUndoManager().isClean()); 
-            }
-         });
+		var loaded = false;
+		var doMarkClean = false;
+		var filename = window.location.href;
+		var filepath = "";
+		var urlparts = window.location.href.match("^(.+)\/wol\/lua\/([\\w-]+)\/(.+)$");
+		var editor = ace.edit("editor");
 
-        function reload(aFilename) {
-            loaded = false;
-            if (aFilename == undefined) {
-                aFilename = filename;
-            }
-            var target = aFilename+"?"
-            console.log("GET "+target)
-            $.ajax({
-                dataType: "json",
-                url: target,
-                success: function(data) {
-                    editor.setValue(data.content);
-                    editor.clearSelection();
-                    editor.focus();
-                    setModified(false);
-                    document.title = data.path;
-                    filepath = data.path;
-                    loaded = true;
-                    doMarkClean = true;
-                },
-                error: function(data) {
-                    alert('Error: ' + JSON.stringify(data));
-                    document.title = filepath;
-                } 
-            });
-        }
+		editor.getSession().setTabSize(2);
+		editor.$blockScrolling = Infinity;
+		editor.getSession().setMode("ace/mode/lua");
+		editor.setTheme("ace/theme/twilight");
+		editor.setHighlightActiveLine(true);
 
-        $(document).ready(function() {
-            if (!loaded) {
-                reload();
-            }
-        });
-    </script>
+		editor.commands.addCommand({
+			name: 'save',
+			bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
+			exec: function(editor) {
+				document.title = "saving "+filepath;
+				var json =  JSON.stringify({ path: filename, content: editor.getValue()});
+				console.log("POST "+filename)
+				$.ajax({
+					type: "POST",
+					url: filename,
+					data: json,
+					contentType: "application/json",
+					success: function(response) {
+						document.title = filepath;
+						setModified(false);
+					}
+				})
+				.fail(function(response) {
+					console.log('ERROR saving file');
+					console.log(response);
+					alert('Unable to save file content.');
+					document.title = filepath;
+				});
+			}
+		})
+
+		editor.commands.addCommand({
+			name: 'open',
+			bindKey: {win: "Ctrl-O", "mac": "Cmd-O"},
+			exec: function(editor) {
+				$('#path').focus();
+			}
+		})
+		
+		function setModified(modified) {
+			if (modified) {
+				document.title = "\u25CF "+filepath;
+			} else {
+				editor.session.getUndoManager().markClean();
+				document.title = filepath;
+			}
+		}
+		
+		editor.on("input", function() {
+			if (doMarkClean) {
+				setModified(false);
+				doMarkClean = false;
+			} else {
+				setModified(!editor.session.getUndoManager().isClean()); 
+			}
+		});
+
+		function reload(aFilename) {
+			loaded = false;
+			if (!aFilename) aFilename = filename;
+			$.ajax({
+				dataType: "json",
+				url: aFilename+"?",
+				success: function(data) {
+					editor.setValue(data.content);
+					editor.clearSelection();
+					editor.focus();
+					setModified(false);
+					document.title = data.path;
+					filepath = data.path;
+					loaded = true;
+					doMarkClean = true;
+				},
+				error: function(data) {
+					console.log('ERROR loading file');
+					console.log(data);
+					alert('Unable to load file.');
+					document.title = filepath;
+				} 
+			});
+		}
+
+		$(document).ready(function() {
+			if (!loaded) reload();
+			if (urlparts[2] == 'shared' || urlparts[2] == 'world') {
+				$('#context').val(urlparts[2]);
+			} else {
+				$('#context').val('private');            
+			}
+			$('#path').val(urlparts[3]);
+		});
+
+/*
+		Autocomplete Fileselect
+		added 20-05-29 by bytemage
+*/
+
+		var suggestions = [];
+		var suggestionSelect = 0;
+		var suggestionClick = 0;
+		var suggestionCursor = 0;
+
+		var uuid = 0;
+
+		function requestSuggestions() {
+			var context = $('#context').val();
+			var path = $('#path').val().substring(0,suggestionCursor);
+			$.ajax({
+				dataType: "json",
+				url: urlparts[1] + "/wol/autocomplete?c="+context+"&p="+path,
+				success: function(data) {
+					uuid = data.uuid;
+					suggestions = data.matches.sort();
+					$("#suggestion").empty();
+					suggestions.forEach(element => $("#suggestion").append('<div>'+element+'</div>'));
+					$('#suggestion div').click(function(event) {
+						suggestionClick = true;
+						takeSuggestion(event.target.innerText);
+						$('#path').focus();
+					});
+					if (suggestionSelect) $("#suggestion div:eq("+(suggestionSelect-1)+")").addClass('selected');
+					$('#suggestion').css('display','block');
+					$('#path').focus();
+				},
+				error: function(data) {
+					console.log('ERROR requesting suggestions');
+					console.log(data);
+					alert('Error while requesting suggestions from server.');
+				} 
+			});
+		}
+
+		function resetSuggestions() {
+			$('#path').val(urlparts[3]);
+			$('#suggestion').css('display','none');
+			suggestionSelect = 0;
+			suggestionClick = false;
+		}
+
+		function takeSuggestion(text) {
+				$('#suggestion').css('display','none');
+				$('#path').val(text);
+				suggestionCursor = text.length;
+				suggestionSelect = 0;
+				requestSuggestions();
+		}
+
+		function confirmDiscard() {
+			if (editor.session.getUndoManager().isClean()) return true;
+			return confirm("You have unsaved changes.\nDo you want to discard them?");
+		}
+
+		$('#context').change(function() {
+			if (!confirmDiscard()) {
+				if (urlparts[2] == 'shared' || urlparts[2] == 'world') {
+					$('#context').val(urlparts[2]);
+				} else {
+					$('#context').val('private');            
+				}
+				return;
+			}
+			var context = $('#context').val();
+			if (context == 'private') context = uuid;
+			var path = $('#path').val();
+			window.location = urlparts[1] + "/wol/lua/" + context + "/" + path;
+		});
+
+		$('#path').keydown(function(event) {
+			if (event.which == 9) event.preventDefault();
+			if (event.which == 190 && $('#path').val() == '') event.preventDefault();
+		});
+
+		$('#path').keyup(function(event) {
+			console.log(event);
+			suggestionCursor = event.target.selectionStart;
+			switch (event.which) {
+				case 9: // tab
+					if (suggestionSelect)
+						takeSuggestion(suggestions[suggestionSelect-1]);
+					break;
+				case 13: // return
+					if (suggestionSelect) {
+						takeSuggestion(suggestions[suggestionSelect-1]);
+					} else {
+						var path = $('#path').val();
+						if (!path.match('([\\w-]+)\\.([\\w-]+)$')) return;
+						if (!confirmDiscard()) {
+							$('#path').val(urlparts[3]);
+							return;
+						}
+						var context = $('#context').val();
+						if (context == 'private') context = uuid;
+						window.location = urlparts[1] + '/wol/lua/' + context + '/' + path;
+					}
+					break;
+				case 27: // esc
+					resetSuggestions();
+					editor.focus();
+					break;
+				case 38: // up
+					if (suggestionSelect) suggestionSelect--;
+					$('#suggestion div').removeClass('selected');
+					if (suggestionSelect)
+						$('#suggestion div:eq('+(suggestionSelect-1)+')').addClass('selected');
+					break;
+				case 40: // down
+					if (suggestionSelect < suggestions.length) suggestionSelect++;                
+					$('#suggestion div').removeClass('selected');
+					$('#suggestion div:eq('+(suggestionSelect-1)+')').addClass('selected');
+					break;
+				default:
+					requestSuggestions();
+			}
+		});
+
+		$('#path').blur(function() {
+			setTimeout(function() {
+				if (suggestionClick == true) {
+					suggestionClick = false;
+				} else {
+					resetSuggestions();
+				}
+			}, 500);
+		});
+
+		$.ajax({
+			dataType: "json",
+			url: urlparts[1] + "/wol/autocomplete?c=shared&p=aaa",
+			success: function(data) {
+				uuid = data.uuid;
+			},
+			error: function(data) {
+				console.log('ERROR requesting initiation');
+				console.log(data);
+			} 
+		});
+
+	</script>
 </body>
 </html>

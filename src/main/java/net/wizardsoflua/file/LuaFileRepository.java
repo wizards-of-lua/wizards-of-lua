@@ -1,8 +1,10 @@
 package net.wizardsoflua.file;
 
 import static java.lang.String.format;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -10,13 +12,18 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.crypto.BadPaddingException;
 import javax.inject.Inject;
+
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerProfileCache;
@@ -52,7 +59,7 @@ public class LuaFileRepository {
             .map(p -> playerLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -64,7 +71,7 @@ public class LuaFileRepository {
             .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -76,7 +83,7 @@ public class LuaFileRepository {
             .map(p -> sharedLibDir.relativize(p).toString()).collect(Collectors.toList());
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -102,7 +109,7 @@ public class LuaFileRepository {
       URL result = new URL(protocol + "://" + hostname + ":" + port + "/wol/lua/" + fileReference);
       return result;
     } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -119,7 +126,7 @@ public class LuaFileRepository {
       URL result = new URL(protocol + "://" + hostname + ":" + port + "/wol/lua/" + fileReference);
       return result;
     } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -146,7 +153,7 @@ public class LuaFileRepository {
           new URL(protocol + "://" + hostname + ":" + port + "/wol/export/" + fileReference);
       return result;
     } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -171,7 +178,7 @@ public class LuaFileRepository {
         Files.delete(parent);
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -187,7 +194,7 @@ public class LuaFileRepository {
         Files.delete(parent);
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -219,7 +226,7 @@ public class LuaFileRepository {
         Files.delete(parent);
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -249,7 +256,7 @@ public class LuaFileRepository {
         Files.delete(parent);
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -266,7 +273,7 @@ public class LuaFileRepository {
       }
       return new LuaFile(getFilepathFor(fileReference), name, fileReference, content);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -288,7 +295,7 @@ public class LuaFileRepository {
       }
       return spellPackFactory.createSpellPack(fileReference, file);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -309,7 +316,7 @@ public class LuaFileRepository {
       Path path = file.toPath();
       Files.write(path, bytes);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -334,7 +341,7 @@ public class LuaFileRepository {
           new URL(protocol + "://" + hostname + ":" + port + "/wol/login/" + uuid + "/" + token);
       return result;
     } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
@@ -413,6 +420,53 @@ public class LuaFileRepository {
   private boolean isEmpty(Path directory) throws IOException {
     try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
       return !dirStream.iterator().hasNext();
+    }
+  }
+
+  public List<String> getMatches(UUID playerUuid, String context, String filepath) {
+    if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
+      return Collections.emptyList();
+    }
+    if ("shared".equals(context)) {
+      return getMatches(config.getSharedLibDir().toPath(), filepath);
+    }
+    if ("private".equals(context)) {
+      return getMatches(config.getOrCreateWizardConfig(playerUuid).getLibDir().toPath(), filepath);
+    }
+
+    // TODO "world"
+    return Collections.emptyList();
+  }
+
+  private List<String> getMatches(Path contextDir, String pathStr) {
+    try {
+      List<String> result = new ArrayList<>();
+      Path path = contextDir.resolve(pathStr);
+      Path relativize = contextDir.relativize(path);
+      if (Files.exists(path) && !contextDir.equals(path)) {
+        if (Files.isDirectory(path)) {
+          result.add(relativize.toString() + "/");
+        }
+      }
+      while (true) {
+        if (Files.exists(path) && Files.isDirectory(path)) {
+          result.addAll(Files.list(path).map(p -> {
+            if (Files.isDirectory(p)) {
+              return contextDir.relativize(p).toString() + "/";
+            } else {
+              return contextDir.relativize(p).toString();
+            }
+          }).filter(s -> s.startsWith(pathStr)).collect(Collectors.toList()));
+          return result;
+        }
+        if (contextDir.equals(path)) {
+          break;
+        }
+        path = path.getParent();
+      }
+      return result;
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 
