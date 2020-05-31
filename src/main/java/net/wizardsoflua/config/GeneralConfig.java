@@ -4,8 +4,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static net.wizardsoflua.WizardsOfLua.LOGGER;
 import static net.wizardsoflua.lua.table.TableUtils.getAsOptional;
+
 import java.io.File;
+
 import javax.annotation.Nullable;
+
 import net.sandius.rembulan.Table;
 
 public class GeneralConfig {
@@ -115,6 +118,16 @@ public class GeneralConfig {
 
   public @Nullable String getGitHubAccessToken() {
     return gitHubAccessToken.equals("") ? null : gitHubAccessToken;
+  }
+
+  public boolean getSpellOutput() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public void setSpellOutput(boolean value) {
+    // TODO Auto-generated method stub
+
   }
 
 }

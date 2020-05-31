@@ -55,6 +55,7 @@ import net.wizardsoflua.config.WolConfig;
 import net.wizardsoflua.extension.api.inject.PostConstruct;
 import net.wizardsoflua.extension.api.inject.PreDestroy;
 import net.wizardsoflua.extension.server.api.ServerScoped;
+import net.wizardsoflua.file.Directory;
 import net.wizardsoflua.file.LuaFile;
 import net.wizardsoflua.file.LuaFileRepository;
 import net.wizardsoflua.file.SpellPack;
@@ -102,11 +103,13 @@ public class WolRestApiServer {
     LOGGER.info("[REST] REST service will cache static files at " + contextRoot.getAbsolutePath());
 
     server = new HTTPServer(port);
+
     server.setServerSocketFactory(
         secure ? createSSLServerSocketFactory(keystore, keystorePassword, keyPassword)
             : ServerSocketFactory.getDefault());
 
     VirtualHost host = new VirtualHost(hostname);
+    host.setDirectoryIndex(null);
     server.addVirtualHost(host);
 
     StaticResourceHandlers staticResourceHandlers =
@@ -159,6 +162,7 @@ public class WolRestApiServer {
   }
 
   class LuaFileJson {
+    public final String type;
     public final String playerUuid;
     public final String path;
     public final String name;
@@ -170,6 +174,7 @@ public class WolRestApiServer {
 
     public LuaFileJson(String playerUuid, String path, String name, String context,
         String reference, String content, boolean exists, @Nullable LocalDateTime lastModified) {
+      type = "file";
       this.playerUuid = playerUuid;
       this.path = path;
       this.name = name;
@@ -190,6 +195,26 @@ public class WolRestApiServer {
 
     public FileUrl(String url) {
       this.url = url;
+    }
+
+  }
+
+  class DirectoryJson {
+    public final String type;
+    public final String playerUuid;
+    public final String path;
+    public final String name;
+    public final String context;
+    public final List<String> children;
+
+    public DirectoryJson(String playerUuid, String path, String name, String context,
+        List<String> children) {
+      type = "directory";
+      this.playerUuid = playerUuid;
+      this.path = path;
+      this.name = name;
+      this.context = context;
+      this.children = children;
     }
 
   }
@@ -340,25 +365,20 @@ public class WolRestApiServer {
         Matcher matcher = pattern.matcher(req.getPath());
         if (matcher.matches()) {
           String fileref = matcher.group(1);
-          String path = req.getParams().get("p");
-          if (path != null) {
+          String toFilepath = req.getParams().get("mv");
+          if (toFilepath != null) {
             // move file
-            String context = req.getParams().get("c");
-            if (!isValidContext(context)) {
-              resp.sendError(401,
-                  "Not a valid context! Allowed contexts are 'private','shared', and 'world'.");
-              return 0;
-            }
             if (!repo.exists(fileref)) {
               resp.sendError(404, "Source File '" + fileref + "' does not exist.");
               return 0;
             }
-            if (repo.exists(loginCookie.getPlayerUuid(), context, path)) {
-              resp.sendError(405, "Target File '" + path + "' already exist.");
+            String context = repo.getContextFrom(fileref);
+            if (repo.exists(loginCookie.getPlayerUuid(), context, toFilepath)) {
+              resp.sendError(405, "Target File '" + toFilepath + "' already exist.");
               return 0;
             }
-            repo.move(fileref, loginCookie.getPlayerUuid(), context, path);
-            sendFileUrl(resp, loginCookie.getPlayerUuid(), context, path);
+            repo.move(fileref, loginCookie.getPlayerUuid(), context, toFilepath);
+            sendFileUrl(resp, loginCookie.getPlayerUuid(), context, toFilepath);
             return 0;
           } else {
             // save file
@@ -412,6 +432,10 @@ public class WolRestApiServer {
         Matcher matcher = pattern.matcher(req.getPath());
         if (matcher.matches()) {
           String fileref = matcher.group(1);
+          if (!repo.exists(fileref)) {
+            resp.sendError(404, "File '" + fileref + "' does not exist.");
+            return 0;
+          }
           repo.deleteFile(fileref);
           resp.send(200, "OK");
           return 0;
@@ -421,50 +445,6 @@ public class WolRestApiServer {
       } catch (Exception e) {
         LOGGER.error("Error handling DELETE: " + req.getPath(), e);
         resp.sendError(500, "Couldn't process DELETE method! e=" + e.getMessage()
-            + "\n See fml-server-latest.log for more info!");
-        return 0;
-      }
-    }
-
-    @HTTPServer.Context(value = "/wol/move", methods = {"POST"})
-    public int move(Request req, Response resp) throws IOException {
-      try {
-        LOGGER.debug("[REST] " + req.getMethod() + " " + req.getPath());
-        LoginCookie loginCookie = getLoginCookie(req);
-        if (loginCookie == null || !isValidLoginCookie(loginCookie)) {
-          resp.sendError(401,
-              "Missing correct login token! Please login first by executing '/wol browser login' in Minecraft.");
-          return 0;
-        }
-
-        String fromContext = req.getParams().get("fc");
-        String fromPath = req.getParams().get("fp");
-        String toContext = req.getParams().get("tc");
-        String toPath = req.getParams().get("tp");
-        if (!isValidContext(fromContext)) {
-          resp.sendError(401,
-              "Not a valid context! Allowed contexts are 'private','shared', and 'world'.");
-          return 0;
-        }
-        if (!repo.exists(loginCookie.getPlayerUuid(), fromContext, fromPath)) {
-          resp.sendError(404, "Source File '" + fromPath + "' does not exist.");
-          return 0;
-        }
-        if (!isValidContext(toContext)) {
-          resp.sendError(401,
-              "Not a valid context! Allowed contexts are 'private','shared', and 'world'.");
-          return 0;
-        }
-        if (repo.exists(loginCookie.getPlayerUuid(), toContext, toPath)) {
-          resp.sendError(405, "Target File '" + toPath + "' already exist.");
-          return 0;
-        }
-        repo.move(loginCookie.getPlayerUuid(), fromContext, fromPath, toContext, toPath);
-        sendFileUrl(resp, loginCookie.getPlayerUuid(), toContext, toPath);
-        return 0;
-      } catch (Exception e) {
-        LOGGER.error("Error handling POST: " + req.getPath(), e);
-        resp.sendError(500, "Couldn't process POST method! e=" + e.getMessage()
             + "\n See fml-server-latest.log for more info!");
         return 0;
       }
@@ -560,18 +540,34 @@ public class WolRestApiServer {
       Matcher matcher = pattern.matcher(req.getPath());
       if (matcher.matches()) {
         String fileref = matcher.group(1);
-        LuaFile luaFile = repo.loadLuaFile(fileref);
-        LuaFileJson luaFileJson = new LuaFileJson(playerUuid.toString(), luaFile.getPath(),
-            luaFile.getName(), luaFile.getContext(), luaFile.getFileReference(),
-            luaFile.getContent(), luaFile.exists(), luaFile.getLastModified());
-        Gson gson = new Gson();
-        String content = gson.toJson(luaFileJson);
-        byte[] bytes = content.getBytes(StandardCharsets.UTF_8.name());
-        InputStream body = new ByteArrayInputStream(bytes);
-        long[] range = null;
-        resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
-        resp.sendBody(body, bytes.length, null);
-        return 0;
+        if (repo.isDirectory(fileref)) {
+          String filepath = repo.getFilepathFor(fileref);
+          String context = repo.getContextFrom(fileref);
+          Directory dir = repo.loadDirectory(playerUuid, context, filepath);
+
+          Gson gson = new Gson();
+          String content = gson.toJson(new DirectoryJson(playerUuid.toString(), dir.getPath(),
+              dir.getName(), context, dir.getChildren()));
+          byte[] bytes = content.getBytes(StandardCharsets.UTF_8.name());
+          InputStream body = new ByteArrayInputStream(bytes);
+          long[] range = null;
+          resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
+          resp.sendBody(body, bytes.length, null);
+          return 0;
+        } else {
+          LuaFile luaFile = repo.loadLuaFile(fileref);
+          LuaFileJson luaFileJson = new LuaFileJson(playerUuid.toString(), luaFile.getPath(),
+              luaFile.getName(), luaFile.getContext(), luaFile.getFileReference(),
+              luaFile.getContent(), luaFile.exists(), luaFile.getLastModified());
+          Gson gson = new Gson();
+          String content = gson.toJson(luaFileJson);
+          byte[] bytes = content.getBytes(StandardCharsets.UTF_8.name());
+          InputStream body = new ByteArrayInputStream(bytes);
+          long[] range = null;
+          resp.sendHeaders(200, bytes.length, -1L, null, "application/json", range);
+          resp.sendBody(body, bytes.length, null);
+          return 0;
+        }
       } else {
         throw new RuntimeException("Unexpected path: '" + req.getPath() + "'");
       }

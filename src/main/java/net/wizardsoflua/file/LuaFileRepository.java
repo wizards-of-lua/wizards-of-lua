@@ -407,6 +407,12 @@ public class LuaFileRepository {
     return file.exists();
   }
 
+  public boolean isDirectory(String fileReference) {
+    File file = getFile(fileReference);
+    return file.isDirectory();
+  }
+
+
   public boolean exists(UUID playerUuid, String context, String filepath) {
     File f = getFile(playerUuid, context, filepath);
     return f.exists();
@@ -479,7 +485,7 @@ public class LuaFileRepository {
     }
   }
 
-  private String getContextFrom(String fileReference) {
+  public String getContextFrom(String fileReference) {
     String filepath = getFilepathFor(fileReference);
     if (filepath.contains("..")) {
       throw new IllegalArgumentException("Filepath must not contain '..' elements!");
@@ -527,7 +533,7 @@ public class LuaFileRepository {
     return "shared" + "/" + filepath.replace('\\', '/');
   }
 
-  private String getFilepathFor(String fileReference) {
+  public String getFilepathFor(String fileReference) {
     int index = fileReference.indexOf('/');
     return fileReference.substring(index + 1);
   }
@@ -588,16 +594,10 @@ public class LuaFileRepository {
       }
       while (true) {
         if (Files.exists(path) && Files.isDirectory(path)) {
-          result.addAll(Files.list(path) //
-              .filter(s -> !s.getFileName().toString().startsWith(".")) //
-              .map(p -> { //
-                if (Files.isDirectory(p)) {
-                  return contextDir.relativize(p).toString() + "/";
-                } else {
-                  return contextDir.relativize(p).toString();
-                }
-              }).filter(s -> s.startsWith(pathStr) && !s.equals(pathStr))
-              .collect(Collectors.toList()));
+          List<String> entries = getChildren(contextDir, path).stream()
+              .filter(s -> s.startsWith(pathStr) && !s.equals(pathStr))
+              .collect(Collectors.toList());
+          result.addAll(entries);
           return result;
         }
         if (contextDir.equals(path)) {
@@ -611,5 +611,32 @@ public class LuaFileRepository {
     }
   }
 
+  private List<String> getChildren(Path path) throws IOException {
+    return getChildren(path, path);
+  }
+
+  private List<String> getChildren(Path relativeDir, Path path) throws IOException {
+    List<String> entries = Files.list(path) //
+        .filter(s -> !s.getFileName().toString().startsWith(".")) //
+        .map(p -> { //
+          if (Files.isDirectory(p)) {
+            return relativeDir.relativize(p).toString() + "/";
+          } else {
+            return relativeDir.relativize(p).toString();
+          }
+        }).collect(Collectors.toList());
+    return entries;
+  }
+
+  public Directory loadDirectory(UUID playerUuid, String context, String filepath)
+      throws IOException {
+    Path contextDir = getContextDir(playerUuid, context);
+    Path fullpath = contextDir.resolve(filepath);
+    if (!Files.isDirectory(fullpath)) {
+      throw new IllegalArgumentException("File '" + filepath + "' is not a directory.");
+    }
+    List<String> children = getChildren(fullpath);
+    return new Directory(filepath, fullpath.getFileName().toString(), children);
+  }
 
 }
