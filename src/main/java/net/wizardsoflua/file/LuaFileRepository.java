@@ -12,6 +12,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -96,15 +98,15 @@ public class LuaFileRepository {
     return false;
   }
 
-  public URL getFileEditURL(EntityPlayer player, String filepath) throws IllegalArgumentException {
+  public URL getFileEditURL(UUID playerUuid, String context, String filepath) {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
     }
+    String fileReference = getFileReferenceFor(playerUuid, context, filepath);
     String hostname = config.getRestApiConfig().getHostname();
     String protocol = config.getRestApiConfig().getProtocol();
     int port = config.getRestApiConfig().getPort();
 
-    String fileReference = getFileReferenceFor(player, filepath);
     try {
       URL result = new URL(protocol + "://" + hostname + ":" + port + "/wol/lua/" + fileReference);
       return result;
@@ -113,21 +115,12 @@ public class LuaFileRepository {
     }
   }
 
-  public URL getSharedFileEditURL(String filepath) throws IllegalArgumentException {
-    if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
-      throw new IllegalArgumentException(String.format("Illegal path '%s'", filepath));
-    }
-    String hostname = config.getRestApiConfig().getHostname();
-    String protocol = config.getRestApiConfig().getProtocol();
-    int port = config.getRestApiConfig().getPort();
+  public URL getFileEditURL(EntityPlayer player, String filepath) throws IllegalArgumentException {
+    return getFileEditURL(player.getUniqueID(), "private", filepath);
+  }
 
-    String fileReference = getSharedFileReferenceFor(filepath);
-    try {
-      URL result = new URL(protocol + "://" + hostname + ":" + port + "/wol/lua/" + fileReference);
-      return result;
-    } catch (MalformedURLException e) {
-      throw new UncheckedIOException(e);
-    }
+  public URL getSharedFileEditURL(String filepath) throws IllegalArgumentException {
+    return getFileEditURL(null, "shared", filepath);
   }
 
   public URL getSpellPackExportURL(String filepath) {
@@ -165,6 +158,19 @@ public class LuaFileRepository {
     return "shared" + "/" + filepath + ".jar";
   }
 
+  public void deleteFile(String fileReference) {
+    try {
+      File file = getFile(fileReference);
+      Files.delete(file.toPath());
+      Path parent = file.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
   public void deleteFile(EntityPlayer player, String filepath) throws IllegalArgumentException {
     try {
       if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
@@ -190,6 +196,68 @@ public class LuaFileRepository {
       File file = new File(config.getSharedLibDir(), filepath);
       Files.delete(file.toPath());
       Path parent = file.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  public void move(String fileReference, UUID playerUuid, String context, String newFilepath) {
+    try {
+      if (newFilepath.contains("..") || newFilepath.startsWith("/")
+          || newFilepath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", newFilepath));
+      }
+      String oldFilepath = getFilepathFor(fileReference);
+      File oldFile = getFile(fileReference);
+
+      Path contextDir = getContextDir(playerUuid, context);
+      File newFile = contextDir.resolve(newFilepath).toFile();
+
+      if (!oldFile.exists()) {
+        throw new IllegalArgumentException(
+            "Can't move " + oldFilepath + " to " + newFilepath + "! Source file does not exist!");
+      }
+      if (newFile.exists()) {
+        throw new IllegalArgumentException(
+            "Can't move " + oldFilepath + " to " + newFilepath + "! Target file already exists!");
+      }
+      Files.createDirectories(newFile.getParentFile().toPath());
+      Files.move(oldFile.toPath(), newFile.toPath());
+      Path parent = oldFile.getParentFile().toPath();
+      if (isEmpty(parent)) {
+        Files.delete(parent);
+      }
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  public void move(UUID playerUuid, String fromContext, String fromPath, String toContext,
+      String toPath) {
+    try {
+      if (fromPath.contains("..") || fromPath.startsWith("/") || fromPath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", fromPath));
+      }
+      if (toPath.contains("..") || toPath.startsWith("/") || toPath.startsWith("\\")) {
+        throw new IllegalArgumentException(String.format("Illegal path '%s'", toPath));
+      }
+      File oldFile = getFile(playerUuid, fromContext, fromPath);
+      File newFile = getFile(playerUuid, toContext, toPath);
+
+      if (!oldFile.exists()) {
+        throw new IllegalArgumentException("Can't move [" + fromContext + "] " + fromPath + " to ["
+            + toContext + "] " + toPath + "! Source file does not exist!");
+      }
+      if (newFile.exists()) {
+        throw new IllegalArgumentException("Can't move [" + fromContext + "] " + fromPath + " to ["
+            + toContext + "] " + toPath + "! Target file already exists!");
+      }
+      Files.createDirectories(newFile.getParentFile().toPath());
+      Files.move(oldFile.toPath(), newFile.toPath());
+      Path parent = oldFile.getParentFile().toPath();
       if (isEmpty(parent)) {
         Files.delete(parent);
       }
@@ -265,13 +333,22 @@ public class LuaFileRepository {
       File file = getFile(fileReference);
       String name = file.getName();
       String content;
+      boolean exists;
+      LocalDateTime lastModified;
       if (file.exists()) {
         Charset cs = Charset.defaultCharset();
         content = new String(Files.readAllBytes(file.toPath()), cs);
+        exists = true;
+        lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file.toPath()).toInstant(),
+            ZoneId.systemDefault());
       } else {
-        content = "";
+        content = null;
+        exists = false;
+        lastModified = null;
       }
-      return new LuaFile(getFilepathFor(fileReference), name, fileReference, content);
+      String context = getContextFrom(fileReference);
+      return new LuaFile(getFilepathFor(fileReference), name, context, fileReference, content,
+          exists, lastModified);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -328,6 +405,11 @@ public class LuaFileRepository {
   public boolean exists(String fileReference) {
     File file = getFile(fileReference);
     return file.exists();
+  }
+
+  public boolean exists(UUID playerUuid, String context, String filepath) {
+    File f = getFile(playerUuid, context, filepath);
+    return f.exists();
   }
 
   public URL getPasswordTokenUrl(EntityPlayer player) {
@@ -397,8 +479,48 @@ public class LuaFileRepository {
     }
   }
 
+  private String getContextFrom(String fileReference) {
+    String filepath = getFilepathFor(fileReference);
+    if (filepath.contains("..")) {
+      throw new IllegalArgumentException("Filepath must not contain '..' elements!");
+    }
+    if (fileReference.startsWith("shared/")) {
+      return "shared";
+    } else if (fileReference.startsWith("world/")) {
+      return "world";
+    } else {
+      getOwnerIdFor(fileReference);
+      return "private";
+    }
+  }
+
+  private File getFile(UUID playerUuid, String context, String filepath) {
+    Path contextDir = getContextDir(playerUuid, context);
+    if (contextDir != null) {
+      return new File(contextDir.toFile(), filepath);
+    }
+    throw new IllegalArgumentException("Unsupported context: '" + context + "'");
+  }
+
+  private String getFileReferenceFor(UUID playerUuid, String context, String filepath) {
+    switch (context) {
+      case "shared":
+        return getSharedFileReferenceFor(filepath);
+      case "private":
+        return getFileReferenceFor(playerUuid, filepath);
+      case "world":
+        // TODO
+      default:
+        throw new IllegalArgumentException("Unsupported context: '" + context + "'");
+    }
+  }
+
   public String getFileReferenceFor(EntityPlayer player, String filepath) {
-    return player.getUniqueID().toString() + "/" + filepath.replace('\\', '/');
+    return getFileReferenceFor(player.getUniqueID(), filepath);
+  }
+
+  public String getFileReferenceFor(UUID playerUuid, String filepath) {
+    return playerUuid.toString() + "/" + filepath.replace('\\', '/');
   }
 
   public String getSharedFileReferenceFor(String filepath) {
@@ -427,15 +549,26 @@ public class LuaFileRepository {
     if (filepath.contains("..") || filepath.startsWith("/") || filepath.startsWith("\\")) {
       return Collections.emptyList();
     }
-    if ("shared".equals(context)) {
-      return getMatches(config.getSharedLibDir().toPath(), filepath);
-    }
-    if ("private".equals(context)) {
-      return getMatches(config.getOrCreateWizardConfig(playerUuid).getLibDir().toPath(), filepath);
+    Path contextDir = getContextDir(playerUuid, context);
+    if (contextDir != null) {
+      return getMatches(contextDir, filepath);
     }
 
     // TODO "world"
     return Collections.emptyList();
+  }
+
+  private Path getContextDir(UUID playerUuid, String context) {
+    switch (context) {
+      case "shared":
+        return config.getSharedLibDir().toPath();
+      case "private":
+        return config.getOrCreateWizardConfig(playerUuid).getLibDir().toPath();
+      case "world":
+        // TODO "world"
+      default:
+        return null;
+    }
   }
 
   private List<String> getMatches(Path contextDir, String pathStr) {
@@ -477,5 +610,6 @@ public class LuaFileRepository {
       throw new UncheckedIOException(e);
     }
   }
+
 
 }
