@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Loading Lua File ...</title>
+<title>Initializing</title>
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <script src="/jquery/jquery-3.2.1.js"></script>
-<script src="/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11/ace.min.js" type="text/javascript" charset="utf-8"></script>
 <style type="text/css" media="screen">
 body {
 	background: #222;
@@ -96,7 +96,7 @@ body {
 #suggestion div:hover {
 	background: #444;
 }
-#action {
+#actions {
 	position: absolute;
 	top: 4px;
 	left: 698px;
@@ -140,8 +140,8 @@ body {
 		<!-- option>world</option -->
 	</select>
 	<input type="text" id="path" />
-	<select id="action">
-		<option value="">action</option>
+	<select id="actions">
+		<option value="">actions</option>
 		<option id="rename">rename</option>
 		<option id="delete">delete</option>
 	</select>
@@ -163,28 +163,34 @@ body {
  <script>
 		var loaded = false;
 		var doMarkClean = false;
-		var filename = window.location.href;
-		var filepath = "";
-		var urlparts = window.location.href.match("^(.+)\/wol\/lua\/([\\w-]+)\/(.+)$");
-		var editor = ace.edit("editor");
 
-		editor.getSession().setTabSize(2);
-		editor.$blockScrolling = Infinity;
-		editor.getSession().setMode("ace/mode/lua");
-		editor.setTheme("ace/theme/twilight");
+		var filename = window.location.href;
+		var filepath = '';
+		var urlparts = window.location.href.match('^(.+)\/wol\/lua\/([\\w-]+)\/(.+)$');
+
+		var playerUuid = '';
+		var lastModified = '';
+		var fileExists = false;
+
+		ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.11');
+		var editor = ace.edit('editor');
+
+		editor.session.setTabSize(2);
+		editor.setTheme('ace/theme/twilight');
 		editor.setHighlightActiveLine(true);
+		editor.$blockScrolling = Infinity;
 
 		editor.commands.addCommand({
 			name: 'save',
-			bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
+			bindKey: {win: 'Ctrl-S', mac: 'Cmd-S'},
 			exec: function(editor) {
-				document.title = "saving "+filepath;
+				document.title = 'Saving '+filepath;
 				var json = JSON.stringify({ path: filename, content: editor.getValue()});
 				$.ajax({
-					type: "POST",
+					type: 'POST',
 					url: filename,
 					data: json,
-					contentType: "application/json",
+					contentType: 'application/json',
 					success: function(response) {
 						document.location.reload();
 					}
@@ -192,7 +198,7 @@ body {
 				.fail(function(response) {
 					console.log('ERROR saving file');
 					console.log(response);
-					alert('Unable to save file content.');
+					alert('Unable to save file.');
 					document.title = filepath;
 				});
 			}
@@ -200,7 +206,7 @@ body {
 
 		editor.commands.addCommand({
 			name: 'open',
-			bindKey: {win: "Ctrl-O", "mac": "Cmd-O"},
+			bindKey: {win: 'Ctrl-O', mac: 'Cmd-O'},
 			exec: function(editor) {
 				$('#path').focus();
 			}
@@ -208,14 +214,14 @@ body {
 		
 		function setModified(modified) {
 			if (modified) {
-				document.title = "\u25CF "+filepath;
+				document.title = '\u25CF '+filepath;
 			} else {
 				editor.session.getUndoManager().markClean();
 				document.title = filepath;
 			}
 		}
 		
-		editor.on("input", function() {
+		editor.on('input', function() {
 			if (doMarkClean) {
 				setModified(false);
 				doMarkClean = false;
@@ -224,36 +230,52 @@ body {
 			}
 		});
 
-		function loadContent(aFilename) {
+		function loadContent() {
 			loaded = false;
-			if (!aFilename) aFilename = filename;
+			document.title = 'Loading '+filename;
 			$.ajax({
-				dataType: "json",
-				url: aFilename+"?",
+				dataType: 'json',
+				url: filename+'?',
 				success: function(data) {
-//					console.log(data);
+					if (data.type == 'directory') window.location	= '/wol/lua/shared/welcome.txt';
 
-					if (data.type == 'directory') window.location	= "/wol/lua/shared/welcome.txt";
-
+					filepath = data.path;
 					lastModified = new Date(data.lastModified);
 					fileExists = data.exists;
 					playerUuid = data.playerUuid;
 
 					if (fileExists) {
-						var date = lastModified.toISOString().substring(0,10) + ' ' + lastModified.toISOString().substring(11,19);
-						$('#status').text('Last modified: ' + date);
+						var date = lastModified.toISOString().substring(0,10)+' '+lastModified.toISOString().substring(11,19);
+						$('#status').text('Last modified: '+date);
 					} else {
 						$('#status').text('This file does not exist yet. It will be created when you save.');						
-						$('#action').attr('disabled','true');
-						$('#action').css('color','#888');
+						$('#actions').attr('disabled','true');
+						$('#actions').css('color','#888');
+					}
+
+					var extension = data.name.match('\\.(\\w+)$');
+					if (extension) switch (extension[1]) {
+						case 'html':
+							editor.session.setMode('ace/mode/html');
+							break;
+						case 'lua':
+							editor.session.setMode('ace/mode/lua');
+							break;
+						case 'md':
+							editor.session.setMode('ace/mode/markdown');
+							break;
+						case 'xml':
+							editor.session.setMode('ace/mode/xml');
+							break;
 					}
 
 					editor.setValue(data.content ? data.content:'');
 					editor.clearSelection();
 					editor.focus();
+
 					setModified(false);
-					document.title = data.path;
-					filepath = data.path;
+					document.title = filepath;
+
 					loaded = true;
 					doMarkClean = true;
 				},
@@ -286,22 +308,19 @@ body {
 		var suggestionCursor = 0;
 		var suggestionClick = false;
 
-		var playerUuid = '';
-		var lastModified = '';
-		var fileExists = false;
 		var renameActive = false;
 
 		function requestSuggestions() {
 			var context = $('#context').val();
 			var path = $('#path').val().substring(0,suggestionCursor);
 			$.ajax({
-				dataType: "json",
-				url: urlparts[1] + "/wol/autocomplete?c="+context+"&p="+path,
+				dataType: 'json',
+				url: urlparts[1] + '/wol/autocomplete?c='+context+'&p='+path,
 				success: function(data) {
 					uuid = data.playerUuid;
 					suggestions = data.matches.sort();
-					$("#suggestion").empty();
-					suggestions.forEach(element => $("#suggestion").append('<div>'+element+'</div>'));
+					$('#suggestion').empty();
+					suggestions.forEach(element => $('#suggestion').append('<div>'+element+'</div>'));
 					$('#suggestion div').click(function(event) { clickSuggestion(event) });
 					highlightSuggestion();
 					$('#suggestion').css('display','block');
@@ -351,7 +370,7 @@ body {
 
 		function confirmDiscard() {
 			if (editor.session.getUndoManager().isClean()) return true;
-			return confirm("You have unsaved changes.\nDo you want to discard them?");
+			return confirm('You have unsaved changes.\nDo you want to discard them?');
 		}
 
 		function executeAction() {
@@ -406,7 +425,7 @@ body {
 			var context = $('#context').val();
 			if (context == 'private') context = playerUuid;
 			var path = $('#path').val();
-			window.location = urlparts[1] + "/wol/lua/" + context + "/" + path;
+			window.location = urlparts[1] + '/wol/lua/' + context + '/' + path;
 		});
 
 		$('#path').keydown(function(event) {
@@ -458,9 +477,9 @@ body {
 			}, 500);
 		});
 
-		$('#action').change(function() {
-			var action = $('#action').val();
-			$('#action').val('');
+		$('#actions').change(function() {
+			var action = $('#actions').val();
+			$('#actions').val('');
 			switch (action) {
 
 				case 'rename':
@@ -471,14 +490,14 @@ body {
 					break;
 
 				case 'delete':
-					if (!confirm("Are you sure you want to delete this file?\nThis action is irreversible.")) return;
+					if (!confirm('Are you sure you want to delete this file?\nThis action is irreversible.')) return;
 					$.ajax({
 						type: 'DELETE',
 						url: filename,
 						data: '',
 						contentType: 'application/json',
 						success: function(response) {
-							window.location	= "/wol/lua/shared/welcome.txt";
+							window.location	= '/wol/lua/shared/welcome.txt';
 						}
 					})
 					.fail(function(response) {
