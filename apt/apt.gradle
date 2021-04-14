@@ -7,6 +7,7 @@ dependencies {
   annotationProcessor libs.auto_service
   compileOnly libs.auto_service
   compile libs.guava
+  compile libs.javax_annotation
   compile libs.javapoet
   compile libs.jsr305
   compile libs.rembulan_runtime
