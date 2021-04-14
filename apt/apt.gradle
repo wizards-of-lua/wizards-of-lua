@@ -8,6 +8,7 @@ dependencies {
   compileOnly libs.auto_service
   compile libs.guava
   compile libs.javapoet
+  compile libs.javax_annotation
   compile libs.jsr305
   compile libs.rembulan_runtime
 }
