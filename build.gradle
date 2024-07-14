@@ -95,6 +95,10 @@ allprojects {
       name = "java-download"
       url = "http://download.java.net/maven/2/"
     }
+    maven {
+      name = "papermc"
+      url = "https://repo.papermc.io/repository/maven-public"
+    }
   }
 }
 
