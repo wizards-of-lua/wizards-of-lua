@@ -2,9 +2,9 @@
 title: Welcome to the Home of the Wizards of Lua
 ---
 
-### Update
+### Update !!!
 * This page is about the **outdated** forge-base version of Wizards of Lua.
-* The **actively maintained** fabric-based version of Wizards of Lua is hosted on [Codeberg](https://codeberg.org/mickkay/Wizards-of-Lua-Fabric/src/branch/main/README.md)
+* The **actively maintained** fabric-based version of Wizards of Lua is hosted on [Codeberg](https://codeberg.org/mickkay/Wizards-of-Lua-Fabric/src/branch/main/README.md).
 
 
 
