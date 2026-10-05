@@ -3,8 +3,8 @@
 The Wizards of Lua Mod is a modification of Minecraft. It adds the `/lua` command to the game.
 
 ## Update:
-* This repo contains the **outdated** forge-base version of WoL.
-* The most recent an actively maintained fabric-based version of WoL is hosted on [Codeberg](https://codeberg.org/mickkay/Wizards-of-Lua-Fabric).
+> * Warning: This repo contains the **outdated** forge-base version of WoL. It is not maintained anymore!
+> * The most recent and actively maintained **fabric-based** version of WoL is hosted on [Codeberg](https://codeberg.org/mickkay/Wizards-of-Lua-Fabric). Visit [www.wizards-of-lua.net](https://www.wizards-of-lua.net) for more information.
 
 ## How to Contribute Ideas
 If you have any nice idea that you think this mod could benefit from please feel free to tell us about it. 
